@@ -4,5 +4,5 @@ import '@testing-library/jest-dom';
 
 test('renders welcome message', () => {
   render(<App />);
-  expect(screen.getByText(/welcome/i)).toBeInTheDocument();
+  expect(screen.getByText(/Dog-Log/i)).toBeInTheDocument();
 });
