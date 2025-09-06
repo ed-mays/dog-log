@@ -8,7 +8,7 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": "./src",
     "paths": {
-      "@components/*": ["components/*"],
+      "@components/*": ["components/*"]
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

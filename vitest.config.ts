@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./vitest.setup.tsx']
+    setupFiles: ['./vitest.setup.tsx'],
   },
   plugins: [tsconfigPaths()],
 });
