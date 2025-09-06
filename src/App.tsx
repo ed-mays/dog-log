@@ -5,7 +5,6 @@ import { useAppStore } from '@store/store';
 import { useTranslation } from 'react-i18next';
 
 function App() {
-  //const [count, setCount] = useState(0);
   const { i18n } = useTranslation();
   const store = useAppStore();
   const appTitle = import.meta.env.VITE_APP_TITLE;
