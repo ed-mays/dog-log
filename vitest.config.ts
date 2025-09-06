@@ -23,6 +23,10 @@ export default defineConfig({
         '**/*.config.js', // Exclude all config JS files (pattern)
         'vite.config.*', // Exclude Vite config, TS or JS
         'vitest.config.*', // Exclude Vitest config, TS or JS
+        'src/**/*.types.tsx',
+        'src/main.tsx',
+        'src/i18n.tsx',
+        '**/*.d.ts',
       ],
     },
   },

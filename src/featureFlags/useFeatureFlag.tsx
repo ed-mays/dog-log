@@ -1,4 +1,4 @@
-import { useFeatureFlagsContext } from './FeatureFlagsContext';
+import { useFeatureFlagsContext } from './useFeatureFlagsContext';
 import type { FeatureFlag } from './featureFlags.types';
 
 // Typed hook for easy access in components
