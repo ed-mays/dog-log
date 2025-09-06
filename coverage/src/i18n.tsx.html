@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for dog-log/vitest.config.ts</title>
+    <title>Code coverage report for src/i18n.tsx</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../index.html">All files</a> / <a href="index.html">dog-log</a> vitest.config.ts</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> i18n.tsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -84,9 +84,13 @@
 <a name='L19'></a><a href='#L19'>19</a>
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
-<a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L22'></a><a href='#L22'>22</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -101,37 +105,27 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { defineConfig } from 'vitest/config';<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
-<span class="cstat-no" title="statement not covered" >import tsconfigPaths from 'vite-tsconfig-paths';</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import i18n from 'i18next';<span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" ></span></span></span>
+<span class="cstat-no" title="statement not covered" >import { initReactI18next } from 'react-i18next';</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export default defineConfig({</span>
-<span class="cstat-no" title="statement not covered" >  plugins: [tsconfigPaths({ projects: ['./tsconfig.app.json'] })],</span>
-<span class="cstat-no" title="statement not covered" >  test: {</span>
-<span class="cstat-no" title="statement not covered" >    environment: 'jsdom',</span>
-<span class="cstat-no" title="statement not covered" >    globals: true,</span>
-<span class="cstat-no" title="statement not covered" >    setupFiles: ['./vitest.setup.tsx'],</span>
-<span class="cstat-no" title="statement not covered" >    coverage: {</span>
-<span class="cstat-no" title="statement not covered" >      provider: 'v8', // 'v8' is the default</span>
-<span class="cstat-no" title="statement not covered" >      reporter: ['text', 'html'], // Supported: terminal output &amp; html report</span>
-<span class="cstat-no" title="statement not covered" >      reportsDirectory: 'coverage', // Output directory for reports</span>
-<span class="cstat-no" title="statement not covered" >      exclude: [</span>
-<span class="cstat-no" title="statement not covered" >        'node_modules/',</span>
-<span class="cstat-no" title="statement not covered" >        'test/',</span>
-<span class="cstat-no" title="statement not covered" >        '**/*.test.ts',</span>
-<span class="cstat-no" title="statement not covered" >        '**/*.test.tsx',</span>
-<span class="cstat-no" title="statement not covered" >        '**/__tests__/**',</span>
-<span class="cstat-no" title="statement not covered" >      ],</span>
-<span class="cstat-no" title="statement not covered" >    },</span>
+<span class="cstat-no" title="statement not covered" >import homeEN from './locales/en/home.json';</span>
+<span class="cstat-no" title="statement not covered" >import commonEN from './locales/en/common.json';</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >import homeES from './locales/es/home.json';</span>
+<span class="cstat-no" title="statement not covered" >import commonES from './locales/es/common.json';</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >i18n.use(initReactI18next).init({</span>
+<span class="cstat-no" title="statement not covered" >  resources: {</span>
+<span class="cstat-no" title="statement not covered" >    en: { common: commonEN, home: homeEN },</span>
+<span class="cstat-no" title="statement not covered" >    es: { common: commonES, home: homeES },</span>
 <span class="cstat-no" title="statement not covered" >  },</span>
+<span class="cstat-no" title="statement not covered" >  lng: import.meta.env.VITE_DEFAULT_LOCALE,</span>
+<span class="cstat-no" title="statement not covered" >  fallbackLng: 'en',</span>
+<span class="cstat-no" title="statement not covered" >  ns: ['common', 'home'],</span>
+<span class="cstat-no" title="statement not covered" >  defaultNS: 'common',</span>
+<span class="cstat-no" title="statement not covered" >  interpolation: { escapeValue: false },</span>
 <span class="cstat-no" title="statement not covered" >});</span>
+<span class="cstat-no" title="statement not covered" >export default i18n;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -139,7 +133,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-06T20:31:45.854Z
+                at 2025-09-06T20:35:50.484Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for dog-log/src/App.tsx</title>
+    <title>Code coverage report for src/featureFlags/FeatureFlagsProvider.tsx</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">dog-log/src</a> App.tsx</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/featureFlags</a> FeatureFlagsProvider.tsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">82.14% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>33/33</span>
+                <span class='fraction'>23/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">85.71% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>6/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">82.14% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>33/33</span>
+                <span class='fraction'>23/28</span>
             </div>
         
             
@@ -97,83 +97,74 @@
 <a name='L32'></a><a href='#L32'>32</a>
 <a name='L33'></a><a href='#L33'>33</a>
 <a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
-import { useAppStore } from '@store/store';
-import { useTranslation } from 'react-i18next';
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState, useEffect } from 'react';
+import { FeatureFlagsContext } from './FeatureFlagsContext';
+import type { FeatureFlags } from './featureFlags.types';
+import { defaultFeatureFlags } from './featureFlags.config';
 &nbsp;
-function App() {
-  const { i18n } = useTranslation();
-  const store = useAppStore();
-  const appTitle = import.meta.env.VITE_APP_TITLE;
+export const FeatureFlagsProvider: React.FC&lt;{ children: React.ReactNode }&gt; = ({
+  children,
+}) =&gt; {
+  const [flags, setFlags] = useState&lt;FeatureFlags&gt;(defaultFeatureFlags);
+&nbsp;
+  useEffect(() =&gt; {
+    const handler = <span class="fstat-no" title="function not covered" >() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      setFlags({</span>
+<span class="cstat-no" title="statement not covered" >        ...flags,</span>
+<span class="cstat-no" title="statement not covered" >        betaFeature: localStorage.getItem('FLAG_BETA_FEATURE') === 'true',</span>
+<span class="cstat-no" title="statement not covered" >      });</span>
+<span class="cstat-no" title="statement not covered" >    };</span>
+    window.addEventListener('storage', handler);
+    return () =&gt; window.removeEventListener('storage', handler);
+  }, [flags]);
+&nbsp;
+  const setFlag = (key: keyof FeatureFlags, value: boolean) =&gt; {
+    setFlags((f) =&gt; ({ ...f, [key]: value }));
+    if (key === 'betaFeature') {
+      localStorage.setItem('FLAG_BETA_FEATURE', value ? <span class="branch-0 cbranch-no" title="branch not covered" >'true' : 'false')</span>;
+    }
+  };
+&nbsp;
   return (
-    &lt;&gt;
-      &lt;div&gt;
-        &lt;a href="https://vite.dev" target="_blank"&gt;
-          &lt;img src={viteLogo} className="logo" alt="Vite logo" /&gt;
-        &lt;/a&gt;
-        &lt;a href="https://react.dev" target="_blank"&gt;
-          &lt;img src={reactLogo} className="logo react" alt="React logo" /&gt;
-        &lt;/a&gt;
-      &lt;/div&gt;
-      &lt;h1&gt;{appTitle}&lt;/h1&gt;
-      &lt;div className="card"&gt;
-        &lt;button onClick={<span class="fstat-no" title="function not covered" >() =&gt; store.increment()}&gt;</span>
-          {i18n.t('home:countButton.countText')} {store.count}
-        &lt;/button&gt;
-        &lt;p&gt;
-          Edit &lt;code&gt;src/App.tsx&lt;/code&gt; and save to test HMR
-        &lt;/p&gt;
-      &lt;/div&gt;
-      &lt;p className="read-the-docs"&gt;
-        Click on the Vite and React logos to learn more
-      &lt;/p&gt;
-    &lt;/&gt;
+    &lt;FeatureFlagsContext.Provider value={{ flags, setFlag }}&gt;
+      {children}
+    &lt;/FeatureFlagsContext.Provider&gt;
   );
-}
-&nbsp;
-export default App;
+};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -181,7 +172,7 @@ export default App;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-06T20:31:45.854Z
+                at 2025-09-06T20:35:50.484Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

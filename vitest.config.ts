@@ -14,9 +14,15 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'test/',
+        'dist/',
         '**/*.test.ts',
         '**/*.test.tsx',
         '**/__tests__/**',
+        '**/featureFlags.config.ts', // Exclude specific config file
+        '**/*.config.ts', // Exclude all config TS files (pattern)
+        '**/*.config.js', // Exclude all config JS files (pattern)
+        'vite.config.*', // Exclude Vite config, TS or JS
+        'vitest.config.*', // Exclude Vitest config, TS or JS
       ],
     },
   },
