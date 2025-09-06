@@ -1,7 +1,7 @@
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
-import{ useAppStore } from '@store/store';
+import { useAppStore } from '@store/store';
 import { useTranslation } from 'react-i18next';
 
 function App() {

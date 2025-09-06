@@ -10,12 +10,12 @@ import commonES from './locales/es/common.json';
 i18n.use(initReactI18next).init({
   resources: {
     en: { common: commonEN, home: homeEN },
-    es: { common: commonES , home: homeES },
+    es: { common: commonES, home: homeES },
   },
   lng: import.meta.env.VITE_DEFAULT_LOCALE,
-  fallbackLng: "en",
-  ns: ["common", "home"],
-  defaultNS: "common",
-  interpolation: { escapeValue: false }
+  fallbackLng: 'en',
+  ns: ['common', 'home'],
+  defaultNS: 'common',
+  interpolation: { escapeValue: false },
 });
 export default i18n;
