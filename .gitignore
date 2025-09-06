@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 
 guide.md
+coverage/
