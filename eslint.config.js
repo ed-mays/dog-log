@@ -5,12 +5,15 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import { globalIgnores } from 'eslint/config';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import { defineConfig } from 'eslint/config';
+import prettierRecommended from 'eslint-plugin-prettier/recommended'
 
-export default [
+export default defineConfig([
   js.configs.recommended,
   ...tseslint.configs.recommended,
   reactHooks.configs['recommended-latest'],
   reactRefresh.configs.vite,
+  prettierRecommended,
   jsxA11y.flatConfigs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
@@ -20,4 +23,4 @@ export default [
     },
   },
   globalIgnores(['dist']),
-];
+]);
