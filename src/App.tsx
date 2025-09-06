@@ -1,11 +1,12 @@
-//import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 import{ useAppStore } from '@store/store';
+import { useTranslation } from 'react-i18next';
 
 function App() {
   //const [count, setCount] = useState(0);
+  const { i18n } = useTranslation();
   const store = useAppStore();
   const appTitle = import.meta.env.VITE_APP_TITLE;
   return (
@@ -21,7 +22,7 @@ function App() {
       <h1>{appTitle}</h1>
       <div className="card">
         <button onClick={() => store.increment()}>
-          count is {store.count}
+          {i18n.t('home:countButton.countText')} {store.count}
         </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR

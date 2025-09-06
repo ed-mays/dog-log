@@ -29,5 +29,5 @@
       "@store/*": ["store/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "vitest.setup.tsx"]
 }
