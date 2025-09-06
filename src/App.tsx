@@ -3,10 +3,12 @@ import viteLogo from '/vite.svg';
 import './App.css';
 import { useAppStore } from '@store/store';
 import { useTranslation } from 'react-i18next';
+import { useFeatureFlag } from './featureFlags/useFeatureFlag.tsx';
 
 function App() {
   const { i18n } = useTranslation();
   const store = useAppStore();
+  const showCountButton = useFeatureFlag('test_show_count_button');
   const appTitle = import.meta.env.VITE_APP_TITLE;
   return (
     <>
@@ -20,9 +22,11 @@ function App() {
       </div>
       <h1>{appTitle}</h1>
       <div className="card">
-        <button onClick={() => store.increment()}>
-          {i18n.t('home:countButton.countText')} {store.count}
-        </button>
+        {showCountButton && (
+          <button onClick={() => store.increment()}>
+            {i18n.t('home:countButton.countText')} {store.count}
+          </button>
+        )}
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>

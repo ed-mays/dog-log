@@ -1,69 +1,86 @@
-# React + TypeScript + Vite
+## Dog Log
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern **React** application scaffolded with **Vite** and written in **TypeScript**. It supports robust linting and testing, and leverages modular path aliases and i18n. This project uses the latest React 19+ and popular state and translation libraries.
 
-Currently, two official plugins are available:
+***
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Project Structure
 
-## Expanding the ESLint configuration
+- **TypeScript** with strict type checking and modern bundler settings
+- **Vite** for fast development & optimized builds
+- Support for **path aliases**:
+    - `@components/* → src/components/*`
+    - `@store/* → src/store/*`
+- Test setup with **Vitest** & **Testing Library**
+- Linting & formatting with **ESLint** & **Prettier**
+- Internationalization powered by **i18next** and **react-i18next**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+***
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Install dependencies
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Available Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+| Script                | Description                              |
+|-----------------------|------------------------------------------|
+| `npm run dev`         | Start development server (Vite)          |
+| `npm run build`       | Type-check & build for production        |
+| `npm run preview`     | Preview local production build           |
+| `npm run lint`        | Run ESLint for code linting              |
+| `npm run lint:fix`    | Auto-fix lint issues                     |
+| `npm run format`      | Format codebase with Prettier            |
+| `npm run test`        | Run unit & component tests (Vitest)      |
+| `npm run test:coverage` | Run tests with code coverage           |
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+***
+
+### Testing
+
+- Uses **Vitest** for running fast TypeScript and component tests.
+- **@testing-library/react**, **user-event**, and **jest-dom** for ergonomic, reliable UI/UX testing.
+- TypeScript test globals and matchers included by default.
+
+***
+
+### Linting & Formatting
+
+- **ESLint** for linting React, TypeScript, accessibility, and prettier integration.
+- **Prettier** for code style and consistency.
+
+***
+
+### Internationalization
+
+- **i18next** & **react-i18next** for easy language switching and translations.
+
+***
+
+### Path Aliases
+
+- **@components/** and **@store/** resolve to `src/components/` and `src/store/` respectively, set in `tsconfig.app.json` and `tsconfig.json`. Update imports accordingly.
+
+***
+
+## Tech Stack
+
+- React 19
+- TypeScript (strict)
+- Vite
+- Vitest + Testing Library
+- Zustand (state)
+- i18next/react-i18next (i18n)
+- ESLint, Prettier
+
+***
+
+### License
+
+This project is private and not currently intended for open-source distribution.
+
+***
