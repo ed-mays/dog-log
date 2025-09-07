@@ -1,41 +1,26 @@
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
 import './App.css';
-import { useAppStore } from '@store/store';
-import { useTranslation } from 'react-i18next';
 import { useFeatureFlag } from './featureFlags/useFeatureFlag.tsx';
+import { DogList } from '@components/DogList.tsx';
+import { useDogsStore } from '@store/dogs.store.tsx';
+import React from 'react';
 
 function App() {
-  const { i18n } = useTranslation();
-  const store = useAppStore();
-  const showCountButton = useFeatureFlag('test_show_count_button');
-  const appTitle = import.meta.env.VITE_APP_TITLE;
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>{appTitle}</h1>
-      <div className="card">
-        {showCountButton && (
-          <button onClick={() => store.increment()}>
-            {i18n.t('home:countButton.countText')} {store.count}
-          </button>
-        )}
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+  const dogs = useDogsStore((state) => state.dogs);
+  const loading = useDogsStore((state) => state.loading);
+  const error = useDogsStore((state) => state.error);
+  const fetchDogs = useDogsStore((state) => state.fetchDogs);
+  const enableDogList = useFeatureFlag('dog_list_enabled');
+  //const appTitle = import.meta.env.VITE_APP_TITLE;
+
+  React.useEffect(() => {
+    fetchDogs();
+  }, [fetchDogs]);
+
+  if (loading) return <div data-testid="loading-indicator">Loading…</div>;
+  if (error) return <div data-testid="error-indicator">{error}</div>;
+  if (enableDogList && dogs.length > 0)
+    return <DogList dogs={dogs} data-testid="dog-list" />;
+  return null;
 }
 
 export default App;
