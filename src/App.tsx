@@ -4,6 +4,7 @@ import { DogList } from '@components/DogList.tsx';
 import { useDogsStore } from '@store/dogs.store.tsx';
 import React from 'react';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
+import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator.tsx';
 
 function App() {
   const dogs = useDogsStore((state) => state.dogs);
@@ -17,7 +18,7 @@ function App() {
   }, [fetchDogs]);
 
   if (loading) return <LoadingIndicator />;
-  else if (error) return <div data-testid="error-indicator">{error}</div>;
+  else if (error) return <ErrorIndicator />;
   else if (enableDogList && dogs.length > 0)
     return <DogList dogs={dogs} data-testid="dog-list" />;
   return null;
