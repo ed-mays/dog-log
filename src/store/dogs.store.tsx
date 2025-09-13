@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 // Import the Dog type from your DogList module to keep type definitions DRY
-import type { Dog } from '@components/DogList';
+
+import type { Dog } from '../features/petManagement/dogListTypes.tsx';
 
 interface DogsState {
   dogs: Dog[];

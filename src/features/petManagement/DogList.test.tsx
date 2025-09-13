@@ -1,9 +1,9 @@
 import { render, screen, within } from '@testing-library/react';
-import { DogList } from './DogList';
-import type { Dog } from './DogList';
-import i18n from '@testUtils/mocki18n.tsx';
+import { DogList } from './DogList.tsx';
+import i18n from './mocki18n.tsx';
 import { I18nextProvider } from 'react-i18next';
 import { beforeEach, test } from 'vitest';
+import type { Dog } from './dogListTypes.tsx';
 
 const testDogs: Dog[] = [
   { id: '1', name: 'Fido', breed: 'Labrador' },

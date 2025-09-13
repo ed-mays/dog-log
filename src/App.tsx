@@ -1,6 +1,6 @@
 import './App.css';
 import { useFeatureFlag } from './featureFlags/useFeatureFlag.tsx';
-import { DogList } from '@components/DogList.tsx';
+import { DogList } from './features/petManagement/DogList.tsx';
 import { useDogsStore } from '@store/dogs.store.tsx';
 import React from 'react';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';

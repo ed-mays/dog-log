@@ -1,11 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import styles from './DogList.module.css';
+import type { Dog } from './dogListTypes.tsx';
 
-export interface Dog {
-  id: string;
-  name: string;
-  breed: string;
-}
 type DogListProps = {
   dogs: Dog[];
   'data-TestId'?: string;
