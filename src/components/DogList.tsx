@@ -21,15 +21,15 @@ export function DogList({
     <table className={styles.tableFullWidth} data-testid={dataTestId}>
       <thead>
         <tr>
-          <th>{t('columnHeaders.name')}</th>
-          <th>{t('columnHeaders.breed')}</th>
+          <th className={styles.th}>{t('columnHeaders.name')}</th>
+          <th className={styles.th}>{t('columnHeaders.breed')}</th>
         </tr>
       </thead>
       <tbody>
         {dogs.map((dog) => (
           <tr key={dog.id}>
-            <td>{dog.name}</td>
-            <td>{dog.breed}</td>
+            <td className={styles.td}>{dog.name}</td>
+            <td className={styles.td}>{dog.breed}</td>
           </tr>
         ))}
       </tbody>
