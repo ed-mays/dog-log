@@ -4,12 +4,13 @@ import '@testing-library/jest-dom';
 import { FeatureFlagsProvider } from './featureFlags/FeatureFlagsProvider.tsx';
 import { useDogsStore } from '@store/dogs.store.tsx';
 
-afterEach(() => {
+beforeEach(() => {
+  //return;
   useDogsStore.setState({
     dogs: [],
     loading: false,
     error: null,
-    fetchDogs: useDogsStore.getState().fetchDogs, // or a mock
+    fetchDogs: async () => {},
   });
 });
 
@@ -22,8 +23,15 @@ function renderComponent() {
 }
 
 test('renders loading state', async () => {
-  useDogsStore.setState({ dogs: [], loading: true, error: null });
+  useDogsStore.setState({
+    dogs: [],
+    loading: true,
+    error: null,
+    fetchDogs: () => Promise.resolve(),
+  });
+
   renderComponent();
+
   await waitFor(() => {
     expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
   });
@@ -42,7 +50,7 @@ test('renders error state', async () => {
   });
 });
 
-test('renders dog list', () => {
+test('renders dog list', async () => {
   useDogsStore.setState({
     dogs: [
       { id: '1', name: 'Fido', breed: 'Labrador' },
@@ -52,8 +60,10 @@ test('renders dog list', () => {
     error: null,
   });
   renderComponent();
-  expect(screen.getByText('Fido (Labrador)')).toBeInTheDocument();
-  expect(screen.getByText('Bella (Beagle)')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('Fido (Labrador)')).toBeInTheDocument();
+    expect(screen.getByText('Bella (Beagle)')).toBeInTheDocument();
+  });
 });
 
 test('mocks fetchDogs action', async () => {
