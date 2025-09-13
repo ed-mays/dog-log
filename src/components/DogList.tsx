@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from './DogList.module.css';
 
 export interface Dog {
@@ -5,7 +6,6 @@ export interface Dog {
   name: string;
   breed: string;
 }
-
 type DogListProps = {
   dogs: Dog[];
   'data-TestId'?: string;
@@ -15,12 +15,14 @@ export function DogList({
   dogs,
   'data-TestId': dataTestId = 'dog-list',
 }: DogListProps) {
+  const { t } = useTranslation('dogList');
+
   return (
     <table className={styles.tableFullWidth} data-testid={dataTestId}>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Breed</th>
+          <th>{t('columnHeaders.name')}</th>
+          <th>{t('columnHeaders.breed')}</th>
         </tr>
       </thead>
       <tbody>

@@ -3,6 +3,8 @@ import App from './App';
 import '@testing-library/jest-dom';
 import { FeatureFlagsProvider } from './featureFlags/FeatureFlagsProvider.tsx';
 import { useDogsStore } from '@store/dogs.store.tsx';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '@testUtils/mocki18n.tsx';
 
 beforeEach(() => {
   useDogsStore.setState({
@@ -16,7 +18,9 @@ beforeEach(() => {
 function renderComponent() {
   render(
     <FeatureFlagsProvider>
-      <App />
+      <I18nextProvider i18n={i18n}>
+        <App />
+      </I18nextProvider>
     </FeatureFlagsProvider>
   );
 }

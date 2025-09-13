@@ -1,13 +1,36 @@
-// src/components/DogList.test.tsx
 import { render, screen, within } from '@testing-library/react';
 import { DogList } from './DogList';
 import type { Dog } from './DogList';
-import { test } from 'vitest';
+import i18n from '@testUtils/mocki18n.tsx';
+import { I18nextProvider } from 'react-i18next';
+import { beforeEach, test } from 'vitest';
 
 const testDogs: Dog[] = [
   { id: '1', name: 'Fido', breed: 'Labrador' },
   { id: '2', name: 'Bella', breed: 'Beagle' },
 ];
+
+beforeEach(() => {
+  i18n.changeLanguage('en');
+});
+
+const cases = [
+  { locale: 'en', expectedNameHeader: 'Name', expectedBreedHeader: 'Breed' },
+  { locale: 'es', expectedNameHeader: 'Nombre', expectedBreedHeader: 'Raza' },
+];
+test.each(cases)(
+  'renders translated headers for $locale locale',
+  ({ locale, expectedNameHeader, expectedBreedHeader }) => {
+    i18n.changeLanguage(locale);
+    render(
+      <I18nextProvider i18n={i18n}>
+        <DogList dogs={testDogs} />
+      </I18nextProvider>
+    );
+    expect(screen.getByText(expectedNameHeader)).toBeInTheDocument();
+    expect(screen.getByText(expectedBreedHeader)).toBeInTheDocument();
+  }
+);
 
 test('renders a table with headers', () => {
   render(<DogList dogs={testDogs} />);

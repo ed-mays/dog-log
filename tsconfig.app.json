@@ -26,7 +26,8 @@
     "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
-      "@store/*": ["store/*"]
+      "@store/*": ["store/*"],
+      "@testUtils/*": ["testUtils/*"],
     }
   },
   "include": ["src", "vitest.setup.tsx"]
