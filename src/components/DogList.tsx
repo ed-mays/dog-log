@@ -6,16 +6,29 @@ export interface Dog {
 
 type DogListProps = {
   dogs: Dog[];
+  'data-TestId'?: string;
 };
 
-export function DogList({ dogs }: DogListProps) {
+export function DogList({
+  dogs,
+  'data-TestId': dataTestId = 'dog-list',
+}: DogListProps) {
   return (
-    <ul>
-      {dogs.map((dog) => (
-        <li key={dog.id}>
-          {dog.name} ({dog.breed})
-        </li>
-      ))}
-    </ul>
+    <table data-testid={dataTestId}>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Breed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {dogs.map((dog) => (
+          <tr key={dog.id}>
+            <td>{dog.name}</td>
+            <td>{dog.breed}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

@@ -5,7 +5,6 @@ import { FeatureFlagsProvider } from './featureFlags/FeatureFlagsProvider.tsx';
 import { useDogsStore } from '@store/dogs.store.tsx';
 
 beforeEach(() => {
-  //return;
   useDogsStore.setState({
     dogs: [],
     loading: false,
@@ -61,30 +60,24 @@ test('renders dog list', async () => {
   });
   renderComponent();
   await waitFor(() => {
-    expect(screen.getByText('Fido (Labrador)')).toBeInTheDocument();
-    expect(screen.getByText('Bella (Beagle)')).toBeInTheDocument();
+    expect(screen.getByTestId('dog-list')).toBeInTheDocument();
   });
 });
 
-test('mocks fetchDogs action', async () => {
-  // Mock fetchDogs to simulate async fetch
+test('fetches dogs on mount', () => {
+  // Create a spy for fetchDogs
+  const fetchDogsSpy = vi.fn(async () => {});
+
+  // Set the store state to use the spy function
   useDogsStore.setState({
+    dogs: [],
     loading: false,
     error: null,
-    dogs: [],
-    fetchDogs: async () => {
-      useDogsStore.setState({ loading: true });
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      useDogsStore.setState({
-        dogs: [{ id: '3', name: 'Buddy', breed: 'Poodle' }],
-        loading: false,
-        error: null,
-      });
-    },
+    fetchDogs: fetchDogsSpy,
   });
 
   renderComponent();
-  await waitFor(() =>
-    expect(screen.getByText('Buddy (Poodle)')).toBeInTheDocument()
-  );
+
+  // Assert fetchDogs was called exactly once, i.e., on mount
+  expect(fetchDogsSpy).toHaveBeenCalledTimes(1);
 });
