@@ -1,3 +1,5 @@
+import styles from './DogList.module.css';
+
 export interface Dog {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ export function DogList({
   'data-TestId': dataTestId = 'dog-list',
 }: DogListProps) {
   return (
-    <table data-testid={dataTestId}>
+    <table className={styles.tableFullWidth} data-testid={dataTestId}>
       <thead>
         <tr>
           <th>Name</th>
