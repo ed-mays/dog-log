@@ -1,11 +1,11 @@
 import { render, screen, within } from '@testing-library/react';
-import { DogList } from './DogList.tsx';
+import { PetList } from './PetList.tsx';
 import i18n from './mocki18n.tsx';
 import { I18nextProvider } from 'react-i18next';
 import { beforeEach, test } from 'vitest';
-import type { Dog } from './dogListTypes.tsx';
+import type { Pet } from './petListTypes.tsx';
 
-const testDogs: Dog[] = [
+const testPets: Pet[] = [
   { id: '1', name: 'Fido', breed: 'Labrador' },
   { id: '2', name: 'Bella', breed: 'Beagle' },
 ];
@@ -24,7 +24,7 @@ test.each(cases)(
     i18n.changeLanguage(locale);
     render(
       <I18nextProvider i18n={i18n}>
-        <DogList dogs={testDogs} />
+        <PetList pets={testPets} />
       </I18nextProvider>
     );
     expect(screen.getByText(expectedNameHeader)).toBeInTheDocument();
@@ -33,7 +33,7 @@ test.each(cases)(
 );
 
 test('renders a table with headers', () => {
-  render(<DogList dogs={testDogs} />);
+  render(<PetList pets={testPets} />);
   // Table and column headers
   const table = screen.getByRole('table');
   expect(table).toBeInTheDocument();
@@ -44,11 +44,11 @@ test('renders a table with headers', () => {
 });
 
 test('renders default data-testid', async () => {
-  render(<DogList dogs={testDogs} />);
-  expect(screen.getByTestId('dog-list')).toBeInTheDocument();
+  render(<PetList pets={testPets} />);
+  expect(screen.getByTestId('pet-list')).toBeInTheDocument();
 });
 
 test('renders a custom data-testid', async () => {
-  render(<DogList dogs={testDogs} data-TestId="custom-test-id" />);
+  render(<PetList pets={testPets} data-TestId="custom-test-id" />);
   expect(screen.getByTestId('custom-test-id')).toBeInTheDocument();
 });

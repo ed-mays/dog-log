@@ -1,26 +1,26 @@
 import './App.css';
 import { useFeatureFlag } from './featureFlags/useFeatureFlag.tsx';
-import { DogList } from './features/petManagement/DogList.tsx';
-import { useDogsStore } from '@store/dogs.store.tsx';
+import { PetList } from './features/petManagement/PetList.tsx';
+import { usePetsStore } from '@store/pets.store.tsx';
 import React from 'react';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator.tsx';
 
 function App() {
-  const dogs = useDogsStore((state) => state.dogs);
-  const loading = useDogsStore((state) => state.loading);
-  const error = useDogsStore((state) => state.error);
-  const fetchDogs = useDogsStore((state) => state.fetchDogs);
-  const enableDogList = useFeatureFlag('dog_list_enabled');
+  const pets = usePetsStore((state) => state.pets);
+  const loading = usePetsStore((state) => state.loading);
+  const error = usePetsStore((state) => state.error);
+  const fetchPets = usePetsStore((state) => state.fetchPets);
+  const enablePetList = useFeatureFlag('pet_list_enabled');
 
   React.useEffect(() => {
-    fetchDogs();
-  }, [fetchDogs]);
+    fetchPets();
+  }, [fetchPets]);
 
   if (loading) return <LoadingIndicator />;
   else if (error) return <ErrorIndicator />;
-  else if (enableDogList && dogs.length > 0)
-    return <DogList dogs={dogs} data-testid="dog-list" />;
+  else if (enablePetList && pets.length > 0)
+    return <PetList pets={pets} data-testid="pet-list" />;
   return null;
 }
 

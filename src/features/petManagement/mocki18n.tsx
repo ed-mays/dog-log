@@ -5,10 +5,10 @@ i18n.use(initReactI18next).init({
   lng: 'en',
   resources: {
     en: {
-      dogList: { columnHeaders: { name: 'Name', breed: 'Breed' } },
+      petList: { columnHeaders: { name: 'Name', breed: 'Breed' } },
     },
     es: {
-      dogList: { columnHeaders: { name: 'Nombre', breed: 'Raza' } },
+      petList: { columnHeaders: { name: 'Nombre', breed: 'Raza' } },
     },
   },
 });

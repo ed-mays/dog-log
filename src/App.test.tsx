@@ -2,16 +2,16 @@ import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 import '@testing-library/jest-dom';
 import { FeatureFlagsProvider } from './featureFlags/FeatureFlagsProvider.tsx';
-import { useDogsStore } from '@store/dogs.store.tsx';
+import { usePetsStore } from '@store/pets.store.tsx';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './features/petManagement/mocki18n.tsx';
 
 beforeEach(() => {
-  useDogsStore.setState({
-    dogs: [],
+  usePetsStore.setState({
+    pets: [],
     loading: false,
     error: null,
-    fetchDogs: async () => {},
+    fetchPets: async () => {},
   });
 });
 
@@ -26,11 +26,11 @@ function renderComponent() {
 }
 
 test('renders loading state', async () => {
-  useDogsStore.setState({
-    dogs: [],
+  usePetsStore.setState({
+    pets: [],
     loading: true,
     error: null,
-    fetchDogs: () => Promise.resolve(),
+    fetchPets: () => Promise.resolve(),
   });
 
   renderComponent();
@@ -41,11 +41,11 @@ test('renders loading state', async () => {
 });
 
 test('renders error state', async () => {
-  useDogsStore.setState({
-    dogs: [],
+  usePetsStore.setState({
+    pets: [],
     loading: false,
     error: 'Fetch failed',
-    fetchDogs: async () => {},
+    fetchPets: async () => {},
   });
   renderComponent();
   await waitFor(() => {
@@ -53,9 +53,9 @@ test('renders error state', async () => {
   });
 });
 
-test('renders dog list', async () => {
-  useDogsStore.setState({
-    dogs: [
+test('renders pet list', async () => {
+  usePetsStore.setState({
+    pets: [
       { id: '1', name: 'Fido', breed: 'Labrador' },
       { id: '2', name: 'Bella', breed: 'Beagle' },
     ],
@@ -64,20 +64,20 @@ test('renders dog list', async () => {
   });
   renderComponent();
   await waitFor(() => {
-    expect(screen.getByTestId('dog-list')).toBeInTheDocument();
+    expect(screen.getByTestId('pet-list')).toBeInTheDocument();
   });
 });
 
-test('fetches dogs on mount', () => {
+test('fetches pets on mount', () => {
   // Create a spy for fetchDogs
   const fetchDogsSpy = vi.fn(async () => {});
 
   // Set the store state to use the spy function
-  useDogsStore.setState({
-    dogs: [],
+  usePetsStore.setState({
+    pets: [],
     loading: false,
     error: null,
-    fetchDogs: fetchDogsSpy,
+    fetchPets: fetchDogsSpy,
   });
 
   renderComponent();
