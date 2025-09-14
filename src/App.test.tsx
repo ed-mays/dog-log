@@ -1,10 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { render } from './test-utils.tsx';
 import App from './App';
 import '@testing-library/jest-dom';
-import { FeatureFlagsProvider } from './featureFlags/FeatureFlagsProvider.tsx';
 import { usePetsStore } from '@store/pets.store.tsx';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './features/petManagement/mocki18n.tsx';
 
 beforeEach(() => {
   usePetsStore.setState({
@@ -16,13 +14,7 @@ beforeEach(() => {
 });
 
 function renderComponent() {
-  render(
-    <FeatureFlagsProvider>
-      <I18nextProvider i18n={i18n}>
-        <App />
-      </I18nextProvider>
-    </FeatureFlagsProvider>
-  );
+  render(<App />);
 }
 
 test('renders loading state', async () => {
