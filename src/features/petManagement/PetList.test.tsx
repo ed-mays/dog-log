@@ -4,6 +4,7 @@ import i18n from './mocki18n.tsx';
 import { I18nextProvider } from 'react-i18next';
 import { beforeEach, test } from 'vitest';
 import type { Pet } from './petListTypes.tsx';
+import { FeatureFlagsProvider } from '@featureFlags/FeatureFlagsProvider.tsx';
 
 const testPets: Pet[] = [
   { id: '1', name: 'Fido', breed: 'Labrador' },
@@ -14,6 +15,19 @@ beforeEach(() => {
   i18n.changeLanguage('en');
 });
 
+const renderComponent = (
+  pets: Pet[] = testPets,
+  testId: string = 'pet-list'
+) => {
+  return render(
+    <FeatureFlagsProvider>
+      <I18nextProvider i18n={i18n}>
+        <PetList pets={pets} data-TestId={testId} />
+      </I18nextProvider>
+    </FeatureFlagsProvider>
+  );
+};
+
 const cases = [
   { locale: 'en', expectedNameHeader: 'Name', expectedBreedHeader: 'Breed' },
   { locale: 'es', expectedNameHeader: 'Nombre', expectedBreedHeader: 'Raza' },
@@ -22,18 +36,14 @@ test.each(cases)(
   'renders translated headers for $locale locale',
   ({ locale, expectedNameHeader, expectedBreedHeader }) => {
     i18n.changeLanguage(locale);
-    render(
-      <I18nextProvider i18n={i18n}>
-        <PetList pets={testPets} />
-      </I18nextProvider>
-    );
+    renderComponent();
     expect(screen.getByText(expectedNameHeader)).toBeInTheDocument();
     expect(screen.getByText(expectedBreedHeader)).toBeInTheDocument();
   }
 );
 
 test('renders a table with headers', () => {
-  render(<PetList pets={testPets} />);
+  renderComponent();
   // Table and column headers
   const table = screen.getByRole('table');
   expect(table).toBeInTheDocument();
@@ -44,11 +54,16 @@ test('renders a table with headers', () => {
 });
 
 test('renders default data-testid', async () => {
-  render(<PetList pets={testPets} />);
+  renderComponent();
   expect(screen.getByTestId('pet-list')).toBeInTheDocument();
 });
 
 test('renders a custom data-testid', async () => {
-  render(<PetList pets={testPets} data-TestId="custom-test-id" />);
+  renderComponent(testPets, 'custom-test-id');
   expect(screen.getByTestId('custom-test-id')).toBeInTheDocument();
+});
+
+test('renders an "add" button', async () => {
+  renderComponent();
+  expect(screen.getByTestId('add-pet-button')).toBeInTheDocument();
 });
