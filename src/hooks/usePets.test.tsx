@@ -19,7 +19,10 @@ test('fetches and returns mock pets', async () => {
   expect(result.current.pets).toEqual([]);
   expect(result.current.error).toBeNull();
 
-  await waitFor(() => expect(result.current.loading).toBe(false));
+  await waitFor(() => expect(result.current.loading).toBe(false), {
+    // Temporary evil due to baked-in simulated delay in the store.
+    timeout: 3000,
+  });
 
   expect(result.current.pets[0].name).toBe('Fido');
   expect(result.current.pets[1].name).toBe('Bella');

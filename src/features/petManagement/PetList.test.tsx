@@ -4,6 +4,7 @@ import i18n from './mocki18n.tsx';
 import { beforeEach, describe, test } from 'vitest';
 import type { Pet } from './petListTypes.tsx';
 import { render } from '../../test-utils.tsx';
+import { MemoryRouter } from 'react-router-dom';
 
 const testPets: Pet[] = [
   { id: '1', name: 'Fido', breed: 'Labrador' },
@@ -18,9 +19,14 @@ const renderComponent = (
   pets: Pet[] = testPets,
   testId: string = 'pet-list'
 ) => {
-  return render(<PetList pets={pets} data-TestId={testId} />, {
-    i18nInstance: i18n,
-  });
+  return render(
+    <MemoryRouter>
+      <PetList pets={pets} data-TestId={testId} />
+    </MemoryRouter>,
+    {
+      i18nInstance: i18n,
+    }
+  );
 };
 
 describe('Pet List', () => {

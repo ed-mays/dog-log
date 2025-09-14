@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import styles from './PetList.module.css';
 import type { Pet } from './petListTypes.tsx';
 import { useFeatureFlag } from '@featureFlags/useFeatureFlag.tsx';
+import { Link } from 'react-router-dom';
 
 type PetListProps = {
   pets: Pet[];
@@ -19,14 +20,16 @@ export function PetList({
     <>
       {enable_add_pets && (
         <div className={styles.headerRow}>
-          <button
-            className={styles.addButton}
-            data-testid={'add-pet-button'}
-            aria-label={t('addPet')}
-            title={t('addPet')}
-          >
-            {'\u2795'}
-          </button>
+          <Link to="/pets/new">
+            <button
+              className={styles.addButton}
+              data-testid={'add-pet-button'}
+              aria-label={t('addPet')}
+              title={t('addPet')}
+            >
+              {'\u2795'}
+            </button>
+          </Link>
         </div>
       )}
 
