@@ -1,10 +1,9 @@
-import { render, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { PetList } from './PetList.tsx';
 import i18n from './mocki18n.tsx';
-import { I18nextProvider } from 'react-i18next';
 import { beforeEach, describe, test } from 'vitest';
 import type { Pet } from './petListTypes.tsx';
-import { FeatureFlagsProvider } from '@featureFlags/FeatureFlagsProvider.tsx';
+import { render } from '../../test-utils.tsx';
 
 const testPets: Pet[] = [
   { id: '1', name: 'Fido', breed: 'Labrador' },
@@ -19,13 +18,9 @@ const renderComponent = (
   pets: Pet[] = testPets,
   testId: string = 'pet-list'
 ) => {
-  return render(
-    <FeatureFlagsProvider>
-      <I18nextProvider i18n={i18n}>
-        <PetList pets={pets} data-TestId={testId} />
-      </I18nextProvider>
-    </FeatureFlagsProvider>
-  );
+  return render(<PetList pets={pets} data-TestId={testId} />, {
+    i18nInstance: i18n,
+  });
 };
 
 describe('Pet List', () => {
