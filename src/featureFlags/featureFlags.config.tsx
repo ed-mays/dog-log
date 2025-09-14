@@ -5,4 +5,5 @@ export const defaultFeatureFlags: FeatureFlags = {
   betaFeature: localStorage.getItem('FLAG_BETA_FEATURE') === 'true',
   test_show_count_button: import.meta.env.VITE_FLAG_COUNT_BUTTON === 'true',
   pet_list_enabled: import.meta.env.VITE_PET_LIST_ENABLED === 'true',
+  add_pet_enabled: import.meta.env.VITE_ADD_PET_ENABLED === 'true',
 };
