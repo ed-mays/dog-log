@@ -15,5 +15,6 @@
     margin-bottom: 10px; /* space between button and table */
 }
 .addButton {
-    /* optional: add any custom button styling here */
+    color: white;
+    background-color: lightgrey;
 }

@@ -19,8 +19,13 @@ export function PetList({
     <>
       {enable_add_pets && (
         <div className={styles.headerRow}>
-          <button className={styles.addButton} data-testid={'add-pet-button'}>
-            Add
+          <button
+            className={styles.addButton}
+            data-testid={'add-pet-button'}
+            aria-label={t('addPet')}
+            title={t('addPet')}
+          >
+            {'\u2795'}
           </button>
         </div>
       )}

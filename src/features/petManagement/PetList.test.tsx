@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { PetList } from './PetList.tsx';
 import i18n from './mocki18n.tsx';
 import { I18nextProvider } from 'react-i18next';
-import { beforeEach, test } from 'vitest';
+import { beforeEach, describe, test } from 'vitest';
 import type { Pet } from './petListTypes.tsx';
 import { FeatureFlagsProvider } from '@featureFlags/FeatureFlagsProvider.tsx';
 
@@ -28,42 +28,70 @@ const renderComponent = (
   );
 };
 
-const cases = [
-  { locale: 'en', expectedNameHeader: 'Name', expectedBreedHeader: 'Breed' },
-  { locale: 'es', expectedNameHeader: 'Nombre', expectedBreedHeader: 'Raza' },
-];
-test.each(cases)(
-  'renders translated headers for $locale locale',
-  ({ locale, expectedNameHeader, expectedBreedHeader }) => {
-    i18n.changeLanguage(locale);
+describe('Pet List', () => {
+  const cases = [
+    { locale: 'en', expectedNameHeader: 'Name', expectedBreedHeader: 'Breed' },
+    { locale: 'es', expectedNameHeader: 'Nombre', expectedBreedHeader: 'Raza' },
+  ];
+  test.each(cases)(
+    'renders translated headers for $locale locale',
+    ({ locale, expectedNameHeader, expectedBreedHeader }) => {
+      i18n.changeLanguage(locale);
+      renderComponent();
+      expect(screen.getByText(expectedNameHeader)).toBeInTheDocument();
+      expect(screen.getByText(expectedBreedHeader)).toBeInTheDocument();
+    }
+  );
+
+  test('renders a table with headers', () => {
     renderComponent();
-    expect(screen.getByText(expectedNameHeader)).toBeInTheDocument();
-    expect(screen.getByText(expectedBreedHeader)).toBeInTheDocument();
-  }
-);
+    // Table and column headers
+    const table = screen.getByRole('table');
+    expect(table).toBeInTheDocument();
 
-test('renders a table with headers', () => {
-  renderComponent();
-  // Table and column headers
-  const table = screen.getByRole('table');
-  expect(table).toBeInTheDocument();
+    const headerRow = screen.getByRole('row', { name: /Name Breed/i });
+    expect(within(headerRow).getByText('Name')).toBeInTheDocument();
+    expect(within(headerRow).getByText('Breed')).toBeInTheDocument();
+  });
 
-  const headerRow = screen.getByRole('row', { name: /Name Breed/i });
-  expect(within(headerRow).getByText('Name')).toBeInTheDocument();
-  expect(within(headerRow).getByText('Breed')).toBeInTheDocument();
+  test('renders default data-testid', async () => {
+    renderComponent();
+    expect(screen.getByTestId('pet-list')).toBeInTheDocument();
+  });
+
+  test('renders a custom data-testid', async () => {
+    renderComponent(testPets, 'custom-test-id');
+    expect(screen.getByTestId('custom-test-id')).toBeInTheDocument();
+  });
 });
 
-test('renders default data-testid', async () => {
-  renderComponent();
-  expect(screen.getByTestId('pet-list')).toBeInTheDocument();
-});
+describe('Add button', () => {
+  test('has correct content, title, and aria label', async () => {
+    renderComponent();
+    const addButton = screen.getByTestId('add-pet-button');
+    expect(addButton).toBeInTheDocument();
+    expect(addButton).toHaveTextContent('\u2795');
+    expect(addButton).toHaveAttribute('aria-label', 'Add Pet');
+    expect(addButton).toHaveAttribute('title', 'Add Pet');
+  });
 
-test('renders a custom data-testid', async () => {
-  renderComponent(testPets, 'custom-test-id');
-  expect(screen.getByTestId('custom-test-id')).toBeInTheDocument();
-});
+  const i18nCases = [
+    { locale: 'en', expectedTitle: 'Add Pet', expectedAriaTitle: 'Add Pet' },
+    {
+      locale: 'es',
+      expectedTitle: 'Agrega Mascota',
+      expectedAriaTitle: 'Agrega Mascota',
+    },
+  ];
 
-test('renders an "add" button', async () => {
-  renderComponent();
-  expect(screen.getByTestId('add-pet-button')).toBeInTheDocument();
+  test.each(i18nCases)(
+    'renders translated headers for $locale locale',
+    ({ locale, expectedTitle, expectedAriaTitle }) => {
+      i18n.changeLanguage(locale);
+      renderComponent();
+      const addButton = screen.getByTestId('add-pet-button');
+      expect(addButton).toHaveAttribute('aria-label', expectedAriaTitle);
+      expect(addButton).toHaveAttribute('title', expectedTitle);
+    }
+  );
 });
