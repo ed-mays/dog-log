@@ -85,7 +85,7 @@ describe('Add button', () => {
   ];
 
   test.each(i18nCases)(
-    'renders translated headers for $locale locale',
+    'renders translated values for $locale locale',
     ({ locale, expectedTitle, expectedAriaTitle }) => {
       i18n.changeLanguage(locale);
       renderComponent();
