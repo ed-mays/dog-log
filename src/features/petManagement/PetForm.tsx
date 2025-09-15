@@ -20,7 +20,7 @@ export function PetForm({
   onCancel,
   setDirty,
 }: PetFormProps) {
-  const { t } = useTranslation('petForm'); // Use a relevant namespace for organization
+  const { t } = useTranslation(['petForm', 'petProperties']); // Use a relevant namespace for organization
   const [pet, setPet] = useState(initialValues);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function PetForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="pet-name">{t('name')}</label>
+      <label htmlFor="pet-name">{t('name', { ns: 'petProperties' })}</label>
       <input
         id="pet-name"
         name="name"
@@ -51,7 +51,7 @@ export function PetForm({
         onChange={handleChange}
         required
       />
-      <label htmlFor="pet-breed">{t('breed')}</label>
+      <label htmlFor="pet-breed">{t('breed', { ns: 'petProperties' })}</label>
       <input
         id="pet-breed"
         name="breed"
