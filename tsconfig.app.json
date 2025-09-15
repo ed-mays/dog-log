@@ -29,6 +29,7 @@
       "@store/*": ["store/*"],
       "@testUtils/*": ["testUtils/*"],
       "@featureFlags/*": ["featureFlags/*"],
+      "@features/*": ["features/*"],
     }
   },
   "include": ["src", "vitest.setup.tsx"]

@@ -5,6 +5,7 @@ import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingInd
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator.tsx';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PetListPage from './features/petManagement/petListPage.tsx';
+import AddPetPage from '@features/petManagement/AddPetPage.tsx';
 
 function App() {
   const loading = usePetsStore((state) => state.loading);
@@ -27,6 +28,7 @@ function App() {
             )
           }
         />
+        <Route path="/pets/new" element={<AddPetPage />} />
         <Route path="*" element={<Navigate to="/pets" />} />
         <Route
           path="/feature-unavailable"

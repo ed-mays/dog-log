@@ -6,12 +6,14 @@ interface PetsState {
   loading: boolean;
   error: string | null;
   fetchPets: () => Promise<void>;
+  addPet: (pet: Pet) => void;
 }
 
 export const usePetsStore = create<PetsState>((set) => ({
   pets: [],
   loading: false,
   error: null,
+  addPet: (pet: Pet) => set((state) => ({ pets: [...state.pets, pet] })),
   fetchPets: async () => {
     set({ loading: true, error: null });
     try {
