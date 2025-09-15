@@ -1,5 +1,7 @@
 {
   "yes": "Yes",
   "no": "No",
+  "cancel": "Cancel",
+  "ok": "OK",
   "discardChangesQuestion": "Discard changes?"
 }

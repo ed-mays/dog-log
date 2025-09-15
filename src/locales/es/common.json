@@ -1,5 +1,7 @@
 {
   "yes": "Si",
   "no": "No",
+  "cancel": "Cancelar",
+  "ok": "Aceptar",
   "discardChangesQuestion": "Borrar actualizaciónes?"
 }

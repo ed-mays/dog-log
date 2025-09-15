@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import formStyles from '@styles/FormStyles.module.css';
 
 export interface Pet {
   id?: string;
@@ -42,29 +43,49 @@ export function PetForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="pet-name">{t('name', { ns: 'petProperties' })}</label>
-      <input
-        id="pet-name"
-        name="name"
-        value={pet.name}
-        onChange={handleChange}
-        required
-      />
-      <label htmlFor="pet-breed">{t('breed', { ns: 'petProperties' })}</label>
-      <input
-        id="pet-breed"
-        name="breed"
-        value={pet.breed}
-        onChange={handleChange}
-        required
-      />
-      <button type="submit" disabled={!isValid}>
-        {t('ok')}
-      </button>
-      <button type="button" onClick={onCancel}>
-        {t('cancel')}
-      </button>
+    <form className={formStyles.formRoot} onSubmit={handleSubmit}>
+      <div className={formStyles.formGroup}>
+        <label className={formStyles.formLabel} htmlFor="pet-name">
+          {t('name', { ns: 'petProperties' })}
+        </label>
+        <input
+          className={formStyles.formInput}
+          id="pet-name"
+          name="name"
+          value={pet.name}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className={formStyles.formGroup}>
+        <label className={formStyles.formLabel} htmlFor="pet-breed">
+          {t('breed', { ns: 'petProperties' })}
+        </label>
+        <input
+          className={formStyles.formInput}
+          id="pet-breed"
+          name="breed"
+          value={pet.breed}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      <div className={formStyles.formActions}>
+        <button
+          className={formStyles.formButton}
+          type="button"
+          onClick={onCancel}
+        >
+          {t('cancel', { ns: 'common' })}
+        </button>
+        <button
+          className={`${formStyles.formButton} ${formStyles.formButtonPrimary}`}
+          type="submit"
+          disabled={!isValid}
+        >
+          {t('ok', { ns: 'common' })}
+        </button>
+      </div>
     </form>
   );
 }

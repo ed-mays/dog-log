@@ -30,6 +30,8 @@
       "@testUtils/*": ["testUtils/*"],
       "@featureFlags/*": ["featureFlags/*"],
       "@features/*": ["features/*"],
+      "@styles/*": ["styles/*"],
+
     }
   },
   "include": ["src", "vitest.setup.tsx"]
