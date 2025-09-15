@@ -6,14 +6,20 @@ i18n.use(initReactI18next).init({
   resources: {
     en: {
       petList: {
-        columnHeaders: { name: 'Name', breed: 'Breed' },
         addPet: 'Add Pet',
+      },
+      petProperties: {
+        name: 'Name',
+        breed: 'Breed',
       },
     },
     es: {
       petList: {
-        columnHeaders: { name: 'Nombre', breed: 'Raza' },
         addPet: 'Agrega Mascota',
+      },
+      petProperties: {
+        name: 'Nombre',
+        breed: 'Raza',
       },
     },
   },

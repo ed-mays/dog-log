@@ -1,7 +1,3 @@
 {
-"columnHeaders": {
-  "name": "Name",
-  "breed": "Breed"
-},
   "addPet": "Add Pet"
 }

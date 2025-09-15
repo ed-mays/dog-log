@@ -13,7 +13,7 @@ export function PetList({
   pets,
   'data-TestId': dataTestId = 'pet-list',
 }: PetListProps) {
-  const { t } = useTranslation('petList');
+  const { t } = useTranslation(['petList', 'petProperties']);
   const enable_add_pets = useFeatureFlag('add_pet_enabled');
 
   return (
@@ -36,8 +36,8 @@ export function PetList({
       <table className={styles.tableFullWidth} data-testid={dataTestId}>
         <thead>
           <tr>
-            <th className={styles.th}>{t('columnHeaders.name')}</th>
-            <th className={styles.th}>{t('columnHeaders.breed')}</th>
+            <th className={styles.th}>{t('name', { ns: 'petProperties' })}</th>
+            <th className={styles.th}>{t('breed', { ns: 'petProperties' })}</th>
           </tr>
         </thead>
         <tbody>

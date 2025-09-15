@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface Pet {
   id?: string;
@@ -19,7 +20,8 @@ export function PetForm({
   onCancel,
   setDirty,
 }: PetFormProps) {
-  const [pet, setPet] = useState<Pet>(initialValues);
+  const { t } = useTranslation('petForm'); // Use a relevant namespace for organization
+  const [pet, setPet] = useState(initialValues);
 
   useEffect(() => {
     const dirty =
@@ -27,7 +29,6 @@ export function PetForm({
     setDirty(dirty);
   }, [pet, initialValues, setDirty]);
 
-  // Simple validation: fields must not be empty
   const isValid = pet.name.trim().length > 0 && pet.breed.trim().length > 0;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -42,31 +43,27 @@ export function PetForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="pet-name">Name</label>
-        <input
-          id="pet-name"
-          name="name"
-          value={pet.name}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="pet-breed">Breed</label>
-        <input
-          id="pet-breed"
-          name="breed"
-          value={pet.breed}
-          onChange={handleChange}
-          required
-        />
-      </div>
+      <label htmlFor="pet-name">{t('name')}</label>
+      <input
+        id="pet-name"
+        name="name"
+        value={pet.name}
+        onChange={handleChange}
+        required
+      />
+      <label htmlFor="pet-breed">{t('breed')}</label>
+      <input
+        id="pet-breed"
+        name="breed"
+        value={pet.breed}
+        onChange={handleChange}
+        required
+      />
       <button type="submit" disabled={!isValid}>
-        OK
+        {t('ok')}
       </button>
       <button type="button" onClick={onCancel}>
-        Cancel
+        {t('cancel')}
       </button>
     </form>
   );

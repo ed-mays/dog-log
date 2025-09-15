@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { PetForm } from './PetForm';
 import type { Pet } from './PetForm';
+import { render } from 'test-utils.tsx';
 
 describe('PetForm', () => {
   const initialPet: Pet = { name: '', breed: '' };

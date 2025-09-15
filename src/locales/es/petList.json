@@ -1,7 +1,3 @@
 {
-"columnHeaders": {
-  "name": "Nombre",
-  "breed": "Raza"
-},
   "addPet": "Agrega Mascota"
 }
