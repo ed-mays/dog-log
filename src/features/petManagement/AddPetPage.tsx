@@ -4,12 +4,14 @@ import { PetForm } from '@features/petManagement/PetForm';
 import type { Pet } from '@features/petManagement/PetForm';
 import { usePetsStore } from '@store/pets.store';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
+import { useTranslation } from 'react-i18next';
 
 export default function AddPetPage() {
   const addPet = usePetsStore((state) => state.addPet);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formDirty, setFormDirty] = useState(false);
+  const { t } = useTranslation('common');
 
   function handleSubmit(pet: Pet) {
     addPet({ ...pet, id: '3' }); // generateId is your id function
@@ -44,9 +46,11 @@ export default function AddPetPage() {
       />
       {showModal && (
         <ConfirmModal
-          text="Discard changes?"
+          text={t('discardChangesQuestion')}
           onAccept={handleModalAccept}
           onDecline={handleModalDecline}
+          acceptLabel={t('yes')}
+          declineLabel={t('no')}
         />
       )}
     </>

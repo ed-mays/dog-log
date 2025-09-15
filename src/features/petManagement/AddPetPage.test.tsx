@@ -1,7 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import type { Pet } from '@features/petManagement/PetForm';
 import AddPetPage from './AddPetPage';
+import { render } from 'test-utils.tsx';
 
 // ---- Typed Zustand Store Mock ----
 type AddPet = (pet: Pet) => void;

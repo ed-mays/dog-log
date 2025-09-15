@@ -1,1 +1,5 @@
-{}
+{
+  "yes": "Si",
+  "no": "No",
+  "discardChangesQuestion": "Borrar actualizaciónes?"
+}
