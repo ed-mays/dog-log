@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { usePetsStore } from '@store/pets.store.tsx';
+import { usePetsStore } from '@store/pets.store';
 
 export function usePets() {
   const pets = usePetsStore((state) => state.pets);

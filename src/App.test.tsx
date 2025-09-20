@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { render } from '@/test-utils';
 import App from './App';
 import '@testing-library/jest-dom';
-import { usePetsStore } from '@store/pets.store.tsx';
+import { usePetsStore } from '@store/pets.store';
 
 beforeEach(() => {
   usePetsStore.setState({

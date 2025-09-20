@@ -1,11 +1,11 @@
 import './App.css';
-import { useFeatureFlag } from './featureFlags/useFeatureFlag.tsx';
-import { usePetsStore } from '@store/pets.store.tsx';
-import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
-import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator.tsx';
+import { useFeatureFlag } from './featureFlags/useFeatureFlag';
+import { usePetsStore } from '@store/pets.store';
+import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
+import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import PetListPage from './features/petManagement/petListPage.tsx';
-import AddPetPage from '@features/petManagement/AddPetPage.tsx';
+import PetListPage from './features/petManagement/petListPage';
+import AddPetPage from '@features/petManagement/AddPetPage';
 
 function App() {
   const loading = usePetsStore((state) => state.loading);

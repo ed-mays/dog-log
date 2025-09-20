@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Pet } from '../features/petManagement/petListTypes.tsx';
+import type { Pet } from '@features/petManagement/types';
 
 interface PetsState {
   pets: Pet[];

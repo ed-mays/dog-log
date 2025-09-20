@@ -1,5 +1,5 @@
 import { act } from 'react';
-import { useAppStore } from './store.tsx';
+import { useAppStore } from './store';
 
 describe('useAppStore', () => {
   beforeEach(() => {

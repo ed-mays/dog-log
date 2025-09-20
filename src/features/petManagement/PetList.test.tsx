@@ -1,8 +1,8 @@
 import { screen, within } from '@testing-library/react';
-import { PetList } from './PetList.tsx';
-import i18n from './mocki18n.tsx';
+import { PetList } from './PetList';
+import i18n from './mocki18n';
 import { beforeEach, describe, test } from 'vitest';
-import type { Pet } from './petListTypes.tsx';
+import type { Pet } from './petListTypes';
 import { render } from '@/test-utils';
 import { MemoryRouter } from 'react-router-dom';
 

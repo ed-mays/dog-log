@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { usePets } from './usePets.tsx';
-import { usePetsStore } from '@store/pets.store.tsx';
+import { usePets } from './usePets';
+import { usePetsStore } from '@store/pets.store';
 
 beforeEach(() => {
   // Reset Zustand store between tests to avoid state bleed

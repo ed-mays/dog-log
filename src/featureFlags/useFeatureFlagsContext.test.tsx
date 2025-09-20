@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FeatureFlagsProvider } from './FeatureFlagsProvider';
 import { useFeatureFlagsContext } from './useFeatureFlagsContext';
-import type { FeatureFlagsContextType } from './FeatureFlagsContext.tsx';
+import type { FeatureFlagsContextType } from './FeatureFlagsContext';
 
 const HookConsumer: React.FC = () => {
   const { flags, setFlag } = useFeatureFlagsContext();

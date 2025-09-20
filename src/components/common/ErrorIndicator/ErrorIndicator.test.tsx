@@ -1,4 +1,4 @@
-import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator.tsx';
+import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { test } from 'vitest';
