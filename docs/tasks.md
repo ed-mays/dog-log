@@ -40,8 +40,8 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
 14. [x] Fix link/button semantics in PetList
     - [x] Avoid nesting a `<button>` inside a `<Link>`; use a single appropriate interactive element
 
-15. [ ] Strengthen table semantics
-    - [ ] Ensure table headers use `<th scope="col">` and rows use `<th scope="row">` if applicable
+15. [x] Strengthen table semantics
+    - [x] Ensure table headers use `<th scope="col">` and rows use `<th scope="row">` if applicable
 
 16. [ ] Feature flags consistency
     - [ ] Unify configuration source (prefer Vite `VITE_` env vars or provider props; avoid mixing with `localStorage`)

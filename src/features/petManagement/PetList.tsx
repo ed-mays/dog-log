@@ -33,8 +33,12 @@ export function PetList({ pets, dataTestId = 'pet-list' }: PetListProps) {
       <table className={styles.tableFullWidth} data-testid={dataTestId}>
         <thead>
           <tr>
-            <th className={styles.th}>{t('name', { ns: 'petProperties' })}</th>
-            <th className={styles.th}>{t('breed', { ns: 'petProperties' })}</th>
+            <th scope="col" className={styles.th}>
+              {t('name', { ns: 'petProperties' })}
+            </th>
+            <th scope="col" className={styles.th}>
+              {t('breed', { ns: 'petProperties' })}
+            </th>
           </tr>
         </thead>
         <tbody>
