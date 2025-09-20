@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PetForm } from './PetForm';
@@ -86,5 +87,29 @@ describe('PetForm', () => {
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'A');
     expect(onDirtyChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it('supports controlled mode with value/onChange', async () => {
+    const ControlledHost = () => {
+      const [val, setVal] = useState<Pet>({ name: '', breed: '' });
+      return (
+        <PetForm
+          initialValues={{ name: '', breed: '' }}
+          value={val}
+          onChange={setVal}
+          onSubmit={onSubmit}
+          onCancel={onCancel}
+          onDirtyChange={onDirtyChange}
+        />
+      );
+    };
+
+    render(<ControlledHost />);
+    await userEvent.type(screen.getByLabelText(/name/i), 'Fido');
+    await userEvent.type(screen.getByLabelText(/breed/i), 'Beagle');
+    const okButton = screen.getByRole('button', { name: /ok/i });
+    expect(okButton).not.toBeDisabled();
+    await userEvent.click(okButton);
+    expect(onSubmit).toHaveBeenCalledWith({ name: 'Fido', breed: 'Beagle' });
   });
 });

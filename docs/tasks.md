@@ -52,9 +52,9 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
     - [x] Confirm default routes and fallback behavior; localize any "feature unavailable" screens
     - [x] Consider preloading pets on route enter (route loader or page-level hook) to reduce loading flicker
 
-18. [ ] Improve PetForm API
+18. [x] Improve PetForm API
     - [x] Replace imperative `setDirty` prop with derived internal dirty state and optional `onDirtyChange?(boolean)` callback
-    - [ ] Consider exposing controlled props (`value`/`onChange`) for reuse, while keeping a simple uncontrolled default
+    - [x] Consider exposing controlled props (`value`/`onChange`) for reuse, while keeping a simple uncontrolled default
 
 19. [x] Enhance common components for a11y
     - [x] Support `aria-live` and roles for loading/error components; provide ergonomic defaults

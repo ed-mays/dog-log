@@ -8,6 +8,8 @@ interface PetFormProps {
   onSubmit: (pet: Pet) => void;
   onCancel: () => void;
   onDirtyChange?: (dirty: boolean) => void;
+  value?: Pet; // controlled current value (optional)
+  onChange?: (pet: Pet) => void; // controlled change handler (optional)
 }
 
 export function PetForm({
@@ -15,9 +17,14 @@ export function PetForm({
   onSubmit,
   onCancel,
   onDirtyChange,
+  value,
+  onChange,
 }: PetFormProps) {
   const { t } = useTranslation('petForm');
-  const [pet, setPet] = useState(initialValues);
+  const [internalPet, setInternalPet] = useState<Pet>(initialValues);
+
+  // Determine the current pet object depending on controlled vs uncontrolled usage
+  const pet: Pet = value ?? internalPet;
 
   useEffect(() => {
     const dirty =
@@ -28,8 +35,13 @@ export function PetForm({
   const isValid = pet.name.trim().length > 0 && pet.breed.trim().length > 0;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setPet((prev) => ({ ...prev, [name]: value }));
+    const { name, value: nextVal } = e.target;
+    const nextPet = { ...pet, [name]: nextVal } as Pet;
+    if (onChange) {
+      onChange(nextPet);
+    } else {
+      setInternalPet(nextPet);
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
