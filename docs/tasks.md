@@ -23,22 +23,22 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
     - [x] Wire it through `src/test-utils.tsx` so all tests share consistent i18n
     - [x] Remove local duplicates
 
-11. [ ] Localize common UI strings
-    - [ ] Localize Loading and Error indicators using the `common` namespace with sensible defaults
-    - [ ] Allow overriding labels via props; support `role`/`aria-live` for a11y
+11. [x] Localize common UI strings
+    - [x] Localize Loading and Error indicators using the `common` namespace with sensible defaults
+    - [x] Allow overriding labels via props; support `role`/`aria-live` for a11y
 
-12. [ ] i18n namespace hygiene
-    - [ ] Ensure each component uses a primary namespace (`useTranslation('<ns>')`)
-    - [ ] Reference other namespaces via options only when necessary `{ ns: '...' }`
+12. [x] i18n namespace hygiene
+    - [x] Ensure each component uses a primary namespace (`useTranslation('<ns>')`)
+    - [x] Reference other namespaces via options only when necessary `{ ns: '...' }`
 
-13. [ ] Improve ConfirmModal accessibility
-    - [ ] Add `aria-labelledby` tied to a visible heading
-    - [ ] Trap focus within the modal and set an initial focus target
-    - [ ] Support ESC to close when aligned with design
-    - [ ] Use i18n-backed button labels (fallbacks from `common.yes`/`common.no`)
+13. [x] Improve ConfirmModal accessibility
+    - [x] Add `aria-labelledby` tied to a visible heading
+    - [x] Trap focus within the modal and set an initial focus target
+    - [x] Support ESC to close when aligned with design
+    - [x] Use i18n-backed button labels (fallbacks from `common.yes`/`common.no`)
 
-14. [ ] Fix link/button semantics in PetList
-    - [ ] Avoid nesting a `<button>` inside a `<Link>`; use a single appropriate interactive element
+14. [x] Fix link/button semantics in PetList
+    - [x] Avoid nesting a `<button>` inside a `<Link>`; use a single appropriate interactive element
 
 15. [ ] Strengthen table semantics
     - [ ] Ensure table headers use `<th scope="col">` and rows use `<th scope="row">` if applicable

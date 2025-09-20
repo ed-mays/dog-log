@@ -1,7 +1,8 @@
 {
-  "yes": "Si",
-  "no": "No",
-  "cancel": "Cancelar",
+  "loading": "Cargando…",
+  "error": "Error…",
   "ok": "Aceptar",
-  "discardChangesQuestion": "Borrar actualizaciónes?"
+  "cancel": "Cancelar",
+  "yes": "Sí",
+  "no": "No"
 }

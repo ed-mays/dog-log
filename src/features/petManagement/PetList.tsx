@@ -10,22 +10,22 @@ type PetListProps = {
 };
 
 export function PetList({ pets, dataTestId = 'pet-list' }: PetListProps) {
-  const { t } = useTranslation(['petList', 'petProperties']);
+  const { t } = useTranslation('petList');
   const enable_add_pets = useFeatureFlag('add_pet_enabled');
 
   return (
     <>
       {enable_add_pets && (
         <div className={styles.headerRow}>
-          <Link to="/pets/new">
-            <button
-              className={styles.addButton}
-              data-testid={'add-pet-button'}
-              aria-label={t('addPet')}
-              title={t('addPet')}
-            >
-              {'\u2795'}
-            </button>
+          <Link
+            to="/pets/new"
+            className={styles.addButton}
+            role="button"
+            data-testid={'add-pet-button'}
+            aria-label={t('addPet')}
+            title={t('addPet')}
+          >
+            {'\u2795'}
           </Link>
         </div>
       )}

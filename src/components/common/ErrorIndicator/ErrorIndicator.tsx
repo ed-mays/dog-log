@@ -1,11 +1,23 @@
+import { useTranslation } from 'react-i18next';
+
 export type ErrorIndicatorProps = {
-  text?: string;
+  text?: string; // optional override of localized default
+  role?: React.AriaRole; // a11y role
+  ariaLive?: 'polite' | 'assertive' | 'off';
   'data-testid'?: string;
 };
 
 export function ErrorIndicator({
-  text = 'Error...',
+  text,
+  role = 'alert',
+  ariaLive = 'assertive',
   'data-testid': dataTestId = 'error-indicator',
 }: ErrorIndicatorProps) {
-  return <div data-testid={dataTestId}>{text}</div>;
+  const { t } = useTranslation('common');
+  const label = text ?? t('error', 'Error...');
+  return (
+    <div data-testid={dataTestId} role={role} aria-live={ariaLive}>
+      {label}
+    </div>
+  );
 }

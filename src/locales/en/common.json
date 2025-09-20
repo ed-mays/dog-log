@@ -1,7 +1,8 @@
 {
-  "yes": "Yes",
-  "no": "No",
-  "cancel": "Cancel",
+  "loading": "Loading…",
+  "error": "Error...",
   "ok": "OK",
-  "discardChangesQuestion": "Discard changes?"
+  "cancel": "Cancel",
+  "yes": "Yes",
+  "no": "No"
 }

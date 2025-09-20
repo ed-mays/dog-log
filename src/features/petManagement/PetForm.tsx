@@ -16,7 +16,7 @@ export function PetForm({
   onCancel,
   setDirty,
 }: PetFormProps) {
-  const { t } = useTranslation(['petForm', 'petProperties']); // Use a relevant namespace for organization
+  const { t } = useTranslation('petForm');
   const [pet, setPet] = useState(initialValues);
 
   useEffect(() => {
