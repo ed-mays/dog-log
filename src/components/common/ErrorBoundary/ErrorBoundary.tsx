@@ -38,7 +38,7 @@ export class ErrorBoundary extends React.Component<
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  componentDidCatch(error: unknown, _info: unknown) {
+  componentDidCatch(_error: unknown, _info: unknown) {
     // Can log to an error reporting service if needed
   }
 
