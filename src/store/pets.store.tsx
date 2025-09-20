@@ -4,7 +4,7 @@ import type { Pet } from '@features/petManagement/types';
 interface PetsState {
   pets: Pet[];
   loading: boolean;
-  error: string | null;
+  error: unknown | string | null;
   fetchPets: () => Promise<void>;
   addPet: (pet: Pet) => void;
 }
@@ -24,8 +24,8 @@ export const usePetsStore = create<PetsState>((set) => ({
       ];
       // Removed artificial delay for faster dev/test loops
       set({ pets: mockPets, loading: false });
-    } catch {
-      set({ error: 'Failed to load pets.', loading: false });
+    } catch (err) {
+      set({ error: err ?? new Error('Failed to load pets.'), loading: false });
     }
   },
 }));

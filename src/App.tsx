@@ -7,6 +7,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PetListPage from './features/petManagement/petListPage';
 import AddPetPage from '@features/petManagement/AddPetPage';
 import { useTranslation } from 'react-i18next';
+import { toErrorMessage } from './utils/errors';
 
 function App() {
   const loading = usePetsStore((state) => state.loading);
@@ -15,10 +16,16 @@ function App() {
   const enablePetList = useFeatureFlag('petListEnabled');
   const { t } = useTranslation('common');
 
+  const errorTextBase = t('error', 'Error...');
+  const errorDetail = toErrorMessage(error);
+  const errorText = errorDetail
+    ? `${errorTextBase}: ${errorDetail}`
+    : errorTextBase;
+
   return (
     <BrowserRouter>
       {loading && <LoadingIndicator />}
-      {error && <ErrorIndicator />}
+      {error && <ErrorIndicator text={errorText} />}
       <Routes>
         <Route
           path="/pets"

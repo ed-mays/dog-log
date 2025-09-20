@@ -77,15 +77,3 @@ test('fetches pets on mount', () => {
   // Assert fetchDogs was called exactly once, i.e., on mount
   expect(fetchDogsSpy).toHaveBeenCalledTimes(1);
 });
-
-
-
-
-
-
-
-
-
-
-
-

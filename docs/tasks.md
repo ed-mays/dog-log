@@ -2,17 +2,17 @@
 
 A single, actionable backlog to modernize and harden the codebase. Check items off as you complete them. Order is intentional: start with quick wins that reduce churn, then proceed to type safety, state/data flow, and so on.
 
-6. [ ] Add explicit props typing for shared UI components
-   - [ ] Audit `src/components/common/*` and add/verify explicit prop interfaces with clear optionality and defaults
-   - [ ] Export minimal public APIs via index files if modules grow
+6. [x] Add explicit props typing for shared UI components
+   - [x] Audit `src/components/common/*` and add/verify explicit prop interfaces with clear optionality and defaults
+   - [x] Export minimal public APIs via index files if modules grow
 
-7. [ ] Stabilize Zustand store usage patterns
-   - [ ] Update components/pages to select actions via stable selectors, e.g., `const fetchPets = usePetsStore(s => s.fetchPets)` and use with proper effect deps
-   - [ ] Ensure store state selectors are narrow to reduce re-renders
+7. [x] Stabilize Zustand store usage patterns
+   - [x] Update components/pages to select actions via stable selectors, e.g., `const fetchPets = usePetsStore(s => s.fetchPets)` and use with proper effect deps
+   - [x] Ensure store state selectors are narrow to reduce re-renders
 
-8. [ ] Normalize store error typing and handling
-   - [ ] Change store `error` to `unknown | string` and introduce `toErrorMessage(err: unknown): string`
-   - [ ] Ensure UI renders friendly, localized error messages using the helper
+8. [x] Normalize store error typing and handling
+   - [x] Change store `error` to `unknown | string` and introduce `toErrorMessage(err: unknown): string`
+   - [x] Ensure UI renders friendly, localized error messages using the helper
 
 9. [x] Trim artificial delays in async actions
   - [x] Remove `setTimeout(2000)` from `fetchPets` (or similar) for faster dev/test loops
