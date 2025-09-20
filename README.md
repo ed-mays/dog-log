@@ -11,6 +11,11 @@ A modern **React** application scaffolded with **Vite** and written in **TypeScr
 - Support for **path aliases**:
     - `@components/* → src/components/*`
     - `@store/* → src/store/*`
+    - `@features/* → src/features/*`
+    - `@featureFlags/* → src/featureFlags/*`
+    - `@styles/* → src/styles/*`
+    - `@testUtils/* → src/testUtils/*`
+    - `@/test-utils → src/test-utils.tsx`
 - Test setup with **Vitest** & **Testing Library**
 - Linting & formatting with **ESLint** & **Prettier**
 - Internationalization powered by **i18next** and **react-i18next**
@@ -44,6 +49,13 @@ npm install
 
 - Uses **Vitest** for running fast TypeScript and component tests.
 - **@testing-library/react**, **user-event**, and **jest-dom** for ergonomic, reliable UI/UX testing.
+- Use the shared render wrapper which includes providers (i18n + feature flags):
+  
+  ```
+  import { render, screen } from '@/test-utils';
+  
+  render(<MyComponent />, { featureFlags: { addPetEnabled: true } });
+  ```
 - TypeScript test globals and matchers included by default.
 
 ***
@@ -57,13 +69,43 @@ npm install
 
 ### Internationalization
 
-- **i18next** & **react-i18next** for easy language switching and translations.
+- **i18next** & **react-i18next** with namespaced translations: `common`, `home`, `petList`, `petProperties`.
+- Default language from Vite env: `VITE_DEFAULT_LOCALE` (fallback: `en`).
+- In components: `const { t } = useTranslation('<namespace>');` and `t('key')`.
+- Shared test i18n lives at `src/testUtils/test-i18n.tsx` and is wired through the test render wrapper.
+
+***
+
+### Feature Flags
+
+- Managed via a provider at `src/featureFlags/FeatureFlagsProvider` with defaults from Vite env vars (`VITE_*`).
+- Query flags via `useFeatureFlag('<flagName>')`. Current flags include `petListEnabled` and `addPetEnabled`.
+- In tests, override flags through the render wrapper:
+  
+  ```
+  render(<App />, { featureFlags: { petListEnabled: false } });
+  ```
 
 ***
 
 ### Path Aliases
 
-- **@components/** and **@store/** resolve to `src/components/` and `src/store/` respectively, set in `tsconfig.app.json` and `tsconfig.json`. Update imports accordingly.
+- Configured in `tsconfig.app.json` (moduleResolution: "bundler").
+- Aliases:
+  - `@components/*` → `src/components/*`
+  - `@store/*` → `src/store/*`
+  - `@features/*` → `src/features/*`
+  - `@featureFlags/*` → `src/featureFlags/*`
+  - `@styles/*` → `src/styles/*`
+  - `@testUtils/*` → `src/testUtils/*`
+  - `@/test-utils` → `src/test-utils.tsx`
+- Prefer extensionless imports with these aliases.
+
+***
+
+### Error Handling
+
+- A top-level `ErrorBoundary` (localized) wraps the app. Customize fallback via `fallbackText` prop; default text comes from the `common` namespace.
 
 ***
 

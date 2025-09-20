@@ -16,7 +16,9 @@ Short, practical guidance to get productive quickly.
 - src/styles/*: CSS modules (prefer module.css for component/feature styles)
 - src/locales/<lang>/*: Namespaced JSON translations
 - src/featureFlags/*: Feature flag provider, config, and hooks
+- src/services/*: Data/service layer modules (API calls, adapters)
 - src/test-utils.tsx: Preconfigured render wrapper for tests
+- src/testUtils/test-i18n.tsx: Shared test i18n setup
 
 Aliases (from tsconfig.app.json):
 - @components/* → src/components/*
@@ -45,19 +47,23 @@ Guidelines:
 
 ## 4. Testing Guidelines (Vitest + Testing Library)
 - Prefer behavior-driven tests via @testing-library/react and user-event.
-- Use the shared render wrapper for providers:
-  import { render, screen } from '@/test-utils' or from src/test-utils; // alias/path as configured
+- Use the shared render wrapper for providers (i18n + feature flags):
+  import { render, screen } from '@/test-utils';
+  // You can override flags or i18n per test when needed
+  // render(<MyComponent />, { featureFlags: { addPetEnabled: false }, i18nInstance });
 - Keep tests next to code: Component.tsx and Component.test.tsx in same folder.
 - Use getByRole and accessible queries; avoid brittle text selectors.
 - Snapshot sparingly; assert meaningful behavior and state.
 
 Setup notes:
+- Shared test i18n lives at src/testUtils/test-i18n.tsx (wired through the render wrapper).
 - JSDOM environment, jest-dom matchers preloaded via vitest.setup.tsx.
 - Coverage reports: coverage/ (HTML + text). Excludes config files and setup.
 
 ## 5. State & Data (Zustand)
 - Create small, focused stores in src/store/ with typed state/actions.
 - Keep async side-effects inside store actions when practical.
+- Prefer a small data/service layer in src/services/* to encapsulate fetch logic.
 - Avoid leaking store shape across app; read via selectors: useStore(s => s.part).
 
 ## 6. Internationalization (i18next)
@@ -68,6 +74,7 @@ Setup notes:
 
 ## 7. Feature Flags
 - See src/featureFlags/README.featureFlags.md for add/toggle/remove.
+- Defaults come from Vite env vars (VITE_*); override per-test via <FeatureFlagsProvider initialFlags={{ ... }}> or render options.
 - Query flags with useFeatureFlag('flag_name').
 - Gate routes/UI paths conditionally; keep legacy/new code tidy.
 
@@ -75,6 +82,7 @@ Setup notes:
 - Create .env.local for local-only values. Examples:
   VITE_DEFAULT_LOCALE=en
   VITE_PET_LIST_ENABLED=true
+  VITE_ADD_PET_ENABLED=true
 - All app-consumed env vars must be prefixed with VITE_.
 - Restart the dev server after changing env vars.
 
@@ -93,6 +101,7 @@ Setup notes:
 ## 11. Troubleshooting
 - Alias import not resolving: ensure path matches tsconfig.app.json and restart Vite.
 - i18n key missing: verify namespace/key and locale file loaded in src/i18n.tsx.
-- Tests can’t find providers: import render from src/test-utils.tsx.
+- Tests can’t find providers: import render from '@/test-utils'.
+- Test i18n warning (NO_I18NEXT_INSTANCE): render via '@/test-utils' or wrap with I18nextProvider and a shared i18n instance (src/testUtils/test-i18n.tsx).
 
 Welcome aboard! Keep it simple, typed, and testable.

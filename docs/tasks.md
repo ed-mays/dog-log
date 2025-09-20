@@ -107,9 +107,9 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
     - [x] Implement a top-level error boundary with localized fallback UI
     - [x] Add tests covering rendering on thrown errors
 
-27. [ ] Documentation updates
-    - [ ] Update README and developer guidelines to reflect finalized conventions (imports, testing, i18n, feature flags)
-    - [ ] Create docs/CHANGELOG.md and populate it with a summary of each task in this document.
+27. [x] Documentation updates
+    - [x] Update README and developer guidelines to reflect finalized conventions (imports, testing, i18n, feature flags)
+    - [x] Create CHANGELOG.md and populate it with a summary of each task in this document.
     
 28. [x] Fix test warnings
     - [x] Fix `NO_I18NEXT_INSTANCE` warnings
