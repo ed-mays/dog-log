@@ -6,5 +6,6 @@
   "yes": "Sí",
   "no": "No",
   "featureNotEnabled": "Funcionalidad no habilitada",
-  "somethingWentWrong": "Algo salió mal"
+  "somethingWentWrong": "Algo salió mal",
+  "discardChanges": "¿Descartar cambios?"
 }

@@ -48,7 +48,7 @@ export default function AddPetPage() {
       />
       {showModal && (
         <ConfirmModal
-          text={t('discardChangesQuestion')}
+          text={t('discardChanges')}
           onAccept={handleModalAccept}
           onDecline={handleModalDecline}
           acceptLabel={t('yes')}

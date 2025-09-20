@@ -6,5 +6,6 @@
   "yes": "Yes",
   "no": "No",
   "featureNotEnabled": "Feature not enabled",
-  "somethingWentWrong": "Something went wrong"
+  "somethingWentWrong": "Something went wrong",
+  "discardChanges": "Discard changes?"
 }
