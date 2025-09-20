@@ -23,39 +23,43 @@ The following actionable tasks are ordered to take you from architecture decisio
    - [x] Create `src/services/auth/authService.tsx` to encapsulate Google provider, sign-in, sign-out, and onAuthStateChanged subscription
    - [x] Use `GoogleAuthProvider` and `setPersistence(auth, browserLocalPersistence)` to persist sessions across reloads
    - [x] Ensure emulator connection is respected (already supported via src/firebase.tsx)
-
-5. [x] Create application-level Auth state
+   - [ ] Implement appropriate unit tests for auth service and provider
+5. 
+6. [x] Create application-level Auth state
    - [ ] If using Context: `src/features/authentication/AuthProvider.tsx` that subscribes to onAuthStateChanged and exposes user/loading/error
    - [x] If using Zustand: `src/store/auth.store.tsx` with user, initializing, error, actions: initAuthListener(), signInWithGoogle(), signOut()
    - [x] Export typed User shape derived from Firebase `User` with a minimal app-facing model (uid, displayName, email, photoURL)
 
-6. [ ] Initialize Auth at app startup
+6. [x] Initialize Auth at app startup
    - [x] Wrap `<App />` with `<AuthProvider>` (or call store.initAuthListener()) in `src/main.tsx`
-   - [ ] Ensure splash/loading state is shown while auth status is resolving
-
-7. [ ] Build UI components for the flows
+   - [x] Ensure splash/loading state is shown while auth status is resolving
+   - [ ] Implement unit tests for app startup changes
+   - 
+7. [x] Build UI components for the flows
    - [x] Implement `src/features/authentication/SignupComponent.tsx` to trigger Google sign-up/sign-in (file currently empty)
    - [x] Create `LoginButton` and `LogoutButton` common components under `src/components/common/Auth/`
-   - [ ] Add error and loading states with accessible status text
+   - [x] Add error and loading states with accessible status text
    - [x] Localize UI strings via i18n (namespace: `common` or `authentication`)
+   - [ ] Implement unit tests for the flow implementation and components
+   
+8. [x] Create a public Welcome page for logged-out users
+   - [x] `src/features/authentication/WelcomePage.tsx` explaining the app with a prominent “Continue with Google” button
+   - [x] i18n keys for header, subtitle, call-to-action, and error strings
 
-8. [ ] Create a public Welcome page for logged-out users
-   - [ ] `src/features/authentication/WelcomePage.tsx` explaining the app with a prominent “Continue with Google” button
-   - [ ] i18n keys for header, subtitle, call-to-action, and error strings
-
-9. [ ] Protect private routes with React Router
-   - [ ] Add a `PrivateRoute` wrapper or use element guards that check auth state and redirect unauthenticated users to `/welcome`
-   - [ ] Update `src/App.tsx` routes so `/pets` and related pages are private
-   - [ ] Ensure redirect preserves the intended destination (via `state.from`), and return users after login
+9. [x] Protect private routes with React Router
+   - [x] Add a `PrivateRoute` wrapper or use element guards that check auth state and redirect unauthenticated users to `/welcome`
+   - [x] Update `src/App.tsx` routes so `/pets` and related pages are private
+   - [x] Ensure redirect preserves the intended destination (via `state.from`), and return users after login
 
 10. [ ] Wire login, signup, and logout flows end-to-end
     - [ ] Signup/Login: invoke `signInWithPopup(new GoogleAuthProvider())`, handle errors (popup blocked, canceled, network)
-    - [ ] Logout: call `signOut(auth)` and route to `/welcome`
+    - [ ] Display logout button on all screens if user is logged in
+    - [x] Logout: call `signOut(auth)` and route to `/welcome`
     - [ ] Handle first-time users vs returning users (optional profile enrichment hook)
 
 11. [ ] Handle auth persistence, refresh, and edge cases
     - [x] Set `browserLocalPersistence` and verify session recovery on reload
-    - [ ] Show a minimal in-app loading indicator while restoring auth
+    - [x] Show a minimal in-app loading indicator while restoring auth
     - [x] Gracefully handle `onAuthStateChanged` null user scenarios
 
 12. [ ] Feature flags (optional but recommended)

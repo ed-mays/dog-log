@@ -3,8 +3,23 @@ import { render } from '@/test-utils';
 import App from './App';
 import '@testing-library/jest-dom';
 import { usePetsStore } from '@store/pets.store';
+import { useAuthStore } from '@store/auth.store';
+import type { AuthState } from '@store/auth.store';
 
 beforeEach(() => {
+  // Ensure auth guard allows access during these tests
+  useAuthStore.setState({
+    user: {
+      uid: 'test',
+      displayName: 'Tester',
+      email: 't@example.com',
+      photoURL: null,
+    },
+    initializing: false,
+    error: null,
+  } as Partial<AuthState>);
+
+  // Reset pets store to a neutral baseline
   usePetsStore.setState({
     pets: [],
     loading: false,

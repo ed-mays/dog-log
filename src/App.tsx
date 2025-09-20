@@ -15,52 +15,81 @@ import PetListPage from './features/petManagement/petListPage';
 import AddPetPage from '@features/petManagement/AddPetPage';
 import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from './utils/errors';
+import WelcomePage from '@features/authentication/WelcomePage';
+import { useAuthStore } from '@store/auth.store';
 
 function RoutePrefetcher() {
+  // console.debug('[RoutePrefetcher] render');
   const location = useLocation();
-  const pets = usePetsStore((s) => s.pets);
+  // Select primitives separately to avoid creating new objects per render
+  const petsLen = usePetsStore((s) => s.pets.length);
   const loading = usePetsStore((s) => s.loading);
   const fetchPets = usePetsStore((s) => s.fetchPets);
 
   React.useEffect(() => {
+    // console.debug('[RoutePrefetcher] effect', { path: location.pathname, petsLen, loading });
     const onPetsRoute = location.pathname.startsWith('/pets');
-    if (onPetsRoute && pets.length === 0 && !loading) {
+    if (onPetsRoute && petsLen === 0 && !loading) {
       void fetchPets();
     }
-  }, [location.pathname, pets.length, loading, fetchPets]);
+  }, [location.pathname, petsLen, loading, fetchPets]);
 
   return null;
 }
 
+function PrivateRoute({ children }: { children: React.ReactElement }) {
+  // Select primitives to avoid returning a new object on each render
+  const initializing = useAuthStore((s) => s.initializing);
+  const user = useAuthStore((s) => s.user);
+  const location = useLocation();
+  if (initializing) {
+    return <LoadingIndicator />;
+  }
+  if (!user) {
+    return <Navigate to="/welcome" replace state={{ from: location }} />;
+  }
+  return children;
+}
+
 function App() {
-  const loading = usePetsStore((state) => state.loading);
-  const error = usePetsStore((state) => state.error);
+  const appLoading = usePetsStore((state) => state.loading);
+  const appError = usePetsStore((state) => state.error);
 
   const enablePetList = useFeatureFlag('petListEnabled');
   const { t } = useTranslation('common');
 
   const errorTextBase = t('error', 'Error...');
-  const errorDetail = toErrorMessage(error);
+  const errorDetail = toErrorMessage(appError);
   const errorText = errorDetail
     ? `${errorTextBase} ${String(errorDetail)}`
     : errorTextBase;
   return (
     <BrowserRouter>
       <RoutePrefetcher />
-      {loading && <LoadingIndicator />}
+      {appLoading && <LoadingIndicator />}
       {errorDetail && <ErrorIndicator text={errorText} />}
       <Routes>
+        <Route path="/welcome" element={<WelcomePage />} />
         <Route
           path="/pets"
           element={
             enablePetList ? (
-              <PetListPage />
+              <PrivateRoute>
+                <PetListPage />
+              </PrivateRoute>
             ) : (
               <Navigate to="/feature-unavailable" replace />
             )
           }
         />
-        <Route path="/pets/new" element={<AddPetPage />} />
+        <Route
+          path="/pets/new"
+          element={
+            <PrivateRoute>
+              <AddPetPage />
+            </PrivateRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/pets" />} />
         <Route
           path="/feature-unavailable"

@@ -34,6 +34,7 @@
       "@/test-utils": ["test-utils"],
       "@/firebase": ["firebase"],
       "@/services/*": ["services/*"],
+      "@/utils/*": ["utils/*"],
     }
   },
   "include": ["src", "vitest.setup.tsx"]

@@ -10,9 +10,7 @@ type Props = {
 const LoginButton: React.FC<Props> = ({ className, disabled }) => {
   const { t } = useTranslation('common');
   const signIn = useAuthStore((s) => s.signInWithGoogle);
-  const { initializing } = useAuthStore((s) => ({
-    initializing: s.initializing,
-  }));
+  const initializing = useAuthStore((s) => s.initializing);
 
   const onClick = async () => {
     await signIn();

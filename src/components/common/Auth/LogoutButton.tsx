@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   className?: string;
@@ -10,12 +11,12 @@ type Props = {
 const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
   const { t } = useTranslation('common');
   const signOut = useAuthStore((s) => s.signOut);
-  const { initializing } = useAuthStore((s) => ({
-    initializing: s.initializing,
-  }));
+  const initializing = useAuthStore((s) => s.initializing);
+  const navigate = useNavigate();
 
   const onClick = async () => {
     await signOut();
+    navigate('/welcome', { replace: true });
   };
 
   return (
