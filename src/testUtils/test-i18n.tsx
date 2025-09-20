@@ -22,6 +22,7 @@ if (!i18n.isInitialized) {
           ok: 'OK',
           cancel: 'Cancel',
           featureNotEnabled: 'Feature not enabled',
+          somethingWentWrong: 'Something went wrong',
         },
       },
       es: {
@@ -36,6 +37,7 @@ if (!i18n.isInitialized) {
           ok: 'Aceptar',
           cancel: 'Cancelar',
           featureNotEnabled: 'Funcionalidad no habilitada',
+          somethingWentWrong: 'Algo salió mal',
         },
       },
     },

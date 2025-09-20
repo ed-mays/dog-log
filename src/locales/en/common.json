@@ -5,5 +5,6 @@
   "cancel": "Cancel",
   "yes": "Yes",
   "no": "No",
-  "featureNotEnabled": "Feature not enabled"
+  "featureNotEnabled": "Feature not enabled",
+  "somethingWentWrong": "Something went wrong"
 }

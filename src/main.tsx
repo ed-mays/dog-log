@@ -4,11 +4,14 @@ import './index.css';
 import App from './App';
 import './i18n';
 import { FeatureFlagsProvider } from './featureFlags/FeatureFlagsProvider';
+import { ErrorBoundary } from '@components/common/ErrorBoundary/ErrorBoundary';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <FeatureFlagsProvider>
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </FeatureFlagsProvider>
   </StrictMode>
 );

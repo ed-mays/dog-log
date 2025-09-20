@@ -81,9 +81,9 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
 25. [x] Introduce a data/service layer
     - [x] Extract fetch logic to a service module to ease backend migration and facilitate `msw`-based test stubs
 
-26. [ ] Add an Error Boundary
-    - [ ] Implement a top-level error boundary with localized fallback UI
-    - [ ] Add tests covering rendering on thrown errors
+26. [x] Add an Error Boundary
+    - [x] Implement a top-level error boundary with localized fallback UI
+    - [x] Add tests covering rendering on thrown errors
 
 27. [ ] Documentation updates
     - [ ] Update README and developer guidelines to reflect finalized conventions (imports, testing, i18n, feature flags)
