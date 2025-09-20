@@ -78,8 +78,8 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
 24. [x] Robust ID generation strategy
     - [x] Use `crypto.randomUUID()` for runtime; provide a small utility to inject deterministic IDs in tests
 
-25. [ ] Introduce a data/service layer
-    - [ ] Extract fetch logic to a service module to ease backend migration and facilitate `msw`-based test stubs
+25. [x] Introduce a data/service layer
+    - [x] Extract fetch logic to a service module to ease backend migration and facilitate `msw`-based test stubs
 
 26. [ ] Add an Error Boundary
     - [ ] Implement a top-level error boundary with localized fallback UI
