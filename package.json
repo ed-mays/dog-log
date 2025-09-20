@@ -12,9 +12,11 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "start:firebase": "firebase emulators:start"
   },
   "dependencies": {
+    "firebase": "^12.3.0",
     "i18next": "^25.4.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

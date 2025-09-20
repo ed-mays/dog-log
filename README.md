@@ -42,6 +42,23 @@ npm install
 | `npm run format`      | Format codebase with Prettier            |
 | `npm run test`        | Run unit & component tests (Vitest)      |
 | `npm run test:coverage` | Run tests with code coverage           |
+| `npm run start:firebase` | Start Firebase emulators locally      |
+
+***
+
+### Firebase Emulators & Auth (Local Development)
+
+1. Start Firebase emulators first in a dedicated terminal:
+   - `npm run start:firebase`
+   - Auth emulator runs on http://localhost:9099 and the Emulator UI will be available as configured in firebase.json.
+2. In a second terminal, start the Vite dev server:
+   - `npm run dev`
+3. The app auto-connects to the Auth emulator when running on `localhost` (see `src/firebase.tsx`).
+4. For test users, use the Emulator UI to create accounts. Do not use real accounts in local testing.
+
+Notes:
+- Ensure `.env.local` has your Firebase client config. These are client-side keys and not secrets, but treat them as credentials for your project configuration.
+- Never commit real production credentials. If any key leaks, rotate/regenerate from the Firebase Console, update `.env.local`, and redeploy.
 
 ***
 

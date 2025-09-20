@@ -7,5 +7,10 @@
   "no": "No",
   "featureNotEnabled": "Feature not enabled",
   "somethingWentWrong": "Something went wrong",
-  "discardChanges": "Discard changes?"
+  "discardChanges": "Discard changes?",
+  "continueWithGoogle": "Continue with Google",
+  "logout": "Log out",
+  "authentication": "Authentication",
+  "welcomeHeader": "Welcome",
+  "welcomeSubtitle": "Sign in to continue"
 }

@@ -42,14 +42,13 @@ function App() {
   const errorTextBase = t('error', 'Error...');
   const errorDetail = toErrorMessage(error);
   const errorText = errorDetail
-    ? `${errorTextBase}: ${errorDetail}`
+    ? `${errorTextBase} ${String(errorDetail)}`
     : errorTextBase;
-
   return (
     <BrowserRouter>
       <RoutePrefetcher />
       {loading && <LoadingIndicator />}
-      {error && <ErrorIndicator text={errorText} />}
+      {errorDetail && <ErrorIndicator text={errorText} />}
       <Routes>
         <Route
           path="/pets"

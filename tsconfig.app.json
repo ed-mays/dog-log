@@ -32,7 +32,8 @@
       "@features/*": ["features/*"],
       "@styles/*": ["styles/*"],
       "@/test-utils": ["test-utils"],
-
+      "@/firebase": ["firebase"],
+      "@/services/*": ["services/*"],
     }
   },
   "include": ["src", "vitest.setup.tsx"]

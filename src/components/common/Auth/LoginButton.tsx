@@ -1,0 +1,34 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '@store/auth.store';
+
+type Props = {
+  className?: string;
+  disabled?: boolean;
+};
+
+const LoginButton: React.FC<Props> = ({ className, disabled }) => {
+  const { t } = useTranslation('common');
+  const signIn = useAuthStore((s) => s.signInWithGoogle);
+  const { initializing } = useAuthStore((s) => ({
+    initializing: s.initializing,
+  }));
+
+  const onClick = async () => {
+    await signIn();
+  };
+
+  return (
+    <button
+      type="button"
+      className={className}
+      onClick={onClick}
+      disabled={disabled || initializing}
+      aria-busy={initializing || undefined}
+    >
+      {t('continueWithGoogle', 'Continue with Google')}
+    </button>
+  );
+};
+
+export default LoginButton;
