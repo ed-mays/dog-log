@@ -88,6 +88,9 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
 27. [ ] Documentation updates
     - [ ] Update README and developer guidelines to reflect finalized conventions (imports, testing, i18n, feature flags)
 
+28. [ ] Fix test warnings
+    - [ ] Fix `NO_I18NEXT_INSTANCE` warnings
+
 Notes:
 - Keep PRs small and thematic; update tests with each change.
 - Follow feature-first organization and path aliases.
