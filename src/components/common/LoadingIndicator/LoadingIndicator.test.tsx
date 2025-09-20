@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@/test-utils';
 import { LoadingIndicator } from './LoadingIndicator';
 
 test('renders default loading indicator', async () => {

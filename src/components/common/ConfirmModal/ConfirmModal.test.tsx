@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import { ConfirmModal } from './ConfirmModal';
 
@@ -27,19 +27,19 @@ describe('ConfirmModal', () => {
     expect(screen.getByText('No')).toBeInTheDocument();
   });
 
-  it('calls onAccept when the "Yes" button is clicked (default)', () => {
+  it('calls onAccept when the "Yes" button is clicked (default)', async () => {
     render(
       <ConfirmModal text={text} onAccept={onAccept} onDecline={onDecline} />
     );
-    fireEvent.click(screen.getByText('Yes'));
+    await userEvent.click(screen.getByText('Yes'));
     expect(onAccept).toHaveBeenCalled();
   });
 
-  it('calls onDecline when the "No" button is clicked (default)', () => {
+  it('calls onDecline when the "No" button is clicked (default)', async () => {
     render(
       <ConfirmModal text={text} onAccept={onAccept} onDecline={onDecline} />
     );
-    fireEvent.click(screen.getByText('No'));
+    await userEvent.click(screen.getByText('No'));
     expect(onDecline).toHaveBeenCalled();
   });
 
@@ -57,7 +57,7 @@ describe('ConfirmModal', () => {
     expect(screen.getByText('Cancelar')).toBeInTheDocument();
   });
 
-  it('calls onAccept when custom accept label is clicked', () => {
+  it('calls onAccept when custom accept label is clicked', async () => {
     render(
       <ConfirmModal
         text={text}
@@ -67,11 +67,11 @@ describe('ConfirmModal', () => {
         declineLabel="Não"
       />
     );
-    fireEvent.click(screen.getByText('Sim'));
+    await userEvent.click(screen.getByText('Sim'));
     expect(onAccept).toHaveBeenCalled();
   });
 
-  it('calls onDecline when custom decline label is clicked', () => {
+  it('calls onDecline when custom decline label is clicked', async () => {
     render(
       <ConfirmModal
         text={text}
@@ -81,7 +81,7 @@ describe('ConfirmModal', () => {
         declineLabel="Non"
       />
     );
-    fireEvent.click(screen.getByText('Non'));
+    await userEvent.click(screen.getByText('Non'));
     expect(onDecline).toHaveBeenCalled();
   });
 
