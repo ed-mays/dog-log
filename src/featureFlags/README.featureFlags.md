@@ -6,12 +6,15 @@
 - Edit `featureFlags.config.tsx` to add the flag to `DefaultFeatureFlags`, reading from the Vite environment
 
 ## Consume a Feature Flag
-- Import `useFeatureFlag` and query for individual flags, e.g. ```const enablePetList = useFeatureFlag('pet_list_enabled');```
+- Import `useFeatureFlag` and query for individual flags, e.g. ```const enablePetList = useFeatureFlag('petListEnabled');```
 - Wrap the flagged code in a conditional that evaluates the feature flag
 
 ## Toggle a Feature Flag
 - Update the Vite environment variable value
 - Restart the server
+
+## Testing Flags
+- In tests, pass overrides via the provider: `<FeatureFlagsProvider initialFlags={{ addPetEnabled: true }}>`.
 
 ## Remove a Feature Flag
 - Find usages of the flag and remove them. If the flag was toggling between legacy and new behaviors, remove the dead code

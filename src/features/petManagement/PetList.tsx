@@ -11,11 +11,11 @@ type PetListProps = {
 
 export function PetList({ pets, dataTestId = 'pet-list' }: PetListProps) {
   const { t } = useTranslation('petList');
-  const enable_add_pets = useFeatureFlag('add_pet_enabled');
+  const addPetEnabled = useFeatureFlag('addPetEnabled');
 
   return (
     <>
-      {enable_add_pets && (
+      {addPetEnabled && (
         <div className={styles.headerRow}>
           <Link
             to="/pets/new"

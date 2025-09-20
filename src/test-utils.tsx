@@ -5,16 +5,28 @@ import type { RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import defaultI18n from '@testUtils/test-i18n';
 import { FeatureFlagsProvider } from '@featureFlags/FeatureFlagsProvider';
+import type { FeatureFlags } from '@featureFlags/featureFlags.types';
 import type { i18n } from 'i18next';
 
 type AllTheProvidersProps = {
   children: React.ReactNode;
   i18nInstance?: i18n;
+  featureFlags?: Partial<FeatureFlags>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-const AllTheProviders = ({ children, i18nInstance }: AllTheProvidersProps) => (
-  <FeatureFlagsProvider>
+const AllTheProviders = ({
+  children,
+  i18nInstance,
+  featureFlags,
+}: AllTheProvidersProps) => (
+  <FeatureFlagsProvider
+    initialFlags={{
+      petListEnabled: true,
+      addPetEnabled: true,
+      ...(featureFlags ?? {}),
+    }}
+  >
     <I18nextProvider i18n={i18nInstance ?? defaultI18n}>
       {children}
     </I18nextProvider>
@@ -23,15 +35,20 @@ const AllTheProviders = ({ children, i18nInstance }: AllTheProvidersProps) => (
 
 type CustomRenderOptions = Omit<RenderOptions, 'wrapper'> & {
   i18nInstance?: i18n;
+  featureFlags?: Partial<FeatureFlags>;
 };
 
 const customRender = (
   ui: ReactElement,
-  { i18nInstance, ...options }: CustomRenderOptions = {}
+  { i18nInstance, featureFlags, ...options }: CustomRenderOptions = {}
 ) =>
   render(ui, {
     wrapper: (props) => (
-      <AllTheProviders {...props} i18nInstance={i18nInstance} />
+      <AllTheProviders
+        {...props}
+        i18nInstance={i18nInstance}
+        featureFlags={featureFlags}
+      />
     ),
     ...options,
   });

@@ -43,10 +43,10 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
 15. [x] Strengthen table semantics
     - [x] Ensure table headers use `<th scope="col">` and rows use `<th scope="row">` if applicable
 
-16. [ ] Feature flags consistency
-    - [ ] Unify configuration source (prefer Vite `VITE_` env vars or provider props; avoid mixing with `localStorage`)
-    - [ ] Normalize naming (e.g., `petListEnabled`, `addPetEnabled`) and update `FeatureFlag` union accordingly
-    - [ ] Provide a test helper to render with custom flags via `<FeatureFlagsProvider initialFlags={...}>`
+16. [x] Feature flags consistency
+    - [x] Unify configuration source (prefer Vite `VITE_` env vars or provider props; avoid mixing with `localStorage`)
+    - [x] Normalize naming (e.g., `petListEnabled`, `addPetEnabled`) and update `FeatureFlag` union accordingly
+    - [x] Provide a test helper to render with custom flags via `<FeatureFlagsProvider initialFlags={...}>`
 
 17. [ ] Routing and navigation hygiene
     - [ ] Confirm default routes and fallback behavior; localize any "feature unavailable" screens

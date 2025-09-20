@@ -11,7 +11,7 @@ function App() {
   const loading = usePetsStore((state) => state.loading);
   const error = usePetsStore((state) => state.error);
 
-  const enablePetList = useFeatureFlag('pet_list_enabled');
+  const enablePetList = useFeatureFlag('petListEnabled');
 
   return (
     <BrowserRouter>
