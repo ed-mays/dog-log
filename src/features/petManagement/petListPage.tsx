@@ -5,7 +5,7 @@ import { usePetsStore } from '@store/pets.store';
 export default function PetListPage() {
   const pets = usePetsStore((state) => state.pets);
 
-  const fetchPets = usePetsStore.getState().fetchPets;
+  const fetchPets = usePetsStore((state) => state.fetchPets);
   React.useEffect(() => {
     fetchPets();
   }, [fetchPets]);

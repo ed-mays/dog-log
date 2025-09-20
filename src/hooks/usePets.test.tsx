@@ -15,14 +15,9 @@ beforeEach(() => {
 test('fetches and returns mock pets', async () => {
   const { result } = renderHook(() => usePets());
 
-  expect(result.current.loading).toBe(true);
-  expect(result.current.pets).toEqual([]);
-  expect(result.current.error).toBeNull();
-
-  await waitFor(() => expect(result.current.loading).toBe(false), {
-    // Temporary evil due to baked-in simulated delay in the store.
-    timeout: 3000,
-  });
+  // With no artificial delay, loading may flip to false immediately.
+  // Assert final loaded state instead of transient loading state.
+  await waitFor(() => expect(result.current.loading).toBe(false));
 
   expect(result.current.pets[0].name).toBe('Fido');
   expect(result.current.pets[1].name).toBe('Bella');

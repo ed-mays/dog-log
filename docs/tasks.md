@@ -2,15 +2,6 @@
 
 A single, actionable backlog to modernize and harden the codebase. Check items off as you complete them. Order is intentional: start with quick wins that reduce churn, then proceed to type safety, state/data flow, and so on.
 
-4. [x] Align import style
-   - [x] Prefer extensionless imports with path aliases; remove explicit `.tsx` extensions where used
-   - [x] Ensure tsconfig uses modern resolution compatible with Vite (e.g., `moduleResolution: "bundler"") and aliases cover documented prefixes
-
-5. [x] Consolidate Pet types into a single source of truth
-   - [x] Create `src/features/petManagement/types.tsx` (or `src/store/types.tsx`) exporting `Pet`
-   - [x] Update `PetForm.tsx`, `petListTypes.tsx`, and any other consumers to import the unified `Pet` type
-   - [x] Remove duplicate or divergent Pet type declarations
-
 6. [ ] Add explicit props typing for shared UI components
    - [ ] Audit `src/components/common/*` and add/verify explicit prop interfaces with clear optionality and defaults
    - [ ] Export minimal public APIs via index files if modules grow
@@ -23,14 +14,14 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
    - [ ] Change store `error` to `unknown | string` and introduce `toErrorMessage(err: unknown): string`
    - [ ] Ensure UI renders friendly, localized error messages using the helper
 
-9. [ ] Trim artificial delays in async actions
-   - [ ] Remove `setTimeout(2000)` from `fetchPets` (or similar) for faster dev/test loops
-   - [ ] Simulate latency in tests as needed instead of production code
+9. [x] Trim artificial delays in async actions
+  - [x] Remove `setTimeout(2000)` from `fetchPets` (or similar) for faster dev/test loops
+  - [x] Simulate latency in tests as needed instead of production code
 
-10. [ ] Centralize test i18n setup
-    - [ ] Move feature-scoped `mocki18n.tsx` to a shared test i18n (e.g., `src/testUtils/test-i18n.tsx`)
-    - [ ] Wire it through `src/test-utils.tsx` so all tests share consistent i18n
-    - [ ] Remove local duplicates
+10. [x] Centralize test i18n setup
+    - [x] Move feature-scoped `mocki18n.tsx` to a shared test i18n (e.g., `src/testUtils/test-i18n.tsx`)
+    - [x] Wire it through `src/test-utils.tsx` so all tests share consistent i18n
+    - [x] Remove local duplicates
 
 11. [ ] Localize common UI strings
     - [ ] Localize Loading and Error indicators using the `common` namespace with sensible defaults

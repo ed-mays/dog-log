@@ -1,6 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import { PetList } from './PetList';
-import i18n from './mocki18n';
+import i18n from '@testUtils/test-i18n';
 import { beforeEach, describe, test } from 'vitest';
 import type { Pet } from './petListTypes';
 import { render } from '@/test-utils';

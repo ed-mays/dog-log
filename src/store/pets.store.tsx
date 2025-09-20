@@ -22,7 +22,7 @@ export const usePetsStore = create<PetsState>((set) => ({
         { id: '1', name: 'Fido', breed: 'Labrador' },
         { id: '2', name: 'Bella', breed: 'Beagle' },
       ];
-      await new Promise((res) => setTimeout(res, 2000));
+      // Removed artificial delay for faster dev/test loops
       set({ pets: mockPets, loading: false });
     } catch {
       set({ error: 'Failed to load pets.', loading: false });

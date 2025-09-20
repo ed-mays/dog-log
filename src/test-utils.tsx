@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { render } from '@testing-library/react';
 import type { RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
-import defaultI18n from './features/petManagement/mocki18n';
+import defaultI18n from '@testUtils/test-i18n';
 import { FeatureFlagsProvider } from '@featureFlags/FeatureFlagsProvider';
 import type { i18n } from 'i18next';
 
