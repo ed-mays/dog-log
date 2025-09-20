@@ -2,7 +2,7 @@ import { screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import type { Pet } from '@features/petManagement/PetForm';
 import AddPetPage from './AddPetPage';
-import { render } from 'test-utils.tsx';
+import { render } from '@/test-utils';
 
 // ---- Typed Zustand Store Mock ----
 type AddPet = (pet: Pet) => void;
@@ -78,14 +78,32 @@ describe('AddPetPage', () => {
   });
 
   it('submits form, adds pet to store, navigates to /pets', () => {
+    const originalDescriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      'crypto'
+    );
+    // Provide deterministic UUID for the test
+    Object.defineProperty(globalThis, 'crypto', {
+      value: { randomUUID: () => 'test-uuid-123' },
+      configurable: true,
+    });
+
     render(<AddPetPage />);
     fireEvent.click(screen.getByText('OK'));
     expect(addPetMock).toHaveBeenCalledWith({
       name: 'Rover',
       breed: 'Hound',
-      id: '3',
+      id: 'test-uuid-123',
     });
     expect(mockNavigate).toHaveBeenCalledWith('/pets');
+
+    // restore
+    if (originalDescriptor) {
+      Object.defineProperty(globalThis, 'crypto', originalDescriptor);
+    } else {
+      // Cleanup if there was no crypto before
+      delete (globalThis as unknown as { crypto?: unknown }).crypto;
+    }
   });
 
   it('shows modal when cancel is clicked if dirty, then accepts and navigates', () => {

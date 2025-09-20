@@ -14,7 +14,10 @@ export default function AddPetPage() {
   const { t } = useTranslation('common');
 
   function handleSubmit(pet: Pet) {
-    addPet({ ...pet, id: '3' }); // generateId is your id function
+    const id = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID()
+      : Math.random().toString(36).slice(2);
+    addPet({ ...pet, id });
     navigate('/pets');
   }
 

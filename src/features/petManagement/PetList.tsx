@@ -6,13 +6,10 @@ import { Link } from 'react-router-dom';
 
 type PetListProps = {
   pets: Pet[];
-  'data-TestId'?: string;
+  dataTestId?: string;
 };
 
-export function PetList({
-  pets,
-  'data-TestId': dataTestId = 'pet-list',
-}: PetListProps) {
+export function PetList({ pets, dataTestId = 'pet-list' }: PetListProps) {
   const { t } = useTranslation(['petList', 'petProperties']);
   const enable_add_pets = useFeatureFlag('add_pet_enabled');
 

@@ -1,7 +1,7 @@
 import { screen, fireEvent } from '@testing-library/react';
 import { PetForm } from './PetForm';
 import type { Pet } from './PetForm';
-import { render } from 'test-utils.tsx';
+import { render } from '@/test-utils';
 import i18n from './mocki18n';
 
 describe('PetForm', () => {

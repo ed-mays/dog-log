@@ -31,6 +31,7 @@
       "@featureFlags/*": ["featureFlags/*"],
       "@features/*": ["features/*"],
       "@styles/*": ["styles/*"],
+      "@/test-utils": ["test-utils"],
 
     }
   },
