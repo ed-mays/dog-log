@@ -1,7 +1,7 @@
 import React from 'react';
 import LoginButton from '@components/common/Auth/LoginButton';
 import { useTranslation } from 'react-i18next';
-import { useAuthStatus } from '@store/auth.store';
+import { useAuthStore } from '@store/auth.store';
 import { toErrorMessage } from '@/utils/errors.tsx';
 
 type FirebaseAuthError = { code?: string; message?: string } | unknown;
@@ -32,7 +32,8 @@ function mapFirebaseErrorKey(err: FirebaseAuthError): FirebaseErrorKey | null {
 
 const SignupComponent: React.FC = () => {
   const { t } = useTranslation('common');
-  const { initializing, error } = useAuthStatus();
+  const initializing = useAuthStore((s) => s.initializing);
+  const error = useAuthStore((s) => s.error);
   const errorTextBase = t('error', 'Error...');
   const codeKey = mapFirebaseErrorKey(error);
   const errorDetail = toErrorMessage(error);
@@ -56,7 +57,7 @@ const SignupComponent: React.FC = () => {
           {t('loading', 'Loading…')}
         </p>
       )}
-      {error && <p role="alert">{errorText}</p>}
+      {Boolean(error) && <p role="alert">{errorText}</p>}
       <LoginButton />
     </section>
   );

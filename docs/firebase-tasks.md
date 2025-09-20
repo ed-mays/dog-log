@@ -71,12 +71,12 @@ The following actionable tasks are ordered to take you from architecture decisio
     - [ ] Keyboard navigation flows through Welcome and any dialogs
     - [x] Provide clear, localized error messages from Firebase error codes
 
-14. [ ] Testing — unit and component tests (Vitest + Testing Library)
-    - [ ] Unit test authService: signIn and signOut call Firebase methods; mock Firebase auth
-    - [ ] Test AuthProvider/Zustand store: initial state, state after onAuthStateChanged, error propagation
-    - [ ] Test SignupComponent/LoginButton/LogoutButton: behaviors, disabled state, errors, i18n strings
-    - [ ] Router protection tests: unauthenticated users redirected to `/welcome`; authenticated users access `/pets`
-    - [ ] Coverage for edge cases: popup blocked, cancel, network errors
+14. [x] Testing — unit and component tests (Vitest + Testing Library)
+    - [x] Unit test authService: signIn and signOut call Firebase methods; mock Firebase auth
+    - [x] Test AuthProvider/Zustand store: initial state, state after onAuthStateChanged, error propagation
+    - [x] Test SignupComponent/LoginButton/LogoutButton: behaviors, disabled state, errors, i18n strings
+    - [x] Router protection tests: unauthenticated users redirected to `/welcome`; authenticated users access `/pets`
+    - [x] Coverage for edge cases: popup blocked, cancel, network errors
 
 15. [ ] Developer experience
     - [ ] Add `npm run dev:with-emulators` script to concurrently start emulators and Vite (optional)

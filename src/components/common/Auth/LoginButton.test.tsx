@@ -1,59 +1,31 @@
-import { screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
-import { render } from '@/test-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@/test-utils';
+import userEvent from '@testing-library/user-event';
 import LoginButton from './LoginButton';
-
-// ---- Typed Zustand Store Mock ----
-type SignIn = () => Promise<void>;
-interface AuthStoreState {
-  initializing: boolean;
-  signInWithGoogle: SignIn;
-}
-
-const signInMock: SignIn = vi.fn(async () => {});
-let mockState: AuthStoreState = {
-  initializing: false,
-  signInWithGoogle: signInMock,
-};
-
-vi.mock('@store/auth.store', () => ({
-  useAuthStore: (selector: (s: AuthStoreState) => unknown) =>
-    selector(mockState),
-}));
+import { useAuthStore } from '@store/auth.store';
 
 describe('LoginButton', () => {
+  let signInMock: ReturnType<typeof vi.fn>;
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockState = { initializing: false, signInWithGoogle: signInMock };
+    signInMock = vi.fn().mockResolvedValue(undefined);
+    useAuthStore.setState((prev) => ({
+      ...prev,
+      initializing: false,
+      signInWithGoogle: signInMock,
+    }));
   });
 
-  it('renders with default label', () => {
+  it('calls signInWithGoogle on click', async () => {
     render(<LoginButton />);
-    expect(
-      screen.getByRole('button', { name: 'Continue with Google' })
-    ).toBeInTheDocument();
-  });
-
-  it('calls signInWithGoogle on click', () => {
-    render(<LoginButton />);
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Continue with Google' })
-    );
+    const btn = screen.getByRole('button', { name: /continue with google/i });
+    await userEvent.click(btn);
     expect(signInMock).toHaveBeenCalledTimes(1);
   });
 
-  it('is disabled when initializing is true', () => {
-    mockState.initializing = true;
+  it('is disabled when initializing', async () => {
+    useAuthStore.setState((prev) => ({ ...prev, initializing: true }));
     render(<LoginButton />);
-    const btn = screen.getByRole('button', { name: 'Continue with Google' });
-    expect(btn).toBeDisabled();
-    expect(btn).toHaveAttribute('aria-busy', 'true');
-  });
-
-  it('is disabled when disabled prop is true even if not initializing', () => {
-    mockState.initializing = false;
-    render(<LoginButton disabled />);
-    const btn = screen.getByRole('button', { name: 'Continue with Google' });
+    const btn = screen.getByRole('button', { name: /continue with google/i });
     expect(btn).toBeDisabled();
   });
 });

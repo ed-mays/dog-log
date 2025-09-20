@@ -1,8 +1,23 @@
 import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import path from 'node:path';
 
 export default defineConfig({
   plugins: [tsconfigPaths({ projects: ['./tsconfig.app.json'] })],
+  resolve: {
+    alias: {
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@store': path.resolve(__dirname, 'src/store'),
+      '@features': path.resolve(__dirname, 'src/features'),
+      '@featureFlags': path.resolve(__dirname, 'src/featureFlags'),
+      '@styles': path.resolve(__dirname, 'src/styles'),
+      '@testUtils': path.resolve(__dirname, 'src/testUtils'),
+      '@/test-utils': path.resolve(__dirname, 'src/test-utils.tsx'),
+      '@/firebase': path.resolve(__dirname, 'src/firebase.tsx'),
+      '@/services': path.resolve(__dirname, 'src/services'),
+      '@/utils': path.resolve(__dirname, 'src/utils'),
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,

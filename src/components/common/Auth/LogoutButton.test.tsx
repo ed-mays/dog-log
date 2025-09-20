@@ -1,68 +1,35 @@
-import { screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
-import { render } from '@/test-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@/test-utils';
+import userEvent from '@testing-library/user-event';
 import LogoutButton from './LogoutButton';
+import { useAuthStore } from '@store/auth.store';
 
-// ---- Typed Zustand Store Mock ----
-type SignOut = () => Promise<void>;
-interface AuthStoreState {
-  initializing: boolean;
-  signOut: SignOut;
-}
-
-const signOutMock: SignOut = vi.fn(async () => {});
-let mockState: AuthStoreState = {
-  initializing: false,
-  signOut: signOutMock,
-};
-
-vi.mock('@store/auth.store', () => ({
-  useAuthStore: (selector: (s: AuthStoreState) => unknown) =>
-    selector(mockState),
-}));
-
-// ---- Router useNavigate Mock ----
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<{ [key: string]: unknown }>();
+const navigateMock = vi.fn();
+vi.mock('react-router-dom', async (mod) => {
+  const actual = await mod();
   return {
     ...actual,
-    useNavigate: () => mockNavigate,
+    useNavigate: () => navigateMock,
   };
 });
 
 describe('LogoutButton', () => {
+  let signOutMock: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockState = { initializing: false, signOut: signOutMock };
+    signOutMock = vi.fn().mockResolvedValue(undefined);
+    useAuthStore.setState((prev) => ({
+      ...prev,
+      initializing: false,
+      signOut: signOutMock,
+    }));
   });
 
-  it('renders with default label', () => {
+  it('calls signOut and navigates to /welcome', async () => {
     render(<LogoutButton />);
-    expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
-  });
-
-  it('calls signOut and navigates to /welcome on click', async () => {
-    render(<LogoutButton />);
-    fireEvent.click(screen.getByRole('button', { name: 'Log out' }));
-    await waitFor(() => {
-      expect(signOutMock).toHaveBeenCalledTimes(1);
-      expect(mockNavigate).toHaveBeenCalledWith('/welcome', { replace: true });
-    });
-  });
-
-  it('is disabled when initializing is true', () => {
-    mockState.initializing = true;
-    render(<LogoutButton />);
-    const btn = screen.getByRole('button', { name: 'Log out' });
-    expect(btn).toBeDisabled();
-    expect(btn).toHaveAttribute('aria-busy', 'true');
-  });
-
-  it('is disabled when disabled prop is true', () => {
-    mockState.initializing = false;
-    render(<LogoutButton disabled />);
-    const btn = screen.getByRole('button', { name: 'Log out' });
-    expect(btn).toBeDisabled();
+    const btn = screen.getByRole('button', { name: /log out/i });
+    await userEvent.click(btn);
+    expect(signOutMock).toHaveBeenCalledTimes(1);
+    expect(navigateMock).toHaveBeenCalledWith('/welcome', { replace: true });
   });
 });

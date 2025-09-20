@@ -23,6 +23,10 @@ if (!i18n.isInitialized) {
           cancel: 'Cancel',
           featureNotEnabled: 'Feature not enabled',
           somethingWentWrong: 'Something went wrong',
+          firebaseErrors: {
+            popupClosedByUser:
+              'The sign-in popup was closed before completing.',
+          },
         },
       },
       es: {

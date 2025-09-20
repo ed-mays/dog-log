@@ -6,7 +6,6 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -34,8 +33,15 @@
       "@/test-utils": ["test-utils"],
       "@/firebase": ["firebase"],
       "@/services/*": ["services/*"],
-      "@/utils/*": ["utils/*"],
+      "@/utils/*": ["utils/*"]
     }
   },
-  "include": ["src", "vitest.setup.tsx"]
+  "include": ["src"],
+  "exclude": [
+    "src/**/*.test.*",
+    "src/**/*.spec.*",
+    "vitest.setup.tsx",
+    "src/testUtils/**",
+    "src/test-utils.tsx"
+  ]
 }

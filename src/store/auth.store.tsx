@@ -22,7 +22,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   initializing: true,
   error: null,
   initAuthListener: () => {
-    if (unsubscribe) return; // idempotent
+    // Reinitialize listener safely if already set (useful for tests or HMR)
+    if (unsubscribe) {
+      try {
+        unsubscribe();
+      } catch {
+        // no-op
+      }
+      unsubscribe = null;
+    }
     unsubscribe = subscribeToAuth(
       (user) => set({ user, initializing: false, error: null }),
       (error) => set({ error, initializing: false })
@@ -49,5 +57,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 export const useAuthUser = () => useAuthStore((s) => s.user);
-export const useAuthStatus = () =>
-  useAuthStore((s) => ({ initializing: s.initializing, error: s.error }));
+export const useAuthStatus = () => ({
+  initializing: useAuthStore((s) => s.initializing),
+  error: useAuthStore((s) => s.error),
+});
