@@ -4,5 +4,6 @@
   "ok": "Aceptar",
   "cancel": "Cancelar",
   "yes": "Sí",
-  "no": "No"
+  "no": "No",
+  "featureNotEnabled": "Funcionalidad no habilitada"
 }

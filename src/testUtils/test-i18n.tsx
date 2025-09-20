@@ -21,6 +21,7 @@ if (!i18n.isInitialized) {
         common: {
           ok: 'OK',
           cancel: 'Cancel',
+          featureNotEnabled: 'Feature not enabled',
         },
       },
       es: {
@@ -34,6 +35,7 @@ if (!i18n.isInitialized) {
         common: {
           ok: 'Aceptar',
           cancel: 'Cancelar',
+          featureNotEnabled: 'Funcionalidad no habilitada',
         },
       },
     },

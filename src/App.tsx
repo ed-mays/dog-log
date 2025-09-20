@@ -6,12 +6,14 @@ import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PetListPage from './features/petManagement/petListPage';
 import AddPetPage from '@features/petManagement/AddPetPage';
+import { useTranslation } from 'react-i18next';
 
 function App() {
   const loading = usePetsStore((state) => state.loading);
   const error = usePetsStore((state) => state.error);
 
   const enablePetList = useFeatureFlag('petListEnabled');
+  const { t } = useTranslation('common');
 
   return (
     <BrowserRouter>
@@ -32,7 +34,7 @@ function App() {
         <Route path="*" element={<Navigate to="/pets" />} />
         <Route
           path="/feature-unavailable"
-          element={<div>Feature not enabled</div>}
+          element={<div>{t('featureNotEnabled', 'Feature not enabled')}</div>}
         />
       </Routes>
     </BrowserRouter>

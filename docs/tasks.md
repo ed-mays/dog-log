@@ -49,7 +49,7 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
     - [x] Provide a test helper to render with custom flags via `<FeatureFlagsProvider initialFlags={...}>`
 
 17. [ ] Routing and navigation hygiene
-    - [ ] Confirm default routes and fallback behavior; localize any "feature unavailable" screens
+    - [x] Confirm default routes and fallback behavior; localize any "feature unavailable" screens
     - [ ] Consider preloading pets on route enter (route loader or page-level hook) to reduce loading flicker
 
 18. [ ] Improve PetForm API

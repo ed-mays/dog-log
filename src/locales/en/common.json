@@ -4,5 +4,6 @@
   "ok": "OK",
   "cancel": "Cancel",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "featureNotEnabled": "Feature not enabled"
 }
