@@ -13,5 +13,12 @@
   "authentication": "Autenticación",
   "welcomeHeader": "Bienvenido",
   "welcomeSubtitle": "Inicia sesión para continuar",
-  "authDisabledMessage": "La autenticación está deshabilitada actualmente."
+  "authDisabledMessage": "La autenticación está deshabilitada actualmente.",
+  "firebaseErrors": {
+    "popupClosedByUser": "La ventana emergente se cerró antes de completar el inicio de sesión.",
+    "cancelledPopupRequest": "Ya hay otro intento de inicio de sesión en curso.",
+    "popupBlocked": "Tu navegador bloqueó la ventana emergente de inicio de sesión.",
+    "networkRequestFailed": "Error de red durante la autenticación. Inténtalo de nuevo.",
+    "generic": "La autenticación falló. Inténtalo de nuevo."
+  }
 }

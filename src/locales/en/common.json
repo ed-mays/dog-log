@@ -13,5 +13,12 @@
   "authentication": "Authentication",
   "welcomeHeader": "Welcome",
   "welcomeSubtitle": "Sign in to continue",
-  "authDisabledMessage": "Authentication is currently disabled."
+  "authDisabledMessage": "Authentication is currently disabled.",
+  "firebaseErrors": {
+    "popupClosedByUser": "The sign-in popup was closed before completing.",
+    "cancelledPopupRequest": "Another sign-in attempt was in progress.",
+    "popupBlocked": "Your browser blocked the sign-in popup.",
+    "networkRequestFailed": "Network error during authentication. Please try again.",
+    "generic": "Authentication failed. Please try again."
+  }
 }

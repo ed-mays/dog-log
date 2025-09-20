@@ -66,11 +66,11 @@ Pet owners need a way to track health-related details about their pets.
 -[x] install firebase emulators globally on dev machine
 -[x] initialize emulators for project
 -[x] add `start:firebase` script to package.json to start emulator
--[ ] implement sign up component and flow
--[ ] implement login component and flow
--[ ] implement logout flow
--[ ] protect routes with react router
--[ ] display public welcome page to logged-out users
+-[x] implement sign up component and flow
+-[x] implement login component and flow
+-[x] implement logout flow
+-[x] protect routes with react router
+-[x] display public welcome page to logged-out users
 -[ ] update documentation in .junie/guidelines.md
 
 ### Other Social Logins

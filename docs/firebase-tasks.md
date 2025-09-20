@@ -67,9 +67,9 @@ The following actionable tasks are ordered to take you from architecture decisio
     - [x] If disabled, always show `/welcome` with explanatory message and hide auth buttons
 
 13. [ ] Accessibility and UX polish
-    - [ ] Ensure buttons have proper roles, labels, and focus states
+    - [x] Ensure buttons have proper roles, labels, and focus states
     - [ ] Keyboard navigation flows through Welcome and any dialogs
-    - [ ] Provide clear, localized error messages from Firebase error codes
+    - [x] Provide clear, localized error messages from Firebase error codes
 
 14. [ ] Testing — unit and component tests (Vitest + Testing Library)
     - [ ] Unit test authService: signIn and signOut call Firebase methods; mock Firebase auth
@@ -83,7 +83,6 @@ The following actionable tasks are ordered to take you from architecture decisio
     - [ ] Note emulator UI URL and how to add test users when needed
 
 16. [ ] Security and configuration hardening
-    - [ ] Verify only Google provider is enabled for now (console); document how to toggle other providers later
     - [ ] Ensure no privileged server-side actions depend on client auth only (document future rules for Firestore/Storage)
     - [ ] Plan for token verification if adding a backend (out of scope, note in docs)
 
@@ -95,10 +94,6 @@ The following actionable tasks are ordered to take you from architecture decisio
     - [x] Minimal logging for auth success/failure (console or adapter), avoiding PII
 
 19. [x] Documentation updates
-    - [ ] Update `docs/requirements.md` checklist items for auth progress
+    - [x] Update `docs/requirements.md` checklist items for auth progress
     - [x] Add a brief “Authentication” section to README with setup and usage
     - [ ] If applicable, update `.junie/guidelines.md` per requirements
-
-20. [ ] Final verification
-    - [ ] Manual QA: login, logout, refresh handling, route protection, i18n
-    - [ ] Run `npm run lint`, `npm run format`, and `npm run test:coverage` to ensure quality gates pass

@@ -4,13 +4,47 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStatus } from '@store/auth.store';
 import { toErrorMessage } from '@/utils/errors.tsx';
 
+type FirebaseAuthError = { code?: string; message?: string } | unknown;
+
+type FirebaseErrorKey =
+  | 'firebaseErrors.popupClosedByUser'
+  | 'firebaseErrors.cancelledPopupRequest'
+  | 'firebaseErrors.popupBlocked'
+  | 'firebaseErrors.networkRequestFailed'
+  | 'firebaseErrors.generic';
+
+function mapFirebaseErrorKey(err: FirebaseAuthError): FirebaseErrorKey | null {
+  const code = (err as { code?: string })?.code;
+  if (!code) return null;
+  switch (code) {
+    case 'auth/popup-closed-by-user':
+      return 'firebaseErrors.popupClosedByUser';
+    case 'auth/cancelled-popup-request':
+      return 'firebaseErrors.cancelledPopupRequest';
+    case 'auth/popup-blocked':
+      return 'firebaseErrors.popupBlocked';
+    case 'auth/network-request-failed':
+      return 'firebaseErrors.networkRequestFailed';
+    default:
+      return 'firebaseErrors.generic';
+  }
+}
+
 const SignupComponent: React.FC = () => {
   const { t } = useTranslation('common');
   const { initializing, error } = useAuthStatus();
   const errorTextBase = t('error', 'Error...');
+  const codeKey = mapFirebaseErrorKey(error);
   const errorDetail = toErrorMessage(error);
-  const errorText = errorDetail
-    ? `${errorTextBase} ${typeof errorDetail === 'string' ? errorDetail : String(errorDetail)}`
+  let localizedDetail: string | undefined = undefined;
+  if (error) {
+    const key: FirebaseErrorKey = codeKey ?? 'firebaseErrors.generic';
+    localizedDetail = t(key, {
+      defaultValue: errorDetail || 'Authentication failed.',
+    });
+  }
+  const errorText = localizedDetail
+    ? `${errorTextBase} ${typeof localizedDetail === 'string' ? localizedDetail : String(localizedDetail)}`
     : errorTextBase;
 
   return (

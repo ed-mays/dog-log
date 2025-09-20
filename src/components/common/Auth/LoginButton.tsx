@@ -27,6 +27,7 @@ const LoginButton: React.FC<Props> = ({ className, disabled }) => {
       onClick={onClick}
       disabled={disabled || initializing}
       aria-busy={initializing || undefined}
+      aria-label={t('continueWithGoogle', 'Continue with Google')}
     >
       {t('continueWithGoogle', 'Continue with Google')}
     </button>
