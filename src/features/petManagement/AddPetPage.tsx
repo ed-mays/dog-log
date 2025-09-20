@@ -45,7 +45,7 @@ export default function AddPetPage() {
         initialValues={{ name: '', breed: '' }}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
-        setDirty={setFormDirty}
+        onDirtyChange={setFormDirty}
       />
       {showModal && (
         <ConfirmModal

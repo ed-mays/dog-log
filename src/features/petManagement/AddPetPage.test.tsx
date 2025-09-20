@@ -32,12 +32,12 @@ vi.mock('@features/petManagement/PetForm', () => ({
   PetForm: (props: {
     onSubmit: (pet: Pet) => void;
     onCancel: () => void;
-    setDirty: (dirty: boolean) => void;
+    onDirtyChange?: (dirty: boolean) => void;
   }) => (
     <div>
       <button
         onClick={() => {
-          props.setDirty(true);
+          props.onDirtyChange?.(true);
           props.onSubmit({ name: 'Rover', breed: 'Hound' });
         }}
       >
@@ -45,13 +45,13 @@ vi.mock('@features/petManagement/PetForm', () => ({
       </button>
       <button
         onClick={() => {
-          props.setDirty(true);
+          props.onDirtyChange?.(true);
           props.onCancel();
         }}
       >
         Cancel
       </button>
-      <button onClick={() => props.setDirty(true)}>Dirty</button>
+      <button onClick={() => props.onDirtyChange?.(true)}>Dirty</button>
     </div>
   ),
 }));

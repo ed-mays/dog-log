@@ -7,14 +7,14 @@ interface PetFormProps {
   initialValues: Pet;
   onSubmit: (pet: Pet) => void;
   onCancel: () => void;
-  setDirty: (dirty: boolean) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }
 
 export function PetForm({
   initialValues,
   onSubmit,
   onCancel,
-  setDirty,
+  onDirtyChange,
 }: PetFormProps) {
   const { t } = useTranslation('petForm');
   const [pet, setPet] = useState(initialValues);
@@ -22,8 +22,8 @@ export function PetForm({
   useEffect(() => {
     const dirty =
       pet.name !== initialValues.name || pet.breed !== initialValues.breed;
-    setDirty(dirty);
-  }, [pet, initialValues, setDirty]);
+    onDirtyChange?.(dirty);
+  }, [pet, initialValues, onDirtyChange]);
 
   const isValid = pet.name.trim().length > 0 && pet.breed.trim().length > 0;
 

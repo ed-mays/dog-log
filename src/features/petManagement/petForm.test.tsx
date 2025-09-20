@@ -11,12 +11,12 @@ describe('PetForm', () => {
   // Use vi.fn() for all mocks (Vitest)
   let onSubmit: ReturnType<typeof vi.fn>;
   let onCancel: ReturnType<typeof vi.fn>;
-  let setDirty: ReturnType<typeof vi.fn>;
+  let onDirtyChange: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     onSubmit = vi.fn();
     onCancel = vi.fn();
-    setDirty = vi.fn();
+    onDirtyChange = vi.fn();
   });
 
   function renderForm(vals: Pet = initialPet, lng: 'en' | 'es' = 'en') {
@@ -26,7 +26,7 @@ describe('PetForm', () => {
         initialValues={vals}
         onSubmit={onSubmit}
         onCancel={onCancel}
-        setDirty={setDirty}
+        onDirtyChange={onDirtyChange}
       />
     );
   }
@@ -77,14 +77,14 @@ describe('PetForm', () => {
     expect(onCancel).toHaveBeenCalled();
   });
 
-  it('calls setDirty(true) when form is modified, setDirty(false) when reverted', async () => {
+  it('calls onDirtyChange(true) when form is modified, onDirtyChange(false) when reverted', async () => {
     renderForm({ name: 'A', breed: 'B' });
     const nameInput = screen.getByLabelText(/name/i);
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'Alice');
-    expect(setDirty).toHaveBeenLastCalledWith(true);
+    expect(onDirtyChange).toHaveBeenLastCalledWith(true);
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'A');
-    expect(setDirty).toHaveBeenLastCalledWith(false);
+    expect(onDirtyChange).toHaveBeenLastCalledWith(false);
   });
 });
