@@ -17,9 +17,10 @@ import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from './utils/errors';
 import WelcomePage from '@features/authentication/WelcomePage';
 import { useAuthStore } from '@store/auth.store';
+import LogoutButton from '@components/common/Auth/LogoutButton';
+import { useAuthUser } from '@store/auth.store';
 
 function RoutePrefetcher() {
-  // console.debug('[RoutePrefetcher] render');
   const location = useLocation();
   // Select primitives separately to avoid creating new objects per render
   const petsLen = usePetsStore((s) => s.pets.length);
@@ -57,6 +58,7 @@ function App() {
 
   const enablePetList = useFeatureFlag('petListEnabled');
   const { t } = useTranslation('common');
+  const user = useAuthUser();
 
   const errorTextBase = t('error', 'Error...');
   const errorDetail = toErrorMessage(appError);
@@ -66,6 +68,11 @@ function App() {
   return (
     <BrowserRouter>
       <RoutePrefetcher />
+      {user && (
+        <header aria-label="user-controls">
+          <LogoutButton />
+        </header>
+      )}
       {appLoading && <LoadingIndicator />}
       {errorDetail && <ErrorIndicator text={errorText} />}
       <Routes>

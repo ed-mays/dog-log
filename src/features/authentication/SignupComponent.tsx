@@ -22,7 +22,7 @@ const SignupComponent: React.FC = () => {
           {t('loading', 'Loading…')}
         </p>
       )}
-      {errorText && <p role="alert">{t('error', 'Error...')}</p>}
+      {error && <p role="alert">{errorText}</p>}
       <LoginButton />
     </section>
   );

@@ -13,7 +13,11 @@ const LoginButton: React.FC<Props> = ({ className, disabled }) => {
   const initializing = useAuthStore((s) => s.initializing);
 
   const onClick = async () => {
-    await signIn();
+    try {
+      await signIn();
+    } catch {
+      // Error state is handled by the auth store and rendered by consumers.
+    }
   };
 
   return (

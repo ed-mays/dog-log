@@ -52,8 +52,8 @@ The following actionable tasks are ordered to take you from architecture decisio
    - [x] Ensure redirect preserves the intended destination (via `state.from`), and return users after login
 
 10. [ ] Wire login, signup, and logout flows end-to-end
-    - [ ] Signup/Login: invoke `signInWithPopup(new GoogleAuthProvider())`, handle errors (popup blocked, canceled, network)
-    - [ ] Display logout button on all screens if user is logged in
+    - [x] Signup/Login: invoke `signInWithPopup(new GoogleAuthProvider())`, handle errors (popup blocked, canceled, network)
+    - [x] Display logout button on all screens if user is logged in
     - [x] Logout: call `signOut(auth)` and route to `/welcome`
     - [ ] Handle first-time users vs returning users (optional profile enrichment hook)
 
