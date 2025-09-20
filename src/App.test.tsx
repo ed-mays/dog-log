@@ -36,12 +36,15 @@ test('renders error state', async () => {
   usePetsStore.setState({
     pets: [],
     loading: false,
-    error: 'Fetch failed',
+    error: new Error('Boom'),
     fetchPets: async () => {},
   });
   renderComponent();
   await waitFor(() => {
-    expect(screen.getByTestId('error-indicator')).toBeInTheDocument();
+    const el = screen.getByTestId('error-indicator');
+    expect(el).toBeInTheDocument();
+    expect(el).toHaveTextContent(/Error/);
+    expect(el).toHaveTextContent(/Boom/);
   });
 });
 

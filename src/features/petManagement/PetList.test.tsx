@@ -55,6 +55,14 @@ describe('Pet List', () => {
     expect(within(headerRow).getByText('Breed')).toBeInTheDocument();
   });
 
+  test('table headers have columnheader role and accessible names', () => {
+    renderComponent();
+    const headers = screen.getAllByRole('columnheader');
+    expect(headers).toHaveLength(2);
+    expect(headers[0]).toHaveAccessibleName('Name');
+    expect(headers[1]).toHaveAccessibleName('Breed');
+  });
+
   test('renders default data-testid', async () => {
     renderComponent();
     expect(screen.getByTestId('pet-list')).toBeInTheDocument();
@@ -95,4 +103,14 @@ describe('Add button', () => {
       expect(addButton).toHaveAttribute('title', expectedTitle);
     }
   );
+
+  test('hides add button when addPetEnabled feature flag is false', () => {
+    render(
+      <MemoryRouter>
+        <PetList pets={testPets} />
+      </MemoryRouter>,
+      { featureFlags: { addPetEnabled: false }, i18nInstance: i18n }
+    );
+    expect(screen.queryByTestId('add-pet-button')).not.toBeInTheDocument();
+  });
 });

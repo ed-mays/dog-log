@@ -59,10 +59,10 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
 19. [x] Enhance common components for a11y
     - [x] Support `aria-live` and roles for loading/error components; provide ergonomic defaults
 
-20. [ ] Testing quality improvements
+20. [x] Testing quality improvements
     - [x] Prefer `@testing-library/user-event` over `fireEvent` where realistic interactions are needed
-    - [ ] Add a11y-focused tests for modal focus trapping and table header roles/names
-    - [ ] Increase coverage around feature-flagged UI and store error paths
+    - [x] Add a11y-focused tests for modal focus trapping and table header roles/names
+    - [x] Increase coverage around feature-flagged UI and store error paths
 
 21. [ ] ESLint ruleset hardening
     - [ ] Add/enforce rules for import consistency, hooks exhaustive-deps, accessibility, and prefer named exports

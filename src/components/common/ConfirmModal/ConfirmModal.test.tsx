@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ConfirmModal } from './ConfirmModal';
 
 describe('ConfirmModal', () => {
@@ -81,6 +82,51 @@ describe('ConfirmModal', () => {
       />
     );
     fireEvent.click(screen.getByText('Non'));
+    expect(onDecline).toHaveBeenCalled();
+  });
+
+  it('focuses the decline button initially and traps focus between buttons when tabbing', async () => {
+    render(
+      <ConfirmModal
+        text={text}
+        onAccept={onAccept}
+        onDecline={onDecline}
+        acceptLabel="Yes"
+        declineLabel="No"
+      />
+    );
+
+    const declineBtn = screen.getByRole('button', { name: 'No' });
+    const acceptBtn = screen.getByRole('button', { name: 'Yes' });
+
+    expect(declineBtn).toHaveFocus();
+
+    // Tab moves to accept
+    await userEvent.tab();
+    expect(acceptBtn).toHaveFocus();
+
+    // Tab again wraps to decline
+    await userEvent.tab();
+    expect(declineBtn).toHaveFocus();
+
+    // Shift+Tab from decline wraps to accept
+    await userEvent.tab({ shift: true });
+    expect(acceptBtn).toHaveFocus();
+  });
+
+  it('closes (calls onDecline) on Escape key', async () => {
+    render(
+      <ConfirmModal
+        text={text}
+        onAccept={onAccept}
+        onDecline={onDecline}
+        acceptLabel="Yes"
+        declineLabel="No"
+      />
+    );
+
+    // Send Escape
+    await userEvent.keyboard('{Escape}');
     expect(onDecline).toHaveBeenCalled();
   });
 });
