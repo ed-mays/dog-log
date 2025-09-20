@@ -1,4 +1,5 @@
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PetForm } from './PetForm';
 import type { Pet } from './PetForm';
 import { render } from '@/test-utils';
@@ -52,44 +53,38 @@ describe('PetForm', () => {
     expect(okButton).toBeDisabled();
   });
 
-  it('enables OK when inputs are filled', () => {
+  it('enables OK when inputs are filled', async () => {
     renderForm();
-    fireEvent.change(screen.getByLabelText(/name/i), {
-      target: { value: 'Fido', name: 'name' },
-    });
-    fireEvent.change(screen.getByLabelText(/breed/i), {
-      target: { value: 'Beagle', name: 'breed' },
-    });
+    await userEvent.type(screen.getByLabelText(/name/i), 'Fido');
+    await userEvent.type(screen.getByLabelText(/breed/i), 'Beagle');
     const okButton = screen.getByRole('button', { name: /ok/i });
     expect(okButton).not.toBeDisabled();
   });
 
-  it('calls onSubmit with pet data and disables on invalid', () => {
+  it('calls onSubmit with pet data and disables on invalid', async () => {
     renderForm();
-    fireEvent.change(screen.getByLabelText(/name/i), {
-      target: { value: 'Rex', name: 'name' },
-    });
-    fireEvent.change(screen.getByLabelText(/breed/i), {
-      target: { value: 'Lab', name: 'breed' },
-    });
+    await userEvent.type(screen.getByLabelText(/name/i), 'Rex');
+    await userEvent.type(screen.getByLabelText(/breed/i), 'Lab');
     const okButton = screen.getByRole('button', { name: /ok/i });
-    fireEvent.click(okButton);
+    await userEvent.click(okButton);
     expect(onSubmit).toHaveBeenCalledWith({ name: 'Rex', breed: 'Lab' });
   });
 
-  it('calls onCancel when Cancel is clicked', () => {
+  it('calls onCancel when Cancel is clicked', async () => {
     renderForm();
     const cancelButton = screen.getByRole('button', { name: /cancel/i });
-    fireEvent.click(cancelButton);
+    await userEvent.click(cancelButton);
     expect(onCancel).toHaveBeenCalled();
   });
 
-  it('calls setDirty(true) when form is modified, setDirty(false) when reverted', () => {
+  it('calls setDirty(true) when form is modified, setDirty(false) when reverted', async () => {
     renderForm({ name: 'A', breed: 'B' });
     const nameInput = screen.getByLabelText(/name/i);
-    fireEvent.change(nameInput, { target: { value: 'Alice', name: 'name' } });
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'Alice');
     expect(setDirty).toHaveBeenLastCalledWith(true);
-    fireEvent.change(nameInput, { target: { value: 'A', name: 'name' } });
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, 'A');
     expect(setDirty).toHaveBeenLastCalledWith(false);
   });
 });

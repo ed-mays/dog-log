@@ -48,19 +48,19 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
     - [x] Normalize naming (e.g., `petListEnabled`, `addPetEnabled`) and update `FeatureFlag` union accordingly
     - [x] Provide a test helper to render with custom flags via `<FeatureFlagsProvider initialFlags={...}>`
 
-17. [ ] Routing and navigation hygiene
+17. [x] Routing and navigation hygiene
     - [x] Confirm default routes and fallback behavior; localize any "feature unavailable" screens
-    - [ ] Consider preloading pets on route enter (route loader or page-level hook) to reduce loading flicker
+    - [x] Consider preloading pets on route enter (route loader or page-level hook) to reduce loading flicker
 
 18. [ ] Improve PetForm API
     - [ ] Replace imperative `setDirty` prop with derived internal dirty state and optional `onDirtyChange?(boolean)` callback
     - [ ] Consider exposing controlled props (`value`/`onChange`) for reuse, while keeping a simple uncontrolled default
 
-19. [ ] Enhance common components for a11y
-    - [ ] Support `aria-live` and roles for loading/error components; provide ergonomic defaults
+19. [x] Enhance common components for a11y
+    - [x] Support `aria-live` and roles for loading/error components; provide ergonomic defaults
 
 20. [ ] Testing quality improvements
-    - [ ] Prefer `@testing-library/user-event` over `fireEvent` where realistic interactions are needed
+    - [x] Prefer `@testing-library/user-event` over `fireEvent` where realistic interactions are needed
     - [ ] Add a11y-focused tests for modal focus trapping and table header roles/names
     - [ ] Increase coverage around feature-flagged UI and store error paths
 
