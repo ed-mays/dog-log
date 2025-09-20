@@ -68,15 +68,15 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
     - [ ] Add/enforce rules for import consistency, hooks exhaustive-deps, accessibility, and prefer named exports
     - [ ] Resolve resulting lint warnings; add suppressions only with justification
 
-22. [ ] Vite/TypeScript config hygiene
-    - [ ] Ensure all documented aliases exist (`@components/*`, `@store/*`, `@features/*`, `@featureFlags/*`, `@styles/*`, `@testUtils/*`)
-    - [ ] Prefer extensionless imports and confirm `moduleResolution: "bundler"` where appropriate
+22. [x] Vite/TypeScript config hygiene
+    - [x] Ensure all documented aliases exist (`@components/*`, `@store/*`, `@features/*`, `@featureFlags/*`, `@styles/*`, `@testUtils/*`)
+    - [x] Prefer extensionless imports and confirm `moduleResolution: "bundler"` where appropriate
 
-23. [ ] Prettier and editor consistency
-    - [ ] Verify Prettier settings and add `.editorconfig` if missing to align editor behavior
+23. [x] Prettier and editor consistency
+    - [x] Verify Prettier settings and add `.editorconfig` if missing to align editor behavior
 
-24. [ ] Robust ID generation strategy
-    - [ ] Use `crypto.randomUUID()` for runtime; provide a small utility to inject deterministic IDs in tests
+24. [x] Robust ID generation strategy
+    - [x] Use `crypto.randomUUID()` for runtime; provide a small utility to inject deterministic IDs in tests
 
 25. [ ] Introduce a data/service layer
     - [ ] Extract fetch logic to a service module to ease backend migration and facilitate `msw`-based test stubs

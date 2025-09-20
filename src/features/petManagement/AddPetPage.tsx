@@ -5,6 +5,7 @@ import type { Pet } from '@features/petManagement/PetForm';
 import { usePetsStore } from '@store/pets.store';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
 import { useTranslation } from 'react-i18next';
+import { generateId } from 'utils/id';
 
 export default function AddPetPage() {
   const addPet = usePetsStore((state) => state.addPet);
@@ -14,9 +15,7 @@ export default function AddPetPage() {
   const { t } = useTranslation('common');
 
   function handleSubmit(pet: Pet) {
-    const id = globalThis.crypto?.randomUUID
-      ? globalThis.crypto.randomUUID()
-      : Math.random().toString(36).slice(2);
+    const id = generateId();
     addPet({ ...pet, id });
     navigate('/pets');
   }
