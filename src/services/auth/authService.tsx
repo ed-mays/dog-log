@@ -37,12 +37,25 @@ export function mapUser(user: FirebaseUser | null): AppUser | null {
 
 export async function signInWithGoogle(): Promise<AppUser> {
   await ensurePersistence();
-  const result = await signInWithPopup(auth, provider);
-  return mapUser(result.user)!;
+  try {
+    const result = await signInWithPopup(auth, provider);
+    // Minimal telemetry (no PII):
+    console.info('[auth] signInWithGoogle success');
+    return mapUser(result.user)!;
+  } catch (e) {
+    console.warn('[auth] signInWithGoogle failed');
+    throw e;
+  }
 }
 
 export async function signOut(): Promise<void> {
-  await fbSignOut(auth);
+  try {
+    await fbSignOut(auth);
+    console.info('[auth] signOut success');
+  } catch (e) {
+    console.warn('[auth] signOut failed');
+    throw e;
+  }
 }
 
 export function subscribeToAuth(
@@ -52,7 +65,13 @@ export function subscribeToAuth(
   // Caller can show a loading state while the first event is received.
   return onAuthStateChanged(
     auth,
-    (user) => cb(mapUser(user)),
-    (err) => onError?.(err)
+    (user) => {
+      console.debug('[auth] onAuthStateChanged event');
+      cb(mapUser(user));
+    },
+    (err) => {
+      console.warn('[auth] onAuthStateChanged error');
+      onError?.(err);
+    }
   );
 }

@@ -3,5 +3,6 @@ export type FeatureFlag =
   | 'betaFeature'
   | 'test_show_count_button'
   | 'petListEnabled'
-  | 'addPetEnabled';
+  | 'addPetEnabled'
+  | 'authEnabled';
 export type FeatureFlags = Record<FeatureFlag, boolean>;

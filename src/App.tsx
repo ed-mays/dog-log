@@ -43,6 +43,10 @@ function PrivateRoute({ children }: { children: React.ReactElement }) {
   const initializing = useAuthStore((s) => s.initializing);
   const user = useAuthStore((s) => s.user);
   const location = useLocation();
+  const authEnabled = useFeatureFlag('authEnabled');
+  if (!authEnabled) {
+    return <Navigate to="/welcome" replace />;
+  }
   if (initializing) {
     return <LoadingIndicator />;
   }
@@ -57,6 +61,7 @@ function App() {
   const appError = usePetsStore((state) => state.error);
 
   const enablePetList = useFeatureFlag('petListEnabled');
+  const authEnabled = useFeatureFlag('authEnabled');
   const { t } = useTranslation('common');
   const user = useAuthUser();
 
@@ -68,7 +73,7 @@ function App() {
   return (
     <BrowserRouter>
       <RoutePrefetcher />
-      {user && (
+      {user && authEnabled && (
         <header aria-label="user-controls">
           <LogoutButton />
         </header>

@@ -12,5 +12,6 @@
   "logout": "Log out",
   "authentication": "Authentication",
   "welcomeHeader": "Welcome",
-  "welcomeSubtitle": "Sign in to continue"
+  "welcomeSubtitle": "Sign in to continue",
+  "authDisabledMessage": "Authentication is currently disabled."
 }

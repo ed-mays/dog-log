@@ -62,9 +62,9 @@ The following actionable tasks are ordered to take you from architecture decisio
     - [x] Show a minimal in-app loading indicator while restoring auth
     - [x] Gracefully handle `onAuthStateChanged` null user scenarios
 
-12. [ ] Feature flags (optional but recommended)
-    - [ ] Add `VITE_AUTH_ENABLED` and wire a flag `authEnabled` in feature flags provider
-    - [ ] If disabled, always show `/welcome` with explanatory message and hide auth buttons
+12. [x] Feature flags (optional but recommended)
+    - [x] Add `VITE_AUTH_ENABLED` and wire a flag `authEnabled` in feature flags provider
+    - [x] If disabled, always show `/welcome` with explanatory message and hide auth buttons
 
 13. [ ] Accessibility and UX polish
     - [ ] Ensure buttons have proper roles, labels, and focus states
@@ -91,8 +91,8 @@ The following actionable tasks are ordered to take you from architecture decisio
     - [x] Add/verify translations for authentication strings in `src/locales/<lang>/common.json` or `authentication.json`
     - [ ] Ensure tests render via shared i18n test utilities
 
-18. [ ] Telemetry/logging (optional)
-    - [ ] Minimal logging for auth success/failure (console or adapter), avoiding PII
+18. [x] Telemetry/logging (optional)
+    - [x] Minimal logging for auth success/failure (console or adapter), avoiding PII
 
 19. [x] Documentation updates
     - [ ] Update `docs/requirements.md` checklist items for auth progress

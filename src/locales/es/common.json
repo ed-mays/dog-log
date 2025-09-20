@@ -12,5 +12,6 @@
   "logout": "Cerrar sesión",
   "authentication": "Autenticación",
   "welcomeHeader": "Bienvenido",
-  "welcomeSubtitle": "Inicia sesión para continuar"
+  "welcomeSubtitle": "Inicia sesión para continuar",
+  "authDisabledMessage": "La autenticación está deshabilitada actualmente."
 }
