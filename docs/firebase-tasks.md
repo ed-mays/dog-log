@@ -79,7 +79,7 @@ The following actionable tasks are ordered to take you from architecture decisio
     - [x] Coverage for edge cases: popup blocked, cancel, network errors
 
 15. [ ] Developer experience
-    - [ ] Add `npm run dev:with-emulators` script to concurrently start emulators and Vite (optional)
+    - [x] Add `npm run dev:with-emulators` script to concurrently start emulators and Vite (optional)
     - [ ] Note emulator UI URL and how to add test users when needed
 
 16. [ ] Security and configuration hardening
