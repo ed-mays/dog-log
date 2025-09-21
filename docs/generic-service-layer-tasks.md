@@ -8,11 +8,11 @@
 
 ### 2. Repository Configuration and Utilities
 
-- [ ] Create `src/repositories/config.tsx` for collection names, database constants, and environment configs.
-- [ ] Implement query builders and validators in `config.tsx` as needed for repository logic.
-- [ ] Create `src/repositories/utils/dataTransformers.tsx` for converting Firestore documents, handling timestamps, and data sanitization.
-- [ ] Add repository-level validation helpers in `dataTransformers.tsx` or separate utils.
-- [ ] Write unit tests for all repository utilities and config functions as co-located `.test.tsx` files next to their code.
+- [x] Create `src/repositories/config.tsx` for collection names, database constants, and environment configs.
+- [x] Implement query builders and validators in `config.tsx` as needed for repository logic.
+- [x] Create `src/repositories/utils/dataTransformers.tsx` for converting Firestore documents, handling timestamps, and data sanitization.
+- [x] Add repository-level validation helpers in `dataTransformers.tsx` or separate utils.
+- [x] Write unit tests for all repository utilities and config functions as co-located `.test.tsx` files next to their code.
 
 ### 3. Feature-Specific Repository and Service Development
 
