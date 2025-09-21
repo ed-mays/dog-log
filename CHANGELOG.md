@@ -3,9 +3,11 @@
 All notable changes to this project are documented here. This file summarizes the checklist items from `docs/tasks.md` as they were implemented.
 
 ## Unreleased
+
 - Documentation updates: README and guidelines aligned with finalized conventions (imports, testing, i18n, feature flags). Created CHANGELOG.md.
 
 ## Completed Improvements
+
 1. Normalize test utilities imports — unified on `@/test-utils`/`@testUtils/*` across tests.
 2. Standardize data-testid handling in public components — PetList now accepts `dataTestId` rendered as `data-testid`; tests updated.
 3. Remove hardcoded IDs — `AddPetPage` uses robust id generation (`generateId` with `crypto.randomUUID()` fallback). Tests mock deterministically.

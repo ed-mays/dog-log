@@ -1,28 +1,29 @@
 # Dog Log — Improvement Tasks Checklist
 
 A single, actionable backlog to modernize and harden the codebase. Check items off as you complete them. Order is intentional: start with quick wins that reduce churn, then proceed to type safety, state/data flow, and so on.
+
 1. [x] Normalize test utilities imports
-    - [x] Replace mixed imports (`test-utils.tsx`, `../../test-utils.tsx`) with the configured alias import: `@/test-utils` or `@testUtils/*` consistently across all tests
-    - [x] Update path alias configuration if needed to support the chosen import form
+   - [x] Replace mixed imports (`test-utils.tsx`, `../../test-utils.tsx`) with the configured alias import: `@/test-utils` or `@testUtils/*` consistently across all tests
+   - [x] Update path alias configuration if needed to support the chosen import form
 
 2. [x] Standardize data-testid handling in public components
-    - [x] Replace non-standard `data-TestId` prop in PetList with conventional handling:
-        - [x] Either accept `dataTestId?: string` and render as `data-testid`
-        - [ ] Or forward arbitrary `data-testid` via `...rest` props
-    - [x] Update PetList tests to match the new prop shape and behavior
+   - [x] Replace non-standard `data-TestId` prop in PetList with conventional handling:
+     - [x] Either accept `dataTestId?: string` and render as `data-testid`
+     - [ ] Or forward arbitrary `data-testid` via `...rest` props
+   - [x] Update PetList tests to match the new prop shape and behavior
 
 3. [x] Remove hardcoded IDs in AddPetPage
-    - [x] Replace `id: '3'` with `crypto.randomUUID()` or delegate ID generation to the pets store layer
-    - [x] Update tests to assert deterministic behavior (e.g., mock `randomUUID` or store function)
+   - [x] Replace `id: '3'` with `crypto.randomUUID()` or delegate ID generation to the pets store layer
+   - [x] Update tests to assert deterministic behavior (e.g., mock `randomUUID` or store function)
 
 4. [x] Align import style
-    - [x] Prefer extensionless imports with path aliases; remove explicit `.tsx` extensions where used
-    - [x] Ensure tsconfig uses modern resolution compatible with Vite (e.g., `moduleResolution: "bundler"") and aliases cover documented prefixes
+   - [x] Prefer extensionless imports with path aliases; remove explicit `.tsx` extensions where used
+   - [x] Ensure tsconfig uses modern resolution compatible with Vite (e.g., `moduleResolution: "bundler"") and aliases cover documented prefixes
 
 5. [x] Consolidate Pet types into a single source of truth
-    - [x] Create `src/features/petManagement/types.tsx` (or `src/store/types.tsx`) exporting `Pet`
-    - [x] Update `PetForm.tsx`, `petListTypes.tsx`, and any other consumers to import the unified `Pet` type
-    - [x] Remove duplicate or divergent Pet type declarations
+   - [x] Create `src/features/petManagement/types.tsx` (or `src/store/types.tsx`) exporting `Pet`
+   - [x] Update `PetForm.tsx`, `petListTypes.tsx`, and any other consumers to import the unified `Pet` type
+   - [x] Remove duplicate or divergent Pet type declarations
 
 6. [x] Add explicit props typing for shared UI components
    - [x] Audit `src/components/common/*` and add/verify explicit prop interfaces with clear optionality and defaults
@@ -37,8 +38,9 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
    - [x] Ensure UI renders friendly, localized error messages using the helper
 
 9. [x] Trim artificial delays in async actions
-  - [x] Remove `setTimeout(2000)` from `fetchPets` (or similar) for faster dev/test loops
-  - [x] Simulate latency in tests as needed instead of production code
+
+- [x] Remove `setTimeout(2000)` from `fetchPets` (or similar) for faster dev/test loops
+- [x] Simulate latency in tests as needed instead of production code
 
 10. [x] Centralize test i18n setup
     - [x] Move feature-scoped `mocki18n.tsx` to a shared test i18n (e.g., `src/testUtils/test-i18n.tsx`)
@@ -110,11 +112,11 @@ A single, actionable backlog to modernize and harden the codebase. Check items o
 27. [x] Documentation updates
     - [x] Update README and developer guidelines to reflect finalized conventions (imports, testing, i18n, feature flags)
     - [x] Create CHANGELOG.md and populate it with a summary of each task in this document.
-    
 28. [x] Fix test warnings
     - [x] Fix `NO_I18NEXT_INSTANCE` warnings
 
 Notes:
+
 - Keep PRs small and thematic; update tests with each change.
 - Follow feature-first organization and path aliases.
 - Avoid breaking public component APIs; deprecate and migrate gradually where necessary.

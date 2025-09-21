@@ -2,25 +2,25 @@
 
 A modern **React** application scaffolded with **Vite** and written in **TypeScript**. It supports robust linting and testing, and leverages modular path aliases and i18n. This project uses the latest React 19+ and popular state and translation libraries.
 
-***
+---
 
 ### Project Structure
 
 - **TypeScript** with strict type checking and modern bundler settings
 - **Vite** for fast development & optimized builds
 - Support for **path aliases**:
-    - `@components/* → src/components/*`
-    - `@store/* → src/store/*`
-    - `@features/* → src/features/*`
-    - `@featureFlags/* → src/featureFlags/*`
-    - `@styles/* → src/styles/*`
-    - `@testUtils/* → src/testUtils/*`
-    - `@/test-utils → src/test-utils.tsx`
+  - `@components/* → src/components/*`
+  - `@store/* → src/store/*`
+  - `@features/* → src/features/*`
+  - `@featureFlags/* → src/featureFlags/*`
+  - `@styles/* → src/styles/*`
+  - `@testUtils/* → src/testUtils/*`
+  - `@/test-utils → src/test-utils.tsx`
 - Test setup with **Vitest** & **Testing Library**
 - Linting & formatting with **ESLint** & **Prettier**
 - Internationalization powered by **i18next** and **react-i18next**
 
-***
+---
 
 ## Getting Started
 
@@ -32,19 +32,19 @@ npm install
 
 ### Available Scripts
 
-| Script                | Description                              |
-|-----------------------|------------------------------------------|
-| `npm run dev`         | Start development server (Vite)          |
-| `npm run build`       | Type-check & build for production        |
-| `npm run preview`     | Preview local production build           |
-| `npm run lint`        | Run ESLint for code linting              |
-| `npm run lint:fix`    | Auto-fix lint issues                     |
-| `npm run format`      | Format codebase with Prettier            |
-| `npm run test`        | Run unit & component tests (Vitest)      |
-| `npm run test:coverage` | Run tests with code coverage           |
-| `npm run start:firebase` | Start Firebase emulators locally      |
+| Script                   | Description                         |
+| ------------------------ | ----------------------------------- |
+| `npm run dev`            | Start development server (Vite)     |
+| `npm run build`          | Type-check & build for production   |
+| `npm run preview`        | Preview local production build      |
+| `npm run lint`           | Run ESLint for code linting         |
+| `npm run lint:fix`       | Auto-fix lint issues                |
+| `npm run format`         | Format codebase with Prettier       |
+| `npm run test`           | Run unit & component tests (Vitest) |
+| `npm run test:coverage`  | Run tests with code coverage        |
+| `npm run start:firebase` | Start Firebase emulators locally    |
 
-***
+---
 
 ### Firebase Emulators & Auth (Local Development)
 
@@ -57,32 +57,34 @@ npm install
 4. For test users, use the Emulator UI to create accounts. Do not use real accounts in local testing.
 
 Notes:
+
 - Ensure `.env.local` has your Firebase client config. These are client-side keys and not secrets, but treat them as credentials for your project configuration.
 - Never commit real production credentials. If any key leaks, rotate/regenerate from the Firebase Console, update `.env.local`, and redeploy.
 
-***
+---
 
 ### Testing
 
 - Uses **Vitest** for running fast TypeScript and component tests.
 - **@testing-library/react**, **user-event**, and **jest-dom** for ergonomic, reliable UI/UX testing.
 - Use the shared render wrapper which includes providers (i18n + feature flags):
-  
+
   ```
   import { render, screen } from '@/test-utils';
-  
+
   render(<MyComponent />, { featureFlags: { addPetEnabled: true } });
   ```
+
 - TypeScript test globals and matchers included by default.
 
-***
+---
 
 ### Linting & Formatting
 
 - **ESLint** for linting React, TypeScript, accessibility, and prettier integration.
 - **Prettier** for code style and consistency.
 
-***
+---
 
 ### Internationalization
 
@@ -91,19 +93,19 @@ Notes:
 - In components: `const { t } = useTranslation('<namespace>');` and `t('key')`.
 - Shared test i18n lives at `src/testUtils/test-i18n.tsx` and is wired through the test render wrapper.
 
-***
+---
 
 ### Feature Flags
 
 - Managed via a provider at `src/featureFlags/FeatureFlagsProvider` with defaults from Vite env vars (`VITE_*`).
 - Query flags via `useFeatureFlag('<flagName>')`. Current flags include `petListEnabled` and `addPetEnabled`.
 - In tests, override flags through the render wrapper:
-  
+
   ```
   render(<App />, { featureFlags: { petListEnabled: false } });
   ```
 
-***
+---
 
 ### Path Aliases
 
@@ -118,13 +120,13 @@ Notes:
   - `@/test-utils` → `src/test-utils.tsx`
 - Prefer extensionless imports with these aliases.
 
-***
+---
 
 ### Error Handling
 
 - A top-level `ErrorBoundary` (localized) wraps the app. Customize fallback via `fallbackText` prop; default text comes from the `common` namespace.
 
-***
+---
 
 ## Tech Stack
 
@@ -136,10 +138,10 @@ Notes:
 - i18next/react-i18next (i18n)
 - ESLint, Prettier
 
-***
+---
 
 ### License
 
 This project is private and not currently intended for open-source distribution.
 
-***
+---
