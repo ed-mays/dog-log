@@ -16,17 +16,19 @@ Create the foundational files in `src/repositories/`:
 - Handle error conversion from Firestore exceptions to plain JavaScript errors
 - Ensure all returned data are plain JavaScript objects, never Firestore types
 
-### 2. Implement Configuration and Utilities
+### 2. Implement Repository Configuration and Utilities
 
-**2.1 Create `src/services/config.tsx`**
-- Define collection names and database configuration constants
-- Include environment-specific settings
-- Set up common query builders and validators
+**2.1 Create `src/repositories/config.tsx`**
+- Define collection names and database configuration constants.
+- Include environment-specific settings.
+- Set up common query builders and validators for repository usage.
 
-**2.2 Create `src/services/utils/dataTransformers.tsx`**
-- Implement utilities to convert Firestore documents to plain objects
-- Handle timestamp conversions and data sanitization
-- Include validation helpers for incoming and outgoing data
+**2.2 Create `src/repositories/utils/dataTransformers.tsx`**
+- Implement utilities to convert Firestore documents to plain objects in repositories.
+- Handle timestamp conversions and data sanitization, scoped for repository logic.
+- Include validation helpers to support repository-level data requirements.
+
+_Repositories and related utilities are located in `src/repositories/`, while services for business logic reside in `src/services/` as distinct layers._
 
 ### 3. Create Feature-Specific Service Implementation
 
@@ -61,13 +63,22 @@ Create the foundational files in `src/repositories/`:
 
 ### 6. Set Up Testing Infrastructure
 
-**6.1 Create `src/services/__tests__/`**
+**6.1 Repository tests**
+- Place repository tests alongside their implementation files (e.g. `src/repositories/base/BaseRepository.test.tsx` next to `BaseRepository.tsx`)
+- Place feature repository tests alongside their implementation (e.g. `src/repositories/petRepository.test.tsx` next to `petRepository.tsx`)
 - Implement mock data generators for pets and other entities
-- Create service layer unit tests with mocked Firestore operations
+- Create repository layer unit tests with mocked Firestore operations
 - Test error handling and data transformation logic
 - Ensure tests demonstrate backend-independence as required
 
-**6.2 Create `src/features/petManagement/__tests__/`**
+**6.2 Service tests**
+- Place service tests alongside their implementation files (e.g. `src/services/petService.test.tsx` next to `petService.tsx`)
+- Test business logic and service layer functionality
+- Mock repository dependencies to isolate service logic
+- Validate complex business rules and cross-cutting concerns
+
+**6.3 Hook tests**
+- Place hook tests alongside their implementation (e.g. `src/features/petManagement/hooks/usePetList.test.tsx` next to `usePetList.tsx`)
 - Test custom hooks with mocked service dependencies
 - Validate hook behavior under various loading and error states
 - Test component integration with hooks using the shared render wrapper
