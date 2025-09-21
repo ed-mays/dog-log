@@ -2,15 +2,15 @@
 
 ### 1. Create Base Repository Infrastructure
 
-Create the foundational files in `src/services/`:
+Create the foundational files in `src/repositories/`:
 
-**1.1 Create `src/services/types.tsx`**
+**1.1 Create `src/repositories/types.tsx`**
 - Define generic repository interfaces and common entity types
 - Include base CRUD operations: `create`, `read`, `update`, `delete`/`archive`
 - Define error handling types and response wrappers
 - Include pagination and filtering interfaces for future scalability
 
-**1.2 Create `src/services/base/BaseRepository.tsx`**
+**1.2 Create `src/repositories/base/BaseRepository.tsx`**
 - Implement abstract base class with common Firestore operations
 - Include generic CRUD methods that specific repositories can extend
 - Handle error conversion from Firestore exceptions to plain JavaScript errors

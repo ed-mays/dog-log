@@ -25,14 +25,14 @@
     "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
+      "@/firebase": ["firebase"],
       "@store/*": ["store/*"],
       "@testUtils/*": ["testUtils/*"],
       "@featureFlags/*": ["featureFlags/*"],
       "@features/*": ["features/*"],
+      "@/services/*": ["services/*"],
       "@styles/*": ["styles/*"],
       "@/test-utils": ["test-utils"],
-      "@/firebase": ["firebase"],
-      "@/services/*": ["services/*"],
       "@/utils/*": ["utils/*"]
     }
   },
