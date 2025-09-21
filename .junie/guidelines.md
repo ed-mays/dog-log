@@ -37,6 +37,7 @@ Guidelines:
 
 ## 3. Scripts You’ll Use Daily
 - npm run dev — start Vite dev server
+- npm run def:with-emulators — start Vite dev server with firebase emulators
 - npm run build — type-check then build for production
 - npm run preview — preview the production build locally
 - npm run lint — run ESLint
@@ -54,6 +55,7 @@ Guidelines:
 - Keep tests next to code: Component.tsx and Component.test.tsx in same folder.
 - Use getByRole and accessible queries; avoid brittle text selectors.
 - Snapshot sparingly; assert meaningful behavior and state.
+- Create unit tests while implementing functionality, not afterward.
 
 Setup notes:
 - Shared test i18n lives at src/testUtils/test-i18n.tsx (wired through the render wrapper).
@@ -65,6 +67,48 @@ Setup notes:
 - Keep async side-effects inside store actions when practical.
 - Prefer a small data/service layer in src/services/* to encapsulate fetch logic.
 - Avoid leaking store shape across app; read via selectors: useStore(s => s.part).
+
+## 6. Data Access Strategy: Firestore
+**Principle:**  
+All interactions with Firestore must be abstracted through a service/repository layer (e.g., src/services) and custom hooks. React components, stores, and business logic should never depend directly on Firestore APIs or objects.
+
+**Patterns:**
+
+- Use repository modules (in `src/services`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.) and always return plain JavaScript objects.
+- Create custom React hooks (e.g., `usePetList`) that call the repository functions and expose application data, not Firestore types.
+- Provide repositories to the app through context providers if stateful or cross-feature access is needed.
+- Never expose Firestore types, Snapshots, or References outside service modules.
+- Strictly type all repository and hook outputs for reliable, testable contracts.
+
+**When To Use This Strategy:**
+
+- When building new features that need app or user  Place all data-fetching and saving logic inside a dedicated repository/service module and use from hooks or components.
+- When refactoring legacy code: Move Firestore calls out of components and consolidate them in service modules. Update hooks to call these services.
+- When doing unit or integration testing: Mock repository functions, not Firestore SDK access, making tests backend-independent.
+- When considering migration or backend changes: Abstracting Firestore lets you swap data sources by updating only the repository logic.
+- Whenever sharing business logic or data transformations: Keep these in services or hooks, not inside UI components.
+
+**Example:**
+
+```typescript
+// src/services/petService.ts
+export const petService = {
+  getList: async () => { /* Firestore query logic */ },
+  addPet: async (pet) => { /* Firestore add logic */ }
+};
+
+// src/features/petManagement/usePetList.ts
+import { useEffect, useState } from "react";
+import { petService } from "../../services/petService";
+export function usePetList() {
+  const [pets, setPets] = useState([]);
+  useEffect(() => { petService.getList().then(setPets); }, []);
+  return pets;
+}
+```
+
+**Summary:**  
+Always access Firestore through abstracted repository/service modules and custom hooks, never directly in components. This keeps your codebase maintainable, testable, and flexible for future changes.
 
 ## 6. Internationalization (i18next)
 - Namespaces: common, home, petList, petProperties.
@@ -80,9 +124,17 @@ Setup notes:
 
 ## 8. Environment Variables (Vite)
 - Create .env.local for local-only values. Examples:
+  VITE_APP_TITLE=Dog-Log
   VITE_DEFAULT_LOCALE=en
-  VITE_PET_LIST_ENABLED=true
+  VITE_FLAG_COUNT_BUTTON=false
   VITE_ADD_PET_ENABLED=true
+  VITE_FIREBASE_API_KEY=''
+  VITE_FIREBASE_AUTH_DOMAIN=''
+  VITE_FIREBASE_PROJECT_ID=''
+  VITE_FIREBASE_STORAGE_BUCKET=''
+  VITE_FIREBASE_MESSAGING_SENDER_ID=''
+  VITE_FIREBASE_APP_ID=''
+  VITE_FIREBASE_MEASUREMENT_ID=''
 - All app-consumed env vars must be prefixed with VITE_.
 - Restart the dev server after changing env vars.
 
