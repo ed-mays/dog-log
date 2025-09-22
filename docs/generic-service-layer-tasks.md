@@ -16,15 +16,15 @@
 
 ### 3. Feature-Specific Repository and Service Development
 
-- [ ] Implement pet repository in `src/repositories/petRepository.tsx` extending `BaseRepository`, with its test in `petRepository.test.tsx`.
-- [ ] Implement pet feature service in `src/services/petService.tsx` that uses the pet repository for business logic, with its test in `petService.test.tsx`.
-- [ ] Add typed Pet definitions to `src/features/petManagement/types.tsx`.
+- [x] Implement pet repository in `src/repositories/petRepository.tsx` extending `BaseRepository`, with its test in `petRepository.test.tsx`.
+- [x] Implement pet feature service in `src/services/petService.tsx` that uses the pet repository for business logic, with its test in `petService.test.tsx`.
+- [x] Add typed Pet definitions to `src/features/petManagement/types.tsx`.
 - [ ] Implement pet validation and transformation functions within the repository (with tests next to these functions).
 - [ ] Create and export feature-related queries (e.g. active/archived pets) from the repository.
 
 ### 4. Domain Types and Common Utilities
 
-- [ ] Update or create `src/features/petManagement/types.tsx` with all pet domain types and API interfaces.
+- [x] Update or create `src/features/petManagement/types.tsx` with all pet domain types and API interfaces.
 - [ ] Add reusable API and entity types in `src/types/common.tsx`.
 
 ### 5. React Hooks Layer

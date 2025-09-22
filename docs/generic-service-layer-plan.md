@@ -32,7 +32,7 @@ _Repositories and related utilities are located in `src/repositories/`, while se
 
 ### 3. Create Feature-Specific Service Implementation
 
-**3.1 Create `src/services/petService.tsx`**
+**3.1 Create `src/services/petService.test.tsx`**
 - Extend the base repository for pet-specific operations
 - Implement `getList`, `getById`, `create`, `update`, `archive` methods
 - Include pet-specific queries (active vs archived pets)
@@ -72,7 +72,7 @@ _Repositories and related utilities are located in `src/repositories/`, while se
 - Ensure tests demonstrate backend-independence as required
 
 **6.2 Service tests**
-- Place service tests alongside their implementation files (e.g. `src/services/petService.test.tsx` next to `petService.tsx`)
+- Place service tests alongside their implementation files (e.g. `src/services/petService.test.tsx` next to `petService.test.tsx`)
 - Test business logic and service layer functionality
 - Mock repository dependencies to isolate service logic
 - Validate complex business rules and cross-cutting concerns

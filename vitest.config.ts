@@ -16,6 +16,7 @@ export default defineConfig({
       '@/firebase': path.resolve(__dirname, 'src/firebase.tsx'),
       '@/services': path.resolve(__dirname, 'src/services'),
       '@/utils': path.resolve(__dirname, 'src/utils'),
+      '@repositories': path.resolve(__dirname, 'src/repositories'),
     },
   },
   test: {

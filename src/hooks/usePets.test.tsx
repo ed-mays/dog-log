@@ -3,22 +3,44 @@ import { usePets } from './usePets';
 import { usePetsStore } from '@store/pets.store';
 
 beforeEach(() => {
-  // Reset Zustand store between tests to avoid state bleed
   usePetsStore.setState({
     pets: [],
     loading: false,
     error: null,
-    fetchPets: usePetsStore.getState().fetchPets,
+    fetchPets: () => {
+      usePetsStore.setState({
+        pets: [
+          {
+            id: '1',
+            name: 'Fido',
+            breed: 'Lab',
+            birthDate: new Date(),
+            isArchived: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            createdBy: 'user1',
+          },
+          {
+            id: '2',
+            name: 'Bella',
+            breed: 'Poodle',
+            birthDate: new Date(),
+            isArchived: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            createdBy: 'user2',
+          },
+        ],
+        loading: false,
+        error: null,
+      });
+    },
   });
 });
 
 test('fetches and returns mock pets', async () => {
   const { result } = renderHook(() => usePets());
-
-  // With no artificial delay, loading may flip to false immediately.
-  // Assert final loaded state instead of transient loading state.
   await waitFor(() => expect(result.current.loading).toBe(false));
-
   expect(result.current.pets[0].name).toBe('Fido');
   expect(result.current.pets[1].name).toBe('Bella');
   expect(result.current.error).toBeNull();

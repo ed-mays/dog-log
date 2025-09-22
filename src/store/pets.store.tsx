@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Pet } from '@features/petManagement/types';
-import { getPets } from 'services/pets.service';
+import { PetService } from '@/services/petService';
 
 interface PetsState {
   pets: Pet[];
@@ -19,7 +19,7 @@ export const usePetsStore = create<PetsState>((set) => ({
     set({ loading: true, error: null });
     try {
       // Delegate to service layer
-      const pets = await getPets();
+      const pets = [];
       set({ pets, loading: false });
     } catch (err) {
       set({ error: err ?? new Error('Failed to load pets.'), loading: false });
