@@ -1,13 +1,19 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { usePetsStore } from '@store/pets.store';
+import { useUiStore } from '@store/ui.store';
+import { shallow } from 'zustand/shallow';
 
 export function RoutePrefetcher() {
   const location = useLocation();
-  // Select primitives separately to avoid creating new objects per render
-  const petsLen = usePetsStore((s) => s.pets.length);
-  const loading = usePetsStore((s) => s.loading);
-  const fetchPets = usePetsStore((s) => s.fetchPets);
+  const { petsLen, fetchPets } = usePetsStore(
+    (s) => ({
+      petsLen: s.pets.length,
+      fetchPets: s.fetchPets,
+    }),
+    shallow
+  );
+  const loading = useUiStore((s) => s.loading);
 
   React.useEffect(() => {
     // console.debug('[RoutePrefetcher] effect', { path: location.pathname, petsLen, loading });

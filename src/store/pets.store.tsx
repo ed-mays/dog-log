@@ -1,28 +1,28 @@
 import { create } from 'zustand';
 import type { Pet } from '@features/petManagement/types';
-import { PetService } from '@/services/petService';
+import { useUiStore } from './ui.store';
 
 interface PetsState {
   pets: Pet[];
-  loading: boolean;
-  error: unknown | string | null;
   fetchPets: () => Promise<void>;
   addPet: (pet: Pet) => void;
 }
 
 export const usePetsStore = create<PetsState>((set) => ({
   pets: [],
-  loading: false,
-  error: null,
   addPet: (pet: Pet) => set((state) => ({ pets: [...state.pets, pet] })),
   fetchPets: async () => {
-    set({ loading: true, error: null });
+    const { setLoading, setError } = useUiStore.getState();
+    setLoading(true);
+    setError(null);
     try {
       // Delegate to service layer
       const pets = [];
-      set({ pets, loading: false });
+      set({ pets });
     } catch (err) {
-      set({ error: err ?? new Error('Failed to load pets.'), loading: false });
+      setError(err as Error ?? new Error('Failed to load pets.'));
+    } finally {
+      setLoading(false);
     }
   },
 }));

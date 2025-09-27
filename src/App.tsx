@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import { useFeatureFlag } from './featureFlags/useFeatureFlag';
-import { usePetsStore } from '@store/pets.store';
+import { useUiStore } from '@store/ui.store';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 import { BrowserRouter } from 'react-router-dom';
@@ -13,8 +13,8 @@ import { RoutePrefetcher } from './features/petManagement/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
 
 function App() {
-  const appLoading = usePetsStore((state) => state.loading);
-  const appError = usePetsStore((state) => state.error);
+  const appLoading = useUiStore((state) => state.loading);
+  const appError = useUiStore((state) => state.error);
 
   const authEnabled = useFeatureFlag('authEnabled');
   const { t } = useTranslation('common');
