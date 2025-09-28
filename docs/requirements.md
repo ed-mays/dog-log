@@ -2,6 +2,36 @@
 
 Dog Log is a pet management application that enables users to keep track of important data about their pets.
 
+
+# Technical MVP
+The goal of the technical MVP is to establish architectural patterns and best practices to support further development of the application.
+
+## Architecture and Stack
+- UI is implemented in React with typescript
+- State is managed with Zustand, ideally via an abstraction layer
+- Backend is managed in Firestore, via a repository abstraction
+  - For local development, use the Firestore emulator
+- Authentication is managed in Firebase Auth, ideally via an abstraction layer
+  - For local development, use the Firebase emulator
+- Testing is via vitest and jest-dom
+
+## Authentication and Security
+- The user must be able to sign in with Google
+- The user can only view their own data
+
+## Data Storage
+- Data will be stored in Firebase
+
+## Feature Flags
+- The application will leverage feature flags to enable continuous delivery
+
+## Testing
+- Unit and integration tests exist and are up to date
+- Ideally follow test-driven patterns
+
+---
+# Future: Do not consider for now.
+
 ## User-Facing Features
 
 The user must be able to:
