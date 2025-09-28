@@ -1,4 +1,3 @@
-import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useFeatureFlag } from './featureFlags/useFeatureFlag';
 import { PrivateRoute } from '@components/common/PrivateRoute';

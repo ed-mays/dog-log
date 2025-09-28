@@ -4,94 +4,83 @@ import App from './App';
 import '@testing-library/jest-dom';
 import { usePetsStore } from '@store/pets.store';
 import { useAuthStore } from '@store/auth.store';
-import type { AuthState } from '@store/auth.store';
+import { useUiStore } from '@store/ui.store';
 
-beforeEach(() => {
-  // Ensure auth guard allows access during these tests
-  useAuthStore.setState({
-    user: {
-      uid: 'test',
-      displayName: 'Tester',
-      email: 't@example.com',
-      photoURL: null,
-    },
-    initializing: false,
-    error: null,
-  } as Partial<AuthState>);
+// Mock child components with side-effects
+vi.mock('@features/authentication/AuthBootstrap', () => ({
+  default: () => null,
+}));
 
-  // Reset pets store to a neutral baseline
-  usePetsStore.setState({
-    pets: [],
-    loading: false,
-    error: null,
-    fetchPets: async () => {},
-  });
-});
+// Mock stores
+vi.mock('@store/pets.store');
+vi.mock('@store/auth.store');
+vi.mock('@store/ui.store');
 
-function renderComponent() {
-  render(<App />);
-}
+describe('App', () => {
+  const mockUsePetsStore = usePetsStore as vi.Mock;
+  const mockUseAuthStore = useAuthStore as vi.Mock;
+  const mockUseUiStore = useUiStore as vi.Mock;
+  const fetchPetsSpy = vi.fn();
 
-test('renders loading state', async () => {
-  usePetsStore.setState({
-    pets: [],
-    loading: true,
-    error: null,
-    fetchPets: () => Promise.resolve(),
+  beforeEach(() => {
+    vi.resetAllMocks();
+    // Setup default mocks for each test
+    mockUseAuthStore.mockImplementation((selector) =>
+      selector({ user: { uid: 'test' }, initializing: false, error: null })
+    );
+    mockUsePetsStore.mockImplementation((selector) =>
+      selector({ pets: [], fetchPets: fetchPetsSpy })
+    );
+    mockUseUiStore.mockImplementation((selector) =>
+      selector({ loading: false, error: null })
+    );
   });
 
-  renderComponent();
+  function renderComponent() {
+    render(<App />);
+  }
 
-  await waitFor(() => {
-    expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
-  });
-});
-
-test('renders error state', async () => {
-  usePetsStore.setState({
-    pets: [],
-    loading: false,
-    error: new Error('Boom'),
-    fetchPets: async () => {},
-  });
-  renderComponent();
-  await waitFor(() => {
-    const el = screen.getByTestId('error-indicator');
-    expect(el).toBeInTheDocument();
-    expect(el).toHaveTextContent(/Error/);
-    expect(el).toHaveTextContent(/Boom/);
-  });
-});
-
-test('renders pet list', async () => {
-  usePetsStore.setState({
-    pets: [
-      { id: '1', name: 'Fido', breed: 'Labrador' },
-      { id: '2', name: 'Bella', breed: 'Beagle' },
-    ],
-    loading: false,
-    error: null,
-  });
-  renderComponent();
-  await waitFor(() => {
-    expect(screen.getByTestId('pet-list')).toBeInTheDocument();
-  });
-});
-
-test('fetches pets on mount', () => {
-  // Create a spy for fetchDogs
-  const fetchDogsSpy = vi.fn(async () => {});
-
-  // Set the store state to use the spy function
-  usePetsStore.setState({
-    pets: [],
-    loading: false,
-    error: null,
-    fetchPets: fetchDogsSpy,
+  test('renders loading state', async () => {
+    mockUseUiStore.mockImplementation((selector) =>
+      selector({ loading: true, error: null })
+    );
+    renderComponent();
+    await waitFor(() => {
+      expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
+    });
   });
 
-  renderComponent();
+  test('renders error state', async () => {
+    mockUseUiStore.mockImplementation((selector) =>
+      selector({ loading: false, error: new Error('Boom') })
+    );
+    renderComponent();
+    await waitFor(() => {
+      const el = screen.getByTestId('error-indicator');
+      expect(el).toBeInTheDocument();
+      expect(el).toHaveTextContent(/Error/);
+      expect(el).toHaveTextContent(/Boom/);
+    });
+  });
 
-  // Assert fetchDogs was called exactly once, i.e., on mount
-  expect(fetchDogsSpy).toHaveBeenCalledTimes(1);
+  test('renders pet list', async () => {
+    mockUsePetsStore.mockImplementation((selector) =>
+      selector({
+        pets: [
+          { id: '1', name: 'Fido', breed: 'Labrador' },
+          { id: '2', name: 'Bella', breed: 'Beagle' },
+        ],
+        fetchPets: fetchPetsSpy,
+      })
+    );
+    renderComponent();
+    await waitFor(() => {
+      expect(screen.getByTestId('pet-list')).toBeInTheDocument();
+    });
+  });
+
+  test('fetches pets on mount', () => {
+    renderComponent();
+    expect(fetchPetsSpy).toHaveBeenCalledTimes(1);
+  });
 });

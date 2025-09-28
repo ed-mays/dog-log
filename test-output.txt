@@ -1,0 +1,1381 @@
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 95ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 93ms
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 311ms
+ ❯ src/components/common/PrivateRoute.test.tsx (4 tests | 2 failed) 60ms
+   ✓ PrivateRoute > should redirect to /welcome if auth is not enabled 34ms
+   ✓ PrivateRoute > should render loading indicator while initializing 8ms
+   × PrivateRoute > should redirect to /welcome if user is not authenticated 11ms
+     → Unable to find an element with the text: Welcome Page. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mdata-testid[39m=[32m"loading-indicator"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m>[39m
+      [0mLoading…[0m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × PrivateRoute > should render children if user is authenticated 6ms
+     → Unable to find an element with the text: Private Content. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mdata-testid[39m=[32m"loading-indicator"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m>[39m
+      [0mLoading…[0m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 111ms
+ ❯ src/App.authGuard.test.tsx (2 tests | 2 failed) 69ms
+   × App auth route protection > redirects unauthenticated users to /welcome for /pets 61ms
+     → You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+   × App auth route protection > allows authenticated users to access /pets 4ms
+     → You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+ ❯ src/AppRoutes.test.tsx (5 tests | 3 failed) 84ms
+   ✓ AppRoutes > should render WelcomePage for /welcome route 52ms
+   × AppRoutes > should render PetListPage for /pets route when feature is enabled 8ms
+     → Unable to find an element by: [data-testid="pet-list"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mdata-testid[39m=[32m"loading-indicator"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m>[39m
+      [0mLoading…[0m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ AppRoutes > should redirect to /feature-unavailable for /pets route when feature is disabled 6ms
+   × AppRoutes > should render AddPetPage for /pets/new route 13ms
+     → Unable to find an accessible element with the role "heading" and name `/add a new pet/i`
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------main:
+
+  Name "Welcome":
+  [36m<main[39m
+    [33maria-labelledby[39m=[32m"welcome-heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Welcome":
+  [36m<h1[39m
+    [33mid[39m=[32m"welcome-heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-labelledby[39m=[32m"welcome-heading"[39m
+    [36m>[39m
+      [36m<h1[39m
+        [33mid[39m=[32m"welcome-heading"[39m
+      [36m>[39m
+        [0mWelcome[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mAuthentication is currently disabled.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × AppRoutes > should redirect to /pets for unknown routes 4ms
+     → Unable to find an element by: [data-testid="pet-list"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mdata-testid[39m=[32m"loading-indicator"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m>[39m
+      [0mLoading…[0m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ src/App.test.tsx (4 tests | 4 failed) 104ms
+   × renders loading state 37ms
+     → You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+   × renders error state 52ms
+     → You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+   × renders pet list 11ms
+     → You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+   × fetches pets on mount 2ms
+     → You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+ ❯ src/App.routing.test.tsx (1 test | 1 failed) 132ms
+   × Routing and navigation hygiene > shows a localized feature-unavailable screen when pet list is disabled 131ms
+     → You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 579ms
+ ✓ src/features/petManagement/AddPetPage.test.tsx (5 tests) 101ms
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 29ms
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 138ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 76ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 61ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 54ms
+ ✓ src/hooks/usePets.test.tsx (1 test) 38ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 131ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 115ms
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 68ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 6ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 8ms
+ ✓ src/repositories/config.test.tsx (7 tests) 3ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/utils/id.test.tsx (2 tests) 4ms
+ ✓ src/store/store.test.tsx (3 tests) 2ms
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 7ms
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 3ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/services/petService.test.tsx (3 tests) 4ms
+
+ Test Files  5 failed | 23 passed (28)
+      Tests  12 failed | 94 passed (106)
+   Start at  11:59:18
+   Duration  4.45s (transform 1.20s, setup 2.26s, collect 9.05s, tests 2.48s, environment 15.75s, prepare 3.18s)
+
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 97ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 108ms
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ❯ src/App.routing.test.tsx (1 test | 1 failed) 35ms
+   × Routing and navigation hygiene > shows a localized feature-unavailable screen when pet list is disabled 34ms
+     → Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 299ms
+ ❯ src/App.authGuard.test.tsx (2 tests | 2 failed) 59ms
+   × App auth route protection > redirects unauthenticated users to /welcome for /pets 37ms
+     → Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+   × App auth route protection > allows authenticated users to access /pets 21ms
+     → Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 157ms
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 138ms
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 487ms
+ ❯ src/App.test.tsx (4 tests | 4 failed) 158ms
+   × renders loading state 109ms
+     → Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+   × renders error state 12ms
+     → Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+   × renders pet list 26ms
+     → Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+   × fetches pets on mount 9ms
+     → Maximum update depth exceeded. This can happen when a component repeatedly calls setState inside componentWillUpdate or componentDidUpdate. React limits the number of nested updates to prevent infinite loops.
+ ❯ src/AppRoutes.test.tsx (5 tests | 1 failed) 282ms
+   ✓ AppRoutes > should render WelcomePage for /welcome route 81ms
+   ✓ AppRoutes > should render PetListPage for /pets route when feature is enabled 57ms
+   ✓ AppRoutes > should redirect to /feature-unavailable for /pets route when feature is disabled 17ms
+   × AppRoutes > should render AddPetPage for /pets/new route 84ms
+     → Unable to find an accessible element with the role "heading" and name `/add a new pet/i`
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------main:
+
+  Name "Welcome":
+  [36m<main[39m
+    [33maria-labelledby[39m=[32m"welcome-heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Welcome":
+  [36m<h1[39m
+    [33mid[39m=[32m"welcome-heading"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-labelledby[39m=[32m"welcome-heading"[39m
+    [36m>[39m
+      [36m<h1[39m
+        [33mid[39m=[32m"welcome-heading"[39m
+      [36m>[39m
+        [0mWelcome[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mAuthentication is currently disabled.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ AppRoutes > should redirect to /pets for unknown routes 42ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/hooks/usePets.test.tsx (1 test) 40ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 42ms
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 21ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 89ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 54ms
+ ✓ src/features/petManagement/AddPetPage.test.tsx (5 tests) 89ms
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 70ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 19ms
+ ✓ src/components/common/PrivateRoute.test.tsx (4 tests) 50ms
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 30ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 8ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 7ms
+ ✓ src/utils/id.test.tsx (2 tests) 2ms
+ ✓ src/repositories/config.test.tsx (7 tests) 3ms
+ ✓ src/store/store.test.tsx (3 tests) 2ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 3ms
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 8ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/services/petService.test.tsx (3 tests) 4ms
+
+ Test Files  4 failed | 24 passed (28)
+      Tests  8 failed | 98 passed (106)
+   Start at  12:03:31
+   Duration  4.00s (transform 859ms, setup 2.03s, collect 8.11s, tests 2.36s, environment 13.72s, prepare 2.97s)
+
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 103ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 101ms
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 262ms
+ ❯ src/App.routing.test.tsx (1 test | 1 failed) 33ms
+   × Routing and navigation hygiene > shows a localized feature-unavailable screen when pet list is disabled 32ms
+     → fetchPets is not a function
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 115ms
+ ✓ src/App.authGuard.test.tsx (2 tests) 98ms
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 160ms
+ ✓ src/App.test.tsx (4 tests) 110ms
+ ❯ src/AppRoutes.test.tsx (5 tests | 3 failed) 164ms
+   ✓ AppRoutes > should render WelcomePage for /welcome route 75ms
+   × AppRoutes > should render PetListPage for /pets route when feature is enabled 16ms
+     → Unable to find an element by: [data-testid="pet-list"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-labelledby[39m=[32m"welcome-heading"[39m
+    [36m>[39m
+      [36m<h1[39m
+        [33mid[39m=[32m"welcome-heading"[39m
+      [36m>[39m
+        [0mWelcome[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mAuthentication is currently disabled.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ AppRoutes > should redirect to /feature-unavailable for /pets route when feature is disabled 4ms
+   × AppRoutes > should render AddPetPage for /pets/new route 52ms
+     → Unable to find an accessible element with the role "heading" and name `/add a new pet/i`
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------textbox:
+
+  Name "Name":
+  [36m<input[39m
+    [33mclass[39m=[32m"_formInput_8341fc"[39m
+    [33mid[39m=[32m"pet-name"[39m
+    [33mname[39m=[32m"name"[39m
+    [33mrequired[39m=[32m""[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  Name "Breed":
+  [36m<input[39m
+    [33mclass[39m=[32m"_formInput_8341fc"[39m
+    [33mid[39m=[32m"pet-breed"[39m
+    [33mname[39m=[32m"breed"[39m
+    [33mrequired[39m=[32m""[39m
+    [33mvalue[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Cancel":
+  [36m<button[39m
+    [33mclass[39m=[32m"_formButton_8341fc"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "OK":
+  [36m<button[39m
+    [33mclass[39m=[32m"_formButton_8341fc _formButtonPrimary_8341fc"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"submit"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<form[39m
+      [33mclass[39m=[32m"_formRoot_8341fc"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_formGroup_8341fc"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"_formLabel_8341fc"[39m
+          [33mfor[39m=[32m"pet-name"[39m
+        [36m>[39m
+          [0mName[0m
+        [36m</label>[39m
+        [36m<input[39m
+          [33mclass[39m=[32m"_formInput_8341fc"[39m
+          [33mid[39m=[32m"pet-name"[39m
+          [33mname[39m=[32m"name"[39m
+          [33mrequired[39m=[32m""[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_formGroup_8341fc"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"_formLabel_8341fc"[39m
+          [33mfor[39m=[32m"pet-breed"[39m
+        [36m>[39m
+          [0mBreed[0m
+        [36m</label>[39m
+        [36m<input[39m
+          [33mclass[39m=[32m"_formInput_8341fc"[39m
+          [33mid[39m=[32m"pet-breed"[39m
+          [33mname[39m=[32m"breed"[39m
+          [33mrequired[39m=[32m""[39m
+          [33mvalue[39m=[32m""[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_formActions_8341fc"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"_formButton_8341fc"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mCancel[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"_formButton_8341fc _formButtonPrimary_8341fc"[39m
+          [33mdisabled[39m=[32m""[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mOK[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   × AppRoutes > should redirect to /pets for unknown routes 16ms
+     → Unable to find an element by: [data-testid="pet-list"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<main[39m
+      [33maria-labelledby[39m=[32m"welcome-heading"[39m
+    [36m>[39m
+      [36m<h1[39m
+        [33mid[39m=[32m"welcome-heading"[39m
+      [36m>[39m
+        [0mWelcome[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mAuthentication is currently disabled.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 676ms
+ ✓ src/features/petManagement/AddPetPage.test.tsx (5 tests) 90ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 62ms
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 37ms
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 48ms
+ ✓ src/hooks/usePets.test.tsx (1 test) 29ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 59ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 48ms
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/PrivateRoute.test.tsx (4 tests) 53ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 41ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 162ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 8ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 9ms
+ ✓ src/utils/id.test.tsx (2 tests) 2ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 6ms
+ ✓ src/repositories/config.test.tsx (7 tests) 2ms
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 4ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/services/petService.test.tsx (3 tests) 6ms
+ ✓ src/store/store.test.tsx (3 tests) 2ms
+
+ Test Files  2 failed | 26 passed (28)
+      Tests  4 failed | 102 passed (106)
+   Start at  12:19:28
+   Duration  3.93s (transform 1.05s, setup 2.02s, collect 8.43s, tests 2.49s, environment 14.34s, prepare 2.81s)
+
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 87ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 121ms
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 253ms
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 109ms
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 89ms
+ ✓ src/App.routing.test.tsx (1 test) 40ms
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 531ms
+ ✓ src/App.authGuard.test.tsx (2 tests) 167ms
+ ✓ src/AppRoutes.test.tsx (5 tests) 197ms
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/App.test.tsx (4 tests) 118ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/petManagement/AddPetPage.test.tsx (5 tests) 123ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 50ms
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 75ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 74ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 87ms
+ ✓ src/hooks/usePets.test.tsx (1 test) 31ms
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 25ms
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 57ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 21ms
+ ✓ src/components/common/PrivateRoute.test.tsx (4 tests) 225ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 11ms
+ ✓ src/repositories/config.test.tsx (7 tests) 4ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 7ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 8ms
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 3ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/services/petService.test.tsx (3 tests) 6ms
+ ✓ src/utils/id.test.tsx (2 tests) 2ms
+ ✓ src/store/store.test.tsx (3 tests) 3ms
+
+ Test Files  1 failed | 28 passed (29)
+      Tests  106 passed (106)
+   Start at  12:25:24
+   Duration  4.03s (transform 1.04s, setup 2.29s, collect 8.31s, tests 2.53s, environment 14.91s, prepare 2.94s)
+
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ✓ src/features/petManagement/AddPetPage.test.tsx (5 tests) 64ms
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 114ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 93ms
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 92ms
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 294ms
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 122ms
+ ✓ src/App.authGuard.test.tsx (2 tests) 119ms
+ ✓ src/AppRoutes.test.tsx (5 tests) 130ms
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 745ms
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 59ms
+ ✓ src/App.test.tsx (4 tests) 97ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 87ms
+ ✓ src/components/common/PrivateRoute.test.tsx (4 tests) 78ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 112ms
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 37ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 103ms
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 26ms
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/hooks/usePets.test.tsx (1 test) 37ms
+ ✓ src/App.routing.test.tsx (1 test) 132ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 6ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 18ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 10ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/config.test.tsx (7 tests) 3ms
+ ✓ src/services/petService.test.tsx (3 tests) 6ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/utils/id.test.tsx (2 tests) 3ms
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 5ms
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 4ms
+ ✓ src/store/store.test.tsx (3 tests) 3ms
+
+ Test Files  1 failed | 28 passed (29)
+      Tests  106 passed (106)
+   Start at  12:28:35
+   Duration  4.03s (transform 1.06s, setup 2.18s, collect 7.91s, tests 2.60s, environment 15.20s, prepare 2.86s)
+
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ❯ src/features/petManagement/AddPetPage.test.tsx (5 tests | 1 failed) 159ms
+   ✓ AddPetPage > renders the PetForm 74ms
+   × AddPetPage > submits form, adds pet to store, navigates to /pets 41ms
+     → expected "spy" to be called with arguments: [ { name: 'Rover', …(2) } ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    {[22m
+[31m+     "birthDate": undefined,[90m
+[2m      "breed": "Hound",[22m
+[32m-     "id": "test-uuid-123",[90m
+[2m      "name": "Rover",[22m
+[2m    },[22m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ AddPetPage > shows modal when cancel is clicked if dirty, then accepts and navigates 22ms
+   ✓ AddPetPage > shows modal on cancel if dirty, declines and stays on page 15ms
+   ✓ AddPetPage > navigates away immediately if cancel is clicked and not dirty 5ms
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 106ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 97ms
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 273ms
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/features/petManagement/AddPet.integration.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 91ms
+ ✓ src/App.test.tsx (4 tests) 72ms
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 556ms
+ ✓ src/App.authGuard.test.tsx (2 tests) 90ms
+ ✓ src/AppRoutes.test.tsx (5 tests) 96ms
+ ❯ src/features/petManagement/AddPet.integration.test.tsx (1 test | 1 failed) 577ms
+   × Add Pet Integration Test > should allow a user to add a new pet and see it in the list 576ms
+     → Unable to find an element with the text: Buddy. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mdata-testid[39m=[32m"loading-indicator"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m>[39m
+      [0mLoading…[0m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_headerRow_45e9db"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33maria-label[39m=[32m"Add Pet"[39m
+          [33mclass[39m=[32m"_addButton_45e9db"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mdata-testid[39m=[32m"add-pet-button"[39m
+          [33mhref[39m=[32m"/pets/new"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtitle[39m=[32m"Add Pet"[39m
+        [36m>[39m
+          [0m➕[0m
+        [36m</a>[39m
+      [36m</div>[39m
+      [36m<table[39m
+        [33mclass[39m=[32m"_tableFullWidth_45e9db"[39m
+        [33mdata-testid[39m=[32m"pet-list"[39m
+      [36m>[39m
+        [36m<thead>[39m
+          [36m<tr>[39m
+            [36m<th[39m
+              [33mclass[39m=[32m"_th_45e9db"[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mName[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mclass[39m=[32m"_th_45e9db"[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mBreed[0m
+            [36m</th>[39m
+          [36m</tr>[39m
+        [36m</thead>[39m
+        [36m<tbody />[39m
+      [36m</table>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 112ms
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 149ms
+ ✓ src/App.routing.test.tsx (1 test) 65ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 66ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 86ms
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 74ms
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/PrivateRoute.test.tsx (4 tests) 42ms
+stdout | src/features/petManagement/RoutePrefetcher.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 165ms
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 34ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 21ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 9ms
+stdout | src/hooks/usePets.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/hooks/usePets.test.tsx (1 test) 21ms
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 12ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 7ms
+ ✓ src/repositories/config.test.tsx (7 tests) 4ms
+ ✓ src/store/store.test.tsx (3 tests) 2ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 4ms
+ ✓ src/services/petService.test.tsx (3 tests) 3ms
+ ✓ src/utils/id.test.tsx (2 tests) 2ms
+
+ Test Files  2 failed | 27 passed (29)
+      Tests  2 failed | 105 passed (107)
+   Start at  13:45:24
+   Duration  5.20s (transform 1.57s, setup 3.06s, collect 13.14s, tests 2.99s, environment 19.50s, prepare 2.88s)
+
+[?1049h[>4;2m[?1h=[?2004h[?1004h[1;50r[?12h[?12l[22;2t[22;1t[27m[23m[29m[m[H[2J[?25l[50;1H"test" [New][2;1H[94m~                                                 [3;1H~                                                 [4;1H~                                                 [5;1H~                                                 [6;1H~                                                 [7;1H~                                                 [8;1H~                                                 [9;1H~                                                 [10;1H~                                                 [11;1H~                                                 [12;1H~                                                 [13;1H~                                                 [14;1H~                                                 [15;1H~                                                 [16;1H~                                                 [17;1H~                                                 [18;1H~                                                 [19;1H~                                                 [20;1H~                                                 [21;1H~                                                 [22;1H~                                                 [23;1H~                                                 [24;1H~                                                 [25;1H~                                                 [26;1H~                                                 [27;1H~                                                 [28;1H~                                                 [29;1H~                                                 [30;1H~                                                 [31;1H~                                                 [32;1H~                                                 [33;1H~                                                 [34;1H~                                                 [35;1H~                                                 [36;1H~                                                 [37;1H~                                                 [38;1H~                                                 [39;1H~                                                 [40;1H~                                                 [41;1H~                                                 [42;1H~                                                 [43;1H~                                                 [44;1H~                                                 [45;1H~                                                 [46;1H~                                                 [47;1H~                                                 [48;1H~                                                 [49;1H~                                                 [1;1H[?25h[?4m[50;1H[?2004l[>4;m[23;2t[23;1t[m[50;1H[K[50;1H[?1004l[?2004l[?1l>[?1049l[>4;m
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ❯ src/features/petManagement/AddPetPage.test.tsx (5 tests | 1 failed) 73ms
+   ✓ AddPetPage > renders the PetForm 23ms
+   × AddPetPage > submits form, adds pet to store, navigates to /pets 31ms
+     → expected "spy" to be called with arguments: [ { name: 'Rover', …(2) } ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    {[22m
+[31m+     "birthDate": undefined,[90m
+[2m      "breed": "Hound",[22m
+[32m-     "id": "test-uuid-123",[90m
+[2m      "name": "Rover",[22m
+[2m    },[22m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ AddPetPage > shows modal when cancel is clicked if dirty, then accepts and navigates 9ms
+   ✓ AddPetPage > shows modal on cancel if dirty, declines and stays on page 6ms
+   ✓ AddPetPage > navigates away immediately if cancel is clicked and not dirty 3ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/features/petManagement/AddPet.integration.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 70ms
+ ✓ src/components/common/PrivateRoute.test.tsx (4 tests) 72ms
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 285ms
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 151ms
+ ✓ src/App.test.tsx (4 tests) 92ms
+ ✓ src/AppRoutes.test.tsx (5 tests) 102ms
+ ✓ src/App.authGuard.test.tsx (2 tests) 108ms
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 631ms
+ ❯ src/features/petManagement/AddPet.integration.test.tsx (1 test | 1 failed) 524ms
+   × Add Pet Integration Test > should allow a user to add a new pet and see it in the list 522ms
+     → Unable to find an element with the text: Buddy. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mdata-testid[39m=[32m"loading-indicator"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m>[39m
+      [0mLoading…[0m
+    [36m</div>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_headerRow_45e9db"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33maria-label[39m=[32m"Add Pet"[39m
+          [33mclass[39m=[32m"_addButton_45e9db"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mdata-testid[39m=[32m"add-pet-button"[39m
+          [33mhref[39m=[32m"/pets/new"[39m
+          [33mrole[39m=[32m"button"[39m
+          [33mtitle[39m=[32m"Add Pet"[39m
+        [36m>[39m
+          [0m➕[0m
+        [36m</a>[39m
+      [36m</div>[39m
+      [36m<table[39m
+        [33mclass[39m=[32m"_tableFullWidth_45e9db"[39m
+        [33mdata-testid[39m=[32m"pet-list"[39m
+      [36m>[39m
+        [36m<thead>[39m
+          [36m<tr>[39m
+            [36m<th[39m
+              [33mclass[39m=[32m"_th_45e9db"[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mName[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mclass[39m=[32m"_th_45e9db"[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mBreed[0m
+            [36m</th>[39m
+          [36m</tr>[39m
+        [36m</thead>[39m
+        [36m<tbody />[39m
+      [36m</table>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 24ms
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 92ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 66ms
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 166ms
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 31ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 91ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 81ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 228ms
+ ✓ src/App.routing.test.tsx (1 test) 127ms
+stdout | src/features/petManagement/RoutePrefetcher.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 189ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 10ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 7ms
+ ✓ src/repositories/config.test.tsx (7 tests) 5ms
+ ✓ src/store/store.test.tsx (3 tests) 6ms
+stdout | src/hooks/usePets.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 4ms
+ ✓ src/hooks/usePets.test.tsx (1 test) 24ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 8ms
+ ✓ src/utils/id.test.tsx (2 tests) 5ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/services/petService.test.tsx (3 tests) 4ms
+
+ Test Files  2 failed | 27 passed (29)
+      Tests  2 failed | 105 passed (107)
+   Start at  13:46:56
+   Duration  4.17s (transform 924ms, setup 2.14s, collect 8.97s, tests 3.27s, environment 15.06s, prepare 3.08s)
+
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 87ms
+ ❯ src/features/petManagement/AddPetPage.test.tsx (5 tests | 1 failed) 86ms
+   ✓ AddPetPage > renders the PetForm 30ms
+   × AddPetPage > submits form, adds pet to store, navigates to /pets 21ms
+     → expected "spy" to be called with arguments: [ { name: 'Rover', …(2) } ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  [[22m
+[2m    {[22m
+[31m+     "birthDate": undefined,[90m
+[2m      "breed": "Hound",[22m
+[32m-     "id": "test-uuid-123",[90m
+[2m      "name": "Rover",[22m
+[2m    },[22m
+[2m  ][22m
+[39m[90m
+
+Number of calls: [1m1[22m
+[39m
+   ✓ AddPetPage > shows modal when cancel is clicked if dirty, then accepts and navigates 21ms
+   ✓ AddPetPage > shows modal on cancel if dirty, declines and stays on page 10ms
+   ✓ AddPetPage > navigates away immediately if cancel is clicked and not dirty 4ms
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/features/petManagement/AddPet.integration.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/PrivateRoute.test.tsx (4 tests) 58ms
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 254ms
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 94ms
+ ✓ src/App.test.tsx (4 tests) 88ms
+ ✓ src/AppRoutes.test.tsx (5 tests) 173ms
+ ✓ src/App.authGuard.test.tsx (2 tests) 178ms
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 630ms
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 210ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/App.routing.test.tsx (1 test) 50ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 54ms
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 77ms
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 209ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 25ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 53ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 173ms
+ ❯ src/features/petManagement/AddPet.integration.test.tsx (1 test | 1 failed) 1640ms
+   × Add Pet Integration Test > should allow a user to add a new pet and see it in the list 1638ms
+     → Unable to find an element by: [data-testid="pet-list"]
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"firebase-emulator-warning"[39m
+    [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+  [36m/>[39m
+  [36m<div>[39m
+    [36m<form[39m
+      [33mclass[39m=[32m"_formRoot_8341fc"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_formGroup_8341fc"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"_formLabel_8341fc"[39m
+          [33mfor[39m=[32m"pet-name"[39m
+        [36m>[39m
+          [0mName[0m
+        [36m</label>[39m
+        [36m<input[39m
+          [33mclass[39m=[32m"_formInput_8341fc"[39m
+          [33mid[39m=[32m"pet-name"[39m
+          [33mname[39m=[32m"name"[39m
+          [33mrequired[39m=[32m""[39m
+          [33mvalue[39m=[32m"Buddy"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_formGroup_8341fc"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"_formLabel_8341fc"[39m
+          [33mfor[39m=[32m"pet-breed"[39m
+        [36m>[39m
+          [0mBreed[0m
+        [36m</label>[39m
+        [36m<input[39m
+          [33mclass[39m=[32m"_formInput_8341fc"[39m
+          [33mid[39m=[32m"pet-breed"[39m
+          [33mname[39m=[32m"breed"[39m
+          [33mrequired[39m=[32m""[39m
+          [33mvalue[39m=[32m"Golden Retriever"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_formActions_8341fc"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"_formButton_8341fc"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mCancel[0m
+        [36m</button>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"_formButton_8341fc _formButtonPrimary_8341fc"[39m
+          [33mtype[39m=[32m"submit"[39m
+        [36m>[39m
+          [0mOK[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</form>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"firebase-emulator-warning"[39m
+      [33mstyle[39m=[32m"position: fixed; width: 100%; background-color: rgb(255, 255, 255); border: 0.1em solid rgb(0, 0, 0); color: rgb(181, 0, 0); bottom: 0px; left: 0px; margin: 0px; z-index: 10000; text-align: center;"[39m
+    [36m/>[39m
+    [36m<div>[39m
+      [36m<form[39m
+        [33mclass[39m=[32m"_formRoot_8341fc"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_formGroup_8341fc"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"_formLabel_8341fc"[39m
+            [33mfor[39m=[32m"pet-name"[39m
+          [36m>[39m
+            [0mName[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"_formInput_8341fc"[39m
+            [33mid[39m=[32m"pet-name"[39m
+            [33mname[39m=[32m"name"[39m
+            [33mrequired[39m=[32m""[39m
+            [33mvalue[39m=[32m"Buddy"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_formGroup_8341fc"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"_formLabel_8341fc"[39m
+            [33mfor[39m=[32m"pet-breed"[39m
+          [36m>[39m
+            [0mBreed[0m
+          [36m</label>[39m
+          [36m<input[39m
+            [33mclass[39m=[32m"_formInput_8341fc"[39m
+            [33mid[39m=[32m"pet-breed"[39m
+            [33mname[39m=[32m"breed"[39m
+            [33mrequired[39m=[32m""[39m
+            [33mvalue[39m=[32m"Golden Retriever"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_formActions_8341fc"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"_formButton_8341fc"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mCancel[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"_formButton_8341fc _formButtonPrimary_8341fc"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mOK[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+stdout | src/features/petManagement/RoutePrefetcher.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/features/petManagement/RoutePrefetcher.test.tsx (4 tests) 23ms
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 47ms
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle calls signInWithPopup and maps user
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (6 tests) 9ms
+stdout | src/hooks/usePets.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/config.test.tsx (7 tests) 8ms
+ ✓ src/hooks/usePets.test.tsx (1 test) 25ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 13ms
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 7ms
+ ✓ src/store/store.test.tsx (3 tests) 17ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/petRepository.test.tsx (3 tests) 9ms
+ ✓ src/utils/id.test.tsx (2 tests) 7ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/services/petService.test.tsx (3 tests) 8ms
+
+ Test Files  2 failed | 27 passed (29)
+      Tests  2 failed | 105 passed (107)
+   Start at  13:49:50
+   Duration  4.24s (transform 987ms, setup 1.85s, collect 8.97s, tests 4.32s, environment 14.99s, prepare 2.86s)
+

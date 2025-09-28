@@ -1,11 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PetForm } from '@features/petManagement/PetForm';
-import type { Pet } from '@features/petManagement/PetForm';
+import type { Pet } from './types';
 import { usePetsStore } from '@store/pets.store';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
 import { useTranslation } from 'react-i18next';
-import { generateId } from 'utils/id';
+
+const newPetInitialValues: Pet = {
+  id: '',
+  name: '',
+  breed: '',
+  birthDate: new Date(),
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  createdBy: '',
+  isArchived: false,
+};
 
 export default function AddPetPage() {
   const addPet = usePetsStore((state) => state.addPet);
@@ -14,9 +24,12 @@ export default function AddPetPage() {
   const [formDirty, setFormDirty] = useState(false);
   const { t } = useTranslation('common');
 
-  function handleSubmit(pet: Pet) {
-    const id = generateId();
-    addPet({ ...pet, id });
+  async function handleSubmit(pet: Pet) {
+    await addPet({
+      name: pet.name,
+      breed: pet.breed,
+      birthDate: pet.birthDate,
+    });
     navigate('/pets');
   }
 
@@ -41,7 +54,7 @@ export default function AddPetPage() {
   return (
     <>
       <PetForm
-        initialValues={{ name: '', breed: '' }}
+        initialValues={newPetInitialValues}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         onDirtyChange={setFormDirty}

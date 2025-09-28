@@ -2,19 +2,33 @@ import { describe, it, beforeEach, expect } from 'vitest';
 import { render, screen, waitFor } from '@/test-utils';
 import App from './App';
 import { useAuthStore } from '@store/auth.store';
+import { usePetsStore } from '@store/pets.store';
+
+// Mock child components with side-effects
+vi.mock('@features/authentication/AuthBootstrap', () => ({
+  default: () => null,
+}));
+vi.mock('@store/auth.store');
+vi.mock('@store/pets.store');
 
 describe('App auth route protection', () => {
+  const mockUseAuthStore = useAuthStore as vi.Mock;
+  const mockUsePetsStore = usePetsStore as vi.Mock;
+
   beforeEach(() => {
-    // default unauthenticated state
-    useAuthStore.setState({
-      user: null,
-      initializing: false,
-      error: null,
-    } as unknown as ReturnType<typeof useAuthStore.getState>);
+    vi.resetAllMocks();
+    // Prevent pet pre-fetcher from looping
+    mockUsePetsStore.mockImplementation((selector) =>
+      selector({ pets: [{ id: '1' }] })
+    );
   });
 
   it('redirects unauthenticated users to /welcome for /pets', async () => {
-    render(<App />);
+    const authStoreState = { user: null, initializing: false };
+    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+
+    render(<App />, { initialRoutes: ['/pets'] });
+
     await waitFor(() => {
       expect(
         screen.getByRole('heading', { name: /welcome/i })
@@ -23,16 +37,11 @@ describe('App auth route protection', () => {
   });
 
   it('allows authenticated users to access /pets', async () => {
-    useAuthStore.setState((prev) => ({
-      ...prev,
-      user: {
-        uid: '1',
-        displayName: 'User',
-        email: 'u@example.com',
-        photoURL: null,
-      },
-    }));
-    render(<App />);
+    const authStoreState = { user: { uid: '1' }, initializing: false };
+    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+
+    render(<App />, { initialRoutes: ['/pets'] });
+
     await waitFor(() => {
       expect(screen.getByTestId('pet-list')).toBeInTheDocument();
     });

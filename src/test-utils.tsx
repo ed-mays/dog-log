@@ -7,11 +7,13 @@ import defaultI18n from '@testUtils/test-i18n';
 import { FeatureFlagsProvider } from '@featureFlags/FeatureFlagsProvider';
 import type { FeatureFlags } from '@featureFlags/featureFlags.types';
 import type { i18n } from 'i18next';
+import { MemoryRouter } from 'react-router-dom';
 
 type AllTheProvidersProps = {
   children: React.ReactNode;
   i18nInstance?: i18n;
   featureFlags?: Partial<FeatureFlags>;
+  initialRoutes?: string[];
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -19,28 +21,38 @@ const AllTheProviders = ({
   children,
   i18nInstance,
   featureFlags,
+  initialRoutes,
 }: AllTheProvidersProps) => (
-  <FeatureFlagsProvider
-    initialFlags={{
-      petListEnabled: true,
-      addPetEnabled: true,
-      ...(featureFlags ?? {}),
-    }}
-  >
-    <I18nextProvider i18n={i18nInstance ?? defaultI18n}>
-      {children}
-    </I18nextProvider>
-  </FeatureFlagsProvider>
+  <MemoryRouter initialEntries={initialRoutes}>
+    <FeatureFlagsProvider
+      initialFlags={{
+        petListEnabled: true,
+        addPetEnabled: true,
+        authEnabled: true,
+        ...(featureFlags ?? {}),
+      }}
+    >
+      <I18nextProvider i18n={i18nInstance ?? defaultI18n}>
+        {children}
+      </I18nextProvider>
+    </FeatureFlagsProvider>
+  </MemoryRouter>
 );
 
 type CustomRenderOptions = Omit<RenderOptions, 'wrapper'> & {
   i18nInstance?: i18n;
   featureFlags?: Partial<FeatureFlags>;
+  initialRoutes?: string[];
 };
 
 const customRender = (
   ui: ReactElement,
-  { i18nInstance, featureFlags, ...options }: CustomRenderOptions = {}
+  {
+    i18nInstance,
+    featureFlags,
+    initialRoutes,
+    ...options
+  }: CustomRenderOptions = {}
 ) =>
   render(ui, {
     wrapper: (props) => (
@@ -48,6 +60,7 @@ const customRender = (
         {...props}
         i18nInstance={i18nInstance}
         featureFlags={featureFlags}
+        initialRoutes={initialRoutes}
       />
     ),
     ...options,

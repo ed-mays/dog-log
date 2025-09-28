@@ -2,8 +2,8 @@ import { BaseRepository } from './base/BaseRepository';
 import type {
   Pet,
   PetCreateInput,
-  PetUpdateInput,
   PetQueryOptions,
+  PetUpdateInput,
 } from '@features/petManagement/types';
 import { COLLECTIONS } from './config';
 
@@ -24,7 +24,7 @@ export class PetRepository extends BaseRepository<Pet> {
 
   async createPet(input: PetCreateInput) {
     // Transforms input and delegates to BaseRepository.create
-    return this.create(input);
+    return this.create({ ...input, isArchived: false });
   }
 
   async updatePet(id: string, updates: PetUpdateInput) {

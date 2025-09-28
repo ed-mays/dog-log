@@ -6,14 +6,17 @@ import './i18n';
 import { FeatureFlagsProvider } from './featureFlags/FeatureFlagsProvider';
 import { ErrorBoundary } from '@components/common/ErrorBoundary/ErrorBoundary';
 import AuthBootstrap from '@features/authentication/AuthBootstrap';
+import { BrowserRouter } from 'react-router-dom';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <FeatureFlagsProvider>
-      <ErrorBoundary>
-        <AuthBootstrap />
-        <App />
-      </ErrorBoundary>
-    </FeatureFlagsProvider>
+    <BrowserRouter>
+      <FeatureFlagsProvider>
+        <ErrorBoundary>
+          <AuthBootstrap />
+          <App />
+        </ErrorBoundary>
+      </FeatureFlagsProvider>
+    </BrowserRouter>
   </StrictMode>
 );

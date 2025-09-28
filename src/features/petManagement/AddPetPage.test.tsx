@@ -1,23 +1,16 @@
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import type { Pet } from '@features/petManagement/PetForm';
+import type { Pet, PetCreateInput } from '@features/petManagement/types';
 import AddPetPage from './AddPetPage';
 import { render } from '@/test-utils';
 
-// ---- Typed Zustand Store Mock ----
-type AddPet = (pet: Pet) => void;
-interface PetsStoreState {
-  addPet: AddPet;
-}
+const addPetMock = vi.fn<[PetCreateInput], Promise<void>>(() => Promise.resolve());
 
-// Always use the vi.fn mock directly
-const addPetMock: AddPet = vi.fn();
 vi.mock('@store/pets.store', () => ({
-  usePetsStore: (selector: (state: PetsStoreState) => unknown) =>
+  usePetsStore: (selector: (state: { addPet: typeof addPetMock }) => unknown) =>
     selector({ addPet: addPetMock }),
 }));
 
-// ---- Router useNavigate Mock ----
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
   const actual = await importOriginal<{ [key: string]: unknown }>();
@@ -27,7 +20,8 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-// ---- PetForm and ConfirmModal mocks ----
+const testBirthDate = new Date('2023-01-01T00:00:00.000Z');
+
 vi.mock('@features/petManagement/PetForm', () => ({
   PetForm: (props: {
     onSubmit: (pet: Pet) => void;
@@ -38,7 +32,11 @@ vi.mock('@features/petManagement/PetForm', () => ({
       <button
         onClick={() => {
           props.onDirtyChange?.(true);
-          props.onSubmit({ name: 'Rover', breed: 'Hound' });
+          props.onSubmit({
+            name: 'Rover',
+            breed: 'Hound',
+            birthDate: testBirthDate,
+          } as Pet);
         }}
       >
         OK
@@ -65,7 +63,6 @@ vi.mock('@components/common/ConfirmModal/ConfirmModal', () => ({
   ),
 }));
 
-// ---- Test Suite ----
 describe('AddPetPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -77,33 +74,21 @@ describe('AddPetPage', () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
-  it('submits form, adds pet to store, navigates to /pets', () => {
-    const originalDescriptor = Object.getOwnPropertyDescriptor(
-      globalThis,
-      'crypto'
-    );
-    // Provide deterministic UUID for the test
-    Object.defineProperty(globalThis, 'crypto', {
-      value: { randomUUID: () => 'test-uuid-123' },
-      configurable: true,
-    });
-
+  it('submits form, adds pet to store, navigates to /pets', async () => {
     render(<AddPetPage />);
     fireEvent.click(screen.getByText('OK'));
-    expect(addPetMock).toHaveBeenCalledWith({
-      name: 'Rover',
-      breed: 'Hound',
-      id: 'test-uuid-123',
-    });
-    expect(mockNavigate).toHaveBeenCalledWith('/pets');
 
-    // restore
-    if (originalDescriptor) {
-      Object.defineProperty(globalThis, 'crypto', originalDescriptor);
-    } else {
-      // Cleanup if there was no crypto before
-      delete (globalThis as unknown as { crypto?: unknown }).crypto;
-    }
+    await waitFor(() => {
+      expect(addPetMock).toHaveBeenCalledWith({
+        name: 'Rover',
+        breed: 'Hound',
+        birthDate: testBirthDate,
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/pets');
+    });
   });
 
   it('shows modal when cancel is clicked if dirty, then accepts and navigates', () => {
@@ -125,7 +110,6 @@ describe('AddPetPage', () => {
   });
 
   it('navigates away immediately if cancel is clicked and not dirty', () => {
-    // Remock PetForm for this test: setDirty not called, so not dirty
     vi.doMock('@features/petManagement/PetForm', () => ({
       PetForm: (props: { onCancel: () => void }) => (
         <div>

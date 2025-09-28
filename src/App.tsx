@@ -1,10 +1,8 @@
 import './App.css';
-import React from 'react';
 import { useFeatureFlag } from './featureFlags/useFeatureFlag';
 import { useUiStore } from '@store/ui.store';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
-import { BrowserRouter } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from './utils/errors';
 import LogoutButton from '@components/common/Auth/LogoutButton';
@@ -26,7 +24,7 @@ function App() {
     ? `${errorTextBase} ${String(errorDetail)}`
     : errorTextBase;
   return (
-    <BrowserRouter>
+    <>
       <RoutePrefetcher />
       {user && authEnabled && (
         <header aria-label="user-controls">
@@ -36,7 +34,7 @@ function App() {
       {appLoading && <LoadingIndicator />}
       {errorDetail && <ErrorIndicator text={errorText} />}
       <AppRoutes />
-    </BrowserRouter>
+    </>
   );
 }
 
