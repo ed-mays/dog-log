@@ -4,6 +4,30 @@ import App from '@/App';
 import { afterEach, vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { useAuthStore } from '@store/auth.store';
+import {
+  initializeTestEnvironment,
+  RulesTestEnvironment,
+} from '@firebase/rules-unit-testing';
+
+let testEnv: RulesTestEnvironment;
+
+beforeAll(async () => {
+  testEnv = await initializeTestEnvironment({
+    projectId: 'dog-log-5d198',
+    firestore: {
+      host: 'localhost',
+      port: 8080,
+    },
+  });
+});
+
+afterEach(async () => {
+  await testEnv.clearFirestore();
+});
+
+afterAll(async () => {
+  await testEnv.cleanup();
+});
 
 // Mock child components with side-effects to isolate the test
 vi.mock('@features/authentication/AuthBootstrap', () => ({
