@@ -20,10 +20,10 @@ This initial step aligns the data access layer with the new user-scoped Firestor
 
 With the repository now requiring a `userId`, the `pets.store` must be updated to supply it. The store will now depend on the `auth.store` to get the current user's ID before performing any data operations.
 
--   [ ] **Task 2.1:** Modify the `fetchPets` and `addPet` actions within the `usePetsStore` Zustand store.
--   [ ] **Task 2.2:** Inside these actions, retrieve the current user's ID from the `useAuthStore`.
--   [ ] **Task 2.3:** Add logic to prevent data operations if no user is authenticated. For example, `fetchPets` should do nothing, and `addPet` should throw an error or fail silently.
--   [ ] **Task 2.4:** Update the tests for `pets.store` to mock an authenticated user state in `useAuthStore` to ensure the store's actions function correctly when a user is logged in.
+-   :white_check_mark: **Task 2.1:** Modify the `fetchPets` and `addPet` actions within the `usePetsStore` Zustand store.
+-   :white_check_mark: **Task 2.2:** Inside these actions, retrieve the current user's ID from the `useAuthStore`.
+-   :white_check_mark: **Task 2.3:** Add logic to prevent data operations if no user is authenticated. For example, `fetchPets` should do nothing, and `addPet` should throw an error or fail silently.
+-   :white_check_mark: **Task 2.4:** Update the tests for `pets.store` to mock an authenticated user state in `useAuthStore` to ensure the store's actions function correctly when a user is logged in.
 
 ### Step 3: Implement Conditional Rendering in `App.tsx` and Update `PrivateRoute`
 
