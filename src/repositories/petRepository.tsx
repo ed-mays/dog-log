@@ -1,4 +1,4 @@
-import { BaseRepository } from './base/BaseRepository';
+import { ArchivableBaseRepository } from './base/BaseRepository';
 import type {
   Pet,
   PetCreateInput,
@@ -7,33 +7,33 @@ import type {
 } from '@features/petManagement/types';
 import { COLLECTIONS } from './config';
 
-export class PetRepository extends BaseRepository<Pet> {
+export class PetRepository extends ArchivableBaseRepository<Pet> {
   constructor() {
     super(COLLECTIONS.PETS);
   }
 
-  async getActivePets(options: PetQueryOptions = {}) {
+  async getActivePets(userId: string, options: PetQueryOptions = {}) {
     // All pets with isArchived === false
-    return this.getList({ ...options, filters: { isArchived: false } });
+    return this.getActiveList(userId, options);
   }
 
-  async getArchivedPets(options: PetQueryOptions = {}) {
+  async getArchivedPets(userId: string, options: PetQueryOptions = {}) {
     // All pets with isArchived === true
-    return this.getList({ ...options, filters: { isArchived: true } });
+    return this.getArchivedList(userId, options);
   }
 
-  async createPet(input: PetCreateInput) {
+  async createPet(userId: string, input: PetCreateInput) {
     // Transforms input and delegates to BaseRepository.create
-    return this.create({ ...input, isArchived: false });
+    return this.create(userId, { ...input, isArchived: false });
   }
 
-  async updatePet(id: string, updates: PetUpdateInput) {
+  async updatePet(userId: string, id: string, updates: PetUpdateInput) {
     // Transforms updates and delegates to BaseRepository.update
-    return this.update(id, updates);
+    return this.update(userId, id, updates);
   }
 
-  async archivePet(id: string) {
+  async archivePet(userId: string, id: string) {
     // Set isArchived to true
-    return this.update(id, { isArchived: true, archivedAt: new Date() });
+    return this.archive(userId, id);
   }
 }

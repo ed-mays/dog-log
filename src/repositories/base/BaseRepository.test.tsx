@@ -175,17 +175,17 @@ describe('ArchivableBaseRepository', () => {
         name: 'Test Pet',
         isArchived: true,
         archivedAt: new Date(),
-        archivedBy: 'current-user-id',
+        archivedBy: 'test-user-id',
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: 'user-id',
         description: 'description',
       });
-      await repository.archive('test-id');
-      expect(updateSpy).toHaveBeenCalledWith('test-id', {
+      await repository.archive('test-user-id', 'test-id');
+      expect(updateSpy).toHaveBeenCalledWith('test-user-id', 'test-id', {
         isArchived: true,
         archivedAt: expect.any(Date),
-        archivedBy: 'current-user-id',
+        archivedBy: 'test-user-id',
       });
     });
   });

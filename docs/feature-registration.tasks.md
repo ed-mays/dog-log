@@ -11,10 +11,10 @@ This plan outlines the tasks required to implement user registration and refacto
 
 This initial step aligns the data access layer with the new user-scoped Firestore structure (`users/{userId}/pets/{petId}`). All data operations will now require a user's ID, which is a foundational change for securing data.
 
--   [ ] **Task 1.1:** Update all methods in the `PetRepository` class (e.g., `getActivePets`, `createPet`) to accept a `userId` string as a new first argument.
--   [ ] **Task 1.2:** Modify the internal logic of the `PetRepository` methods to construct Firestore collection paths that include the provided `userId`, targeting `users/{userId}/pets`.
--   [ ] **Task 1.3:** Update the `createdBy` field in the `createPet` method to use the `userId` instead of a placeholder value.
--   [ ] **Task 1.4:** Revise the unit tests for `PetRepository` to pass a mock `userId` to the updated methods and assert that the correct user-specific collection paths are being accessed.
+-   :white_check_mark: **Task 1.1:** Update all methods in the `PetRepository` class (e.g., `getActivePets`, `createPet`) to accept a `userId` string as a new first argument.
+-   :white_check_mark: **Task 1.2:** Modify the internal logic of the `PetRepository` methods to construct Firestore collection paths that include the provided `userId`, targeting `users/{userId}/pets`.
+-   :white_check_mark: **Task 1.3:** Update the `createdBy` field in the `createPet` method to use the `userId` instead of a placeholder value.
+-   :white_check_mark: **Task 1.4:** Revise the unit tests for `PetRepository` to pass a mock `userId` to the updated methods and assert that the correct user-specific collection paths are being accessed.
 
 ### Step 2: Update `pets.store` to be Auth-Aware
 
