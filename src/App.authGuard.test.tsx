@@ -18,14 +18,17 @@ describe('App auth route protection', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // Prevent pet pre-fetcher from looping
+    const petsState = { pets: [{ id: '1' }] };
     mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [{ id: '1' }] })
+      selector ? selector(petsState) : petsState
     );
   });
 
   it('redirects unauthenticated users to /welcome for /pets', async () => {
     const authStoreState = { user: null, initializing: false };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+    mockUseAuthStore.mockImplementation((selector) =>
+      selector ? selector(authStoreState) : authStoreState
+    );
 
     render(<App />, { initialRoutes: ['/pets'] });
 
@@ -38,7 +41,9 @@ describe('App auth route protection', () => {
 
   it('allows authenticated users to access /pets', async () => {
     const authStoreState = { user: { uid: '1' }, initializing: false };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+    mockUseAuthStore.mockImplementation((selector) =>
+      selector ? selector(authStoreState) : authStoreState
+    );
 
     render(<App />, { initialRoutes: ['/pets'] });
 

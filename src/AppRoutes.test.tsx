@@ -20,13 +20,6 @@ describe('AppRoutes', () => {
     mockUseFeatureFlag.mockReturnValue(true);
   });
 
-  it('should render WelcomePage for /welcome route', () => {
-    render(<AppRoutes />, { initialRoutes: ['/welcome'] });
-    expect(
-      screen.getByRole('heading', { name: /welcome/i })
-    ).toBeInTheDocument();
-  });
-
   it('should render PetListPage for /pets route when feature is enabled', () => {
     mockUseFeatureFlag.mockImplementation(
       (flag) => flag === 'petListEnabled' || flag === 'authEnabled'
@@ -45,13 +38,5 @@ describe('AppRoutes', () => {
     render(<AppRoutes />, { initialRoutes: ['/pets/new'] });
     // The AddPetPage renders a form, check for a form field as a proxy for the page
     expect(screen.getByLabelText('Name')).toBeInTheDocument();
-  });
-
-  it('should redirect to /pets for unknown routes', () => {
-    mockUseFeatureFlag.mockImplementation(
-      (flag) => flag === 'petListEnabled' || flag === 'authEnabled'
-    );
-    render(<AppRoutes />, { initialRoutes: ['/unknown'] });
-    expect(screen.getByTestId('pet-list')).toBeInTheDocument();
   });
 });

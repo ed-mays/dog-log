@@ -1,5 +1,4 @@
 import { render, screen } from '@/test-utils';
-import { Routes, Route } from 'react-router-dom';
 import { PrivateRoute } from './PrivateRoute';
 import { useAuthStore } from '@store/auth.store';
 import { useFeatureFlag } from '../../featureFlags/useFeatureFlag';
@@ -17,32 +16,10 @@ describe('PrivateRoute', () => {
     vi.resetAllMocks();
   });
 
-  it('should redirect to /welcome if auth is not enabled', () => {
+  it('should render children if auth is not enabled', () => {
     mockUseFeatureFlag.mockReturnValue(false);
-    const authStoreState = { initializing: false, user: { uid: 'test' } };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
-
-    render(
-      <Routes>
-        <Route
-          path="/private"
-          element={
-            <PrivateRoute>
-              <div>Private Content</div>
-            </PrivateRoute>
-          }
-        />
-        <Route path="/welcome" element={<div>Welcome Page</div>} />
-      </Routes>,
-      { initialRoutes: ['/private'] }
-    );
-
-    expect(screen.getByText('Welcome Page')).toBeInTheDocument();
-  });
-
-  it('should render loading indicator while initializing', () => {
-    mockUseFeatureFlag.mockReturnValue(true);
-    const authStoreState = { initializing: true, user: null };
+    // user state shouldn't matter
+    const authStoreState = { user: null };
     mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
 
     render(
@@ -51,35 +28,26 @@ describe('PrivateRoute', () => {
       </PrivateRoute>
     );
 
-    expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
+    expect(screen.getByText('Private Content')).toBeInTheDocument();
   });
 
-  it('should redirect to /welcome if user is not authenticated', () => {
+  it('should render null if auth is enabled and user is not authenticated', () => {
     mockUseFeatureFlag.mockReturnValue(true);
-    const authStoreState = { initializing: false, user: null };
+    const authStoreState = { user: null };
     mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
 
-    render(
-      <Routes>
-        <Route
-          path="/private"
-          element={
-            <PrivateRoute>
-              <div>Private Content</div>
-            </PrivateRoute>
-          }
-        />
-        <Route path="/welcome" element={<div>Welcome Page</div>} />
-      </Routes>,
-      { initialRoutes: ['/private'] }
+    const { container } = render(
+      <PrivateRoute>
+        <div>Private Content</div>
+      </PrivateRoute>
     );
 
-    expect(screen.getByText('Welcome Page')).toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('should render children if user is authenticated', () => {
+  it('should render children if auth is enabled and user is authenticated', () => {
     mockUseFeatureFlag.mockReturnValue(true);
-    const authStoreState = { initializing: false, user: { uid: 'test' } };
+    const authStoreState = { user: { uid: 'test' } };
     mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
 
     render(

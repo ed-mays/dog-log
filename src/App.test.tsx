@@ -25,14 +25,17 @@ describe('App', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // Setup default mocks for each test
+    const authState = { user: { uid: 'test' }, initializing: false, error: null };
     mockUseAuthStore.mockImplementation((selector) =>
-      selector({ user: { uid: 'test' }, initializing: false, error: null })
+      selector ? selector(authState) : authState
     );
+    const petsState = { pets: [], fetchPets: fetchPetsSpy };
     mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [], fetchPets: fetchPetsSpy })
+      selector ? selector(petsState) : petsState
     );
+    const uiState = { loading: false, error: null };
     mockUseUiStore.mockImplementation((selector) =>
-      selector({ loading: false, error: null })
+      selector ? selector(uiState) : uiState
     );
   });
 
@@ -41,8 +44,9 @@ describe('App', () => {
   }
 
   test('renders loading state', async () => {
+    const loadingState = { loading: true, error: null };
     mockUseUiStore.mockImplementation((selector) =>
-      selector({ loading: true, error: null })
+      selector ? selector(loadingState) : loadingState
     );
     renderComponent();
     await waitFor(() => {
@@ -51,8 +55,9 @@ describe('App', () => {
   });
 
   test('renders error state', async () => {
+    const errorState = { loading: false, error: new Error('Boom') };
     mockUseUiStore.mockImplementation((selector) =>
-      selector({ loading: false, error: new Error('Boom') })
+      selector ? selector(errorState) : errorState
     );
     renderComponent();
     await waitFor(() => {
@@ -64,14 +69,15 @@ describe('App', () => {
   });
 
   test('renders pet list', async () => {
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({
+    const petsState = {
         pets: [
           { id: '1', name: 'Fido', breed: 'Labrador' },
           { id: '2', name: 'Bella', breed: 'Beagle' },
         ],
         fetchPets: fetchPetsSpy,
-      })
+      };
+    mockUsePetsStore.mockImplementation((selector) =>
+      selector ? selector(petsState) : petsState
     );
     renderComponent();
     await waitFor(() => {

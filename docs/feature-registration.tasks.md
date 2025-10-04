@@ -29,14 +29,14 @@ With the repository now requiring a `userId`, the `pets.store` must be updated t
 
 This step implements the core user-facing authentication flow. `App.tsx` will now serve as the main entry point, conditionally rendering either the login UI for unauthenticated users or the main application routes for authenticated users.
 
--   [ ] **Task 3.1:** Modify `App.tsx` to retrieve the current `user` and `initializing` status from the `useAuthStore`.
--   [ ] **Task 3.2:** Implement conditional rendering logic within `App.tsx`:
+-   :white_check_mark: **Task 3.1:** Modify `App.tsx` to retrieve the current `user` and `initializing` status from the `useAuthStore`.
+-   :white_check_mark: **Task 3.2:** Implement conditional rendering logic within `App.tsx`:
     -   If `initializing` is true, display the `LoadingIndicator`.
     -   If a `user` is present, render the main application content, including the `AppRoutes` and the `LogoutButton`.
     -   If there is no `user` and `initializing` is false, render a "welcome" or "sign-in" UI that includes the `LoginButton`.
--   [ ] **Task 3.3:** Update the `PrivateRoute` component's logic. Instead of redirecting to `/welcome`, it should now render its `children` only if `authEnabled` is off. This simplifies its role, as `App.tsx` now handles the primary auth gate.
--   [ ] **Task 3.4:** Remove the `/welcome` route from `AppRoutes.tsx` as it is no longer needed.
--   [ ] **Task 3.5:** Update or create tests for `App.tsx` to verify that it correctly displays the loading state, the login UI for unauthenticated users, and the main app content for authenticated users.
+-   :white_check_mark: **Task 3.3:** Update the `PrivateRoute` component's logic. Instead of redirecting to `/welcome`, it should now render its `children` only if `authEnabled` is off. This simplifies its role, as `App.tsx` now handles the primary auth gate.
+-   :white_check_mark: **Task 3.4:** Remove the `/welcome` route from `AppRoutes.tsx` as it is no longer needed.
+-   :white_check_mark: **Task 3.5:** Update or create tests for `App.tsx` to verify that it correctly displays the loading state, the login UI for unauthenticated users, and the main app content for authenticated users.
 
 ### Step 4: Update Integration Tests
 

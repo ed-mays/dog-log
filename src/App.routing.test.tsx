@@ -19,17 +19,19 @@ describe('Routing and navigation hygiene', () => {
     vi.resetAllMocks();
     i18n.changeLanguage('en');
     // Provide default mocks for stores to prevent side-effects
-    mockUseAuthStore.mockImplementation((selector) =>
-      selector({ user: null, initializing: false })
-    );
+    mockUseAuthStore.mockReturnValue({ user: null, initializing: false });
     mockUsePetsStore.mockImplementation((selector) =>
       selector({ pets: [], fetchPets: vi.fn() })
     );
   });
 
   it('shows a localized feature-unavailable screen when pet list is disabled', async () => {
+    mockUseAuthStore.mockReturnValue({
+      user: { uid: 'test-user' },
+      initializing: false,
+    });
     render(<App />, {
-      featureFlags: { petListEnabled: false },
+      featureFlags: { petListEnabled: false, authEnabled: true },
       i18nInstance: i18n,
       initialRoutes: ['/pets'],
     });
