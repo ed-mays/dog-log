@@ -11,9 +11,10 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "vitest run --exclude '**/*.integration.test.tsx'",
+    "test:integration": "vitest run '**/*.integration.test.tsx'",
     "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
+    "test:watch": "vitest --exclude '**/*.integration.test.tsx'",
     "start:firebase": "firebase emulators:start"
   },
   "dependencies": {

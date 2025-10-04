@@ -198,10 +198,12 @@ export abstract class BaseRepository<T extends BaseEntity>
   /**
    * Create a new entity
    */
-  async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
+  async create(
+    entityData: Omit<T, keyof BaseEntity>,
+    userId: string = 'current-user-id'
+  ): Promise<T> {
     try {
       const now = new Date();
-      const userId = 'current-user-id'; // TODO: Get from auth context
 
       const newEntity = {
         ...entityData,

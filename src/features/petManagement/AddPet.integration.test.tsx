@@ -1,15 +1,19 @@
 import { render, screen, waitFor } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import App from '@/App';
-import { afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { useAuthStore } from '@store/auth.store';
 import {
   initializeTestEnvironment,
   RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
+import { collection, deleteDoc, getDocs } from 'firebase/firestore';
+
+const firebaseCollectionName = 'pet-integration-tests';
 
 let testEnv: RulesTestEnvironment;
+let db;
 
 beforeAll(async () => {
   testEnv = await initializeTestEnvironment({
@@ -21,13 +25,21 @@ beforeAll(async () => {
   });
 });
 
-afterEach(async () => {
-  await testEnv.clearFirestore();
+beforeEach(async () => {
+  db = testEnv.authenticatedContext('test').firestore();
 });
 
 afterAll(async () => {
-  await testEnv.cleanup();
+  //await testEnv.cleanup();
 });
+
+async function clearIntegrationTestDogs(db) {
+  const colRef = collection(db, firebaseCollectionName);
+  const snapshot = await getDocs(colRef);
+  for (const dog of snapshot.docs) {
+    await deleteDoc(dog.ref);
+  }
+}
 
 // Mock child components with side-effects to isolate the test
 vi.mock('@features/authentication/AuthBootstrap', () => ({
@@ -37,16 +49,16 @@ vi.mock('@store/auth.store');
 
 describe('Add Pet Integration Test', () => {
   const mockUseAuthStore = useAuthStore as vi.Mock;
-
   beforeEach(() => {
     vi.resetAllMocks();
     // Provide a default authenticated user for the test
     const authStoreState = { initializing: false, user: { uid: 'test' } };
     mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+    //db = testEnv.authenticatedContext('test').firestore();
   });
 
-  afterEach(() => {
-    // TODO: Reset firestore
+  afterEach(async () => {
+    await clearIntegrationTestDogs(db);
   });
 
   it('should allow a user to add a new pet and see it in the list', async () => {
