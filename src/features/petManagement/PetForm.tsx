@@ -5,7 +5,7 @@ import type { Pet } from './types';
 
 interface PetFormProps {
   initialValues: Pet;
-  onSubmit: (pet: Pet) => void;
+  onSubmit: (pet: Pet) => void | Promise<void>;
   onCancel: () => void;
   onDirtyChange?: (dirty: boolean) => void;
   value?: Pet; // controlled current value (optional)
@@ -44,9 +44,9 @@ export function PetForm({
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (isValid) onSubmit(pet);
+    if (isValid) await onSubmit(pet);
   }
 
   return (

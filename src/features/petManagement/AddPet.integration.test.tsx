@@ -10,7 +10,7 @@ import {
 } from '@firebase/rules-unit-testing';
 import { collection, deleteDoc, getDocs } from 'firebase/firestore';
 
-const firebaseCollectionName = 'pet-integration-tests';
+const TEST_USER_ID = 'test';
 
 let testEnv: RulesTestEnvironment;
 let db;
@@ -26,18 +26,18 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  db = testEnv.authenticatedContext('test').firestore();
+  db = testEnv.authenticatedContext(TEST_USER_ID).firestore();
 });
 
 afterAll(async () => {
   //await testEnv.cleanup();
 });
 
-async function clearIntegrationTestDogs(db) {
-  const colRef = collection(db, firebaseCollectionName);
+async function clearUserPets(db) {
+  const colRef = collection(db, `users/${TEST_USER_ID}/pets`);
   const snapshot = await getDocs(colRef);
-  for (const dog of snapshot.docs) {
-    await deleteDoc(dog.ref);
+  for (const doc of snapshot.docs) {
+    await deleteDoc(doc.ref);
   }
 }
 
@@ -52,13 +52,15 @@ describe('Add Pet Integration Test', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // Provide a default authenticated user for the test
-    const authStoreState = { initializing: false, user: { uid: 'test' } };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
-    //db = testEnv.authenticatedContext('test').firestore();
+    const authStoreState = { initializing: false, user: { uid: TEST_USER_ID } };
+    mockUseAuthStore.mockImplementation((selector) =>
+      selector ? selector(authStoreState) : authStoreState
+    );
+    (useAuthStore as any).getState = () => authStoreState;
   });
 
   afterEach(async () => {
-    await clearIntegrationTestDogs(db);
+    await clearUserPets(db);
   });
 
   it('should allow a user to add a new pet and see it in the list', async () => {

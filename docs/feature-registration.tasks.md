@@ -42,7 +42,7 @@ This step implements the core user-facing authentication flow. `App.tsx` will no
 
 The final step is to update the end-to-end tests to reflect the new, complete authentication and data management flow. The "Add Pet" integration test will be updated to validate that a signed-in user can create a pet and that the data is correctly stored and retrieved for their session.
 
--   [ ] **Task 4.1:** Modify `AddPet.integration.test.tsx` to remove mocks for `PetRepository` and `pets.store`, allowing it to interact with the real implementations and the Firebase emulator.
--   [ ] **Task 4.2:** Ensure the test correctly simulates the full user flow: navigating to the add pet page, filling out the form, submitting it, and verifying that the new pet appears on the pet list for the authenticated user.
--   [ ] **Task 4.3:** Confirm that the test environment for Firebase is correctly configured to handle writes to the new user-scoped collection path (`users/{userId}/pets`).
--   [ ] **Task 4.4:** Update the test's cleanup logic to clear data from the user-specific subcollection in the Firestore emulator after each test run.
+-   :white_check_mark: **Task 4.1:** Modify `AddPet.integration.test.tsx` to remove mocks for `PetRepository` and `pets.store`, allowing it to interact with the real implementations and the Firebase emulator.
+-   :white_check_mark: **Task 4.2:** Ensure the test correctly simulates the full user flow: navigating to the add pet page, filling out the form, submitting it, and verifying that the new pet appears on the pet list for the authenticated user.
+-   :white_check_mark: **Task 4.3:** Confirm that the test environment for Firebase is correctly configured to handle writes to the new user-scoped collection path (`users/{userId}/pets`).
+-   :white_check_mark: **Task 4.4:** Update the test's cleanup logic to clear data from the user-specific subcollection in the Firestore emulator after each test run.
