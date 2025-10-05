@@ -6,7 +6,6 @@ import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator
 import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from './utils/errors';
 import LogoutButton from '@components/common/Auth/LogoutButton';
-import LoginButton from '@components/common/Auth/LoginButton';
 import { useAuthStore } from '@store/auth.store';
 import { RoutePrefetcher } from './features/petManagement/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
@@ -27,16 +26,6 @@ function App() {
 
   if (initializing && authEnabled) {
     return <LoadingIndicator />;
-  }
-
-  if (!user && authEnabled) {
-    return (
-      <div className="welcome-container">
-        <h1>{t('welcome.title', 'Welcome to Dog Log!')}</h1>
-        <p>{t('welcome.message', 'Please sign in to continue.')}</p>
-        <LoginButton />
-      </div>
-    );
   }
 
   return (

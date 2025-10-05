@@ -15,7 +15,9 @@ describe('AppRoutes', () => {
     vi.resetAllMocks();
     // Provide a default authenticated user for protected routes
     const authStoreState = { initializing: false, user: { uid: 'test' } };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+    mockUseAuthStore.mockImplementation((selector) =>
+      selector ? selector(authStoreState) : authStoreState
+    );
     // Default all feature flags to true for simplicity, tests can override
     mockUseFeatureFlag.mockReturnValue(true);
   });
