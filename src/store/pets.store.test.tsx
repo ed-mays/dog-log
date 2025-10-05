@@ -10,7 +10,11 @@ vi.mock('@repositories/petRepository');
 vi.mock('./auth.store');
 
 describe('usePetsStore', () => {
-  const mockUser = { uid: 'test-user-id', email: 'test@example.com', displayName: 'Test User' };
+  const mockUser = {
+    uid: 'test-user-id',
+    email: 'test@example.com',
+    displayName: 'Test User',
+  };
 
   beforeEach(() => {
     // Reset the store state before each test
@@ -31,11 +35,13 @@ describe('usePetsStore', () => {
     it('should fetch pets if user is authenticated', async () => {
       (useAuthStore.getState as vi.Mock).mockReturnValue({ user: mockUser });
       const mockPets = [{ id: '1', name: 'Fido' }];
-      (PetRepository.prototype.getActivePets as vi.Mock).mockResolvedValue(mockPets);
+      (PetRepository.prototype.getActivePets as vi.Mock).mockResolvedValue(
+        mockPets
+      );
 
       await usePetsStore.getState().fetchPets();
 
-      expect(PetRepository.prototype.getActivePets).toHaveBeenCalledWith(mockUser.uid);
+      expect(PetRepository.prototype.getActivePets).toHaveBeenCalledWith();
       expect(usePetsStore.getState().pets).toEqual(mockPets);
       expect(usePetsStore.getState().isFetching).toBe(false);
     });
@@ -47,18 +53,22 @@ describe('usePetsStore', () => {
     it('should throw an error if user is not authenticated', async () => {
       (useAuthStore.getState as vi.Mock).mockReturnValue({ user: null });
 
-      await expect(usePetsStore.getState().addPet(newPetInput)).rejects.toThrow('User is not authenticated.');
+      await expect(usePetsStore.getState().addPet(newPetInput)).rejects.toThrow(
+        'User is not authenticated.'
+      );
       expect(PetRepository.prototype.createPet).not.toHaveBeenCalled();
     });
 
     it('should add a pet if user is authenticated', async () => {
       (useAuthStore.getState as vi.Mock).mockReturnValue({ user: mockUser });
-      const newPet = { id: '2', ...newPetInput };
+      const newPet = { id: 'new id', ...newPetInput };
       (PetRepository.prototype.createPet as vi.Mock).mockResolvedValue(newPet);
 
       await usePetsStore.getState().addPet(newPetInput);
 
-      expect(PetRepository.prototype.createPet).toHaveBeenCalledWith(mockUser.uid, newPetInput);
+      expect(PetRepository.prototype.createPet).toHaveBeenCalledWith(
+        newPetInput
+      );
       expect(usePetsStore.getState().pets).toContainEqual(newPet);
     });
   });

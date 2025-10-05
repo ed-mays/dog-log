@@ -17,7 +17,9 @@ const mockUser: User = {
 
 vi.mock('./base/BaseRepository', () => {
   class MockBaseRepository {
-    get = vi.fn(async (id: string) => (id === mockUser.id ? mockUser : undefined));
+    getById = vi.fn(async (id: string) =>
+      id === mockUser.id ? mockUser : undefined
+    );
     create = vi.fn(async (user: User) => {
       if (user.id === 'existing') {
         throw new Error('Document already exists');
@@ -36,15 +38,15 @@ describe('UserRepository', () => {
   });
 
   it('should get a user by id', async () => {
-    const user = await userRepository.get('123');
+    const user = await userRepository.getById('123');
     expect(user).toEqual(mockUser);
-    expect(userRepository.get).toHaveBeenCalledWith('123');
+    expect(userRepository.getById).toHaveBeenCalledWith('123');
   });
 
   it('should return undefined for a non-existent user', async () => {
-    const user = await userRepository.get('456');
+    const user = await userRepository.getById('456');
     expect(user).toBeUndefined();
-    expect(userRepository.get).toHaveBeenCalledWith('456');
+    expect(userRepository.getById).toHaveBeenCalledWith('456');
   });
 
   it('should create a new user', async () => {
@@ -54,7 +56,7 @@ describe('UserRepository', () => {
       email: 'new@example.com',
       photoURL: null,
     };
-    await userRepository.create(newUser);
-    expect(userRepository.create).toHaveBeenCalledWith(newUser);
+    await userRepository.create(newUser.id, newUser);
+    expect(userRepository.create).toHaveBeenCalledWith(newUser.id, newUser);
   });
 });

@@ -12,28 +12,28 @@ export class PetRepository extends ArchivableBaseRepository<Pet> {
     super(COLLECTIONS.PETS);
   }
 
-  async getActivePets(userId: string, options: PetQueryOptions = {}) {
+  async getActivePets(options: PetQueryOptions = {}) {
     // All pets with isArchived === false
-    return this.getActiveList(userId, options);
+    return this.getActiveList(options);
   }
 
-  async getArchivedPets(userId: string, options: PetQueryOptions = {}) {
+  async getArchivedPets(options: PetQueryOptions = {}) {
     // All pets with isArchived === true
-    return this.getArchivedList(userId, options);
+    return this.getArchivedList(options);
   }
 
-  async createPet(userId: string, input: PetCreateInput) {
+  async createPet(input: PetCreateInput) {
     // Transforms input and delegates to BaseRepository.create
-    return this.create(userId, { ...input, isArchived: false });
+    return this.create({ ...input, isArchived: false });
   }
 
-  async updatePet(userId: string, id: string, updates: PetUpdateInput) {
+  async updatePet(id: string, updates: PetUpdateInput) {
     // Transforms updates and delegates to BaseRepository.update
-    return this.update(userId, id, updates);
+    return this.update(id, updates);
   }
 
-  async archivePet(userId: string, id: string) {
+  async archivePet(id: string) {
     // Set isArchived to true
-    return this.archive(userId, id);
+    return this.archive(id);
   }
 }

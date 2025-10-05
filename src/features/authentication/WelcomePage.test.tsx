@@ -17,9 +17,7 @@ describe('WelcomePage', () => {
     render(<WelcomePage />);
 
     expect(screen.getByText('Welcome to Dog Log!')).toBeInTheDocument();
-    expect(
-      screen.getByText('Please sign in to continue.')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Please sign in to continue.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 });

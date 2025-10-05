@@ -181,11 +181,10 @@ describe('ArchivableBaseRepository', () => {
         createdBy: 'user-id',
         description: 'description',
       });
-      await repository.archive('test-user-id', 'test-id');
-      expect(updateSpy).toHaveBeenCalledWith('test-user-id', 'test-id', {
+      await repository.archive('test-id');
+      expect(updateSpy).toHaveBeenCalledWith('test-id', {
         isArchived: true,
         archivedAt: expect.any(Date),
-        archivedBy: 'test-user-id',
       });
     });
   });

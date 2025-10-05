@@ -22,7 +22,7 @@ export const usePetsStore = create<PetsState>((set) => ({
     if (!user) {
       throw new Error('User is not authenticated.');
     }
-    const newPet = await petRepository.createPet(user.uid, pet);
+    const newPet = await petRepository.createPet(pet);
     set((state) => ({ pets: [...state.pets, newPet] }));
   },
   fetchPets: async () => {
@@ -33,7 +33,7 @@ export const usePetsStore = create<PetsState>((set) => ({
     }
     set({ isFetching: true, fetchError: null });
     try {
-      const pets: Pet[] = await petRepository.getActivePets(user.uid);
+      const pets: Pet[] = await petRepository.getActivePets();
       set({ pets, isFetching: false });
     } catch (err) {
       const error = (err as Error) ?? new Error('Failed to load pets.');

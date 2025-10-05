@@ -4,7 +4,9 @@ import type { Pet, PetCreateInput } from '@features/petManagement/types';
 import AddPetPage from './AddPetPage';
 import { render } from '@/test-utils';
 
-const addPetMock = vi.fn<[PetCreateInput], Promise<void>>(() => Promise.resolve());
+const addPetMock = vi.fn<[PetCreateInput], Promise<void>>(() =>
+  Promise.resolve()
+);
 
 vi.mock('@store/pets.store', () => ({
   usePetsStore: (selector: (state: { addPet: typeof addPetMock }) => unknown) =>

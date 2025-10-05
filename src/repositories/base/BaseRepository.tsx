@@ -3,7 +3,7 @@ import {
   doc,
   getDoc,
   getDocs,
-  addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -26,6 +26,7 @@ import type {
   AdvancedQueryOptions,
   FilterCriteria,
 } from '@repositories/types';
+import { getAuth } from 'firebase/auth';
 
 /**
  * Abstract base repository that provides common Firestore operations
@@ -155,7 +156,7 @@ export abstract class BaseRepository<T extends BaseEntity>
    */
   async getById(id: string): Promise<T | null> {
     try {
-      const docRef = doc(db, 'users', id, this.collectionName, id);
+      const docRef = doc(db, this.collectionName, id);
       const docSnap = await getDoc(docRef);
 
       if (!docSnap.exists()) {
@@ -173,14 +174,9 @@ export abstract class BaseRepository<T extends BaseEntity>
   /**
    * Get a list of entities with optional query options
    */
-  async getList(userId: string, options: QueryOptions = {}): Promise<T[]> {
+  async getList(options: QueryOptions = {}): Promise<T[]> {
     try {
-      const collectionRef = collection(
-        db,
-        'users',
-        userId,
-        this.collectionName
-      );
+      const collectionRef = collection(db, this.collectionName);
       let q = query(collectionRef);
 
       // Apply ordering
@@ -203,13 +199,10 @@ export abstract class BaseRepository<T extends BaseEntity>
   /**
    * Create a new entity
    */
-  async create(
-    userId: string,
-    entityData: Omit<T, keyof BaseEntity>
-  ): Promise<T> {
+  async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
     try {
       const now = new Date();
-
+      const userId = getAuth().currentUser?.uid;
       const newEntity = {
         ...entityData,
         createdAt: now,
@@ -218,14 +211,15 @@ export abstract class BaseRepository<T extends BaseEntity>
       } as Record<string, unknown>;
 
       const docData = this.entityToDocument(newEntity);
-      const docRef = await addDoc(
-        collection(db, 'users', userId, this.collectionName),
+
+      await setDoc(
+        doc(db, this.collectionName, newEntity.id as string),
         docData
       );
 
       // Return the created entity with the generated ID
       return {
-        id: docRef.id,
+        id: newEntity.id,
         ...newEntity,
       } as T;
     } catch (error) {
@@ -237,12 +231,11 @@ export abstract class BaseRepository<T extends BaseEntity>
    * Update an existing entity
    */
   async update(
-    userId: string,
     id: string,
     updates: Partial<Omit<T, keyof BaseEntity>>
   ): Promise<T> {
     try {
-      const docRef = doc(db, 'users', userId, this.collectionName, id);
+      const docRef = doc(db, this.collectionName, id);
 
       // Check if document exists
       const docSnap = await getDoc(docRef);
@@ -271,9 +264,9 @@ export abstract class BaseRepository<T extends BaseEntity>
   /**
    * Delete an entity (hard delete)
    */
-  async delete(userId: string, id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     try {
-      const docRef = doc(db, 'users', userId, this.collectionName, id);
+      const docRef = doc(db, this.collectionName, id);
       await deleteDoc(docRef);
     } catch (error) {
       throw this.handleError(error, `delete(${id})`);
@@ -284,7 +277,7 @@ export abstract class BaseRepository<T extends BaseEntity>
    * Build advanced queries with filtering and sorting
    */
   protected buildAdvancedQuery(userId: string, options: AdvancedQueryOptions) {
-    const collectionRef = collection(db, 'users', userId, this.collectionName);
+    const collectionRef = collection(db, userId, this.collectionName);
     let q = query(collectionRef);
 
     // Apply filters
@@ -341,30 +334,21 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
   /**
    * Archive an entity (soft delete)
    */
-  async archive(userId: string, id: string): Promise<T> {
+  async archive(id: string): Promise<T> {
     const now = new Date();
 
-    return this.update(userId, id, {
+    return this.update(id, {
       isArchived: true,
       archivedAt: now,
-      archivedBy: userId,
     } as Partial<Omit<T, keyof BaseEntity>>);
   }
 
   /**
    * Get only active (non-archived) entities
    */
-  async getActiveList(
-    userId: string,
-    options: QueryOptions = {}
-  ): Promise<T[]> {
+  async getActiveList(options: QueryOptions = {}): Promise<T[]> {
     try {
-      const collectionRef = collection(
-        db,
-        'users',
-        userId,
-        this.collectionName
-      );
+      const collectionRef = collection(db, this.collectionName);
       let q = query(collectionRef, where('isArchived', '==', false));
 
       // Apply ordering
@@ -387,17 +371,9 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
   /**
    * Get only archived entities
    */
-  async getArchivedList(
-    userId: string,
-    options: QueryOptions = {}
-  ): Promise<T[]> {
+  async getArchivedList(options: QueryOptions = {}): Promise<T[]> {
     try {
-      const collectionRef = collection(
-        db,
-        'users',
-        userId,
-        this.collectionName
-      );
+      const collectionRef = collection(db, this.collectionName);
       let q = query(collectionRef, where('isArchived', '==', true));
 
       // Apply ordering
@@ -420,7 +396,7 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
   /**
    * Override getList to return only active entities by default
    */
-  async getList(userId: string, options: QueryOptions = {}): Promise<T[]> {
-    return this.getActiveList(userId, options);
+  async getList(options: QueryOptions = {}): Promise<T[]> {
+    return this.getActiveList(options);
   }
 }

@@ -28,7 +28,7 @@ A new repository will be created to manage user data in Firestore, following the
     - `create(user: User): Promise<void>`: Creates a new user document in the `users` collection.
 - The repository will be a singleton.
 
-## 3. Update Authentication Logic
+## :white_check_mark: 3. Update Authentication Logic
 
 The existing authentication logic will be modified to handle user creation on first login.
 
@@ -38,7 +38,7 @@ The existing authentication logic will be modified to handle user creation on fi
     2. The `UserRepository.get()` method will be used to check if a user with the given ID already exists in the `users` collection.
     3. If the user does not exist, a new `User` object will be created and saved to Firestore using `UserRepository.create()`.
 
-## 4. Firestore `users` Collection
+## :white_check_mark:4. Firestore `users` Collection
 
 A new collection named `users` will be created in Firestore to store user data. This is a manual setup step to be performed in the Firebase console.
 

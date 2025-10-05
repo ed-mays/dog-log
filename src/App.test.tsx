@@ -25,7 +25,11 @@ describe('App', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // Setup default mocks for each test
-    const authState = { user: { uid: 'test' }, initializing: false, error: null };
+    const authState = {
+      user: { uid: 'test' },
+      initializing: false,
+      error: null,
+    };
     mockUseAuthStore.mockImplementation((selector) =>
       selector ? selector(authState) : authState
     );
@@ -70,12 +74,12 @@ describe('App', () => {
 
   test('renders pet list', async () => {
     const petsState = {
-        pets: [
-          { id: '1', name: 'Fido', breed: 'Labrador' },
-          { id: '2', name: 'Bella', breed: 'Beagle' },
-        ],
-        fetchPets: fetchPetsSpy,
-      };
+      pets: [
+        { id: '1', name: 'Fido', breed: 'Labrador' },
+        { id: '2', name: 'Bella', breed: 'Beagle' },
+      ],
+      fetchPets: fetchPetsSpy,
+    };
     mockUsePetsStore.mockImplementation((selector) =>
       selector ? selector(petsState) : petsState
     );
