@@ -8,6 +8,8 @@ import {
   type User as FirebaseUser,
 } from 'firebase/auth';
 import { auth } from '@/firebase';
+import { userRepository } from '@repositories/userRepository';
+import type { User } from '@models/User';
 
 export type AppUser = {
   uid: string;
@@ -39,9 +41,25 @@ export async function signInWithGoogle(): Promise<AppUser> {
   await ensurePersistence();
   try {
     const result = await signInWithPopup(auth, provider);
+    const firebaseUser = result.user;
+    if (!firebaseUser) {
+      throw new Error('Firebase authentication failed: no user returned.');
+    }
+
+    const existingUser = await userRepository.getById(firebaseUser.uid);
+    if (!existingUser) {
+      const newUser: User = {
+        id: firebaseUser.uid,
+        displayName: firebaseUser.displayName,
+        email: firebaseUser.email,
+        photoURL: firebaseUser.photoURL,
+      };
+      await userRepository.create(newUser);
+    }
+
     // Minimal telemetry (no PII):
     console.info('[auth] signInWithGoogle success');
-    return mapUser(result.user)!;
+    return mapUser(firebaseUser)!;
   } catch (e) {
     console.warn('[auth] signInWithGoogle failed');
     throw e;

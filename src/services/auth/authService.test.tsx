@@ -5,9 +5,19 @@ import {
   signOut,
   subscribeToAuth,
 } from './authService';
+import { userRepository } from '@repositories/userRepository';
+import type { User } from '@models/User';
 
 vi.mock('@/firebase', () => ({
   auth: {},
+  db: {},
+}));
+
+vi.mock('@repositories/userRepository', () => ({
+  userRepository: {
+    getById: vi.fn(),
+    create: vi.fn(),
+  },
 }));
 
 const setPersistenceMock = vi.fn<Promise<void>, unknown[]>();
@@ -37,23 +47,52 @@ describe('authService', () => {
     expect(setPersistenceMock).toHaveBeenCalledTimes(1);
   });
 
-  it('signInWithGoogle calls signInWithPopup and maps user', async () => {
-    signInWithPopupMock.mockResolvedValueOnce({
-      user: {
+  describe('signInWithGoogle', () => {
+    beforeEach(() => {
+      signInWithPopupMock.mockResolvedValue({
+        user: {
+          uid: 'u1',
+          displayName: 'Test User',
+          email: 't@example.com',
+          photoURL: 'http://x',
+        },
+      });
+    });
+    it('creates a new user if one does not exist', async () => {
+      (userRepository.getById as vi.Mock).mockResolvedValue(undefined);
+
+      const user = await signInWithGoogle();
+
+      expect(signInWithPopupMock).toHaveBeenCalledTimes(1);
+      expect(userRepository.getById).toHaveBeenCalledWith('u1');
+      const expectedUser: User = {
+        id: 'u1',
+        displayName: 'Test User',
+        email: 't@example.com',
+        photoURL: 'http://x',
+      };
+      expect(userRepository.create).toHaveBeenCalledWith(expectedUser);
+      expect(user).toEqual({
         uid: 'u1',
         displayName: 'Test User',
         email: 't@example.com',
         photoURL: 'http://x',
-      },
+      });
     });
 
-    const user = await signInWithGoogle();
-    expect(signInWithPopupMock).toHaveBeenCalledTimes(1);
-    expect(user).toEqual({
-      uid: 'u1',
-      displayName: 'Test User',
-      email: 't@example.com',
-      photoURL: 'http://x',
+    it('does not create a user if one already exists', async () => {
+      const existingUser: User = {
+        id: 'u1',
+        displayName: 'Old Name',
+        email: 'old@example.com',
+        photoURL: 'http://y',
+      };
+      (userRepository.getById as vi.Mock).mockResolvedValue(existingUser);
+
+      await signInWithGoogle();
+
+      expect(userRepository.getById).toHaveBeenCalledWith('u1');
+      expect(userRepository.create).not.toHaveBeenCalled();
     });
   });
 

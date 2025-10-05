@@ -153,9 +153,9 @@ export abstract class BaseRepository<T extends BaseEntity>
   /**
    * Get a single entity by ID
    */
-  async getById(userId: string, id: string): Promise<T | null> {
+  async getById(id: string): Promise<T | null> {
     try {
-      const docRef = doc(db, 'users', userId, this.collectionName, id);
+      const docRef = doc(db, 'users', id, this.collectionName, id);
       const docSnap = await getDoc(docRef);
 
       if (!docSnap.exists()) {
@@ -175,7 +175,12 @@ export abstract class BaseRepository<T extends BaseEntity>
    */
   async getList(userId: string, options: QueryOptions = {}): Promise<T[]> {
     try {
-      const collectionRef = collection(db, 'users', userId, this.collectionName);
+      const collectionRef = collection(
+        db,
+        'users',
+        userId,
+        this.collectionName
+      );
       let q = query(collectionRef);
 
       // Apply ordering
@@ -349,9 +354,17 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
   /**
    * Get only active (non-archived) entities
    */
-  async getActiveList(userId: string, options: QueryOptions = {}): Promise<T[]> {
+  async getActiveList(
+    userId: string,
+    options: QueryOptions = {}
+  ): Promise<T[]> {
     try {
-      const collectionRef = collection(db, 'users', userId, this.collectionName);
+      const collectionRef = collection(
+        db,
+        'users',
+        userId,
+        this.collectionName
+      );
       let q = query(collectionRef, where('isArchived', '==', false));
 
       // Apply ordering
@@ -374,9 +387,17 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
   /**
    * Get only archived entities
    */
-  async getArchivedList(userId: string, options: QueryOptions = {}): Promise<T[]> {
+  async getArchivedList(
+    userId: string,
+    options: QueryOptions = {}
+  ): Promise<T[]> {
     try {
-      const collectionRef = collection(db, 'users', userId, this.collectionName);
+      const collectionRef = collection(
+        db,
+        'users',
+        userId,
+        this.collectionName
+      );
       let q = query(collectionRef, where('isArchived', '==', true));
 
       // Apply ordering

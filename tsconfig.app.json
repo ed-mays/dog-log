@@ -30,6 +30,7 @@
       "@testUtils/*": ["testUtils/*"],
       "@featureFlags/*": ["featureFlags/*"],
       "@features/*": ["features/*"],
+      "@models/*": ["models/*"],
       "@repositories/*": ["repositories/*"],
       "@/services/*": ["services/*"],
       "@styles/*": ["styles/*"],

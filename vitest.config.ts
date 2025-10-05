@@ -18,6 +18,7 @@ export default defineConfig({
       '@/utils': path.resolve(__dirname, 'src/utils'),
       '@repositories': path.resolve(__dirname, 'src/repositories'),
       '@/App': path.resolve(__dirname, 'src/App.tsx'),
+      '@models': path.resolve(__dirname, 'src/models'),
     },
   },
   test: {
