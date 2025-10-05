@@ -5,11 +5,10 @@ import type {
   PetQueryOptions,
   PetUpdateInput,
 } from '@features/petManagement/types';
-import { COLLECTIONS } from './config';
 
 export class PetRepository extends ArchivableBaseRepository<Pet> {
-  constructor() {
-    super(COLLECTIONS.PETS);
+  constructor(userId: string) {
+    super(`users/${userId}/pets`);
   }
 
   async getActivePets(options: PetQueryOptions = {}) {

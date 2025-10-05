@@ -46,8 +46,6 @@ export async function signInWithGoogle(): Promise<AppUser> {
       throw new Error('Firebase authentication failed: no user returned.');
     }
 
-    console.log('firebaseUser in AuthService', firebaseUser);
-
     const existingUser = await userRepository.getById(firebaseUser.uid);
     if (!existingUser) {
       const newUser: User = {
