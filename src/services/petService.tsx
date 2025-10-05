@@ -7,32 +7,30 @@ import type {
 } from '@features/petManagement/types';
 
 export class PetService {
-  private repo: PetRepository;
-
-  constructor(repo?: PetRepository) {
-    // Allow manual injection for testability
-    this.repo = repo ?? new PetRepository();
+  async fetchActivePets(userId: string, options?: PetQueryOptions): Promise<Pet[]> {
+    const repo = new PetRepository(userId);
+    return repo.getActivePets(options);
   }
 
-  async fetchActivePets(options?: PetQueryOptions): Promise<Pet[]> {
-    return this.repo.getActivePets(options);
+  async fetchArchivedPets(userId: string, options?: PetQueryOptions): Promise<Pet[]> {
+    const repo = new PetRepository(userId);
+    return repo.getArchivedPets(options);
   }
 
-  async fetchArchivedPets(options?: PetQueryOptions): Promise<Pet[]> {
-    return this.repo.getArchivedPets(options);
+  async addPet(userId: string, input: PetCreateInput): Promise<Pet> {
+    const repo = new PetRepository(userId);
+    return repo.createPet(input);
   }
 
-  async addPet(input: PetCreateInput): Promise<Pet> {
-    // Add input validation logic here if needed.
-    return this.repo.createPet(input);
+  async editPet(userId: string, id: string, updates: PetUpdateInput): Promise<Pet> {
+    const repo = new PetRepository(userId);
+    return repo.updatePet(id, updates);
   }
 
-  async editPet(id: string, updates: PetUpdateInput): Promise<Pet> {
-    // Add update validation logic here if needed.
-    return this.repo.updatePet(id, updates);
-  }
-
-  async archivePet(id: string): Promise<Pet> {
-    return this.repo.archivePet(id);
+  async archivePet(userId: string, id: string): Promise<Pet> {
+    const repo = new PetRepository(userId);
+    return repo.archivePet(id);
   }
 }
+
+export const petService = new PetService();

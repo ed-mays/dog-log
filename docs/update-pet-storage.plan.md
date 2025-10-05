@@ -9,7 +9,7 @@ This document outlines the plan to refactor the application's data layer to stor
 *   **Action:** Update its constructor to accept a `userId: string`.
 *   **Action:** Inside the constructor, dynamically set the collection path to `users/${userId}/pets`.
 
-### 2. `petService.tsx` (Business Logic Layer)
+### :white_check_mark: 2. `petService.tsx` (Business Logic Layer)
 
 *   **Goal:** Orchestrate pet-related operations and business logic for a specific user.
 *   **Change:** Refactor the `petService` to act as the intermediary between the application and the `PetRepository`.
