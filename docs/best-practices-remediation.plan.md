@@ -227,13 +227,13 @@
     ```
   - If you want to keep convenience, accept an optional `context` in repository methods (e.g., `{ userId }`) instead of reading from Firebase internally.
 
-#### 6) Add Suspense boundary at the app shell and keep a consistent loading experience
+#### [:white_check_mark:] 6) Add Suspense boundary at the app shell and keep a consistent loading experience
 - Why: Smooth UX around code-split boundaries.
 - How:
   - Wrap `<AppRoutes />` with a `Suspense` fallback in `src/App.tsx` or keep it inside `AppRoutes` as shown above.
   - Reuse your existing `LoadingIndicator` as the fallback.
 
-#### 7) Align i18n namespaces
+#### [:white_check_mark:] 7) Align i18n namespaces
 - Why: Prevent missing-key warnings and inconsistent loading.
 - How:
   - Ensure `ns` includes all base namespaces you intend to preload or remove them from preload:
