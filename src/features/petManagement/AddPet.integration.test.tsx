@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@/test-utils';
+import { render, screen, waitFor } from '@test-utils';
 import userEvent from '@testing-library/user-event';
-import App from '@/App';
+import App from '@App';
 import { afterEach, beforeEach, vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { useAuthStore } from '@store/auth.store';

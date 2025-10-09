@@ -1,6 +1,6 @@
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 
-import { render, screen, waitFor } from '@/test-utils';
+import { render, screen, waitFor } from '@test-utils';
 import { test } from 'vitest';
 
 test('renders the default eror indicator', async () => {

@@ -1,0 +1,79 @@
+
+> dog-log@0.0.0 test:unit
+> vitest run --exclude '**/*.integration.test.tsx'
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+stdout | src/App.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/Auth/LogoutButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.routing.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/AppRoutes.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/App.authGuard.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (9 tests) 298ms
+ ✓ src/components/common/Auth/LogoutButton.test.tsx (1 test) 112ms
+ ✓ src/features/petManagement/petForm.test.tsx (8 tests) 701ms
+ ✓ src/featureFlags/FeatureFlagsProvider.test.tsx (1 test) 181ms
+ ✓ src/features/authentication/WelcomePage.test.tsx (1 test) 156ms
+ ✓ src/featureFlags/useFeatureFlagsContext.test.tsx (3 tests) 111ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (3 tests) 48ms
+ ✓ src/features/petManagement/AddPetPage.test.tsx (5 tests) 67ms
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 88ms
+stdout | src/features/authentication/SignupComponent.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle > creates a new user if one does not exist
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signInWithGoogle > does not create a user if one already exists
+[auth] signInWithGoogle success
+
+stdout | src/services/auth/authService.test.tsx > authService > signOut calls Firebase signOut
+[auth] signOut success
+
+stdout | src/services/auth/authService.test.tsx > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[auth] onAuthStateChanged event
+
+ ✓ src/services/auth/authService.test.tsx (7 tests) 11ms
+stdout | src/components/common/Auth/LoginButton.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+stdout | src/components/common/PrivateRoute.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/components/common/PrivateRoute.test.tsx (3 tests) 77ms
+ ✓ src/features/authentication/SignupComponent.test.tsx (2 tests) 152ms
+ ✓ src/components/common/Auth/LoginButton.test.tsx (2 tests) 160ms
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (3 tests) 105ms
+ ✓ src/featureFlags/useFeatureFlag.test.tsx (1 test) 35ms
+ ✓ src/repositories/base/BaseRepository.test.tsx (8 tests) 25ms
+ ✓ src/store/auth.store.test.tsx (5 tests) 7ms
+ ✓ src/repositories/userRepository.test.tsx (4 tests) 6ms
+ ✓ src/repositories/utils/dataTransformers.test.tsx (8 tests) 6ms
+ ✓ src/repositories/config.test.tsx (7 tests) 5ms
+ ✓ src/store/store.test.tsx (3 tests) 4ms
+ ✓ src/utils/id.test.tsx (2 tests) 2ms
+stdout | src/services/petService.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/services/petService.test.tsx (5 tests) 4ms
+stdout | src/repositories/petRepository.test.tsx
+WARNING: You are using the Auth Emulator, which is intended for local testing only.  Do not use with production credentials.
+
+ ✓ src/repositories/petRepository.test.tsx (5 tests) 5ms
+
+ Test Files  7 failed | 24 passed (31)
+      Tests  98 passed (98)
+   Start at  21:19:34
+   Duration  4.09s (transform 939ms, setup 2.02s, collect 4.91s, tests 2.37s, environment 15.79s, prepare 2.89s)
+

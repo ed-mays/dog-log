@@ -7,12 +7,18 @@ import type {
 } from '@features/petManagement/types';
 
 export class PetService {
-  async fetchActivePets(userId: string, options?: PetQueryOptions): Promise<Pet[]> {
+  async fetchActivePets(
+    userId: string,
+    options?: PetQueryOptions
+  ): Promise<Pet[]> {
     const repo = new PetRepository(userId);
     return repo.getActivePets(options);
   }
 
-  async fetchArchivedPets(userId: string, options?: PetQueryOptions): Promise<Pet[]> {
+  async fetchArchivedPets(
+    userId: string,
+    options?: PetQueryOptions
+  ): Promise<Pet[]> {
     const repo = new PetRepository(userId);
     return repo.getArchivedPets(options);
   }
@@ -22,7 +28,11 @@ export class PetService {
     return repo.createPet(input);
   }
 
-  async editPet(userId: string, id: string, updates: PetUpdateInput): Promise<Pet> {
+  async editPet(
+    userId: string,
+    id: string,
+    updates: PetUpdateInput
+  ): Promise<Pet> {
     const repo = new PetRepository(userId);
     return repo.updatePet(id, updates);
   }

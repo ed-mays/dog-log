@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Pet, PetCreateInput } from '@features/petManagement/types';
-import { PetRepository } from '@repositories/petRepository';
+import { petService } from '@services/petService';
 import { useAuthStore } from './auth.store';
 
 interface PetsState {
@@ -9,9 +9,8 @@ interface PetsState {
   fetchError: Error | null;
   fetchPets: () => Promise<void>;
   addPet: (pet: PetCreateInput) => Promise<void>;
+  clearPets: () => void;
 }
-
-const petRepository = new PetRepository();
 
 export const usePetsStore = create<PetsState>((set) => ({
   pets: [],
@@ -22,22 +21,25 @@ export const usePetsStore = create<PetsState>((set) => ({
     if (!user) {
       throw new Error('User is not authenticated.');
     }
-    const newPet = await petRepository.createPet(pet);
+    const newPet = await petService.addPet(user.uid, pet);
     set((state) => ({ pets: [...state.pets, newPet] }));
   },
   fetchPets: async () => {
     const { user } = useAuthStore.getState();
     if (!user) {
-      // Do nothing if user is not authenticated
+      set({ pets: [], isFetching: false, fetchError: null });
       return;
     }
     set({ isFetching: true, fetchError: null });
     try {
-      const pets: Pet[] = await petRepository.getActivePets();
+      const pets: Pet[] = await petService.fetchActivePets(user.uid);
       set({ pets, isFetching: false });
     } catch (err) {
       const error = (err as Error) ?? new Error('Failed to load pets.');
       set({ fetchError: error, isFetching: false });
     }
+  },
+  clearPets: () => {
+    set({ pets: [], isFetching: false, fetchError: null });
   },
 }));

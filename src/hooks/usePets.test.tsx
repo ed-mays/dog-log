@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { usePets } from './usePets';
-import { usePetsStore } from '@store/pets.store';
+import { usePetsStore } from '@/store/pets.store';
 
 beforeEach(() => {
   usePetsStore.setState({

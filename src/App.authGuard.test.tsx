@@ -1,15 +1,15 @@
 import { describe, it, beforeEach, expect } from 'vitest';
 import { render, screen, waitFor } from '@/test-utils';
 import App from './App';
-import { useAuthStore } from '@store/auth.store';
-import { usePetsStore } from '@store/pets.store';
+import { useAuthStore } from '@/store/auth.store';
+import { usePetsStore } from '@/store/pets.store';
 
 // Mock child components with side-effects
-vi.mock('@features/authentication/AuthBootstrap', () => ({
+vi.mock('@/features/authentication/AuthBootstrap', () => ({
   default: () => null,
 }));
-vi.mock('@store/auth.store');
-vi.mock('@store/pets.store');
+vi.mock('@/store/auth.store');
+vi.mock('@/store/pets.store');
 
 describe('App auth route protection', () => {
   const mockUseAuthStore = useAuthStore as vi.Mock;

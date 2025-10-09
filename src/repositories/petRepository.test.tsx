@@ -1,16 +1,20 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PetRepository } from './petRepository';
 import type { Pet } from '@features/petManagement/types';
 
 describe('PetRepository', () => {
   let repo: PetRepository;
+  const mockUserId = 'test-user-id';
 
   beforeEach(() => {
-    repo = new PetRepository();
-    vi.clearAllMocks();
+    repo = new PetRepository(mockUserId);
   });
 
-  it('getActivePets calls getActiveList with correct userId', async () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('getActivePets calls getActiveList with correct options', async () => {
     // Spy on the method from the extended ArchivableBaseRepository
     const getActiveList = vi.spyOn(repo, 'getActiveList').mockResolvedValue([]);
     const options = { orderBy: 'name' };
@@ -20,7 +24,7 @@ describe('PetRepository', () => {
     expect(getActiveList).toHaveBeenCalledWith(options);
   });
 
-  it('getArchivedPets calls getArchivedList with correct userId', async () => {
+  it('getArchivedPets calls getArchivedList with correct options', async () => {
     // Spy on the method from the extended ArchivableBaseRepository
     const getArchivedList = vi
       .spyOn(repo, 'getArchivedList')
@@ -32,7 +36,7 @@ describe('PetRepository', () => {
     expect(getArchivedList).toHaveBeenCalledWith(options);
   });
 
-  it('createPet calls base create with userId and correct payload', async () => {
+  it('createPet calls base create with correct payload', async () => {
     const input = {
       name: 'Buddy',
       breed: 'Lab',
@@ -55,10 +59,9 @@ describe('PetRepository', () => {
       isArchived: false,
     });
     expect(result.name).toBe('Buddy');
-    //expect(result.createdBy).toBe(mockUserId);
   });
 
-  it('updatePet calls base update with userId and correct payload', async () => {
+  it('updatePet calls base update with correct payload', async () => {
     const petId = 'pet-1';
     const updates = { name: 'Buddy Boy' };
     const update = vi.spyOn(repo, 'update').mockResolvedValue({} as Pet);
@@ -68,7 +71,7 @@ describe('PetRepository', () => {
     expect(update).toHaveBeenCalledWith(petId, updates);
   });
 
-  it('archivePet calls base archive with userId and petId', async () => {
+  it('archivePet calls base archive with petId', async () => {
     const petId = 'pet-to-archive';
     // Spy on the method from the extended ArchivableBaseRepository
     const archive = vi.spyOn(repo, 'archive').mockResolvedValue({} as Pet);

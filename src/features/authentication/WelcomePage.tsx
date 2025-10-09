@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import LoginButton from '@components/common/Auth/LoginButton';
+import LoginButton from '@/components/common/Auth/LoginButton';
 import styles from './WelcomePage.module.css';
 
 export function WelcomePage() {

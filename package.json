@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:concise": "npm run test:unit -- --reporter=dot --silent",
+    "test:with-output": "npm run test:unit -- --reporter=json --outputFile=./test-output.json",
     "test:unit": "vitest run --exclude '**/*.integration.test.tsx'",
     "test:integration": "vitest run '**/*.integration.test.tsx'",
     "test:coverage": "npm run test -- --coverage",

@@ -1,15 +1,15 @@
 import { render, screen, waitFor } from '@/test-utils';
-import i18n from '@testUtils/test-i18n';
+import i18n from '@/testUtils/test-i18n';
 import App from './App';
-import { useAuthStore } from '@store/auth.store';
-import { usePetsStore } from '@store/pets.store';
+import { useAuthStore } from '@/store/auth.store';
+import { usePetsStore } from '@/store/pets.store';
 
 // Mock child components with side-effects
-vi.mock('@features/authentication/AuthBootstrap', () => ({
+vi.mock('@/features/authentication/AuthBootstrap', () => ({
   default: () => null,
 }));
-vi.mock('@store/auth.store');
-vi.mock('@store/pets.store');
+vi.mock('@/store/auth.store');
+vi.mock('@/store/pets.store');
 
 describe('Routing and navigation hygiene', () => {
   const mockUseAuthStore = useAuthStore as vi.Mock;

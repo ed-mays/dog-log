@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PetService } from './petService';
-import { PetRepository } from '@repositories/petRepository';
-import type { Pet, PetCreateInput } from '@features/petManagement/types';
+import { PetRepository } from '@/repositories/petRepository';
+import type { Pet, PetCreateInput } from '@/features/petManagement/types';
 
 // Mock the repository dependency
-vi.mock('@repositories/petRepository');
+vi.mock('@/repositories/petRepository');
 
 describe('PetService', () => {
   let service: PetService;
@@ -19,8 +19,6 @@ describe('PetService', () => {
 
   // Before each test, reset mocks and service instance
   beforeEach(() => {
-    vi.clearAllMocks();
-
     // Make the PetRepository mock return our mock methods
     (PetRepository as any).mockImplementation(() => {
       return {
@@ -33,6 +31,10 @@ describe('PetService', () => {
     });
 
     service = new PetService();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('fetchActivePets should create a repository and call getActivePets', async () => {
@@ -52,8 +54,19 @@ describe('PetService', () => {
   });
 
   it('addPet should create a repository and call createPet', async () => {
-    const input: PetCreateInput = { name: 'Rex', breed: 'Lab', birthDate: new Date() };
-    const expectedPet: Pet = { id: 'pet-1', isArchived: false, createdAt: new Date(), updatedAt: new Date(), createdBy: testUserId, ...input };
+    const input: PetCreateInput = {
+      name: 'Rex',
+      breed: 'Lab',
+      birthDate: new Date(),
+    };
+    const expectedPet: Pet = {
+      id: 'pet-1',
+      isArchived: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: testUserId,
+      ...input,
+    };
     mockCreatePet.mockResolvedValue(expectedPet);
 
     const result = await service.addPet(testUserId, input);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@/test-utils';
+import { render, screen } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import LoginButton from './LoginButton';
 import { useAuthStore } from '@store/auth.store';

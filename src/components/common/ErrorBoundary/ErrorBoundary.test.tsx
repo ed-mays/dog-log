@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@/test-utils';
+import { render, screen } from '@test-utils';
 import i18n from '@testUtils/test-i18n';
 import { ErrorBoundary } from './ErrorBoundary';
 

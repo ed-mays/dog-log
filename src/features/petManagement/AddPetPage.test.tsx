@@ -1,6 +1,6 @@
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
-import type { Pet, PetCreateInput } from '@features/petManagement/types';
+import type { Pet, PetCreateInput } from '@/features/petManagement/types';
 import AddPetPage from './AddPetPage';
 import { render } from '@/test-utils';
 
@@ -8,7 +8,7 @@ const addPetMock = vi.fn<[PetCreateInput], Promise<void>>(() =>
   Promise.resolve()
 );
 
-vi.mock('@store/pets.store', () => ({
+vi.mock('@/store/pets.store', () => ({
   usePetsStore: (selector: (state: { addPet: typeof addPetMock }) => unknown) =>
     selector({ addPet: addPetMock }),
 }));
@@ -24,7 +24,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
 
 const testBirthDate = new Date('2023-01-01T00:00:00.000Z');
 
-vi.mock('@features/petManagement/PetForm', () => ({
+vi.mock('@/features/petManagement/PetForm', () => ({
   PetForm: (props: {
     onSubmit: (pet: Pet) => void;
     onCancel: () => void;
@@ -56,7 +56,7 @@ vi.mock('@features/petManagement/PetForm', () => ({
   ),
 }));
 
-vi.mock('@components/common/ConfirmModal/ConfirmModal', () => ({
+vi.mock('@/components/common/ConfirmModal/ConfirmModal', () => ({
   ConfirmModal: (props: { onAccept: () => void; onDecline: () => void }) => (
     <div>
       <button onClick={props.onAccept}>Accept</button>
@@ -112,7 +112,7 @@ describe('AddPetPage', () => {
   });
 
   it('navigates away immediately if cancel is clicked and not dirty', () => {
-    vi.doMock('@features/petManagement/PetForm', () => ({
+    vi.doMock('@/features/petManagement/PetForm', () => ({
       PetForm: (props: { onCancel: () => void }) => (
         <div>
           <button onClick={props.onCancel}>Cancel</button>
