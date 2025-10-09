@@ -7,8 +7,10 @@ import type {
 } from '@features/petManagement/types';
 
 export class PetRepository extends ArchivableBaseRepository<Pet> {
+  private readonly userId: string;
   constructor(userId: string) {
     super(`users/${userId}/pets`);
+    this.userId = userId;
   }
 
   async getActivePets(options: PetQueryOptions = {}) {
@@ -23,7 +25,7 @@ export class PetRepository extends ArchivableBaseRepository<Pet> {
 
   async createPet(input: PetCreateInput) {
     // Transforms input and delegates to BaseRepository.create
-    return this.create({ ...input, isArchived: false });
+    return this.create({ ...input, isArchived: false, createdBy: this.userId } as any);
   }
 
   async updatePet(id: string, updates: PetUpdateInput) {

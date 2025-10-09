@@ -26,7 +26,6 @@ import type {
   AdvancedQueryOptions,
   FilterCriteria,
 } from '@repositories/types';
-import { getAuth } from 'firebase/auth';
 
 /**
  * Abstract base repository that provides common Firestore operations
@@ -202,12 +201,10 @@ export abstract class BaseRepository<T extends BaseEntity>
   async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
     try {
       const now = new Date();
-      const userId = getAuth().currentUser?.uid;
       const newEntity = {
         ...entityData,
         createdAt: now,
         updatedAt: now,
-        createdBy: userId,
       } as Record<string, unknown>;
 
       const docData = this.entityToDocument(newEntity);

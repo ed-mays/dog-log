@@ -41,12 +41,14 @@ describe('PetRepository', () => {
       name: 'Buddy',
       breed: 'Lab',
       birthDate: new Date(),
+      createdBy: 'test-user-id',
     };
     const expectedPet: Pet = {
       id: 'new-id',
       ...input,
       isArchived: false,
       createdAt: new Date(),
+      createdBy: 'test-user-id',
       updatedAt: new Date(),
     };
 

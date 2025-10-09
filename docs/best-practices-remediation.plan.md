@@ -196,7 +196,7 @@
     - `src/components/common/PrivateRoute.tsx` line 3: `import { useFeatureFlag } from '@featureFlags/useFeatureFlag';`
   - Add an ESLint rule or custom lint to discourage deep relative imports when an alias exists.
 
-#### 5) Decouple BaseRepository from Firebase Auth
+#### [:white_check_mark:] 5) Decouple BaseRepository from Firebase Auth
 - Why: Keep repositories pure and testable; avoid relying on global auth state in a generic base.
 - How:
   - Remove `getAuth()` usage from `BaseRepository.create` and require `createdBy` to be part of the `entityData` (provided by the caller).
