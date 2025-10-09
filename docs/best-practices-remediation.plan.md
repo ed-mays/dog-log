@@ -187,7 +187,7 @@
   - In feature entry points (e.g., `petListPage`), call `loadNamespace('petList')` inside an effect or use `useTranslation('petList', { useSuspense: false })` after preloading.
   - Also fix the namespace list inconsistency by including `petProperties` in `ns` when needed or lazy-load it along with the feature that uses it.
 
-#### 4) Standardize imports to use aliases consistently
+#### [`:white_check_mark:]` 4) Standardize imports to use aliases consistently
 - Why: Reinforces module boundaries and avoids brittle relative paths.
 - How:
   - Change relative imports to aliases:
