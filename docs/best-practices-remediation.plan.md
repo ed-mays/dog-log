@@ -96,7 +96,7 @@
     ```
   - Keep `vitest.config.ts` coverage provider as V8 (already configured lines 9–13).
 
-#### 2) Lazy-load routes and wrap in Suspense
+#### [:white_check_mark:] 2) Lazy-load routes and wrap in Suspense
 - Why: Reduce initial bundle size and align with “split routes lazily.”
 - How:
   - Convert page imports in `AppRoutes.tsx` to `React.lazy` and wrap route `element` with `Suspense` fallback.
@@ -158,7 +158,7 @@
     ```
   - Optionally add route-level prefetch via `link rel="prefetch"` when hovering menu items, or keep `RoutePrefetcher` if it already covers data.
 
-#### 3) Lazy-load i18n namespaces per feature
+#### [:white_check_mark:] 3) Lazy-load i18n namespaces per feature
 - Why: Reduce initial bundle; align with “lazy-load namespaces when features mount.”
 - How:
   - Switch `src/i18n.tsx` to dynamic import of JSON per namespace/language or use `i18next-http-backend` for real files. With static JSON, you can do:
