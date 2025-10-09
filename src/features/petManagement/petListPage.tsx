@@ -6,7 +6,7 @@ export default function PetListPage() {
 
   return (
     <div>
-      <PetList pets={pets} /* pets, etc. */ />
+      <PetList data-testid="pet-list" pets={pets} /* pets, etc. */ />
     </div>
   );
 }
