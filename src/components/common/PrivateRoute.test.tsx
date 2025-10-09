@@ -1,12 +1,12 @@
-import { render, screen } from '@/test-utils';
+import { render, screen } from '@test-utils';
 import { PrivateRoute } from './PrivateRoute';
-import { useAuthStore } from '@/store/auth.store';
-import { useFeatureFlag } from '@/featureFlags/useFeatureFlag';
+import { useAuthStore } from '@store/auth.store';
+import { useFeatureFlag } from '@featureFlags/useFeatureFlag';
 import '@testing-library/jest-dom';
 
 // Mock the hooks
-vi.mock('@/store/auth.store');
-vi.mock('@/featureFlags/useFeatureFlag');
+vi.mock('@store/auth.store');
+vi.mock('@featureFlags/useFeatureFlag');
 
 describe('PrivateRoute', () => {
   const mockUseAuthStore = useAuthStore as vi.Mock;

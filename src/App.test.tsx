@@ -1,20 +1,20 @@
 import { screen, waitFor } from '@testing-library/react';
-import { render } from '@/test-utils';
+import { render } from '@test-utils';
 import App from './App';
 import '@testing-library/jest-dom';
-import { usePetsStore } from '@/store/pets.store';
-import { useAuthStore } from '@/store/auth.store';
-import { useUiStore } from '@/store/ui.store';
+import { usePetsStore } from '@store/pets.store';
+import { useAuthStore } from '@store/auth.store';
+import { useUiStore } from '@store/ui.store';
 
 // Mock child components with side-effects
-vi.mock('@/features/authentication/AuthBootstrap', () => ({
+vi.mock('@features/authentication/AuthBootstrap', () => ({
   default: () => null,
 }));
 
 // Mock stores
-vi.mock('@/store/pets.store');
-vi.mock('@/store/auth.store');
-vi.mock('@/store/ui.store');
+vi.mock('@store/pets.store');
+vi.mock('@store/auth.store');
+vi.mock('@store/ui.store');
 
 describe('App', () => {
   const mockUsePetsStore = usePetsStore as vi.Mock;

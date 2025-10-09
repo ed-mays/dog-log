@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@/test-utils';
+import { render, screen } from '@test-utils';
 import SignupComponent from './SignupComponent';
-import { useAuthStore } from '@/store/auth.store';
-import testI18n from '@/testUtils/test-i18n';
+import { useAuthStore } from '@store/auth.store';
+import testI18n from '@testUtils/test-i18n';
 
 describe('SignupComponent', () => {
   beforeEach(() => {

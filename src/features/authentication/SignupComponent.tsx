@@ -2,7 +2,7 @@ import React from 'react';
 import LoginButton from '@components/common/Auth/LoginButton';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
-import { toErrorMessage } from '@/utils/errors.tsx';
+import { toErrorMessage } from '@utils/errors.tsx';
 
 type FirebaseAuthError = { code?: string; message?: string } | unknown;
 

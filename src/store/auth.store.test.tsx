@@ -6,7 +6,7 @@ const signOutSvcMock = vi.fn<Promise<void>, unknown[]>();
 let lastCb: ((u: unknown) => void) | null = null;
 let lastErrCb: ((e: unknown) => void) | null = null;
 
-vi.mock('@/services/auth/authService', () => ({
+vi.mock('@services/auth/authService', () => ({
   signInWithGoogle: (...args: unknown[]) => signInSvcMock(...args),
   signOut: (...args: unknown[]) => signOutSvcMock(...args),
   subscribeToAuth: (

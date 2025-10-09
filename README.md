@@ -9,13 +9,19 @@ A modern **React** application scaffolded with **Vite** and written in **TypeScr
 - **TypeScript** with strict type checking and modern bundler settings
 - **Vite** for fast development & optimized builds
 - Support for **path aliases**:
+  - `@App → src/App.tsx`
   - `@components/* → src/components/*`
+  - `@firebase → src/firebase.tsx`
   - `@store/* → src/store/*`
-  - `@features/* → src/features/*`
-  - `@featureFlags/* → src/featureFlags/*`
-  - `@styles/* → src/styles/*`
+  - `@test-utils → src/test-utils.tsx`
   - `@testUtils/* → src/testUtils/*`
-  - `@/test-utils → src/test-utils.tsx`
+  - `@featureFlags/* → src/featureFlags/*`
+  - `@features/* → src/features/*`
+  - `@models/* → src/models/*`
+  - `@repositories/* → src/repositories/*`
+  - `@services/* → src/services/*`
+  - `@styles/* → src/styles/*`
+  - `@utils/* → src/utils/*`
 - Test setup with **Vitest** & **Testing Library**
 - Linting & formatting with **ESLint** & **Prettier**
 - Internationalization powered by **i18next** and **react-i18next**
@@ -73,7 +79,7 @@ Notes:
 - Use the shared render wrapper which includes providers (i18n + feature flags):
 
   ```
-  import { render, screen } from '@/test-utils';
+  import { render, screen } from '@test-utils';
 
   render(<MyComponent />, { featureFlags: { addPetEnabled: true } });
   ```
@@ -114,13 +120,19 @@ Notes:
 
 - Configured in `tsconfig.app.json` (moduleResolution: "bundler").
 - Aliases:
+  - `@App` → `src/App.tsx`
   - `@components/*` → `src/components/*`
+  - `@firebase` → `src/firebase.tsx`
   - `@store/*` → `src/store/*`
-  - `@features/*` → `src/features/*`
-  - `@featureFlags/*` → `src/featureFlags/*`
-  - `@styles/*` → `src/styles/*`
+  - `@test-utils` → `src/test-utils.tsx`
   - `@testUtils/*` → `src/testUtils/*`
-  - `@/test-utils` → `src/test-utils.tsx`
+  - `@featureFlags/*` → `src/featureFlags/*`
+  - `@features/*` → `src/features/*`
+  - `@models/*` → `src/models/*`
+  - `@repositories/*` → `src/repositories/*`
+  - `@services/*` → `src/services/*`
+  - `@styles/*` → `src/styles/*`
+  - `@utils/*` → `src/utils/*`
 - Prefer extensionless imports with these aliases.
 
 ---

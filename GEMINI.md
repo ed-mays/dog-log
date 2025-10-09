@@ -35,12 +35,19 @@ Short, practical guidance to get productive quickly.
 
 Aliases (from tsconfig.app.json):
 
-- @components/_ → src/components/_
-- @store/_ → src/store/_
-- @features/_ → src/features/_
-- @featureFlags/_ → src/featureFlags/_
-- @styles/_ → src/styles/_
-- @testUtils/_ → src/testUtils/_
+- @App → src/App.tsx
+- @components/* → src/components/*
+- @firebase → src/firebase.tsx
+- @store/* → src/store/*
+- @test-utils → src/test-utils.tsx
+- @testUtils/* → src/testUtils/*
+- @featureFlags/* → src/featureFlags/*
+- @features/* → src/features/*
+- @models/* → src/models/*
+- @repositories/* → src/repositories/*
+- @services/* → src/services/*
+- @styles/* → src/styles/*
+- @utils/* → src/utils/*
 
 Guidelines:
 
@@ -66,7 +73,7 @@ Guidelines:
 
 - Prefer behavior-driven tests via @testing-library/react and user-event.
 - Use the shared render wrapper for providers (i18n + feature flags):
-  import { render, screen } from '@/test-utils';
+  import { render, screen } from '@test-utils';
   // You can override flags or i18n per test when needed
   // render(<MyComponent />, { featureFlags: { addPetEnabled: false }, i18nInstance });
 - Keep tests next to code: Component.tsx and Component.test.tsx in same folder.
@@ -186,8 +193,8 @@ Always access Firestore through abstracted repository/service modules and custom
 
 - Alias import not resolving: ensure path matches tsconfig.app.json and restart Vite.
 - i18n key missing: verify namespace/key and locale file loaded in src/i18n.tsx.
-- Tests can’t find providers: import render from '@/test-utils'.
-- Test i18n warning (NO_I18NEXT_INSTANCE): render via '@/test-utils' or wrap with I18nextProvider and a shared i18n instance (src/testUtils/test-i18n.tsx).
+- Tests can’t find providers: import render from '@test-utils'.
+- Test i18n warning (NO_I18NEXT_INSTANCE): render via '@test-utils' or wrap with I18nextProvider and a shared i18n instance (src/testUtils/test-i18n.tsx).
 
 
 # 12. Additional References

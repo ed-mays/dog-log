@@ -1,11 +1,11 @@
-import { render, screen } from '@/test-utils';
+import { render, screen } from '@test-utils';
 import { AppRoutes } from './AppRoutes';
 import { useFeatureFlag } from './featureFlags/useFeatureFlag';
-import { useAuthStore } from '@/store/auth.store';
+import { useAuthStore } from '@store/auth.store';
 import '@testing-library/jest-dom';
 
 vi.mock('./featureFlags/useFeatureFlag');
-vi.mock('@/store/auth.store');
+vi.mock('@store/auth.store');
 
 describe('AppRoutes', () => {
   const mockUseFeatureFlag = useFeatureFlag as vi.Mock;

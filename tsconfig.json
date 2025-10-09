@@ -8,8 +8,8 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": "./src",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/services/*": ["services/*"]
+      "@components/*": ["components/*"],
+      "@services/*": ["services/*"]
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

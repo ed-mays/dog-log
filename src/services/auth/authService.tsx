@@ -7,9 +7,9 @@ import {
   signOut as fbSignOut,
   type User as FirebaseUser,
 } from 'firebase/auth';
-import { auth } from '@/firebase';
-import { userRepository } from '@/repositories/userRepository';
-import type { User } from '@/models/User';
+import { auth } from '@firebase';
+import { userRepository } from '@repositories/userRepository';
+import type { User } from '@models/User';
 
 export type AppUser = {
   uid: string;

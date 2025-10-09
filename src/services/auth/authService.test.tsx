@@ -5,16 +5,16 @@ import {
   signOut,
   subscribeToAuth,
 } from './authService';
-import { userRepository } from '@/repositories/userRepository';
-import type { User } from '@/models/User';
-import { BaseEntity } from '@/repositories/types';
+import { userRepository } from '@repositories/userRepository';
+import type { User } from '@models/User';
+import { BaseEntity } from '@repositories/types';
 
-vi.mock('@/firebase', () => ({
+vi.mock('@firebase', () => ({
   auth: {},
   db: {},
 }));
 
-vi.mock('@/repositories/userRepository', () => ({
+vi.mock('@repositories/userRepository', () => ({
   userRepository: {
     getById: vi.fn(),
     create: vi.fn(),

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BaseRepository, ArchivableBaseRepository } from './BaseRepository';
-import { BaseEntity, ArchivableEntity } from '@/repositories/types';
+import { BaseEntity, ArchivableEntity } from '@repositories/types';
 
 vi.mock('firebase/firestore', () => {
   class MockTimestamp {
@@ -31,7 +31,7 @@ vi.mock('firebase/firestore', () => {
   };
 });
 
-vi.mock('@/firebase', () => ({ db: {} }));
+vi.mock('@firebase', () => ({ db: {} }));
 
 interface TestEntity extends BaseEntity {
   name: string;

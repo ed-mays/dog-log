@@ -31,32 +31,21 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // Original "@/" aliases (keep for backward compatibility)
-      '@/App': path.resolve(__dirname, './src/App.tsx'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/firebase': path.resolve(__dirname, './src/firebase.tsx'),
-      '@/store': path.resolve(__dirname, './src/store'),
-      '@/test-utils': path.resolve(__dirname, './src/test-utils.tsx'),
-      '@/testUtils': path.resolve(__dirname, './src/testUtils'),
-      '@/featureFlags': path.resolve(__dirname, './src/featureFlags'),
-      '@/features': path.resolve(__dirname, './src/features'),
-      '@/models': path.resolve(__dirname, './src/models'),
-      '@/repositories': path.resolve(__dirname, './src/repositories'),
-      '@/services': path.resolve(__dirname, './src/services'),
-      '@/styles': path.resolve(__dirname, './src/styles'),
-      '@/utils': path.resolve(__dirname, './src/utils'),
-
-      // Aliases per project guidelines (no leading "/")
+      // Standard '@' aliases per project guidelines (no leading '/')
       '@components': path.resolve(__dirname, './src/components'),
       '@store': path.resolve(__dirname, './src/store'),
       '@features': path.resolve(__dirname, './src/features'),
       '@featureFlags': path.resolve(__dirname, './src/featureFlags'),
       '@styles': path.resolve(__dirname, './src/styles'),
       '@testUtils': path.resolve(__dirname, './src/testUtils'),
+
+      // Additional commonly used aliases
       '@repositories': path.resolve(__dirname, './src/repositories'),
       '@services': path.resolve(__dirname, './src/services'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@models': path.resolve(__dirname, './src/models'),
+      '@firebase': path.resolve(__dirname, './src/firebase.tsx'),
+      '@App': path.resolve(__dirname, './src/App.tsx'),
 
       // Convenience alias used in tests pointing to the render wrapper file
       '@test-utils': path.resolve(__dirname, './src/test-utils.tsx'),

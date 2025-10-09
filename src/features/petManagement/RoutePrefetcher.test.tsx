@@ -1,11 +1,11 @@
-import { render } from '@/test-utils';
+import { render } from '@test-utils';
 import { RoutePrefetcher } from './RoutePrefetcher';
-import { usePetsStore } from '@/store/pets.store';
-import { useUiStore } from '@/store/ui.store';
+import { usePetsStore } from '@store/pets.store';
+import { useUiStore } from '@store/ui.store';
 import { vi } from 'vitest';
 
-vi.mock('@/store/pets.store');
-vi.mock('@/store/ui.store');
+vi.mock('@store/pets.store');
+vi.mock('@store/ui.store');
 
 describe('RoutePrefetcher', () => {
   const mockUsePetsStore = usePetsStore as vi.Mock;
