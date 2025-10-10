@@ -24,7 +24,7 @@ vi.mock('react-router-dom', async (importOriginal) => {
 
 const testBirthDate = new Date('2023-01-01T00:00:00.000Z');
 
-vi.mock('@features/petManagement/PetForm', () => ({
+vi.mock('@features/petManagement/components/PetForm', () => ({
   PetForm: (props: {
     onSubmit: (pet: Pet) => void;
     onCancel: () => void;
@@ -112,7 +112,7 @@ describe('AddPetPage', () => {
   });
 
   it('navigates away immediately if cancel is clicked and not dirty', () => {
-    vi.doMock('@features/petManagement/PetForm', () => ({
+    vi.doMock('@features/petManagement/components/PetForm', () => ({
       PetForm: (props: { onCancel: () => void }) => (
         <div>
           <button onClick={props.onCancel}>Cancel</button>

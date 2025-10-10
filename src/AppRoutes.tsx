@@ -8,8 +8,12 @@ import { useAuthStore } from '@store/auth.store';
 import { WelcomePage } from '@features/authentication/pages/WelcomePage.tsx';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
 
-const PetListPage = lazy(() => import('@features/petManagement/petListPage'));
-const AddPetPage = lazy(() => import('@features/petManagement/AddPetPage'));
+const PetListPage = lazy(
+  () => import('@features/petManagement/pages/petListPage.tsx')
+);
+const AddPetPage = lazy(
+  () => import('@features/petManagement/pages/AddPetPage.tsx')
+);
 
 export function AppRoutes() {
   const enablePetList = useFeatureFlag('petListEnabled');

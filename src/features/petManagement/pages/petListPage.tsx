@@ -1,7 +1,7 @@
-import { PetList } from './PetList';
-import { usePetsStore } from '@store/pets.store';
+import { PetList } from '../components/PetList.tsx';
+import { usePetsStore } from '@store/pets.store.tsx';
 import { useEffect, useState } from 'react';
-import { loadNamespace } from '../../i18n';
+import { loadNamespace } from '../../../i18n.tsx';
 
 export default function PetListPage() {
   const pets = usePetsStore((state) => state.pets);
