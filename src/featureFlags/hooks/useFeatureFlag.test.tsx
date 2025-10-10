@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { FeatureFlagsProvider } from './FeatureFlagsProvider';
+import { FeatureFlagsProvider } from '../components/FeatureFlagsProvider';
 import { useFeatureFlag } from './useFeatureFlag';
-import type { FeatureFlag } from './featureFlags.types';
+import type { FeatureFlag } from '../types';
 
 const TestFeature: React.FC<{ flag: string }> = ({ flag }) => {
   const enabled = useFeatureFlag(flag as FeatureFlag);

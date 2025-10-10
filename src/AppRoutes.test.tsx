@@ -1,9 +1,9 @@
-vi.mock('./featureFlags/useFeatureFlag');
+vi.mock('./featureFlags/hooks/useFeatureFlag');
 vi.mock('@store/auth.store');
 
 import { render, screen } from '@test-utils';
 import { AppRoutes } from './AppRoutes';
-import { useFeatureFlag } from './featureFlags/useFeatureFlag';
+import { useFeatureFlag } from './featureFlags/hooks/useFeatureFlag';
 import { useAuthStore } from '@store/auth.store';
 import '@testing-library/jest-dom';
 

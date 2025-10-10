@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { FeatureFlagsContext } from './FeatureFlagsContext';
+import { FeatureFlagsContext } from '../components/FeatureFlagsContext.tsx';
 
 export function useFeatureFlagsContext() {
   const context = useContext(FeatureFlagsContext);

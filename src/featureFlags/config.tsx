@@ -1,4 +1,4 @@
-import type { FeatureFlags } from './featureFlags.types';
+import type { FeatureFlags } from './types.tsx';
 
 export const defaultFeatureFlags: FeatureFlags = {
   newDashboard: import.meta.env.VITE_FLAG_NEW_DASHBOARD === 'true',

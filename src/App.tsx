@@ -1,5 +1,5 @@
 import './App.css';
-import { useFeatureFlag } from '@featureFlags/useFeatureFlag';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
 import { useUiStore } from '@store/ui.store';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';

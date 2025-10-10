@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { FeatureFlags } from './featureFlags.types';
+import type { FeatureFlags } from '../types.tsx';
 
 export type FeatureFlagsContextType = {
   flags: FeatureFlags;

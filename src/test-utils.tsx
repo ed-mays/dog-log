@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import type { RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import defaultI18n from '@testUtils/test-i18n';
-import { FeatureFlagsProvider } from '@featureFlags/FeatureFlagsProvider';
+import { FeatureFlagsProvider } from '@featureFlags/components/FeatureFlagsProvider';
 import type { FeatureFlags } from '@featureFlags/featureFlags.types';
 import type { i18n } from 'i18next';
 import { MemoryRouter } from 'react-router-dom';

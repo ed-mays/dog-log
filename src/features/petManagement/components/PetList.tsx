@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import styles from './PetList.module.css';
 import type { Pet } from '../types.tsx';
-import { useFeatureFlag } from '@featureFlags/useFeatureFlag.tsx';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
 import { Link } from 'react-router-dom';
 
 type PetListProps = {
