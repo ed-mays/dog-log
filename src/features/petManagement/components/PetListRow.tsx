@@ -7,9 +7,11 @@ import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
 
 type PetListRowProps = {
   pet: Pet;
+  onEdit?: (pet: Pet) => void;
+  onDelete?: (pet: Pet) => void;
 };
 
-export function PetListRow({ pet }: PetListRowProps) {
+export function PetListRow({ pet, onEdit, onDelete }: PetListRowProps) {
   const [nsReady, setNsReady] = useState(false);
 
   useEffect(() => {
@@ -27,13 +29,9 @@ export function PetListRow({ pet }: PetListRowProps) {
 
   if (!nsReady) return null;
 
-  const editClick = async () => {
-    alert('Editing ' + pet.id);
-  };
+  const editClick = () => onEdit?.(pet);
 
-  const deleteClick = async () => {
-    alert('Deleting ' + pet.id);
-  };
+  const deleteClick = () => onDelete?.(pet);
 
   return (
     <tr key={pet.id}>

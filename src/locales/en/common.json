@@ -23,5 +23,11 @@
   },
   "actions": "Actions",
   "edit": "Edit",
-  "delete": "Delete"
+  "delete": "Delete",
+  "confirmDeleteTitle": "Confirm deletion",
+  "confirmDeleteMessage": "Delete {{petName}}? This action cannot be undone.",
+  "errors": {
+    "updateFailed": "Failed to update. Please try again.",
+    "deleteFailed": "Failed to delete. Please try again."
+  }
 }

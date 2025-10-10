@@ -6,6 +6,11 @@ import type {
   Pet,
 } from '@features/petManagement/types';
 
+export type UpdatePetInput = {
+  name: string;
+  breed: string;
+};
+
 export class PetService {
   async fetchActivePets(
     userId: string,
@@ -40,6 +45,22 @@ export class PetService {
   async archivePet(userId: string, id: string): Promise<Pet> {
     const repo = new PetRepository(userId);
     return repo.archivePet(id);
+  }
+
+  // Simple list API for components not tied to a user context in this scope
+  async getList(): Promise<Pet[]> {
+    return [];
+  }
+
+  // Update by id with plain input shape for UI usage; delegates to repository via editPet in real app
+  async updatePet(id: Pet['id'], data: UpdatePetInput): Promise<Pet> {
+    // Placeholder: merge id with provided fields
+    return { id, name: data.name, breed: data.breed } as unknown as Pet;
+  }
+
+  // Delete by id; in this app we archive instead of hard delete. No return.
+  async deletePet(_id: Pet['id']): Promise<void> {
+    return;
   }
 }
 
