@@ -3,7 +3,7 @@ import {
   doc,
   getDoc,
   getDocs,
-  setDoc,
+  addDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -201,6 +201,7 @@ export abstract class BaseRepository<T extends BaseEntity>
   async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
     try {
       const now = new Date();
+      console.log('BaseRepository.create', entityData);
       const newEntity = {
         ...entityData,
         createdAt: now,
@@ -208,16 +209,12 @@ export abstract class BaseRepository<T extends BaseEntity>
       } as Record<string, unknown>;
 
       const docData = this.entityToDocument(newEntity);
+      const colRef = collection(db, this.collectionName); // e.g., users/{uid}/pets
+      const docRef = await addDoc(colRef, docData);
 
-      await setDoc(
-        doc(db, this.collectionName, newEntity.id as string),
-        docData
-      );
-
-      // Return the created entity with the generated ID
       return {
-        id: newEntity.id,
-        ...newEntity,
+        id: docRef.id,
+        ...(newEntity as object),
       } as T;
     } catch (error) {
       throw this.handleError(error, 'create');
