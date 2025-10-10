@@ -14,11 +14,7 @@ export function PetListRow({ pet }: PetListRowProps) {
 
   useEffect(() => {
     let mounted = true;
-    Promise.all([
-      loadNamespace('petList'),
-      loadNamespace('petProperties'),
-      loadNamespace('common'),
-    ]).then(() => {
+    Promise.all([loadNamespace('common')]).then(() => {
       if (mounted) setNsReady(true);
     });
     return () => {
