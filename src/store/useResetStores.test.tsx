@@ -73,16 +73,20 @@ describe('useResetStores', () => {
     let second: (() => void) | null = null;
 
     const { rerender } = render(
-      <Harness onReady={(fn) => {
-        first = fn;
-      }} />
+      <Harness
+        onReady={(fn) => {
+          first = fn;
+        }}
+      />
     );
 
     // Force a re-render with a new onReady instance
     rerender(
-      <Harness onReady={(fn) => {
-        second = fn;
-      }} />
+      <Harness
+        onReady={(fn) => {
+          second = fn;
+        }}
+      />
     );
 
     expect(first).toBeInstanceOf(Function);
