@@ -22,6 +22,7 @@ A modern **React** application scaffolded with **Vite** and written in **TypeScr
   - `@services/* → src/services/*`
   - `@styles/* → src/styles/*`
   - `@utils/* → src/utils/*`
+- See: docs/directory-structure-review.md for a focused directory structure review and proposals.
 - Test setup with **Vitest** & **Testing Library**
 - Linting & formatting with **ESLint** & **Prettier**
 - Internationalization powered by **i18next** and **react-i18next**
