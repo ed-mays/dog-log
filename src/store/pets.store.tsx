@@ -9,13 +9,17 @@ interface PetsState {
   fetchError: Error | null;
   fetchPets: () => Promise<void>;
   addPet: (pet: PetCreateInput) => Promise<void>;
-  clearPets: () => void;
+  reset: () => void;
 }
 
-export const usePetsStore = create<PetsState>((set) => ({
+const initialState = {
   pets: [],
   isFetching: false,
   fetchError: null,
+};
+
+export const usePetsStore = create<PetsState>((set) => ({
+  ...initialState,
   addPet: async (pet: PetCreateInput) => {
     const { user } = useAuthStore.getState();
     if (!user) {
@@ -39,7 +43,7 @@ export const usePetsStore = create<PetsState>((set) => ({
       set({ fetchError: error, isFetching: false });
     }
   },
-  clearPets: () => {
-    set({ pets: [], isFetching: false, fetchError: null });
+  reset: () => {
+    set(initialState);
   },
 }));

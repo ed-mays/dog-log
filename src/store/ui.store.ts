@@ -5,11 +5,14 @@ interface UiState {
   error: Error | null;
   setLoading: (loading: boolean) => void;
   setError: (error: Error | null) => void;
+  reset: () => void;
 }
 
+const initialState = { loading: false, error: null };
+
 export const useUiStore = create<UiState>((set) => ({
-  loading: false,
-  error: null,
+  ...initialState,
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
+  reset: () => set(initialState),
 }));

@@ -5,6 +5,7 @@ import { loadNamespace } from '@i18n';
 
 export default function PetListPage() {
   const pets = usePetsStore((state) => state.pets);
+
   const [nsReady, setNsReady] = useState(false);
 
   useEffect(() => {

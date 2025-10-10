@@ -201,7 +201,6 @@ export abstract class BaseRepository<T extends BaseEntity>
   async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
     try {
       const now = new Date();
-      console.log('BaseRepository.create', entityData);
       const newEntity = {
         ...entityData,
         createdAt: now,

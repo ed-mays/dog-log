@@ -13,14 +13,18 @@ export type AuthState = {
   initAuthListener: () => void;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  reset: () => void;
 };
 
 let unsubscribe: Unsubscribe | null = null;
+const initialState = {
+  user: null,
+  initializing: false,
+  error: null,
+};
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  initializing: true,
-  error: null,
+  ...initialState,
   initAuthListener: () => {
     // Reinitialize listener safely if already set (useful for tests or HMR)
     if (unsubscribe) {
@@ -53,6 +57,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ error });
       throw error;
     }
+  },
+  reset: () => {
+    set(initialState);
   },
 }));
 
