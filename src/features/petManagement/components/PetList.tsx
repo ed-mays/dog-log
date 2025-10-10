@@ -2,11 +2,10 @@ import { useTranslation } from 'react-i18next';
 import styles from './PetList.module.css';
 import type { Pet } from '../types.tsx';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PetListRow } from '@features/petManagement/components/PetListRow.tsx';
 import { loadNamespace } from '@i18n';
 import { useEffect, useState } from 'react';
-import { PetForm } from '@features/petManagement/components/PetForm.tsx';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
 import { usePetsStore } from '@store/pets.store.tsx';
 
@@ -18,9 +17,7 @@ type PetListProps = {
 export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
   const [nsReady, setNsReady] = useState(false);
   const pets = usePetsStore((s) => s.pets);
-  const updatePetInStore = usePetsStore((s) => s.updatePet);
   const deletePetInStore = usePetsStore((s) => s.deletePet);
-  const [editingPet, setEditingPet] = useState<Pet | null>(null);
   const [deletingPet, setDeletingPet] = useState<Pet | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,21 +40,9 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
 
   const addPetEnabled = useFeatureFlag('addPetEnabled');
   const petActionsEnabled = useFeatureFlag('petActionsEnabled');
+  const navigate = useNavigate();
   if (!nsReady) return null;
 
-  async function submitEdit(values: { name: string; breed: string }) {
-    if (!editingPet) return;
-    setSaving(true);
-    setError(null);
-    try {
-      await updatePetInStore(editingPet.id, values);
-      setEditingPet(null);
-    } catch (e) {
-      setError(t('errors.updateFailed', { ns: 'common' }));
-    } finally {
-      setSaving(false);
-    }
-  }
 
   async function confirmDelete() {
     if (!deletingPet) return;
@@ -122,25 +107,12 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
             <PetListRow
               key={pet.id}
               pet={pet}
-              onEdit={setEditingPet}
               onDelete={setDeletingPet}
+              onEdit={(p) => navigate(`/pets/${p.id}/edit`)}
             />
           ))}
         </tbody>
       </table>
-
-      {editingPet && (
-        <div role="dialog" aria-modal="true">
-          <div>
-            <h2>{t('editPetTitle', { ns: 'petList' })}</h2>
-            <PetForm
-              initialValues={editingPet}
-              onSubmit={(p) => submitEdit({ name: p.name, breed: p.breed })}
-              onCancel={() => setEditingPet(null)}
-            />
-          </div>
-        </div>
-      )}
 
       {deletingPet && (
         <ConfirmModal

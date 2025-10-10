@@ -4,15 +4,17 @@ import type { Pet } from '../types';
 import { loadNamespace } from '@i18n';
 import { useTranslation } from 'react-i18next';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
+import { useNavigate } from 'react-router-dom';
 
 type PetListRowProps = {
   pet: Pet;
-  onEdit?: (pet: Pet) => void;
   onDelete?: (pet: Pet) => void;
+  onEdit?: (pet: Pet) => void;
 };
 
-export function PetListRow({ pet, onEdit, onDelete }: PetListRowProps) {
+export function PetListRow({ pet, onDelete, onEdit }: PetListRowProps) {
   const [nsReady, setNsReady] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let mounted = true;
@@ -29,7 +31,7 @@ export function PetListRow({ pet, onEdit, onDelete }: PetListRowProps) {
 
   if (!nsReady) return null;
 
-  const editClick = () => onEdit?.(pet);
+  const editClick = () => (onEdit ? onEdit(pet) : navigate(`/pets/${pet.id}/edit`));
 
   const deleteClick = () => onDelete?.(pet);
 

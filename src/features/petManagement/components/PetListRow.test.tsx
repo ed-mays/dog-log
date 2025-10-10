@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@test-utils';
-import { PetListRow } from './PetListRow';
 import type { Pet } from '../types';
 
 function makePet(overrides: Partial<Pet> = {}): Pet {
@@ -18,15 +17,23 @@ function makePet(overrides: Partial<Pet> = {}): Pet {
 }
 
 describe('PetListRow', () => {
-  it('renders Edit/Delete buttons when petActionsEnabled=true and calls callbacks', async () => {
+  it('renders Edit/Delete buttons when petActionsEnabled=true; navigates on Edit and calls onDelete', async () => {
     const pet = makePet();
-    const onEdit = vi.fn();
     const onDelete = vi.fn();
+
+    // Spy on useNavigate
+    const navSpy = vi.fn();
+    vi.doMock('react-router-dom', async (importOriginal) => {
+      const mod: any = await importOriginal();
+      return { ...mod, useNavigate: () => navSpy };
+    });
+    // Need to re-import component after mocking
+    const { PetListRow: MockedPetListRow } = await import('./PetListRow');
 
     render(
       <table>
         <tbody>
-          <PetListRow pet={pet} onEdit={onEdit} onDelete={onDelete} />
+          <MockedPetListRow pet={pet} onDelete={onDelete} />
         </tbody>
       </table>,
       { featureFlags: { petActionsEnabled: true } }
@@ -36,14 +43,16 @@ describe('PetListRow', () => {
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
 
     fireEvent.click(editBtn);
-    expect(onEdit).toHaveBeenCalledWith(pet);
+    expect(navSpy).toHaveBeenCalledWith(`/pets/${pet.id}/edit`);
 
     fireEvent.click(deleteBtn);
     expect(onDelete).toHaveBeenCalledWith(pet);
   });
 
-  it('hides Edit/Delete when petActionsEnabled=false', () => {
+  it('hides Edit/Delete when petActionsEnabled=false', async () => {
     const pet = makePet();
+
+    const { PetListRow } = await import('./PetListRow');
 
     render(
       <table>

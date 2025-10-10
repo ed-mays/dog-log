@@ -14,6 +14,9 @@ const PetListPage = lazy(
 const AddPetPage = lazy(
   () => import('@features/petManagement/pages/AddPetPage.tsx')
 );
+const EditPetPage = lazy(
+  () => import('@features/petManagement/pages/EditPetPage.tsx')
+);
 
 export function AppRoutes() {
   const enablePetList = useFeatureFlag('petListEnabled');
@@ -49,6 +52,14 @@ export function AppRoutes() {
           element={
             <PrivateRoute>
               <AddPetPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/pets/:id/edit"
+          element={
+            <PrivateRoute>
+              <EditPetPage />
             </PrivateRoute>
           }
         />

@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@test-utils';
-import { PetList } from './PetList';
 import type { Pet } from '../types';
 
 vi.mock('@store/pets.store', () => ({
@@ -28,9 +27,11 @@ afterEach(() => {
 });
 
 describe('PetList integration', () => {
-  function setup(
-    flags: { petActionsEnabled?: boolean } = { petActionsEnabled: true }
+  async function setup(
+    flags: { petActionsEnabled?: boolean } = { petActionsEnabled: true },
+    options: { renderList?: boolean } = {}
   ) {
+    const { renderList = true } = options;
     let statePets = [makePet()];
     const actions = {
       updatePet: vi.fn(
@@ -49,67 +50,38 @@ describe('PetList integration', () => {
       selector({ pets: statePets, ...actions })
     );
 
-    render(<PetList pets={statePets} />, {
-      featureFlags: { addPetEnabled: true, ...flags },
-    });
+    if (renderList) {
+      const { PetList } = await import('./PetList');
+      render(<PetList pets={statePets} />, {
+        featureFlags: { addPetEnabled: true, ...flags },
+      });
+    }
 
     return { actions, getPets: () => statePets };
   }
 
-  it('opens edit modal on Edit click, pre-populates fields, submits and updates list', async () => {
-    const { actions } = setup();
+  it('navigates to edit page on Edit click', async () => {
+    await setup({}, { renderList: false });
+
+    const navSpy = vi.fn();
+    vi.doMock('react-router-dom', async (importOriginal) => {
+      const mod: any = await importOriginal();
+      return { ...mod, useNavigate: () => navSpy };
+    });
+    // Import after mocking to pick up mocked navigate
+    const { PetList: MockedPetList } = await import('./PetList');
+    render(<MockedPetList pets={[makePet()]} />, {
+      featureFlags: { addPetEnabled: true, petActionsEnabled: true },
+    });
 
     const editBtn = await screen.findByRole('button', { name: /edit/i });
     fireEvent.click(editBtn);
 
-    const dialog = await screen.findByRole('dialog');
-    expect(dialog).toBeInTheDocument();
-
-    const nameInput = screen.getByLabelText(/name/i) as HTMLInputElement;
-    const breedInput = screen.getByLabelText(/breed/i) as HTMLInputElement;
-
-    expect(nameInput.value).toBe('Fido');
-    expect(breedInput.value).toBe('Mix');
-
-    fireEvent.change(nameInput, { target: { value: 'Rex' } });
-
-    const submitBtn = screen.getByRole('button', { name: /ok/i });
-    fireEvent.click(submitBtn);
-
-    await waitFor(() => {
-      expect(actions.updatePet).toHaveBeenCalledWith('1', {
-        name: 'Rex',
-        breed: 'Mix',
-      });
-    });
-
-    // Modal closes
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog')).toBeNull();
-    });
-
-    // List updates
-    expect(screen.getByText('Rex')).toBeInTheDocument();
-  });
-
-  it('cancel closes edit modal without calling service', async () => {
-    const { actions } = setup();
-
-    const editBtn = await screen.findByRole('button', { name: /edit/i });
-    fireEvent.click(editBtn);
-
-    const cancelBtn = await screen.findByRole('button', { name: /cancel/i });
-    fireEvent.click(cancelBtn);
-
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog')).toBeNull();
-    });
-
-    expect(actions.updatePet).not.toHaveBeenCalled();
+    expect(navSpy).toHaveBeenCalledWith('/pets/1/edit');
   });
 
   it('opens delete confirm, decline closes without action, confirm deletes and closes', async () => {
-    const { actions } = setup();
+    const { actions } = await setup();
 
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
     fireEvent.click(deleteBtn);
@@ -143,22 +115,9 @@ describe('PetList integration', () => {
     });
   });
 
-  it('shows error and keeps edit modal open on update failure', async () => {
-    const { actions } = setup();
-    actions.updatePet.mockRejectedValueOnce(new Error('fail'));
-    fireEvent.click(await screen.findByRole('button', { name: /edit/i }));
-
-    const nameInput = await screen.findByLabelText(/name/i);
-    fireEvent.change(nameInput, { target: { value: 'Buddy' } });
-    fireEvent.click(screen.getByRole('button', { name: /ok/i }));
-
-    await screen.findByRole('alert');
-    // Dialog should still be open
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-  });
 
   it('shows error and keeps confirm open on delete failure', async () => {
-    const { actions } = setup();
+    const { actions } = await setup();
     actions.deletePet.mockRejectedValueOnce(new Error('fail'));
 
     fireEvent.click(await screen.findByRole('button', { name: /delete/i }));
@@ -171,7 +130,7 @@ describe('PetList integration', () => {
   });
 
   it('does not render action buttons when petActionsEnabled=false', async () => {
-    setup({ petActionsEnabled: false });
+    await setup({ petActionsEnabled: false });
 
     expect(screen.queryByRole('button', { name: /edit/i })).toBeNull();
     expect(screen.queryByRole('button', { name: /delete/i })).toBeNull();
