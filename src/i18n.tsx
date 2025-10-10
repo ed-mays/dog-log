@@ -1,19 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Boot with only the critical 'common' namespace to keep initial bundle small
-import commonEN from './locales/en/common.json';
-import commonES from './locales/es/common.json';
-
 i18n.use(initReactI18next).init({
-  resources: {
-    en: {
-      common: commonEN,
-    },
-    es: {
-      common: commonES,
-    },
-  },
   lng: import.meta.env.VITE_DEFAULT_LOCALE,
   fallbackLng: 'en',
   ns: ['common'],

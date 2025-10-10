@@ -27,6 +27,7 @@
       "@App": ["App.tsx"],
       "@components/*": ["components/*"],
       "@firebase": ["firebase.tsx"],
+      "@i18n": ["i18n.tsx"],
       "@store/*": ["store/*"],
       "@test-utils": ["test-utils.tsx"],
       "@testUtils/*": ["testUtils/*"],

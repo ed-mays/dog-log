@@ -46,6 +46,7 @@ export default defineConfig({
       '@models': path.resolve(__dirname, './src/models'),
       '@firebase': path.resolve(__dirname, './src/firebase.tsx'),
       '@App': path.resolve(__dirname, './src/App.tsx'),
+      '@i18n': path.resolve(__dirname, './src/i18n.tsx'),
 
       // Convenience alias used in tests pointing to the render wrapper file
       '@test-utils': path.resolve(__dirname, './src/test-utils.tsx'),
