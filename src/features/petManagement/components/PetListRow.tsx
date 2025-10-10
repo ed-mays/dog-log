@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './PetList.module.css';
 import type { Pet } from '../types';
 import { loadNamespace } from '@i18n';
