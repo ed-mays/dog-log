@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@store/auth.store';
+import { useAuthStore } from '@store/auth.store.tsx';
 
 type Props = {
   className?: string;
@@ -28,6 +28,7 @@ const LoginButton: React.FC<Props> = ({ className, disabled }) => {
       disabled={disabled || initializing}
       aria-busy={initializing || undefined}
       aria-label={t('continueWithGoogle', 'Continue with Google')}
+      data-testid="login-button"
     >
       {t('continueWithGoogle', 'Continue with Google')}
     </button>

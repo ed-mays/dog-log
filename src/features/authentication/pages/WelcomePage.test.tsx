@@ -13,11 +13,11 @@ vi.mock('@components/common/Auth/LoginButton', () => ({
 }));
 
 describe('WelcomePage', () => {
-  it('renders the welcome message and login button', () => {
+  it('renders the welcome message and login button', async () => {
     render(<WelcomePage />);
 
     expect(screen.getByText('Welcome to Dog Log!')).toBeInTheDocument();
     expect(screen.getByText('Please sign in to continue.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+    expect(await screen.findByTestId('login-button')).toBeInTheDocument();
   });
 });

@@ -5,7 +5,7 @@ import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingInd
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from './utils/errors';
-import LogoutButton from '@components/common/Auth/LogoutButton';
+import LogoutButton from '@features/authentication/components/LogoutButton.tsx';
 import { useAuthStore } from '@store/auth.store';
 import { RoutePrefetcher } from '@features/petManagement/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';

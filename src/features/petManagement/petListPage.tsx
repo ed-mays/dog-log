@@ -9,11 +9,12 @@ export default function PetListPage() {
 
   useEffect(() => {
     let mounted = true;
-    Promise.all([loadNamespace('petList'), loadNamespace('petProperties')]).then(
-      () => {
-        if (mounted) setNsReady(true);
-      }
-    );
+    Promise.all([
+      loadNamespace('petList'),
+      loadNamespace('petProperties'),
+    ]).then(() => {
+      if (mounted) setNsReady(true);
+    });
     return () => {
       mounted = false;
     };

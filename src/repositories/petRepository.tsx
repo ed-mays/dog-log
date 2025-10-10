@@ -25,7 +25,11 @@ export class PetRepository extends ArchivableBaseRepository<Pet> {
 
   async createPet(input: PetCreateInput) {
     // Transforms input and delegates to BaseRepository.create
-    return this.create({ ...input, isArchived: false, createdBy: this.userId } as any);
+    return this.create({
+      ...input,
+      isArchived: false,
+      createdBy: this.userId,
+    } as any);
   }
 
   async updatePet(id: string, updates: PetUpdateInput) {
