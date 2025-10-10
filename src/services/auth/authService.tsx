@@ -54,7 +54,7 @@ export async function signInWithGoogle(): Promise<AppUser> {
         email: firebaseUser.email,
         photoURL: firebaseUser.photoURL,
         createdAt: new Date(),
-        createdBy: '',
+        createdBy: firebaseUser.uid,
         updatedAt: new Date(),
       };
       await userRepository.create(newUser);

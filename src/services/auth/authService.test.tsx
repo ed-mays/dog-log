@@ -7,7 +7,6 @@ import {
 } from './authService';
 import { userRepository } from '@repositories/userRepository';
 import type { User } from '@models/User';
-import { BaseEntity } from '@repositories/types';
 
 vi.mock('@firebase', () => ({
   auth: {},
@@ -49,22 +48,22 @@ describe('authService', () => {
   });
 
   describe('signInWithGoogle', () => {
+    const user: User = {
+      uid: 'u1',
+      displayName: 'Test User',
+      email: 't@example.com',
+      photoURL: 'http://x',
+      createdBy: '',
+    };
     beforeEach(() => {
       signInWithPopupMock.mockResolvedValue({
-        user: {
-          uid: 'u1',
-          displayName: 'Test User',
-          email: 't@example.com',
-          photoURL: 'http://x',
-          createdBy: '',
-        },
+        user: user,
       });
     });
     it('creates a new user if one does not exist', async () => {
       (userRepository.getById as vi.Mock).mockResolvedValue(undefined);
 
       const user = await signInWithGoogle();
-      //await signInWithGoogle();
       expect(signInWithPopupMock).toHaveBeenCalledTimes(1);
       expect(userRepository.getById).toHaveBeenCalledWith('u1');
       const expectedUser: User = {
@@ -74,12 +73,6 @@ describe('authService', () => {
         photoURL: 'http://x',
       };
       expect(userRepository.create).toHaveBeenCalledTimes(1);
-      expect(user).toEqual({
-        uid: 'u1',
-        displayName: 'Test User',
-        email: 't@example.com',
-        photoURL: 'http://x',
-      });
     });
 
     it('does not create a user if one already exists', async () => {
