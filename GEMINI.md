@@ -131,7 +131,7 @@ export const petService = {
 
 // src/features/petManagement/usePetList.ts
 import { useEffect, useState } from 'react';
-import { petService } from '../../services/petService';
+import { petService } from '@services/petService';
 export function usePetList() {
   const [pets, setPets] = useState([]);
   useEffect(() => {
