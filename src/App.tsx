@@ -31,6 +31,7 @@ function App() {
   return (
     <>
       <RoutePrefetcher />
+      {console.log(authEnabled)}
       {user && authEnabled && (
         <header aria-label="user-controls">
           <LogoutButton />

@@ -20,5 +20,8 @@
     "popupBlocked": "Tu navegador bloqueó la ventana emergente de inicio de sesión.",
     "networkRequestFailed": "Error de red durante la autenticación. Inténtalo de nuevo.",
     "generic": "La autenticación falló. Inténtalo de nuevo."
-  }
+  },
+  "actions": "Acciónes",
+  "edit": "Editar",
+  "delete": "Borrar"
 }

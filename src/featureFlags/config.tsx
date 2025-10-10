@@ -6,7 +6,6 @@ export const defaultFeatureFlags: FeatureFlags = {
   test_show_count_button: import.meta.env.VITE_FLAG_COUNT_BUTTON === 'true',
   petListEnabled: import.meta.env.VITE_PET_LIST_ENABLED === 'true',
   addPetEnabled: import.meta.env.VITE_ADD_PET_ENABLED === 'true',
-  authEnabled:
-    String(import.meta.env.VITE_AUTH_ENABLED ?? 'true').toLowerCase() ===
-    'true',
+  authEnabled: import.meta.env.VITE_AUTH_ENABLED === 'true',
+  petActionsEnabled: import.meta.env.VITE_PET_ACTIONS_ENABLED === 'true',
 };
