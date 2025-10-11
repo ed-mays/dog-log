@@ -18,35 +18,35 @@ This file contains a backlog of desired changes to the DogLog project.
 - `Question` specifies an open question or decision to be made
 - `Spike` specifies work to investigate concepts
 
-Items ending in `?` are under consideration.
-
 ---
+## Ready for Dev
 
-## Features
 
-### Pet Management
-- Display Pet List as cards
-- Create PetSummary component to display key details?
-- Maybe it would be better to edit the pet inline in card?
-- Filter pet list by name
-
-### Navigation Bar
+## Unrefined
+### Feature: Navigation Bar
 - Show navigation bar when user is logged in
 - Create and integrate navigation bar component
   - Should not show for unauthenticated users
   - Should include logout component
 
-### User Profile
-
-### Implement Easter Egg
-- Add a memorial page for Zuul, linked as an easter egg
+### Feature: Pet Management
+- Display Pet List as cards
+- Create PetSummary component to display key details?
+- Spike: Maybe it would be better to edit the pet inline in card?
+- Filter pet list by name
 
 ## Backlog
 
-### Track Vets by User
+### Feature: Track Vets by User
 - User has a global, dynamic list of vets assignable to pets
 - Use tag-like approach (e.g., Jira tags) with suggested/existing options
 - Prototype this user tagging feature
+
+### Feature: User Profile
+Users should be able to edit basic information and upload a profile image
+
+### Feature: Easter Egg
+- Add a memorial page for Zuul, linked as an easter egg
 
 ---
 
