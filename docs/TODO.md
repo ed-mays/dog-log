@@ -16,6 +16,7 @@ This file contains a backlog of desired changes to the DogLog project.
 - `Feature` specifies creating or enhancing an app feature
 - `Goal` specifies a generalized goal for the application
 - `Question` specifies an open question or decision to be made
+- `Spike` specifies work to investigate concepts
 
 Items ending in `?` are under consideration.
 
@@ -36,12 +37,13 @@ Items ending in `?` are under consideration.
   - Should include logout component
 
 ### User Profile
-- (Unspecified details)
 
 ### Implement Easter Egg
 - Add a memorial page for Zuul, linked as an easter egg
 
-### Track Vets by User (Backlog)
+## Backlog
+
+### Track Vets by User
 - User has a global, dynamic list of vets assignable to pets
 - Use tag-like approach (e.g., Jira tags) with suggested/existing options
 - Prototype this user tagging feature
@@ -74,9 +76,9 @@ Items ending in `?` are under consideration.
 
 ## Implementation/Process Improvements
 
-- Implement pre-commit hooks
-  -[x]Investigate Husky or similar tools for pre-commit rules
-  - Enforce unit tests passing, clean lint, and clean build at commit
+-[x] Implement pre-commit hooks
+  -[x] Investigate Husky or similar tools for pre-commit rules
+  -[x] Enforce unit tests passing, clean lint, and clean build at commit
 
 ---
 
