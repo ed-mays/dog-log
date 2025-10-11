@@ -70,8 +70,8 @@ export default function AddPetPage() {
           text={t('discardChanges')}
           onAccept={handleModalAccept}
           onDecline={handleModalDecline}
-          acceptLabel={t('yes')}
-          declineLabel={t('no')}
+          acceptLabel={t('responses.yes')}
+          declineLabel={t('responses.no')}
         />
       )}
     </>

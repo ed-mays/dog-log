@@ -59,8 +59,8 @@ export function ConfirmModal({
     return () => document.removeEventListener('keydown', handleKeyDown, true);
   }, [onDecline]);
 
-  const yesLabel = acceptLabel ?? t('yes', 'Yes');
-  const noLabel = declineLabel ?? t('no', 'No');
+  const yesLabel = acceptLabel ?? t('responses.yes', 'Yes');
+  const noLabel = declineLabel ?? t('responses.no', 'No');
 
   return (
     <div

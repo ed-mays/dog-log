@@ -29,7 +29,7 @@ describe('EditPetPage', () => {
   });
 
   it('renders existing pet and submits updates then navigates to /pets', async () => {
-    let statePets = [makePet()];
+    const statePets = [makePet()];
     const actions = {
       updatePet: vi.fn(async () => {}),
     };
@@ -115,7 +115,7 @@ describe('EditPetPage', () => {
   });
 
   it('shows confirm modal on cancel when form is dirty; decline closes without navigation', async () => {
-    let statePets = [makePet()];
+    const statePets = [makePet()];
     const actions = { updatePet: vi.fn(async () => {}) };
     (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
       selector({ pets: statePets, ...actions })
@@ -157,7 +157,7 @@ describe('EditPetPage', () => {
   });
 
   it('accepting confirm after dirty cancel navigates back to /pets', async () => {
-    let statePets = [makePet()];
+    const statePets = [makePet()];
     const actions = { updatePet: vi.fn(async () => {}) };
     (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
       selector({ pets: statePets, ...actions })

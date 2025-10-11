@@ -31,7 +31,8 @@ export function PetListRow({ pet, onDelete, onEdit }: PetListRowProps) {
 
   if (!nsReady) return null;
 
-  const editClick = () => (onEdit ? onEdit(pet) : navigate(`/pets/${pet.id}/edit`));
+  const editClick = () =>
+    onEdit ? onEdit(pet) : navigate(`/pets/${pet.id}/edit`);
 
   const deleteClick = () => onDelete?.(pet);
 

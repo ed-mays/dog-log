@@ -19,13 +19,15 @@ if (!i18n.isInitialized) {
           breed: 'Breed',
         },
         common: {
-          ok: 'OK',
-          cancel: 'Cancel',
           featureNotEnabled: 'Feature not enabled',
           somethingWentWrong: 'Something went wrong',
           firebaseErrors: {
             popupClosedByUser:
               'The sign-in popup was closed before completing.',
+          },
+          responses: {
+            ok: 'OK',
+            cancel: 'Cancel',
           },
         },
       },
@@ -38,10 +40,12 @@ if (!i18n.isInitialized) {
           breed: 'Raza',
         },
         common: {
-          ok: 'Aceptar',
-          cancel: 'Cancelar',
           featureNotEnabled: 'Funcionalidad no habilitada',
           somethingWentWrong: 'Algo salió mal',
+          responses: {
+            ok: 'Aceptar',
+            cancel: 'Cancelar',
+          },
         },
       },
     },

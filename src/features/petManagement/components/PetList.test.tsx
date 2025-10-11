@@ -115,7 +115,6 @@ describe('PetList integration', () => {
     });
   });
 
-
   it('shows error and keeps confirm open on delete failure', async () => {
     const { actions } = await setup();
     actions.deletePet.mockRejectedValueOnce(new Error('fail'));

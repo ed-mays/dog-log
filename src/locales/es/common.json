@@ -23,5 +23,9 @@
   },
   "actions": "Acciónes",
   "edit": "Editar",
-  "delete": "Borrar"
+  "delete": "Borrar",
+  "responses": {
+    "ok": "Aceptar",
+    "cancel": "Cancelar"
+  }
 }

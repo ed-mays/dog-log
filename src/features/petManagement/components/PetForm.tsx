@@ -83,14 +83,14 @@ export function PetForm({
           type="button"
           onClick={onCancel}
         >
-          {t('cancel', { ns: 'common' })}
+          {t('responses.cancel', { ns: 'common' })}
         </button>
         <button
           className={`${formStyles.formButton} ${formStyles.formButtonPrimary}`}
           type="submit"
           disabled={!isValid}
         >
-          {t('ok', { ns: 'common' })}
+          {t('responses.ok', { ns: 'common' })}
         </button>
       </div>
     </form>

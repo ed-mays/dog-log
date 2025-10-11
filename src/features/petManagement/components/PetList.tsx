@@ -43,7 +43,6 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
   const navigate = useNavigate();
   if (!nsReady) return null;
 
-
   async function confirmDelete() {
     if (!deletingPet) return;
     setSaving(true);

@@ -1,10 +1,10 @@
 {
   "loading": "Loading…",
   "error": "Error...",
-  "ok": "OK",
-  "cancel": "Cancel",
-  "yes": "Yes",
-  "no": "No",
+  "ok": "OK Old",
+  "cancel": "Cancel Old",
+  "yes": "Yes Old",
+  "no": "No Old",
   "featureNotEnabled": "Feature not enabled",
   "somethingWentWrong": "Something went wrong",
   "discardChanges": "Discard changes?",
@@ -29,5 +29,11 @@
   "errors": {
     "updateFailed": "Failed to update. Please try again.",
     "deleteFailed": "Failed to delete. Please try again."
+  },
+  "responses": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
   }
 }
