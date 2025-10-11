@@ -33,13 +33,13 @@ describe('EditPetPage', () => {
     const actions = {
       updatePet: vi.fn(async () => {}),
     };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
+    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: any = await importOriginal();
+      const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: '1' }),
@@ -65,14 +65,16 @@ describe('EditPetPage', () => {
 
   it('cancel navigates back to /pets', async () => {
     const statePets = [makePet()];
-    const actions = { updatePet: vi.fn(async () => {}) };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
+    const actions = {
+      updatePet: vi.fn(async () => {}),
+    };
+    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: any = await importOriginal();
+      const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: '1' }),
@@ -94,13 +96,15 @@ describe('EditPetPage', () => {
 
   it('shows not found when pet id is invalid', async () => {
     const statePets: Pet[] = [];
-    const actions = { updatePet: vi.fn(async () => {}) };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
+    const actions = {
+      updatePet: vi.fn(async () => {}),
+    };
+    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: any = await importOriginal();
+      const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: 'nope' }),
@@ -116,14 +120,16 @@ describe('EditPetPage', () => {
 
   it('shows confirm modal on cancel when form is dirty; decline closes without navigation', async () => {
     const statePets = [makePet()];
-    const actions = { updatePet: vi.fn(async () => {}) };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
+    const actions = {
+      updatePet: vi.fn(async () => {}),
+    };
+    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: any = await importOriginal();
+      const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: '1' }),
@@ -158,14 +164,16 @@ describe('EditPetPage', () => {
 
   it('accepting confirm after dirty cancel navigates back to /pets', async () => {
     const statePets = [makePet()];
-    const actions = { updatePet: vi.fn(async () => {}) };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
+    const actions = {
+      updatePet: vi.fn(async () => {}),
+    };
+    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: any = await importOriginal();
+      const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: '1' }),

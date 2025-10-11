@@ -15,7 +15,7 @@ describe('AppRoutes', () => {
     vi.resetAllMocks();
 
     const authStoreState = { initializing: false, user: { uid: 'test' } };
-    mockUseAuthStore.mockImplementation((selector?: (s: any) => any) =>
+    mockUseAuthStore.mockImplementation((selector?: (s: never) => never) =>
       selector ? selector(authStoreState) : authStoreState
     );
 

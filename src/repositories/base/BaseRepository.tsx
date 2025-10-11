@@ -89,6 +89,7 @@ export abstract class BaseRepository<T extends BaseEntity>
    * Converts Dates to Timestamps and removes the id field
    */
   protected entityToDocument(entity: Record<string, unknown>): DocumentData {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...data } = entity;
 
     const convertDates = (obj: Record<string, unknown>): DocumentData => {

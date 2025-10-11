@@ -8,6 +8,7 @@ import type {
 
 export class PetRepository extends ArchivableBaseRepository<Pet> {
   private readonly userId: string;
+
   constructor(userId: string) {
     super(`users/${userId}/pets`);
     this.userId = userId;
@@ -29,7 +30,7 @@ export class PetRepository extends ArchivableBaseRepository<Pet> {
       ...input,
       isArchived: false,
       createdBy: this.userId,
-    } as any);
+    } as Pet);
   }
 
   async updatePet(id: string, updates: PetUpdateInput) {

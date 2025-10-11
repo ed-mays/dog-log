@@ -1,20 +1,21 @@
 .tableFullWidth {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.th, .td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
+.th,
+.td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
 }
 
 .headerRow {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px; /* space between button and table */
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px; /* space between button and table */
 }
 .addButton {
-    color: white;
-    background-color: lightgrey;
+  color: white;
+  background-color: lightgrey;
 }

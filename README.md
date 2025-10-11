@@ -39,20 +39,20 @@ npm install
 
 ### Available Scripts
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start development server (Vite) |
+| Script                       | Description                             |
+| ---------------------------- | --------------------------------------- |
+| `npm run dev`                | Start development server (Vite)         |
 | `npm run dev:with-emulators` | Start dev server and Firebase emulators |
-| `npm run build` | Type-check & build for production |
-| `npm run preview` | Preview local production build |
-| `npm run lint` | Run ESLint for code linting |
-| `npm run lint:fix` | Auto-fix lint issues |
-| `npm run format` | Format codebase with Prettier |
-| `npm run test` | Run unit & component tests (Vitest) |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:integration` | Run integration tests |
-| `npm run test:coverage` | Run tests with code coverage |
-| `npm run start:firebase` | Start Firebase emulators locally |
+| `npm run build`              | Type-check & build for production       |
+| `npm run preview`            | Preview local production build          |
+| `npm run lint`               | Run ESLint for code linting             |
+| `npm run lint:fix`           | Auto-fix lint issues                    |
+| `npm run format`             | Format codebase with Prettier           |
+| `npm run test`               | Run unit & component tests (Vitest)     |
+| `npm run test:watch`         | Run tests in watch mode                 |
+| `npm run test:integration`   | Run integration tests                   |
+| `npm run test:coverage`      | Run tests with code coverage            |
+| `npm run start:firebase`     | Start Firebase emulators locally        |
 
 ---
 

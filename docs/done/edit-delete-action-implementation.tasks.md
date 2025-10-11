@@ -5,6 +5,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 ---
 
 ### Scope and Goals
+
 - Implement real Edit and Delete flows for pets.
 - Use a modal `PetForm` for editing and `ConfirmModal` for delete confirmation.
 - Keep Firestore access behind `@services/petService`.
@@ -14,14 +15,17 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 ---
 
 ### Prerequisites
+
 - Ensure feature flag exists for actions (e.g., `petActionsEnabled`).
 - Confirm `PetForm`, `Modal`, and `ConfirmModal` components exist or plan to create stubs.
 
 ---
 
 ### 1) Service Layer
+
 - [ ] Create or update `src/services/petService.tsx` to include update/delete APIs.
   - [ ] Add types and functions:
+
     ```ts
     import type { Pet } from '@features/petManagement/types';
 
@@ -41,12 +45,14 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
       },
     };
     ```
+
   - [ ] Keep SDK specifics internal; return plain JS objects only.
   - [ ] Export the minimal API from this module.
 
 ---
 
 ### 2) Row Component — Surface Intent Only
+
 - File: `src/features/petManagement/components/PetListRow.tsx`
 - [ ] Update props to accept callbacks and remove inline `alert(...)` logic.
   - [ ] Change props:
@@ -69,6 +75,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 ---
 
 ### 3) Pet List — Orchestrate Modals and Mutations
+
 - File: `src/features/petManagement/components/PetList.tsx`
 - [ ] Add state for modal orchestration and network status:
   ```ts
@@ -83,16 +90,24 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
   ```
 - [ ] Render Edit modal with `PetForm` when `editingPet` is set:
   ```tsx
-  {editingPet && (
-    <Modal title={t('editPetTitle', { ns: 'petList' })} onClose={() => setEditingPet(null)}>
-      <PetForm
-        initialValues={{ name: editingPet.name, breed: editingPet.breed /* ... */ }}
-        onSubmit={submitEdit}
-        onCancel={() => setEditingPet(null)}
-        submitting={saving}
-      />
-    </Modal>
-  )}
+  {
+    editingPet && (
+      <Modal
+        title={t('editPetTitle', { ns: 'petList' })}
+        onClose={() => setEditingPet(null)}
+      >
+        <PetForm
+          initialValues={{
+            name: editingPet.name,
+            breed: editingPet.breed /* ... */,
+          }}
+          onSubmit={submitEdit}
+          onCancel={() => setEditingPet(null)}
+          submitting={saving}
+        />
+      </Modal>
+    );
+  }
   ```
 - [ ] Implement `submitEdit` to call `petService.updatePet` and update local list state, then close modal. Show error on failure and keep modal open.
   ```ts
@@ -102,7 +117,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
     setError(null);
     try {
       const updated = await petService.updatePet(editingPet.id, values);
-      setPets(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+      setPets((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
       setEditingPet(null);
     } catch (e) {
       setError(t('errors.updateFailed', { ns: 'common' }));
@@ -113,17 +128,22 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
   ```
 - [ ] Render Delete confirmation when `deletingPet` is set:
   ```tsx
-  {deletingPet && (
-    <ConfirmModal
-      title={t('confirmDeleteTitle', { ns: 'common' })}
-      message={t('confirmDeleteMessage', { ns: 'common', petName: deletingPet.name })}
-      confirmText={t('delete', { ns: 'common' })}
-      cancelText={t('cancel', { ns: 'common' })}
-      onConfirm={confirmDelete}
-      onCancel={() => setDeletingPet(null)}
-      busy={saving}
-    />
-  )}
+  {
+    deletingPet && (
+      <ConfirmModal
+        title={t('confirmDeleteTitle', { ns: 'common' })}
+        message={t('confirmDeleteMessage', {
+          ns: 'common',
+          petName: deletingPet.name,
+        })}
+        confirmText={t('delete', { ns: 'common' })}
+        cancelText={t('cancel', { ns: 'common' })}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeletingPet(null)}
+        busy={saving}
+      />
+    );
+  }
   ```
 - [ ] Implement `confirmDelete` to call `petService.deletePet`, update list, then close modal. Show error on failure and keep modal open.
   ```ts
@@ -133,7 +153,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
     setError(null);
     try {
       await petService.deletePet(deletingPet.id);
-      setPets(prev => prev.filter(p => p.id !== deletingPet.id));
+      setPets((prev) => prev.filter((p) => p.id !== deletingPet.id));
       setDeletingPet(null);
     } catch (e) {
       setError(t('errors.deleteFailed', { ns: 'common' }));
@@ -148,6 +168,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 ---
 
 ### 4) PetForm Contract (if not present)
+
 - File: `src/features/petManagement/components/PetForm.tsx`
 - [ ] Ensure `PetForm` accepts:
   - `initialValues: Omit<Pet, 'id'>`
@@ -160,6 +181,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 ---
 
 ### 5) i18n Updates
+
 - [ ] Add/verify keys in `src/locales/<lang>/common.json`:
   - `edit`
   - `delete`
@@ -175,12 +197,14 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 ---
 
 ### 6) Feature Flag
+
 - [ ] Confirm a `petActionsEnabled` flag exists in `src/featureFlags/config.tsx` (default may come from env `VITE_*`).
 - [ ] Update tests to cover both `true` and `false` cases.
 
 ---
 
 ### 7) Testing — Vitest + Testing Library
+
 Use `render` from `@test-utils` and mock services.
 
 - Row tests: `src/features/petManagement/components/PetListRow.test.tsx`
@@ -193,8 +217,12 @@ Use `render` from `@test-utils` and mock services.
     ```ts
     vi.mock('@services/petService', () => ({
       petService: {
-        getList: vi.fn().mockResolvedValue([{ id: '1', name: 'Fido', breed: 'Mix' }]),
-        updatePet: vi.fn().mockResolvedValue({ id: '1', name: 'Rex', breed: 'Mix' }),
+        getList: vi
+          .fn()
+          .mockResolvedValue([{ id: '1', name: 'Fido', breed: 'Mix' }]),
+        updatePet: vi
+          .fn()
+          .mockResolvedValue({ id: '1', name: 'Rex', breed: 'Mix' }),
         deletePet: vi.fn().mockResolvedValue(undefined),
       },
     }));
@@ -219,12 +247,14 @@ Use `render` from `@test-utils` and mock services.
 ---
 
 ### 8) Type Safety and Linting
+
 - [ ] Keep TypeScript strict; explicitly type `Pet`, `UpdatePetInput`, state setters.
 - [ ] Run `npm run lint` and `npm run format` and fix issues.
 
 ---
 
 ### 9) Accessibility and UX
+
 - [ ] Buttons have accessible names via i18n.
 - [ ] Modals use appropriate roles (`dialog`), focus management, and ESC/overlay close as supported by the common components.
 - [ ] Disable action buttons while `saving` to prevent duplicate submissions.
@@ -232,11 +262,13 @@ Use `render` from `@test-utils` and mock services.
 ---
 
 ### 10) Env and Config (if needed)
+
 - [ ] If adding a new flag, update `.env.local` with defaults (restart dev server after changes).
 
 ---
 
 ### 11) Acceptance Criteria
+
 - [ ] Edit opens `PetForm` modal with current pet values; submit updates list, cancel closes without saving.
 - [ ] Delete opens `ConfirmModal`; decline closes without action; confirm deletes and removes the row.
 - [ ] All user-facing strings are i18n-managed.
@@ -246,6 +278,7 @@ Use `render` from `@test-utils` and mock services.
 ---
 
 ### 12) Suggested Commit Breakdown
+
 - [ ] feat(services): add `updatePet` and `deletePet` to `petService`
 - [ ] refactor(PetListRow): surface `onEdit`/`onDelete` callbacks; remove alerts
 - [ ] feat(PetList): orchestrate edit/delete modals and wire to `petService`
@@ -257,5 +290,6 @@ Use `render` from `@test-utils` and mock services.
 ---
 
 ### Notes
+
 - Keep UI small and stateless; put orchestration in `PetList` and data in `petService`.
 - If a shared `usePetList` hook emerges, refactor later to lift fetching and local updates into it, keeping this change focused now.

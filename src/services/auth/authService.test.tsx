@@ -63,15 +63,10 @@ describe('authService', () => {
     it('creates a new user if one does not exist', async () => {
       (userRepository.getById as vi.Mock).mockResolvedValue(undefined);
 
-      const user = await signInWithGoogle();
+      await signInWithGoogle();
       expect(signInWithPopupMock).toHaveBeenCalledTimes(1);
       expect(userRepository.getById).toHaveBeenCalledWith('u1');
-      const expectedUser: User = {
-        id: 'u1',
-        displayName: 'Test User',
-        email: 't@example.com',
-        photoURL: 'http://x',
-      };
+
       expect(userRepository.create).toHaveBeenCalledTimes(1);
     });
 

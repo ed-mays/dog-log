@@ -46,7 +46,7 @@ describe('PetList integration', () => {
       }),
     };
 
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector: any) =>
+    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
@@ -65,7 +65,7 @@ describe('PetList integration', () => {
 
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: any = await importOriginal();
+      const mod: never = await importOriginal();
       return { ...mod, useNavigate: () => navSpy };
     });
     // Import after mocking to pick up mocked navigate

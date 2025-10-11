@@ -57,11 +57,6 @@ export class PetService {
     // Placeholder: merge id with provided fields
     return { id, name: data.name, breed: data.breed } as unknown as Pet;
   }
-
-  // Delete by id; in this app we archive instead of hard delete. No return.
-  async deletePet(_id: Pet['id']): Promise<void> {
-    return;
-  }
 }
 
 export const petService = new PetService();

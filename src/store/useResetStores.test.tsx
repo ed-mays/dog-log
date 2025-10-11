@@ -53,8 +53,7 @@ describe('useResetStores', () => {
 
     expect(callback).toBeInstanceOf(Function);
     // Invoke the reset function returned by the hook
-    callback && callback();
-
+    callback();
     expect(petsReset).toHaveBeenCalledTimes(1);
     expect(authReset).toHaveBeenCalledTimes(1);
     expect(uiReset).toHaveBeenCalledTimes(1);

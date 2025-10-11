@@ -9,35 +9,39 @@ This report provides a comprehensive architectural review of the Dog Log applica
 The application is built on a modern, robust, and scalable architecture. It effectively separates concerns and employs several established best practices.
 
 **Project Structure:** The codebase follows a hybrid **feature-first** and **domain-type** structure.
-  *   `src/features/<domain>`: Encapsulates feature-specific logic, pages, and components (e.g., `petManagement`). This is excellent for scalability, as it keeps related code together.
-  *   `src/components/common/`: Contains shared, reusable, and generally stateless UI components (`LoadingIndicator`, `ConfirmModal`, `PrivateRoute`), promoting a consistent look and feel.
-  *   Dedicated directories for cross-cutting concerns like `store`, `services`, `featureFlags`, and `styles` provide clear organization.
+
+- `src/features/<domain>`: Encapsulates feature-specific logic, pages, and components (e.g., `petManagement`). This is excellent for scalability, as it keeps related code together.
+- `src/components/common/`: Contains shared, reusable, and generally stateless UI components (`LoadingIndicator`, `ConfirmModal`, `PrivateRoute`), promoting a consistent look and feel.
+- Dedicated directories for cross-cutting concerns like `store`, `services`, `featureFlags`, and `styles` provide clear organization.
 
 **Data Access (Repository Pattern):** The application strictly adheres to a well-defined data access strategy, as outlined in the developer guidelines. This is a major architectural strength.
-  **Layers:** Firestore SDK -> Repository (`PetRepository`) -> Service (`PetService`) -> Zustand Store (`pets.store`) -> React Component/Hook.
-  **Abstraction:** Components and business logic are completely decoupled from Firestore. They interact with a service or a Zustand store, which in turn uses a repository. This makes the application highly maintainable, testable, and flexible for future backend changes.
-  **Type Safety:** All data returned from the repository layer is mapped to plain TypeScript objects (`Pet`, `AppUser`), preventing Firestore-specific types from leaking into the application logic.
+**Layers:** Firestore SDK -> Repository (`PetRepository`) -> Service (`PetService`) -> Zustand Store (`pets.store`) -> React Component/Hook.
+**Abstraction:** Components and business logic are completely decoupled from Firestore. They interact with a service or a Zustand store, which in turn uses a repository. This makes the application highly maintainable, testable, and flexible for future backend changes.
+**Type Safety:** All data returned from the repository layer is mapped to plain TypeScript objects (`Pet`, `AppUser`), preventing Firestore-specific types from leaking into the application logic.
 
 **State Management (Zustand):**
-  *   Global state is managed with Zustand, using small, focused stores for different domains (`pets.store`, `auth.store`, `ui.store`).
-  *   The stores correctly encapsulate asynchronous logic (e.g., `fetchPets` in `pets.store.tsx`), which centralizes side effects.
-  *   The use of fine-grained selectors (e.g., `useAuthUser`) is practiced, which optimizes component re-renders by subscribing only to necessary state slices.
+
+- Global state is managed with Zustand, using small, focused stores for different domains (`pets.store`, `auth.store`, `ui.store`).
+- The stores correctly encapsulate asynchronous logic (e.g., `fetchPets` in `pets.store.tsx`), which centralizes side effects.
+- The use of fine-grained selectors (e.g., `useAuthUser`) is practiced, which optimizes component re-renders by subscribing only to necessary state slices.
 
 **Component Model:**
-  *   The application uses a standard functional component model with hooks.
-  *   It distinguishes between "smart" container components (pages like `AddPetPage`) that handle logic and "dumb" presentational components (`PetList`, `PetForm`) that receive props.
-  *   The `PetForm` component is well-designed, supporting both uncontrolled (internal state) and controlled (via `value`/`onChange` props) modes.
+
+- The application uses a standard functional component model with hooks.
+- It distinguishes between "smart" container components (pages like `AddPetPage`) that handle logic and "dumb" presentational components (`PetList`, `PetForm`) that receive props.
+- The `PetForm` component is well-designed, supporting both uncontrolled (internal state) and controlled (via `value`/`onChange` props) modes.
 
 **Routing (`react-router-dom`):**
-  *   Centralized route definitions in `AppRoutes.tsx`.
-  *   Effective use of a `PrivateRoute` component to guard routes based on authentication status.
-  *   Routing is integrated with feature flags to enable or disable entire sections of the application (e.g., the `/pets` route).
-  *   A `RoutePrefetcher` component demonstrates a sophisticated pattern for proactively fetching data based on the current URL, improving perceived performance.
+
+- Centralized route definitions in `AppRoutes.tsx`.
+- Effective use of a `PrivateRoute` component to guard routes based on authentication status.
+- Routing is integrated with feature flags to enable or disable entire sections of the application (e.g., the `/pets` route).
+- A `RoutePrefetcher` component demonstrates a sophisticated pattern for proactively fetching data based on the current URL, improving perceived performance.
 
 **Feature Flags:** A robust feature flagging system is implemented, allowing for continuous delivery and A/B testing.
-  **Provider:** `FeatureFlagsProvider` wraps the application.
-  **Configuration:** Flags are sourced from Vite environment variables, providing a clear separation between configuration and code.
-  **Consumption:** The `useFeatureFlag` hook provides a clean and simple API for checking flag status within components.
+**Provider:** `FeatureFlagsProvider` wraps the application.
+**Configuration:** Flags are sourced from Vite environment variables, providing a clear separation between configuration and code.
+**Consumption:** The `useFeatureFlag` hook provides a clean and simple API for checking flag status within components.
 
 ---
 
@@ -63,10 +67,11 @@ The dependencies are well-chosen, and the project avoids unnecessary external li
 The codebase demonstrates a high degree of consistency in its conventions, which are clearly documented in `GEMINI.md`.
 
 **File Naming:**
-  *   Components: `PascalCase.tsx` (e.g., `PetList.tsx`)
-  *   Stores: `snake.case.store.ts(x)` (e.g., `pets.store.tsx`)
-  *   Styles: `PascalCase.module.css` (e.g., `PetList.module.css`)
-  *   Tests: Co-located with the source file, using the `.test.tsx` suffix.
+
+- Components: `PascalCase.tsx` (e.g., `PetList.tsx`)
+- Stores: `snake.case.store.ts(x)` (e.g., `pets.store.tsx`)
+- Styles: `PascalCase.module.css` (e.g., `PetList.module.css`)
+- Tests: Co-located with the source file, using the `.test.tsx` suffix.
 
 **Component Props:** Props for common components are explicitly typed and designed for reusability (e.g., `data-testid` passthrough, `text` overrides).
 
@@ -81,15 +86,16 @@ The codebase demonstrates a high degree of consistency in its conventions, which
 The project has a mature and comprehensive testing strategy that covers multiple levels of the application.
 
 **Unit & Integration Tests (Vitest):**
-  *   Tests are co-located with source files, making them easy to find and maintain.
+
+- Tests are co-located with source files, making them easy to find and maintain.
   **Mocking:** `vi.mock` is used effectively to isolate units and mock dependencies like stores, services, and hooks. This is visible in nearly all test files.
   **Store Testing:** Zustand stores are tested by manipulating their state directly and asserting outcomes, which is a clean and effective pattern.
   **Service/Repository Testing:** The service layer is tested by mocking the repository layer, ensuring business logic is tested independently of the database.
 
 **Component Testing (React Testing Library):**
-  **Behavior-Driven:** Tests focus on user behavior (`user-event`) and accessible queries (`getByRole`, `getByLabelText`) rather than implementation details.
-  **Custom Render Utility:** A shared `test-utils.tsx` provides a custom `render` function that wraps components in necessary providers (`MemoryRouter`, `FeatureFlagsProvider`, `I18nextProvider`). This is a critical best practice that drastically simplifies test setup.
-  **Test Coverage:** Tests cover various scenarios, including feature flags being enabled/disabled, authentication states, and error conditions. There are even dedicated integration-style tests like `AddPet.integration.test.tsx`.
+**Behavior-Driven:** Tests focus on user behavior (`user-event`) and accessible queries (`getByRole`, `getByLabelText`) rather than implementation details.
+**Custom Render Utility:** A shared `test-utils.tsx` provides a custom `render` function that wraps components in necessary providers (`MemoryRouter`, `FeatureFlagsProvider`, `I18nextProvider`). This is a critical best practice that drastically simplifies test setup.
+**Test Coverage:** Tests cover various scenarios, including feature flags being enabled/disabled, authentication states, and error conditions. There are even dedicated integration-style tests like `AddPet.integration.test.tsx`.
 
 **Overall Quality:** The testing approach is excellent. It emphasizes reliability, maintainability, and confidence in the application's behavior.
 

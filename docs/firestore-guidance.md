@@ -10,9 +10,11 @@ This document describes and rationalizes the Firestore model for the Dog Log app
 
 - **Rooted by User:**  
   All user-specific data is scoped beneath each user document.
+
 ```
 users/{userId}/pets/{petId}
 ```
+
 - **Pets as Subcollection:**  
   Each user document has a `pets` subcollection containing individual pet documents.
 - **Feedings/Recurrences as Array:**  
@@ -40,29 +42,30 @@ users/{userId}/pets/{petId}
 
 ## Rationale
 
-- **User Scoping:**  
+- **User Scoping:**
   - Provides clear ownership and access separation.
   - Greatly simplifies security rules, since each user's data is naturally namespaced[35][7].
-- **Start Simple:**  
+- **Start Simple:**
   - Embedding recurrent data as arrays inside pet documents is efficient for low-to-moderate volumes and minimizes read/write cost and code complexity[81].
-- **Easy Migration Path:**  
+- **Easy Migration Path:**
   - Should arrays like `feedings` grow too large for a single document (thousands of events, or approaching 1 MB), they can be moved to a subcollection model:
   ```
     users/{userId}/pets/{petId}/feedings/{feedingId}
   ```
+
   - This is a recommended technique for evolving Firestore data models as your app scales[81][35][77].
 
 ---
 
 ## Migration Strategy
 
-1. **Monitor Size:**  
+1. **Monitor Size:**
    - Periodically evaluate typical and max array sizes per pet.
    - Ensure continued compliance with Firestore’s 1 MB document limit and performance best practices.
-2. **Planned Refactor:**  
+2. **Planned Refactor:**
    - When necessary, write a migration script to move existing array entries into a `feedings` subcollection.
    - Update queries/UI to use the new structure. Abstract collection access in code to smooth over this swap[77].
-3. **Future-Proofing:**  
+3. **Future-Proofing:**
    - Favor code interfaces (custom hooks/selectors) that allow for implementation swapping with minimal UI code change.
 
 ---
@@ -85,6 +88,8 @@ users/{userId}/pets/{petId}
 - [Subcollection vs Array Structure][81]
 - [Firestore Migration Patterns][77]
 - [Firebase Data Model Guide][7]
+
 ```
 
 Sources
+```

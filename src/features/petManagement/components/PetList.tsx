@@ -50,6 +50,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
     try {
       await deletePetInStore(deletingPet.id);
       setDeletingPet(null);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       setError(t('errors.deleteFailed', { ns: 'common' }));
     } finally {

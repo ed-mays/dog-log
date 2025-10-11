@@ -20,7 +20,7 @@ describe('PetService', () => {
   // Before each test, reset mocks and service instance
   beforeEach(() => {
     // Make the PetRepository mock return our mock methods
-    (PetRepository as any).mockImplementation(() => {
+    PetRepository.mockImplementation(() => {
       return {
         getActivePets: mockGetActivePets,
         getArchivedPets: mockGetArchivedPets,

@@ -56,7 +56,7 @@ describe('Add Pet Integration Test', () => {
     mockUseAuthStore.mockImplementation((selector) =>
       selector ? selector(authStoreState) : authStoreState
     );
-    (useAuthStore as any).getState = () => authStoreState;
+    useAuthStore.getState = () => authStoreState;
   });
 
   afterEach(async () => {

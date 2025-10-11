@@ -19,17 +19,20 @@ This file contains a backlog of desired changes to the DogLog project.
 - `Spike` specifies work to investigate concepts
 
 ---
+
 ## Ready for Dev
 
-
 ## Unrefined
+
 ### Feature: Navigation Bar
+
 - Show navigation bar when user is logged in
 - Create and integrate navigation bar component
   - Should not show for unauthenticated users
   - Should include logout component
 
 ### Feature: Pet Management
+
 - Display Pet List as cards
 - Create PetSummary component to display key details?
 - Spike: Maybe it would be better to edit the pet inline in card?
@@ -38,14 +41,17 @@ This file contains a backlog of desired changes to the DogLog project.
 ## Backlog
 
 ### Feature: Track Vets by User
+
 - User has a global, dynamic list of vets assignable to pets
 - Use tag-like approach (e.g., Jira tags) with suggested/existing options
 - Prototype this user tagging feature
 
 ### Feature: User Profile
+
 Users should be able to edit basic information and upload a profile image
 
 ### Feature: Easter Egg
+
 - Add a memorial page for Zuul, linked as an easter egg
 
 ---
@@ -76,9 +82,7 @@ Users should be able to edit basic information and upload a profile image
 
 ## Implementation/Process Improvements
 
--[x] Implement pre-commit hooks
-  -[x] Investigate Husky or similar tools for pre-commit rules
-  -[x] Enforce unit tests passing, clean lint, and clean build at commit
+-[x] Implement pre-commit hooks -[x] Investigate Husky or similar tools for pre-commit rules -[x] Enforce unit tests passing, clean lint, and clean build at commit
 
 ---
 

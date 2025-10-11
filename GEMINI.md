@@ -36,18 +36,18 @@ Short, practical guidance to get productive quickly.
 Aliases (from tsconfig.app.json):
 
 - @App → src/App.tsx
-- @components/* → src/components/*
+- @components/_ → src/components/_
 - @firebase → src/firebase.tsx
-- @store/* → src/store/*
+- @store/_ → src/store/_
 - @test-utils → src/test-utils.tsx
-- @testUtils/* → src/testUtils/*
-- @featureFlags/* → src/featureFlags/*
-- @features/* → src/features/*
-- @models/* → src/models/*
-- @repositories/* → src/repositories/*
-- @services/* → src/services/*
-- @styles/* → src/styles/*
-- @utils/* → src/utils/*
+- @testUtils/_ → src/testUtils/_
+- @featureFlags/_ → src/featureFlags/_
+- @features/_ → src/features/_
+- @models/_ → src/models/_
+- @repositories/_ → src/repositories/_
+- @services/_ → src/services/_
+- @styles/_ → src/styles/_
+- @utils/_ → src/utils/_
 
 Guidelines:
 
@@ -195,7 +195,6 @@ Always access Firestore through abstracted repository/service modules and custom
 - i18n key missing: verify namespace/key and locale file loaded in src/i18n.tsx.
 - Tests can’t find providers: import render from '@test-utils'.
 - Test i18n warning (NO_I18NEXT_INSTANCE): render via '@test-utils' or wrap with I18nextProvider and a shared i18n instance (src/testUtils/test-i18n.tsx).
-
 
 # 12. Additional References
 

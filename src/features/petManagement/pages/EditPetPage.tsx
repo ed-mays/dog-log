@@ -57,6 +57,7 @@ export default function EditPetPage() {
     try {
       await updatePet(id, { name: values.name, breed: values.breed });
       navigate('/pets');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       setError(t('errors.updateFailed', { ns: 'common' }));
     } finally {

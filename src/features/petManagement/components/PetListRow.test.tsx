@@ -24,7 +24,7 @@ describe('PetListRow', () => {
     // Spy on useNavigate
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: any = await importOriginal();
+      const mod: never = await importOriginal();
       return { ...mod, useNavigate: () => navSpy };
     });
     // Need to re-import component after mocking

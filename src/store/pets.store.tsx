@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import type { Pet, PetCreateInput } from '@features/petManagement/types';
+import type {
+  Pet,
+  PetCreateInput,
+  PetUpdateInput,
+} from '@features/petManagement/types';
 import { petService } from '@services/petService';
 import { useAuthStore } from './auth.store';
 
@@ -36,7 +40,11 @@ export const usePetsStore = create<PetsState>((set) => ({
   updatePet: async (id, updates) => {
     const { user } = useAuthStore.getState();
     if (!user) throw new Error('User is not authenticated.');
-    const updated = await petService.editPet(user.uid, id, updates as any);
+    const updated = await petService.editPet(
+      user.uid,
+      id,
+      updates as PetUpdateInput
+    );
     set((state) => ({
       pets: state.pets.map((p) => (p.id === id ? { ...p, ...updated } : p)),
     }));

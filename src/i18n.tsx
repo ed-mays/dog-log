@@ -13,7 +13,7 @@ i18n.use(initReactI18next).init({
 export async function loadNamespace(ns: string, lng: string = i18n.language) {
   // Dynamically import the JSON for the requested namespace and language
   const mod = await import(`./locales/${lng}/${ns}.json`);
-  i18n.addResourceBundle(lng, ns, (mod as any).default ?? mod, true, true);
+  i18n.addResourceBundle(lng, ns, mod.default ?? mod, true, true);
   return ns;
 }
 
