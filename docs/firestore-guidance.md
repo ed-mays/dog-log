@@ -49,6 +49,7 @@ users/{userId}/pets/{petId}
   - Embedding recurrent data as arrays inside pet documents is efficient for low-to-moderate volumes and minimizes read/write cost and code complexity[81].
 - **Easy Migration Path:**
   - Should arrays like `feedings` grow too large for a single document (thousands of events, or approaching 1 MB), they can be moved to a subcollection model:
+
   ```
     users/{userId}/pets/{petId}/feedings/{feedingId}
   ```

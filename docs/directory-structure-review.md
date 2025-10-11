@@ -1,6 +1,6 @@
 # Directory Structure Review & Improvement Proposals
 
-Scope: This review considers only files not ignored by .gitignore (ignoring node_modules, dist, dist-ssr, _.local, .idea, .vscode/_ except extensions.json, coverage/, guide.md).
+Scope: This review considers only files not ignored by .gitignore (ignoring node*modules, dist, dist-ssr, *.local, .idea, .vscode/\_ except extensions.json, coverage/, guide.md).
 
 Current layout recap (high level):
 
