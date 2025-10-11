@@ -9,6 +9,7 @@ import LogoutButton from '@features/authentication/components/LogoutButton.tsx';
 import { useAuthStore } from '@store/auth.store';
 import { RoutePrefetcher } from '@features/petManagement/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
+import { NavigationBar } from '@components/common/NavigationBar/NavigationBar.tsx';
 
 function App() {
   const appLoading = useUiStore((state) => state.loading);
@@ -24,20 +25,16 @@ function App() {
     ? `${errorTextBase} ${String(errorDetail)}`
     : errorTextBase;
 
-  if (initializing && authEnabled) {
-    return <LoadingIndicator />;
-  }
-
   return (
     <>
       <RoutePrefetcher />
-      {console.log(authEnabled)}
       {user && authEnabled && (
         <header aria-label="user-controls">
+          <NavigationBar />
           <LogoutButton />
         </header>
       )}
-      {appLoading && <LoadingIndicator />}
+      {appLoading && initializing && <LoadingIndicator />}
       {errorDetail && <ErrorIndicator text={errorText} />}
       <AppRoutes />
     </>
