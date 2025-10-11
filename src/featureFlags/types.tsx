@@ -1,9 +1,7 @@
 export type FeatureFlag =
-  | 'newDashboard'
-  | 'betaFeature'
-  | 'test_show_count_button'
   | 'petListEnabled'
   | 'addPetEnabled'
   | 'authEnabled'
-  | 'petActionsEnabled';
+  | 'petActionsEnabled'
+  | 'navbarEnabled';
 export type FeatureFlags = Record<FeatureFlag, boolean>;
