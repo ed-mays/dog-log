@@ -75,7 +75,7 @@ Items ending in `?` are under consideration.
 ## Implementation/Process Improvements
 
 - Implement pre-commit hooks
-  - Investigate Husky or similar tools for pre-commit rules
+  -[x]Investigate Husky or similar tools for pre-commit rules
   - Enforce unit tests passing, clean lint, and clean build at commit
 
 ---

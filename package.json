@@ -18,7 +18,15 @@
     "test:integration": "vitest run '**/*.integration.test.tsx'",
     "test:coverage": "npm run test:unit -- --coverage",
     "test:watch": "vitest --exclude '**/*.integration.test.tsx'",
-    "start:firebase": "firebase emulators:start"
+    "start:firebase": "firebase emulators:start",
+    "prepare": "husky",
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "npm run lint",
+      "npm run format",
+      "npm run test"
+    ]
   },
   "dependencies": {
     "firebase": "^12.3.0",
@@ -50,7 +58,9 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "husky": "^9.1.7",
     "jsdom": "^26.1.0",
+    "lint-staged": "^16.2.3",
     "prettier": "^3.6.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
