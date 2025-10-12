@@ -1,9 +1,24 @@
 import { useTranslation } from 'react-i18next';
 import LoginButton from '@features/authentication/components/LoginButton';
+import { useEffect, useState } from 'react';
+import { loadNamespace } from '@i18n';
 
 export function WelcomePage() {
-  const { t } = useTranslation('common');
+  const [nsReady, setNsReady] = useState(false);
 
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([loadNamespace('common')]).then(() => {
+      if (mounted) setNsReady(true);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const { t } = useTranslation();
+
+  if (!nsReady) return null;
   return (
     <div className="@container">
       <div className="flex flex-col p4 justify-center">
