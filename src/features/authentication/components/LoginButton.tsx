@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store.tsx';
+import { loadNamespace } from '@i18n';
 
 type Props = {
   className?: string;
@@ -8,9 +9,21 @@ type Props = {
 };
 
 const LoginButton: React.FC<Props> = ({ className, disabled }) => {
-  const { t } = useTranslation('common');
+  const [nsReady, setNsReady] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([loadNamespace('common')]).then(() => {
+      if (mounted) setNsReady(true);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const { t } = useTranslation();
   const signIn = useAuthStore((s) => s.signInWithGoogle);
   const initializing = useAuthStore((s) => s.initializing);
+  if (!nsReady) return null;
 
   const onClick = async () => {
     try {

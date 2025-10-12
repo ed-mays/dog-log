@@ -19,16 +19,25 @@ const newPetInitialValues: Pet = {
 };
 
 export default function AddPetPage() {
+  const [nsReady, setNsReady] = useState(false);
+
   const addPet = usePetsStore((state) => state.addPet);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formDirty, setFormDirty] = useState(false);
-  const { t } = useTranslation('common');
-
-  // Preload field label namespace used by PetForm without blocking render
+  // petProperties
   useEffect(() => {
-    loadNamespace('petProperties');
+    let mounted = true;
+    Promise.all([loadNamespace('petProperties')]).then(() => {
+      if (mounted) setNsReady(true);
+    });
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const { t } = useTranslation();
+  if (!nsReady) return null;
 
   async function handleSubmit(pet: Pet) {
     await addPet({

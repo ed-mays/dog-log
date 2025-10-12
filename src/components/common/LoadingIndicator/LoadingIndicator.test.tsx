@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@test-utils';
 import { LoadingIndicator } from './LoadingIndicator';
 
+// TODO: Implement test for i18n on default loading indicator for en and es locales
 test('renders default loading indicator', async () => {
   render(<LoadingIndicator />);
   await waitFor(() => {

@@ -32,55 +32,55 @@ describe('PetForm', () => {
     );
   }
 
-  it('renders the correct (English) labels and buttons', () => {
+  it('renders the correct (English) labels and buttons', async () => {
     renderForm(initialPet, 'en');
-    expect(screen.getByLabelText('Name')).toBeInTheDocument();
-    expect(screen.getByLabelText('Breed')).toBeInTheDocument();
-    expect(screen.getByText('OK')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Name')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Breed')).toBeInTheDocument();
+    expect(await screen.findByText('OK')).toBeInTheDocument();
+    expect(await screen.findByText('Cancel')).toBeInTheDocument();
   });
 
-  it('renders the correct (Spanish) labels and buttons', () => {
+  it('renders the correct (Spanish) labels and buttons', async () => {
     renderForm(initialPet, 'es');
-    expect(screen.getByLabelText('Nombre')).toBeInTheDocument();
-    expect(screen.getByLabelText('Raza')).toBeInTheDocument();
-    expect(screen.getByText('Aceptar')).toBeInTheDocument();
-    expect(screen.getByText('Cancelar')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Nombre')).toBeInTheDocument();
+    expect(await screen.findByLabelText('Raza')).toBeInTheDocument();
+    expect(await screen.findByText('Aceptar')).toBeInTheDocument();
+    expect(await screen.findByText('Cancelar')).toBeInTheDocument();
   });
 
-  it('disables OK when form is invalid', () => {
+  it('disables OK when form is invalid', async () => {
     renderForm();
-    const okButton = screen.getByRole('button', { name: /ok/i });
+    const okButton = await screen.findByRole('button', { name: /ok/i });
     expect(okButton).toBeDisabled();
   });
 
   it('enables OK when inputs are filled', async () => {
     renderForm();
-    await userEvent.type(screen.getByLabelText(/name/i), 'Fido');
-    await userEvent.type(screen.getByLabelText(/breed/i), 'Beagle');
+    await userEvent.type(await screen.findByLabelText(/name/i), 'Fido');
+    await userEvent.type(await screen.findByLabelText(/breed/i), 'Beagle');
     const okButton = screen.getByRole('button', { name: /ok/i });
     expect(okButton).not.toBeDisabled();
   });
 
   it('calls onSubmit with pet data and disables on invalid', async () => {
     renderForm();
-    await userEvent.type(screen.getByLabelText(/name/i), 'Rex');
-    await userEvent.type(screen.getByLabelText(/breed/i), 'Lab');
-    const okButton = screen.getByRole('button', { name: /ok/i });
+    await userEvent.type(await screen.findByLabelText(/name/i), 'Rex');
+    await userEvent.type(await screen.findByLabelText(/breed/i), 'Lab');
+    const okButton = await screen.findByRole('button', { name: /ok/i });
     await userEvent.click(okButton);
     expect(onSubmit).toHaveBeenCalledWith({ name: 'Rex', breed: 'Lab' });
   });
 
   it('calls onCancel when Cancel is clicked', async () => {
     renderForm();
-    const cancelButton = screen.getByRole('button', { name: /cancel/i });
+    const cancelButton = await screen.findByRole('button', { name: /cancel/i });
     await userEvent.click(cancelButton);
     expect(onCancel).toHaveBeenCalled();
   });
 
   it('calls onDirtyChange(true) when form is modified, onDirtyChange(false) when reverted', async () => {
     renderForm({ name: 'A', breed: 'B' });
-    const nameInput = screen.getByLabelText(/name/i);
+    const nameInput = await screen.findByLabelText(/name/i);
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, 'Alice');
     expect(onDirtyChange).toHaveBeenLastCalledWith(true);
@@ -105,9 +105,9 @@ describe('PetForm', () => {
     };
 
     render(<ControlledHost />);
-    await userEvent.type(screen.getByLabelText(/name/i), 'Fido');
-    await userEvent.type(screen.getByLabelText(/breed/i), 'Beagle');
-    const okButton = screen.getByRole('button', { name: /ok/i });
+    await userEvent.type(await screen.findByLabelText(/name/i), 'Fido');
+    await userEvent.type(await screen.findByLabelText(/breed/i), 'Beagle');
+    const okButton = await screen.findByRole('button', { name: /ok/i });
     expect(okButton).not.toBeDisabled();
     await userEvent.click(okButton);
     expect(onSubmit).toHaveBeenCalledWith({ name: 'Fido', breed: 'Beagle' });

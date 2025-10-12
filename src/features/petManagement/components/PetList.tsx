@@ -36,7 +36,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
     };
   }, []);
 
-  const { t } = useTranslation('petList');
+  const { t } = useTranslation();
 
   const addPetEnabled = useFeatureFlag('addPetEnabled');
   const petActionsEnabled = useFeatureFlag('petActionsEnabled');

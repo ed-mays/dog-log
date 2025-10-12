@@ -17,7 +17,9 @@ describe('LoginButton', () => {
 
   it('calls signInWithGoogle on click', async () => {
     render(<LoginButton />);
-    const btn = screen.getByRole('button', { name: /continue with google/i });
+    const btn = await screen.findByRole('button', {
+      name: /continue with google/i,
+    });
     await userEvent.click(btn);
     expect(signInMock).toHaveBeenCalledTimes(1);
   });
@@ -25,7 +27,9 @@ describe('LoginButton', () => {
   it('is disabled when initializing', async () => {
     useAuthStore.setState((prev) => ({ ...prev, initializing: true }));
     render(<LoginButton />);
-    const btn = screen.getByRole('button', { name: /continue with google/i });
+    const btn = await screen.findByRole('button', {
+      name: /continue with google/i,
+    });
     expect(btn).toBeDisabled();
   });
 });

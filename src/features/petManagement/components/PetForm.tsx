@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import formStyles from '@styles/FormStyles.module.css';
 import type { Pet } from '../types.tsx';
+import { loadNamespace } from '@i18n';
 
 interface PetFormProps {
   initialValues: Pet;
@@ -20,10 +21,20 @@ export function PetForm({
   value,
   onChange,
 }: PetFormProps) {
-  const { t } = useTranslation('petForm');
-  const [internalPet, setInternalPet] = useState<Pet>(initialValues);
+  const [nsReady, setNsReady] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([loadNamespace('common'), loadNamespace('petProperties')]).then(
+      () => {
+        if (mounted) setNsReady(true);
+      }
+    );
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-  // Determine the current pet object depending on controlled vs uncontrolled usage
+  const [internalPet, setInternalPet] = useState<Pet>(initialValues);
   const pet: Pet = value ?? internalPet;
 
   useEffect(() => {
@@ -31,6 +42,10 @@ export function PetForm({
       pet.name !== initialValues.name || pet.breed !== initialValues.breed;
     onDirtyChange?.(dirty);
   }, [pet, initialValues, onDirtyChange]);
+
+  const { t } = useTranslation();
+
+  if (!nsReady) return null;
 
   const isValid = pet.name.trim().length > 0 && pet.breed.trim().length > 0;
 

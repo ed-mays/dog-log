@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
 import { useResetStores } from '@store/useResetStores.tsx';
 import { useNavigate } from 'react-router-dom';
+import { loadNamespace } from '@i18n';
 
 type Props = {
   className?: string;
@@ -10,11 +11,23 @@ type Props = {
 };
 
 const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
-  const { t } = useTranslation('common');
+  const [nsReady, setNsReady] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([loadNamespace('common')]).then(() => {
+      if (mounted) setNsReady(true);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const { t } = useTranslation();
   const signOut = useAuthStore((s) => s.signOut);
   const initializing = useAuthStore((s) => s.initializing);
   const navigate = useNavigate();
   const resetStores = useResetStores();
+  if (!nsReady) return null;
 
   const onClick = async () => {
     await signOut();

@@ -12,6 +12,7 @@ describe('ConfirmModal', () => {
     onDecline = vi.fn();
   });
 
+  // TODO: Implement test for i18n on default button labels for en and es locales
   it('renders the modal text', () => {
     render(
       <ConfirmModal text={text} onAccept={onAccept} onDecline={onDecline} />

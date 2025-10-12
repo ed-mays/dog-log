@@ -27,7 +27,7 @@ describe('LogoutButton', () => {
 
   it('calls signOut and navigates to /welcome', async () => {
     render(<LogoutButton />);
-    const btn = screen.getByRole('button', { name: /log out/i });
+    const btn = await screen.findByRole('button', { name: /log out/i });
     await userEvent.click(btn);
     expect(signOutMock).toHaveBeenCalledTimes(1);
     expect(navigateMock).toHaveBeenCalledWith('/welcome', { replace: true });
