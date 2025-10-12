@@ -29,6 +29,10 @@ if (!i18n.isInitialized) {
             ok: 'OK',
             cancel: 'Cancel',
           },
+          welcomePage: {
+            welcomeHeader: 'Welcome',
+            welcomeSubtitle: 'Sign in to continue',
+          },
         },
       },
       es: {
@@ -45,6 +49,10 @@ if (!i18n.isInitialized) {
           responses: {
             ok: 'Aceptar',
             cancel: 'Cancelar',
+          },
+          welcomePage: {
+            welcomeHeader: 'Bienvenido',
+            welcomeSubtitle: 'Inicia sesión para continuar',
           },
         },
       },

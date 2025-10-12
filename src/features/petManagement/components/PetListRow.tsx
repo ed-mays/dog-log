@@ -42,10 +42,16 @@ export function PetListRow({ pet, onDelete, onEdit }: PetListRowProps) {
       <td className={styles.td}>{pet.breed}</td>
       {petActionsEnabled && (
         <td className={styles.td}>
-          <button className={styles.addButton} onClick={editClick}>
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
+            onClick={editClick}
+          >
             {t('edit', { ns: 'common' })}
           </button>
-          <button className={styles.addButton} onClick={deleteClick}>
+          <button
+            className="bg-red-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
+            onClick={deleteClick}
+          >
             {t('delete', { ns: 'common' })}
           </button>
         </td>

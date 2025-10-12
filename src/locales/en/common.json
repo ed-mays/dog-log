@@ -11,8 +11,6 @@
   "continueWithGoogle": "Continue with Google",
   "logout": "Log out",
   "authentication": "Authentication",
-  "welcomeHeader": "Welcome",
-  "welcomeSubtitle": "Sign in to continue",
   "authDisabledMessage": "Authentication is currently disabled.",
   "firebaseErrors": {
     "popupClosedByUser": "The sign-in popup was closed before completing.",
@@ -35,5 +33,9 @@
     "cancel": "Cancel",
     "yes": "Yes",
     "no": "No"
+  },
+  "welcomePage": {
+    "welcomeHeader": "Welcome",
+    "welcomeSubtitle": "Sign in to continue"
   }
 }

@@ -26,7 +26,7 @@ function App() {
     : errorTextBase;
 
   return (
-    <>
+    <div className="h-full">
       <RoutePrefetcher />
       {user && authEnabled && (
         <header aria-label="user-controls">
@@ -37,7 +37,7 @@ function App() {
       {appLoading && initializing && <LoadingIndicator />}
       {errorDetail && <ErrorIndicator text={errorText} />}
       <AppRoutes />
-    </>
+    </div>
   );
 }
 
