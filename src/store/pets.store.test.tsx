@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { usePetsStore } from './pets.store';
 import { useAuthStore } from './auth.store';
 import { petService } from '@services/petService';
-import type { PetCreateInput } from '@features/petManagement/types';
+import type { PetCreateInput } from '@features/pets/types';
 
 // Mock the petService with a factory
 vi.mock('@services/petService', () => ({

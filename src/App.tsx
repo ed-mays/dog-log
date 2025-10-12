@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from './utils/errors';
 import LogoutButton from '@features/authentication/components/LogoutButton.tsx';
 import { useAuthStore } from '@store/auth.store';
-import { RoutePrefetcher } from '@features/petManagement/RoutePrefetcher';
+import { RoutePrefetcher } from '@features/pets/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
 import { NavigationBar } from '@components/common/NavigationBar/NavigationBar.tsx';
 

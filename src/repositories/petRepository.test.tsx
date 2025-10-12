@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PetRepository } from './petRepository';
-import type { Pet } from '@features/petManagement/types';
+import type { Pet } from '@features/pets/types';
 
 describe('PetRepository', () => {
   let repo: PetRepository;

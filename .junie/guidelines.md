@@ -86,22 +86,29 @@ Setup notes:
 ## 6. Data Access Strategy: Firestore
 
 **Principle:**  
-All interactions with Firestore must be abstracted through a service/repository layer (e.g., src/services) and custom hooks. React components, stores, and business logic should never depend directly on Firestore APIs or objects.
+All interactions with Firestore must be abstracted through a service/repository layer (e.g., src/services) and custom
+hooks. React components, stores, and business logic should never depend directly on Firestore APIs or objects.
 
 **Patterns:**
 
-- Use repository modules (in `src/services`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.) and always return plain JavaScript objects.
-- Create custom React hooks (e.g., `usePetList`) that call the repository functions and expose application data, not Firestore types.
+- Use repository modules (in `src/services`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.) and
+  always return plain JavaScript objects.
+- Create custom React hooks (e.g., `usePetList`) that call the repository functions and expose application data, not
+  Firestore types.
 - Provide repositories to the app through context providers if stateful or cross-feature access is needed.
 - Never expose Firestore types, Snapshots, or References outside service modules.
 - Strictly type all repository and hook outputs for reliable, testable contracts.
 
 **When To Use This Strategy:**
 
-- When building new features that need app or user Place all data-fetching and saving logic inside a dedicated repository/service module and use from hooks or components.
-- When refactoring legacy code: Move Firestore calls out of components and consolidate them in service modules. Update hooks to call these services.
-- When doing unit or integration testing: Mock repository functions, not Firestore SDK access, making tests backend-independent.
-- When considering migration or backend changes: Abstracting Firestore lets you swap data sources by updating only the repository logic.
+- When building new features that need app or user Place all data-fetching and saving logic inside a dedicated
+  repository/service module and use from hooks or components.
+- When refactoring legacy code: Move Firestore calls out of components and consolidate them in service modules. Update
+  hooks to call these services.
+- When doing unit or integration testing: Mock repository functions, not Firestore SDK access, making tests
+  backend-independent.
+- When considering migration or backend changes: Abstracting Firestore lets you swap data sources by updating only the
+  repository logic.
 - Whenever sharing business logic or data transformations: Keep these in services or hooks, not inside UI components.
 
 **Example:**
@@ -117,9 +124,10 @@ export const petService = {
   },
 };
 
-// src/features/petManagement/usePetList.ts
+// src/features/pets/usePetList.ts
 import { useEffect, useState } from 'react';
 import { petService } from '@services/petService';
+
 export function usePetList() {
   const [pets, setPets] = useState([]);
   useEffect(() => {
@@ -130,7 +138,8 @@ export function usePetList() {
 ```
 
 **Summary:**  
-Always access Firestore through abstracted repository/service modules and custom hooks, never directly in components. This keeps your codebase maintainable, testable, and flexible for future changes.
+Always access Firestore through abstracted repository/service modules and custom hooks, never directly in components.
+This keeps your codebase maintainable, testable, and flexible for future changes.
 
 ## 6. Internationalization (i18next)
 
@@ -142,7 +151,8 @@ Always access Firestore through abstracted repository/service modules and custom
 ## 7. Feature Flags
 
 - See src/featureFlags/README.featureFlags.md for add/toggle/remove.
-- Defaults come from Vite env vars (VITE\_\*); override per-test via <FeatureFlagsProvider initialFlags={{ ... }}> or render options.
+- Defaults come from Vite env vars (VITE\_\*); override per-test via <FeatureFlagsProvider initialFlags={{ ... }}> or
+  render options.
 - Query flags with useFeatureFlag('flag_name').
 - Gate routes/UI paths conditionally; keep legacy/new code tidy.
 
@@ -182,6 +192,7 @@ Always access Firestore through abstracted repository/service modules and custom
 - Alias import not resolving: ensure path matches tsconfig.app.json and restart Vite.
 - i18n key missing: verify namespace/key and locale file loaded in src/i18n.tsx.
 - Tests can’t find providers: import render from '@test-utils'.
-- Test i18n warning (NO_I18NEXT_INSTANCE): render via '@test-utils' or wrap with I18nextProvider and a shared i18n instance (src/testUtils/test-i18n.tsx).
+- Test i18n warning (NO_I18NEXT_INSTANCE): render via '@test-utils' or wrap with I18nextProvider and a shared i18n
+  instance (src/testUtils/test-i18n.tsx).
 
 Welcome aboard! Keep it simple, typed, and testable.

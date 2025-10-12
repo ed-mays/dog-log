@@ -27,7 +27,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
   - [ ] Add types and functions:
 
     ```ts
-    import type { Pet } from '@features/petManagement/types';
+    import type { Pet } from '@features/pets/types';
 
     export type UpdatePetInput = Omit<Pet, 'id'>; // adjust to the editable fields
 
@@ -109,7 +109,8 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
     );
   }
   ```
-- [ ] Implement `submitEdit` to call `petService.updatePet` and update local list state, then close modal. Show error on failure and keep modal open.
+- [ ] Implement `submitEdit` to call `petService.updatePet` and update local list state, then close modal. Show error on
+      failure and keep modal open.
   ```ts
   const submitEdit = async (values: Omit<Pet, 'id'>) => {
     if (!editingPet) return;
@@ -145,7 +146,8 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
     );
   }
   ```
-- [ ] Implement `confirmDelete` to call `petService.deletePet`, update list, then close modal. Show error on failure and keep modal open.
+- [ ] Implement `confirmDelete` to call `petService.deletePet`, update list, then close modal. Show error on failure and
+      keep modal open.
   ```ts
   const confirmDelete = async () => {
     if (!deletingPet) return;
@@ -230,7 +232,8 @@ Use `render` from `@test-utils` and mock services.
   - Edit flow
     - [ ] Click Edit opens modal (`getByRole('dialog')`).
     - [ ] Fields pre-populated with pet values.
-    - [ ] Change a field and submit: assert `petService.updatePet` called with `id` and values, list updates, modal closes.
+    - [ ] Change a field and submit: assert `petService.updatePet` called with `id` and values, list updates, modal
+          closes.
     - [ ] Cancel closes modal and does not call service.
   - Delete flow
     - [ ] Click Delete opens confirm dialog.
@@ -256,7 +259,8 @@ Use `render` from `@test-utils` and mock services.
 ### 9) Accessibility and UX
 
 - [ ] Buttons have accessible names via i18n.
-- [ ] Modals use appropriate roles (`dialog`), focus management, and ESC/overlay close as supported by the common components.
+- [ ] Modals use appropriate roles (`dialog`), focus management, and ESC/overlay close as supported by the common
+      components.
 - [ ] Disable action buttons while `saving` to prevent duplicate submissions.
 
 ---
@@ -292,4 +296,5 @@ Use `render` from `@test-utils` and mock services.
 ### Notes
 
 - Keep UI small and stateless; put orchestration in `PetList` and data in `petService`.
-- If a shared `usePetList` hook emerges, refactor later to lift fetching and local updates into it, keeping this change focused now.
+- If a shared `usePetList` hook emerges, refactor later to lift fetching and local updates into it, keeping this change
+  focused now.

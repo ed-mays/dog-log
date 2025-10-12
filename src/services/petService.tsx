@@ -4,7 +4,7 @@ import type {
   PetUpdateInput,
   PetQueryOptions,
   Pet,
-} from '@features/petManagement/types';
+} from '@features/pets/types';
 
 export type UpdatePetInput = {
   name: string;

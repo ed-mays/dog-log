@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PetService } from './petService';
 import { PetRepository } from '@repositories/petRepository';
-import type { Pet, PetCreateInput } from '@features/petManagement/types';
+import type { Pet, PetCreateInput } from '@features/pets/types';
 
 // Mock the repository dependency
 vi.mock('@repositories/petRepository');

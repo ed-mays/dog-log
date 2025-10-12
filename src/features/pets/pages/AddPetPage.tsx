@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PetForm } from '@features/petManagement/components/PetForm.tsx';
+import { PetForm } from '@features/pets/components/PetForm.tsx';
 import type { Pet } from '../types.tsx';
 import { usePetsStore } from '@store/pets.store.tsx';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';

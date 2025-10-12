@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@test-utils';
-import type { Pet } from '@features/petManagement/types';
+import type { Pet } from '@features/pets/types';
 
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),

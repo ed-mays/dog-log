@@ -3,7 +3,7 @@ import styles from './PetList.module.css';
 import type { Pet } from '../types.tsx';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
 import { Link, useNavigate } from 'react-router-dom';
-import { PetListRow } from '@features/petManagement/components/PetListRow.tsx';
+import { PetListRow } from '@features/pets/components/PetListRow.tsx';
 import { loadNamespace } from '@i18n';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
