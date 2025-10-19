@@ -7,6 +7,10 @@ import { FeatureFlagsProvider } from '@featureFlags/components/FeatureFlagsProvi
 import { ErrorBoundary } from '@components/common/ErrorBoundary/ErrorBoundary';
 import AuthBootstrap from '@features/authentication/AuthBootstrap';
 import { BrowserRouter } from 'react-router-dom';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

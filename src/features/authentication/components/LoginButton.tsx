@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store.tsx';
 import { loadNamespace } from '@i18n';
+import { Button } from '@mui/material';
 
 type Props = {
   className?: string;
@@ -34,8 +35,9 @@ const LoginButton: React.FC<Props> = ({ className, disabled }) => {
   };
 
   return (
-    <button
+    <Button
       type="button"
+      variant="contained"
       className={className}
       onClick={onClick}
       disabled={disabled || initializing}
@@ -44,7 +46,7 @@ const LoginButton: React.FC<Props> = ({ className, disabled }) => {
       data-testid="login-button"
     >
       {t('continueWithGoogle', 'Continue with Google')}
-    </button>
+    </Button>
   );
 };
 
