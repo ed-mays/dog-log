@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@test-utils';
 import userEvent from '@testing-library/user-event';
-import LoginButton from './LoginButton';
+import GoogleLoginButton from './GoogleLoginButton';
 import { useAuthStore } from '@store/auth.store';
 import { AuthState } from '@store/auth.store';
 import { act, Suspense } from 'react';
 import { waitFor } from '@testing-library/react';
 import i18n from '@i18n';
 
-describe('LoginButton', () => {
+describe('GoogleLoginButton', () => {
   let signInMock: ReturnType<typeof vi.fn>;
   beforeEach(() => {
     signInMock = vi.fn().mockResolvedValue(undefined);
@@ -20,7 +20,7 @@ describe('LoginButton', () => {
   });
 
   it('calls signInWithGoogle on click', async () => {
-    render(<LoginButton />);
+    render(<GoogleLoginButton />);
     const btn = await screen.findByRole('button', {
       dataTestId: 'login-button',
     });
@@ -33,7 +33,7 @@ describe('LoginButton', () => {
       useAuthStore.setState((prev) => ({ ...prev, initializing: true }));
       const { asFragment, findByTestId } = render(
         <Suspense fallback={<div />}>
-          <LoginButton />
+          <GoogleLoginButton />
           );
         </Suspense>
       );
@@ -47,7 +47,7 @@ describe('LoginButton', () => {
     useAuthStore.setState((prev) => ({ ...prev, initializing: true }));
     const { asFragment, findByTestId } = render(
       <Suspense fallback={<div />}>
-        <LoginButton />
+        <GoogleLoginButton />
       </Suspense>
     );
 
@@ -68,12 +68,12 @@ describe('LoginButton', () => {
       await i18n.changeLanguage('en');
       const { asFragment, findByTestId } = render(
         <Suspense fallback={<div />}>
-          <LoginButton />
+          <GoogleLoginButton />
         </Suspense>
       );
 
-      await waitFor(() => findByTestId('login-button'));
-
+      const button = await waitFor(() => findByTestId('login-button'));
+      expect(button).toHaveTextContent('Continue with Google');
       expect(asFragment()).toMatchSnapshot();
     });
 
@@ -82,7 +82,7 @@ describe('LoginButton', () => {
       await i18n.changeLanguage('es');
       const { asFragment, findByTestId } = render(
         <Suspense fallback={<div />}>
-          <LoginButton />
+          <GoogleLoginButton />
         </Suspense>
       );
 

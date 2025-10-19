@@ -9,7 +9,10 @@ export type LoginButtonProps = {
   disabled?: boolean;
 };
 
-const LoginButton: React.FC<LoginButtonProps> = ({ className, disabled }) => {
+const GoogleLoginButton: React.FC<LoginButtonProps> = ({
+  className,
+  disabled,
+}) => {
   const [nsReady, setNsReady] = useState(false);
   useEffect(() => {
     let mounted = true;
@@ -52,11 +55,8 @@ const LoginButton: React.FC<LoginButtonProps> = ({ className, disabled }) => {
   );
 };
 
-export default LoginButton;
+export default GoogleLoginButton;
 
 /* TODO: ADDITIONAL CLEANUP
-- Rename to GoogleLoginButton?
-- Create Auth i18n namespace and integrate with app
 - I don't like the empty catch block, I need to understand why that is that way
-
  */

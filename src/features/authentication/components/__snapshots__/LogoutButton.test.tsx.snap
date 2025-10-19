@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LogoutButton > i18N behavior > translates the button text in English 1`] = `
+<DocumentFragment>
+  <button
+    aria-label="Log out Default"
+    data-testid="logout-button"
+    type="button"
+  >
+    Log out
+  </button>
+</DocumentFragment>
+`;
+
+exports[`LogoutButton > i18N behavior > translates the button text in Spanish 1`] = `
+<DocumentFragment>
+  <button
+    aria-label="Log out Default"
+    data-testid="logout-button"
+    type="button"
+  >
+    Cerrar sesión
+  </button>
+</DocumentFragment>
+`;

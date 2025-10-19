@@ -41,6 +41,7 @@ const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
       className={className}
       onClick={onClick}
       disabled={disabled || initializing}
+      data-testid="logout-button"
       aria-busy={initializing || undefined}
       aria-label={t('logout', 'Log out Default')}
     >

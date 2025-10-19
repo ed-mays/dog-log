@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import LoginButton from '@features/authentication/components/LoginButton';
+import GoogleLoginButton from '@features/authentication/components/GoogleLoginButton.tsx';
 import { useEffect, useState } from 'react';
 import { loadNamespace } from '@i18n';
 import { Stack } from '@mui/material';
@@ -24,7 +24,7 @@ export function WelcomePage() {
     <Stack direction="column" justifyContent="center">
       <h1>{t('welcomePage.welcomeHeader', 'Welcome to Dog Log!')}</h1>
       <p>{t('welcomePage.welcomeSubtitle', 'Please sign in to continue.')}</p>
-      <LoginButton />
+      <GoogleLoginButton />
     </Stack>
   );
 }
