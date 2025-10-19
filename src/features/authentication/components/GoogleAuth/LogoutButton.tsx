@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@store/auth.store';
+import { useAuthStore } from '@store/auth.store.tsx';
 import { useResetStores } from '@store/useResetStores.tsx';
 import { useNavigate } from 'react-router-dom';
 import { loadNamespace } from '@i18n';

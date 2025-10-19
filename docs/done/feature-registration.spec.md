@@ -23,9 +23,11 @@ The end-to-end user registration and login journey is as follows:
 5. **Firebase Auth Popup:** The `authService` is called, which invokes Firebase's `signInWithPopup` method, presenting
    the user with Google's standard authentication dialog.
 6. **Account Creation/Authentication:**
-  - **New User:** The user selects their Google account. Firebase Auth automatically creates a new user profile in the
-    project's backend.
-  - **Returning User:** Firebase Auth authenticates the existing user.
+
+- **New User:** The user selects their Google account. Firebase Auth automatically creates a new user profile in the
+  project's backend.
+- **Returning User:** Firebase Auth authenticates the existing user.
+
 7. **State Update:** Upon successful authentication, the `onAuthStateChanged` listener (initialized by `AuthBootstrap`)
    fires. The `authService` maps the `FirebaseUser` to the application's `AppUser` type, and the `auth.store` is updated
    with the user's session data.

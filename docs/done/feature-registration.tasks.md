@@ -4,6 +4,7 @@ This plan outlines the tasks required to implement user registration and refacto
 following the guidance in `feature-registration.spec.md` and `firestore-guidance.md`.
 
 ## IMPORTANT: After completing a task on this list, update this file to mark the task as done by replacing the leading brackets with
+
 `:white_check_mark:`
 
 ---
