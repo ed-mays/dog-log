@@ -4,12 +4,12 @@ import { useAuthStore } from '@store/auth.store.tsx';
 import { loadNamespace } from '@i18n';
 import { Button } from '@mui/material';
 
-type Props = {
+export type LoginButtonProps = {
   className?: string;
   disabled?: boolean;
 };
 
-const LoginButton: React.FC<Props> = ({ className, disabled }) => {
+const LoginButton: React.FC<LoginButtonProps> = ({ className, disabled }) => {
   const [nsReady, setNsReady] = useState(false);
   useEffect(() => {
     let mounted = true;
@@ -51,3 +51,10 @@ const LoginButton: React.FC<Props> = ({ className, disabled }) => {
 };
 
 export default LoginButton;
+
+/* TODO: ADDITIONAL CLEANUP
+- Rename to GoogleLoginButton?
+- Create Auth i18n namespace and integrate with app
+- I don't like the empty catch block, I need to understand why that is that way
+
+ */
