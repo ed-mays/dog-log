@@ -14,7 +14,7 @@ const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
   const [nsReady, setNsReady] = useState(false);
   useEffect(() => {
     let mounted = true;
-    Promise.all([loadNamespace('common')]).then(() => {
+    Promise.all([loadNamespace('common'), loadNamespace('auth')]).then(() => {
       if (mounted) setNsReady(true);
     });
     return () => {
@@ -42,9 +42,9 @@ const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
       onClick={onClick}
       disabled={disabled || initializing}
       aria-busy={initializing || undefined}
-      aria-label={t('logout', 'Log out')}
+      aria-label={t('logout', 'Log out Default')}
     >
-      {t('logout', 'Log out')}
+      {t('logout', 'Log out Default', { ns: 'auth' })}
     </button>
   );
 };

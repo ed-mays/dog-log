@@ -13,7 +13,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ className, disabled }) => {
   const [nsReady, setNsReady] = useState(false);
   useEffect(() => {
     let mounted = true;
-    Promise.all([loadNamespace('common')]).then(() => {
+    Promise.all([loadNamespace('common'), loadNamespace('auth')]).then(() => {
       if (mounted) setNsReady(true);
     });
     return () => {
@@ -45,7 +45,9 @@ const LoginButton: React.FC<LoginButtonProps> = ({ className, disabled }) => {
       aria-label={t('continueWithGoogle', 'Continue with Google')}
       data-testid="login-button"
     >
-      {t('continueWithGoogle', 'Continue with Google')}
+      {t('google.continueWithGoogle', 'Continue with Google Default', {
+        ns: 'auth',
+      })}
     </Button>
   );
 };
