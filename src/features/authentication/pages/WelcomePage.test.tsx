@@ -3,18 +3,6 @@ import { WelcomePage } from './WelcomePage';
 import { Suspense } from 'react';
 import i18n from 'i18next';
 
-/*
-vi.mock(import('react-i18next'), async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    useTranslation: () => ({
-      t: (key: string, fallback: string) => fallback,
-    }),
-  };
-});
-*/
-
 describe('WelcomePage', () => {
   it('renders the welcome message and login button', async () => {
     render(<WelcomePage />);

@@ -4,7 +4,7 @@ import { loadNamespace } from '@i18n';
 import { Stack } from '@mui/material';
 import { GoogleAuth } from '@features/authentication/components/GoogleAuth';
 
-export function WelcomePage() {
+export const WelcomePage: React.FC = () => {
   const [nsReady, setNsReady] = useState(false);
 
   useEffect(() => {
@@ -27,4 +27,4 @@ export function WelcomePage() {
       <GoogleAuth />
     </Stack>
   );
-}
+};
