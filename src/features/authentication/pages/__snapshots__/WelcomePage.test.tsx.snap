@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`WelcomePage > renders the expected content in English 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiStack-root css-omazcq-MuiStack-root"
+  >
+    <h1>
+      Welcome to Dog Log!
+    </h1>
+    <p>
+      Please sign in to continue.
+    </p>
+    <button
+      aria-label="Continue with Google"
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-74d805-MuiButtonBase-root-MuiButton-root"
+      data-testid="login-button"
+      tabindex="0"
+      type="button"
+    >
+      Continue with Google
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`WelcomePage > renders the expected content in Spanish 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiStack-root css-omazcq-MuiStack-root"
+  >
+    <h1>
+      Bienvenido a Dog Log!
+    </h1>
+    <p>
+      Inicia sesión para continuar.
+    </p>
+    <button
+      aria-label="Continue with Google"
+      class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-74d805-MuiButtonBase-root-MuiButton-root"
+      data-testid="login-button"
+      tabindex="0"
+      type="button"
+    >
+      Continuar con Google
+    </button>
+  </div>
+</DocumentFragment>
+`;

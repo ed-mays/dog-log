@@ -20,7 +20,7 @@
     "no": "No"
   },
   "welcomePage": {
-    "welcomeHeader": "Welcome",
-    "welcomeSubtitle": "Sign in to continue"
+    "welcomeHeader": "Welcome to Dog Log!",
+    "welcomeSubtitle": "Please sign in to continue."
   }
 }
