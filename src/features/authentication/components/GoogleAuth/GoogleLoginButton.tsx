@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store.tsx';
 import { loadNamespace } from '@i18n';
 import { Button } from '@mui/material';
+import { logger } from '@services/logService';
 
 export type LoginButtonProps = {
   className?: string;
@@ -18,6 +19,7 @@ const GoogleLoginButton: React.FC<LoginButtonProps> = ({
     let mounted = true;
     Promise.all([loadNamespace('common'), loadNamespace('auth')]).then(() => {
       if (mounted) setNsReady(true);
+      logger.info('Loaded i18n', { source: 'GoogleLoginButton' });
     });
     return () => {
       mounted = false;
@@ -32,6 +34,7 @@ const GoogleLoginButton: React.FC<LoginButtonProps> = ({
   const onClick = async () => {
     try {
       await signIn();
+      logger.info('Signed in with Google', { source: 'GoogleLoginButton' });
     } catch {
       // Error state is handled by the auth store and rendered by consumers.
     }

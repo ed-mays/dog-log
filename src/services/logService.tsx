@@ -9,7 +9,7 @@ class LoggerService {
   }
 
   shouldLog = () => {
-    return process.env.NODE_ENV === 'production';
+    return process.env.NODE_ENV !== 'production';
   };
 
   info(message: string, context?: object) {
