@@ -32,6 +32,3 @@ Then I see a navigation bar
 
 Given I am an authenticated user
 When I see the navigation bar
-
-
-

@@ -12,12 +12,12 @@ Development (TDD) approach.
 
 ## Analysis of Current State
 
-* `@components/common/NavigationBar/NavigationBar.tsx`: The current component is a simple `div` with props (`text`,
+- `@components/common/NavigationBar/NavigationBar.tsx`: The current component is a simple `div` with props (`text`,
   `role`, `ariaLive`) that are not semantically correct for a navigation bar.
-* `@components/common/NavigationBar/NavigationBar.test.tsx`: The tests validate the incorrect `div` implementation. They
+- `@components/common/NavigationBar/NavigationBar.test.tsx`: The tests validate the incorrect `div` implementation. They
   will be completely replaced.
-* `@package.json`: Confirms that `@mui/material` and `react-router-dom` are installed and available.
-* `GEMINI.md`: The developer guidelines state to use `@test-utils` for rendering and prefer `test()` over `it()`.
+- `@package.json`: Confirms that `@mui/material` and `react-router-dom` are installed and available.
+- `GEMINI.md`: The developer guidelines state to use `@test-utils` for rendering and prefer `test()` over `it()`.
 
 ---
 
@@ -38,7 +38,7 @@ because the old component is still in place.
 -import { render, screen } from '@testing-library/react';
 +import { render, screen } from '@test-utils';
  import { NavigationBar } from './NavigationBar';
- 
+
  describe('NavigationBar', () => {
 -  it('renders with default props', () => {
 +  test('should render the navigation bar with the app title', () => {
@@ -58,7 +58,7 @@ because the old component is still in place.
 +    // Check for the main navigation landmark. MUI's AppBar renders a <header>.
 +    const navElement = screen.getByRole('banner');
 +    expect(navElement).toBeInTheDocument();
- 
+
 -  it('renders with a custom role', () => {
 -    render(<NavigationBar role="navigation" />);
 -    const navigationBar = screen.getByRole('navigation');
@@ -95,14 +95,14 @@ Now, we write the minimum code required to make the failing test pass. We'll rep
 -//import { useTranslation } from 'react-i18next';
 +import { AppBar, Toolbar, Typography } from '@mui/material';
 +import { Link } from 'react-router-dom';
- 
+
  export type NavigationBarProps = {
 -  text?: string; // optional override of localized default
 -  role?: React.AriaRole; // a11y role
 -  ariaLive?: 'polite' | 'assertive' | 'off';
    'data-testid'?: string;
  };
- 
+
  export function NavigationBar({
 -  text,
 -  role = 'status',
@@ -172,7 +172,7 @@ We add an MUI `Button` integrated with `react-router-dom`'s `Link` to satisfy th
 -import { AppBar, Toolbar, Typography } from '@mui/material';
 +import { AppBar, Button, Toolbar, Typography } from '@mui/material';
  import { Link } from 'react-router-dom';
- 
+
  export type NavigationBarProps = {
 @@ -16,6 +16,9 @@
              Dog Log
@@ -226,7 +226,7 @@ We import and add the `LogoutButton` to the `Toolbar`.
  import { AppBar, Button, Toolbar, Typography } from '@mui/material';
  import { Link } from 'react-router-dom';
 +import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
- 
+
  export type NavigationBarProps = {
    'data-testid'?: string;
 @@ -17,6 +18,7 @@
