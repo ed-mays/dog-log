@@ -88,9 +88,7 @@ Users should be able to edit basic information and upload a profile image
 
 ## Implementation/Process Improvements
 
--[x] Implement pre-commit hooks
--[x] Investigate Husky or similar tools for pre-commit rules
--[x] Enforce unit tests passing, clean lint, and clean build at commit
+-[x] Implement pre-commit hooks -[x] Investigate Husky or similar tools for pre-commit rules -[x] Enforce unit tests passing, clean lint, and clean build at commit
 
 ---
 
