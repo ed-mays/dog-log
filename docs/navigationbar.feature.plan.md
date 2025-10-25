@@ -165,14 +165,9 @@ import { Button } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
 // ...inside the Toolbar, after Typography brand
-<Button
-  color="inherit"
-  component={RouterLink}
-  to="/pets"
-  sx={{ ml: 1 }}
->
+<Button color="inherit" component={RouterLink} to="/pets" sx={{ ml: 1 }}>
   Pets
-</Button>
+</Button>;
 ```
 
 Re-run tests: the Pets link assertion should now pass.
@@ -200,7 +195,8 @@ vi.mock('@i18n', () => ({
 
 // Optionally mock auth store to avoid real side-effects
 vi.mock('@store/auth.store.tsx', () => ({
-  useAuthStore: (selector: any) => selector({ signOut: vi.fn(), initializing: false }),
+  useAuthStore: (selector: any) =>
+    selector({ signOut: vi.fn(), initializing: false }),
 }));
 
 vi.mock('@store/useResetStores.tsx', () => ({
@@ -238,13 +234,23 @@ export function NavigationBar() {
           <PetsIcon titleAccess="Pets" />
         </IconButton>
         <Typography component="h1" variant="h6" noWrap sx={{ flexGrow: 1 }}>
-          <Box component={RouterLink} to="/" color="inherit" sx={{ textDecoration: 'none' }}>
+          <Box
+            component={RouterLink}
+            to="/"
+            color="inherit"
+            sx={{ textDecoration: 'none' }}
+          >
             Dog Log
           </Box>
         </Typography>
 
         {/* Primary links */}
-        <Button color="inherit" component={RouterLink} to="/pets" sx={{ mr: 1 }}>
+        <Button
+          color="inherit"
+          component={RouterLink}
+          to="/pets"
+          sx={{ mr: 1 }}
+        >
           Pets
         </Button>
 
