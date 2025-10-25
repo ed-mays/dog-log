@@ -54,6 +54,12 @@ Users should be able to edit basic information and upload a profile image
 
 - Add a memorial page for Zuul, linked as an easter egg
 
+### Feature: Tech Debt
+
+- Continue implementing snapshot tests for UI components
+  - Already implemented for WelcomePage, GoogleLoginButton, and LogoutButton components
+  - Update GoogleLoginButton test ID to `google-login-button`
+
 ---
 
 ## General Goals
@@ -82,7 +88,9 @@ Users should be able to edit basic information and upload a profile image
 
 ## Implementation/Process Improvements
 
--[x] Implement pre-commit hooks -[x] Investigate Husky or similar tools for pre-commit rules -[x] Enforce unit tests passing, clean lint, and clean build at commit
+-[x] Implement pre-commit hooks
+-[x] Investigate Husky or similar tools for pre-commit rules
+-[x] Enforce unit tests passing, clean lint, and clean build at commit
 
 ---
 
