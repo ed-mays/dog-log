@@ -5,11 +5,11 @@ import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingInd
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from './utils/errors';
-import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
 import { useAuthStore } from '@store/auth.store';
 import { RoutePrefetcher } from '@features/pets/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
 import { NavigationBar } from '@components/common/NavigationBar/NavigationBar.tsx';
+import { Toolbar } from '@mui/material';
 
 function App() {
   const appLoading = useUiStore((state) => state.loading);
@@ -31,10 +31,9 @@ function App() {
       {user && authEnabled && (
         <header aria-label="user-controls">
           <NavigationBar />
-
-          <LogoutButton />
         </header>
       )}
+      <Toolbar />
       {appLoading && initializing && <LoadingIndicator />}
       {errorDetail && <ErrorIndicator text={errorText} />}
       <AppRoutes />
