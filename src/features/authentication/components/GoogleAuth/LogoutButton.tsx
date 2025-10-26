@@ -4,6 +4,7 @@ import { useAuthStore } from '@store/auth.store.tsx';
 import { useResetStores } from '@store/useResetStores.tsx';
 import { useNavigate } from 'react-router-dom';
 import { loadNamespace } from '@i18n';
+import { Button } from '@mui/material';
 
 type Props = {
   className?: string;
@@ -36,8 +37,10 @@ const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      color="inherit"
+      variant="outlined"
+      sx={{ ml: 1 }}
       className={className}
       onClick={onClick}
       disabled={disabled || initializing}
@@ -45,8 +48,8 @@ const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
       aria-busy={initializing || undefined}
       aria-label={t('logout', 'Log out Default')}
     >
-      {t('logout', 'Log out Default', { ns: 'auth' })}
-    </button>
+      {t('auth:logout', 'Log out Default')}
+    </Button>
   );
 };
 

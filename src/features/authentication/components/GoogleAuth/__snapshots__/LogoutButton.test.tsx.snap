@@ -4,7 +4,9 @@ exports[`LogoutButton > i18N behavior > translates the button text in English 1`
 <DocumentFragment>
   <button
     aria-label="Log out Default"
+    class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedInherit MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorInherit MuiButton-root MuiButton-outlined MuiButton-outlinedInherit MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorInherit css-xgtzll-MuiButtonBase-root-MuiButton-root"
     data-testid="logout-button"
+    tabindex="0"
     type="button"
   >
     Log out
@@ -16,7 +18,9 @@ exports[`LogoutButton > i18N behavior > translates the button text in Spanish 1`
 <DocumentFragment>
   <button
     aria-label="Log out Default"
+    class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedInherit MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorInherit MuiButton-root MuiButton-outlined MuiButton-outlinedInherit MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorInherit css-xgtzll-MuiButtonBase-root-MuiButton-root"
     data-testid="logout-button"
+    tabindex="0"
     type="button"
   >
     Cerrar sesión
