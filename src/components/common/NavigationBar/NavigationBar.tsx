@@ -1,4 +1,11 @@
-import { AppBar, Toolbar, Typography, Box, IconButton } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  IconButton,
+  Button,
+} from '@mui/material';
 import PetsIcon from '@mui/icons-material/Pets';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -32,6 +39,15 @@ export function NavigationBar() {
             Dog Log
           </Box>
         </Typography>
+        <Button
+          color="inherit"
+          component={RouterLink}
+          to="/pets"
+          sx={{ ml: 1 }}
+        >
+          Pets
+        </Button>
+        ;
       </Toolbar>
     </AppBar>
   );

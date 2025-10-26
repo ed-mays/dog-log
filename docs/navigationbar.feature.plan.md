@@ -133,7 +133,7 @@ scope for this component’s test.
 
 ---
 
-### Step 2: Add the “Pets” navigation link
+### :white_check_mark: Step 2: Add the “Pets” navigation link
 
 Requirement addressed: Add a navigation link to `/pets`.
 

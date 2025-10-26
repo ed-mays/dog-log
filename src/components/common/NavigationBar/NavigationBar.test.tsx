@@ -23,4 +23,13 @@ describe('NavigationBar', () => {
     const brandLink = within(nav).getByRole('link', { name: /dog log/i });
     expect(brandLink).toHaveAttribute('href', '/');
   });
+
+  it('renders a link to the Pets page', () => {
+    render(<NavigationBar />);
+    const link = screen.getByRole('link', { name: /pets/i });
+    expect(link).toHaveAttribute('href', '/pets');
+  });
+  it.todo('renders the LogoutButton in the navigation bar', () => {});
+  it.todo('navigation has aria-label Primary', () => {});
+  it.todo('brand and Pets links are visible and focusable', () => {});
 });
