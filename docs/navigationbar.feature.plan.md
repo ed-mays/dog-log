@@ -4,7 +4,7 @@ For each step: write a failing test → implement minimal code → refactor if n
 
 ---
 
-### Step 0: Replace placeholders with test scaffolding
+### :white_check_mark: Step 0: Replace placeholders with test scaffolding
 
 We’ll reset the tests to describe the desired behavior of the nav bar. We will use `@test-utils` and wrap the component
 with `MemoryRouter` so that `Link` and `useNavigate` work during render. No assertions yet, just confirm render path
@@ -43,7 +43,7 @@ Run tests to confirm green as a baseline.
 
 ---
 
-### Step 1: Add branded AppBar, fixed top, nav role
+### :white_ckeck_mark: Step 1: Add branded AppBar, fixed top, nav role
 
 Requirements addressed:
 
