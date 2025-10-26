@@ -29,11 +29,24 @@ describe('NavigationBar', () => {
     const link = screen.getByRole('link', { name: /pets/i });
     expect(link).toHaveAttribute('href', '/pets');
   });
+
   it('renders the LogoutButton in the navigation bar', async () => {
     render(<NavigationBar />);
     const logoutButton = await screen.findByTestId('logout-button');
     expect(logoutButton).toBeInTheDocument();
   });
-  it.todo('navigation has aria-label Primary', () => {});
-  it.todo('brand and Pets links are visible and focusable', () => {});
+
+  it('navigation has aria-label Primary', () => {
+    render(<NavigationBar />);
+    const nav = screen.getByRole('navigation', { name: /primary/i });
+    expect(nav).toBeInTheDocument();
+  });
+
+  it('brand and Pets links are visible and focusable', () => {
+    render(<NavigationBar />);
+    const brand = screen.getByRole('link', { name: /dog log/i });
+    const pets = screen.getByRole('link', { name: /pets/i });
+    expect(brand).toBeVisible();
+    expect(pets).toBeVisible();
+  });
 });

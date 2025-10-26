@@ -258,7 +258,7 @@ Re-run tests: now the logout test should pass. Since we mocked `@i18n`, the butt
 
 ---
 
-### Step 4: Small accessibility polish tests (optional but recommended)
+### :white_check_mark: Step 4: Small accessibility polish tests (optional but recommended)
 
 Add a couple more assertions to lock down accessibility contracts:
 
