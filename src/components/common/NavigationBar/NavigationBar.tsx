@@ -11,6 +11,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
 
 export function NavigationBar() {
+  const APP_TITLE = 'Dog Log';
+  const PETS_LABEL = 'Pets';
+
   return (
     <AppBar position="fixed" component="nav" aria-label="Primary">
       <Toolbar>
@@ -23,7 +26,7 @@ export function NavigationBar() {
           edge="start"
           sx={{ mr: 1 }}
         >
-          <PetsIcon titleAccess="Pets" />
+          <PetsIcon titleAccess={PETS_LABEL} />
         </IconButton>
         <Typography
           component="h1"
@@ -37,7 +40,7 @@ export function NavigationBar() {
             color="inherit"
             sx={{ textDecoration: 'none' }}
           >
-            Dog Log
+            {APP_TITLE}
           </Box>
         </Typography>
         <Button
@@ -46,7 +49,7 @@ export function NavigationBar() {
           to="/pets"
           sx={{ ml: 1 }}
         >
-          Pets
+          {PETS_LABEL}
         </Button>
         <LogoutButton />
       </Toolbar>

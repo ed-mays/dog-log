@@ -289,7 +289,7 @@ No additional implementation should be needed.
 
 ---
 
-### Step 5: Refactor and document for future i18n
+### :white_check_mark: Step 5: Refactor and document for future i18n
 
 - Extract visible strings to constants to simplify a future i18n migration:
   - `const APP_TITLE = 'Dog Log';`
