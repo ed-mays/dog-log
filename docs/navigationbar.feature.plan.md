@@ -1,13 +1,5 @@
 ### TDD plan for the Material UI Navigation Bar (React Router v7)
 
-Below is an incremental, tests-first plan to implement the `NavigationBar` using MUI’s `AppBar` and friends, integrating
-with `react-router-dom@7`, and rendering your existing `LogoutButton`. We will:
-
-- keep files at `src/components/common/NavigationBar/NavigationBar.tsx` and `NavigationBar.test.tsx`
-- use `@test-utils` for render + `MemoryRouter` in tests
-- keep visible strings hardcoded for now (i18n later)
-- set `role="navigation"` and `aria-label="Primary"`, and fix the bar to the top
-
 For each step: write a failing test → implement minimal code → refactor if needed.
 
 ---

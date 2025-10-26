@@ -22,24 +22,28 @@ describe('App', () => {
   const mockUseUiStore = useUiStore as vi.Mock;
   const fetchPetsSpy = vi.fn();
 
+  const defaultAuthState = {
+    user: { uid: 'test' },
+    initializing: false,
+    error: null,
+  };
+
+  const defaultPetsState = { pets: [], fetchPets: fetchPetsSpy };
+  const defaultUiState = { loading: false, error: null };
   beforeEach(() => {
     vi.resetAllMocks();
     // Setup default mocks for each test
-    const authState = {
-      user: { uid: 'test' },
-      initializing: false,
-      error: null,
-    };
+
     mockUseAuthStore.mockImplementation((selector) =>
-      selector ? selector(authState) : authState
+      selector ? selector(defaultAuthState) : defaultAuthState
     );
-    const petsState = { pets: [], fetchPets: fetchPetsSpy };
+
     mockUsePetsStore.mockImplementation((selector) =>
-      selector ? selector(petsState) : petsState
+      selector ? selector(defaultPetsState) : defaultPetsState
     );
-    const uiState = { loading: false, error: null };
+
     mockUseUiStore.mockImplementation((selector) =>
-      selector ? selector(uiState) : uiState
+      selector ? selector(defaultUiState) : defaultUiState
     );
   });
 
@@ -52,14 +56,25 @@ describe('App', () => {
     mockUseUiStore.mockImplementation((selector) =>
       selector ? selector(loadingState) : loadingState
     );
+
+    const uiState = {
+      ...defaultUiState,
+      initializing: true,
+    };
+
+    mockUseAuthStore.mockImplementation((selector) =>
+      selector ? selector(uiState) : uiState
+    );
+
     renderComponent();
+
     await waitFor(() => {
       expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
     });
   });
 
   test('renders error state', async () => {
-    const errorState = { loading: false, error: new Error('Boom') };
+    const errorState = { ...defaultUiState, error: new Error('Boom') };
     mockUseUiStore.mockImplementation((selector) =>
       selector ? selector(errorState) : errorState
     );
@@ -74,11 +89,11 @@ describe('App', () => {
 
   test('renders pet list', async () => {
     const petsState = {
+      ...defaultPetsState,
       pets: [
         { id: '1', name: 'Fido', breed: 'Labrador' },
         { id: '2', name: 'Bella', breed: 'Beagle' },
       ],
-      fetchPets: fetchPetsSpy,
     };
     mockUsePetsStore.mockImplementation((selector) =>
       selector ? selector(petsState) : petsState
