@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import PetsIcon from '@mui/icons-material/Pets';
 import { Link as RouterLink } from 'react-router-dom';
+import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
 
 export function NavigationBar() {
   return (
@@ -47,7 +48,7 @@ export function NavigationBar() {
         >
           Pets
         </Button>
-        ;
+        <LogoutButton />
       </Toolbar>
     </AppBar>
   );

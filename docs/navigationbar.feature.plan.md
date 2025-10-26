@@ -166,7 +166,7 @@ Re-run tests: the Pets link assertion should now pass.
 
 ---
 
-### Step 3: Integrate the LogoutButton from context
+### :white_check_mark: Step 3: Integrate the LogoutButton from context
 
 Requirement addressed: Include the existing `LogoutButton` component. It uses `useNavigate`, Zustand auth store, and
 lazy i18n namespace loading. We won’t click it yet; we just assert it renders in the nav. To keep the test fast and
