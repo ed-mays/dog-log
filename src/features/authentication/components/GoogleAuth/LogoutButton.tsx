@@ -35,6 +35,7 @@ const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
     resetStores();
     navigate('/welcome', { replace: true });
   };
+  const ariaLabel = t('auth:logout', 'Log out Default');
 
   return (
     <Button
@@ -44,9 +45,11 @@ const LogoutButton: React.FC<Props> = ({ className, disabled }) => {
       className={className}
       onClick={onClick}
       disabled={disabled || initializing}
+      role="button"
       data-testid="logout-button"
       aria-busy={initializing || undefined}
-      aria-label={t('logout', 'Log out Default')}
+      aria-label={ariaLabel}
+      name={ariaLabel}
     >
       {t('auth:logout', 'Log out Default')}
     </Button>
