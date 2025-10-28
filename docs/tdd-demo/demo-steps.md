@@ -11,7 +11,15 @@
   - Open /src/components/common/NavigationBar/NavigationBar.tsx
   - Open /src/components/common/NavigationBar/NavigationBar.test.tsx
 
-# Step 0: Finished product
+# Step 0: Setting the stage
+
+## Context
+
+- This demo is to illustrate the basic test-driven development flow
+- Given the time constraints, I only implemented basic tests for the navigation bar
+  - We will dive a little deeper into other scenarios at the end of the demo
+
+## Finished product
 
 - Switch to `main` branch
 - Show the browser window, pointing out the navigation bar
@@ -27,7 +35,6 @@
   - Stub NavigationBar implementation
   - Stub NavigationBar tests implementation
 - Review flow: For each step: write a failing test → implement minimal code → refactor if needed.
-- Note test count in terminal as a starting point (137)
 
 # Step 3: Base navigation bar structure
 
@@ -47,14 +54,6 @@ it('renders a fixed primary navigation bar with brand', () => {
   // The nav container
   const nav = screen.getByRole('navigation', { name: /primary/i });
   expect(nav).toBeInTheDocument();
-
-  // Brand heading text
-  const heading = within(nav).getByRole('heading', { name: /dog log/i });
-  expect(heading).toBeInTheDocument();
-
-  // Brand acts as a home link
-  const brandLink = within(nav).getByRole('link', { name: /dog log/i });
-  expect(brandLink).toHaveAttribute('href', '/');
 });
 ```
 
@@ -71,19 +70,19 @@ export function NavigationBar() {
 ### Next test: Branding
 
 ```tsx
-it('renders a the expected branding', () => {
-    render(<NavigationBar />);
+it('renders the expected branding', () => {
+  render(<NavigationBar />);
 
-    // The nav container
-    const nav = screen.getByRole('navigation', { name: /primary/i });
-    Brand heading text
-    const heading = within(nav).getByRole('heading', { name: /dog log/i });
-    expect(heading).toBeInTheDocument();
+  // The nav container
+  const nav = screen.getByRole('navigation', { name: /primary/i });
+  // Brand heading text
+  const heading = within(nav).getByRole('heading', { name: /dog log/i });
+  expect(heading).toBeInTheDocument();
 
-    // Brand acts as a home link
-    const brandLink = within(nav).getByRole('link', { name: /dog log/i });
-    expect(brandLink).toHaveAttribute('href', '/');
-  });
+  // Brand acts as a home link
+  const brandLink = within(nav).getByRole('link', { name: /dog log/i });
+  expect(brandLink).toHaveAttribute('href', '/');
+});
 ```
 
 ### Next implementation: Branding
@@ -131,6 +130,12 @@ export function NavigationBar() {
 ```
 
 ## Step 3.4: Demonstrate passing test in terminal
+
+## Step 3.5: Demonstrate husky hooks
+
+```bash
+git add . && git commit -m "implement navigation bar foundation"
+```
 
 # Step 4: Implement "Pets" Navigation Link
 
@@ -294,3 +299,13 @@ it('brand and Pets links are visible and focusable', async () => {
 No implementation, we were just adding test coverage.
 
 ## Step 6.4: Demonstrate passing test in terminal
+
+# Step 7: Bonus Content
+
+- Quick walkthrough of LogoutButtonTests, focusing on:
+  - Dealing with lazy-loaded components
+  - Controlling test paths using mocks, e.g. useAuthStore
+  - Parameterized tests
+  - Using beforeEach and afterEach for test setup and teardown
+  - Point out the number of tests for even a simple component that is nothing more than a button with some basic behavior
+- Touch on snapshot testing with GoogleLoginButton.test.tsx
