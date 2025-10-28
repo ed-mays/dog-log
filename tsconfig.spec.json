@@ -1,0 +1,35 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.spec.tsbuildinfo",
+    "composite": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
+    "jsx": "react-jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "@App": ["App.tsx"],
+      "@components/*": ["components/*"],
+      "@firebase": ["firebase.tsx"],
+      "@i18n": ["i18n.tsx"],
+      "@store/*": ["store/*"],
+      "@test-utils": ["test-utils.tsx"],
+      "@testUtils/*": ["testUtils/*"],
+      "@featureFlags/*": ["featureFlags/*"],
+      "@features/*": ["features/*"],
+      "@models/*": ["models/*"],
+      "@repositories/*": ["repositories/*"],
+      "@services/*": ["services/*"],
+      "@styles/*": ["styles/*"],
+      "@utils/*": ["utils/*"]
+    }
+  },
+  "include": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "vitest.setup.ts",
+    "vitest.setup.tsx",
+    "src/test-utils.tsx",
+    "src/testUtils/**/*.ts",
+    "src/testUtils/**/*.tsx"
+  ]
+}
