@@ -8,6 +8,8 @@ import { loadNamespace } from '@i18n';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
 import { usePetsStore } from '@store/pets.store.tsx';
+import { IconButton, Tooltip } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 type PetListProps = {
   pets: Pet[];
@@ -61,18 +63,29 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
   return (
     <>
       {addPetEnabled && (
-        <div className={styles.headerRow}>
-          <Link
-            to="/pets/new"
-            className={styles.addButton}
-            role="button"
-            data-testid={'add-pet-button'}
-            aria-label={t('addPet')}
-            title={t('addPet')}
+        <>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+            }}
           >
-            {'\u2795'}
-          </Link>
-        </div>
+            <Tooltip title={t('addPet')}>
+              <IconButton
+                component={Link}
+                to="/pets/new"
+                color="primary"
+                size="large"
+                data-testid="add-pet-button"
+                aria-label={t('addPet')}
+                sx={{ ml: 1 }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </>
       )}
 
       {error && (
