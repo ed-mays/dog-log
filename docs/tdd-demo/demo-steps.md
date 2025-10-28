@@ -41,8 +41,8 @@
 
 ```tsx
 // src/components/common/NavigationBar/NavigationBar.test.tsx
-test('renders a fixed primary navigation bar with brand', () => {
-  renderWithRouter(<NavigationBar />);
+it('renders a fixed primary navigation bar with brand', () => {
+  render(<NavigationBar />);
 
   // The nav container
   const nav = screen.getByRole('navigation', { name: /primary/i });
@@ -61,6 +61,32 @@ test('renders a fixed primary navigation bar with brand', () => {
 ## Step 3.2: Demonstrate failing test in terminal
 
 ## Step 3.3: Minimal implementation
+
+```tsx
+export function NavigationBar() {
+  return <AppBar position="fixed" component="nav" aria-label="Primary" />;
+}
+```
+
+### Next test: Branding
+
+```tsx
+it('renders a the expected branding', () => {
+    render(<NavigationBar />);
+
+    // The nav container
+    const nav = screen.getByRole('navigation', { name: /primary/i });
+    Brand heading text
+    const heading = within(nav).getByRole('heading', { name: /dog log/i });
+    expect(heading).toBeInTheDocument();
+
+    // Brand acts as a home link
+    const brandLink = within(nav).getByRole('link', { name: /dog log/i });
+    expect(brandLink).toHaveAttribute('href', '/');
+  });
+```
+
+### Next implementation: Branding
 
 ```tsx
 // src/components/common/NavigationBar/NavigationBar.tsx
@@ -116,8 +142,8 @@ export function NavigationBar() {
 ```tsx
 // append to NavigationBar.test.tsx
 
-test('renders a link to the Pets page', () => {
-  renderWithRouter(<NavigationBar />);
+it('renders a link to the Pets page', () => {
+  render(<NavigationBar />);
   const link = screen.getByRole('link', { name: /pets/i });
   expect(link).toHaveAttribute('href', '/pets');
 });
@@ -174,8 +200,8 @@ vi.mock('@store/useResetStores.tsx', () => ({
 
 // Now the test
 
-test('renders the LogoutButton in the navigation bar', async () => {
-  renderWithRouter(<NavigationBar />);
+it('renders the LogoutButton in the navigation bar', async () => {
+  render(<NavigationBar />);
   const button = await screen.findByTestId('logout-button');
   expect(button).toBeInTheDocument();
 });
@@ -187,8 +213,7 @@ test('renders the LogoutButton in the navigation bar', async () => {
 
 ```tsx
 // src/components/common/NavigationBar/NavigationBar.tsx
-// TODO: This import sucks and should be shortened.
-import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
+import { LogoutButton } from '@features/authentication';
 
 export function NavigationBar() {
   return (
@@ -247,14 +272,14 @@ export function NavigationBar() {
 ```tsx
 // append optional tests
 
-test('navigation has aria-label Primary', () => {
-  renderWithRouter(<NavigationBar />);
+it('navigation has aria-label Primary', () => {
+  render(<NavigationBar />);
   const nav = screen.getByRole('navigation', { name: /primary/i });
   expect(nav).toBeInTheDocument();
 });
 
-test('brand and Pets links are visible and focusable', async () => {
-  renderWithRouter(<NavigationBar />);
+it('brand and Pets links are visible and focusable', async () => {
+  render(<NavigationBar />);
   const brand = screen.getByRole('link', { name: /dog log/i });
   const pets = screen.getByRole('link', { name: /pets/i });
   expect(brand).toBeVisible();
