@@ -38,18 +38,14 @@
       "@services/*": ["services/*"],
       "@styles/*": ["styles/*"],
       "@utils/*": ["utils/*"]
-    },
-    "composite": true
+    }
   },
   "include": ["src"],
   "exclude": [
-    "node_modules",
-    "vite.config.ts",
+    "src/**/*.test.*",
+    "src/**/*.spec.*",
     "vitest.setup.tsx",
-    "vitest.setup.ts",
     "src/testUtils/**",
-    "src/test-utils.tsx",
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx"
+    "src/test-utils.tsx"
   ]
 }
