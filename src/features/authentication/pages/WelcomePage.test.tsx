@@ -1,13 +1,19 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@test-utils';
 import { WelcomePage } from './WelcomePage';
-import { Suspense } from 'react';
-import i18n from 'i18next';
+import { afterEach } from 'vitest';
+import testI18n from '@testUtils/test-i18n';
+
+afterEach(async () => {
+  await testI18n.changeLanguage('en');
+});
 
 describe('WelcomePage', () => {
   it('renders the welcome message and login button', async () => {
     render(<WelcomePage />);
 
-    expect(await screen.findByText('Welcome to Dog Log!')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Welcome to Dog Log!' })
+    ).toBeInTheDocument();
     expect(
       await screen.findByText('Please sign in to continue.')
     ).toBeInTheDocument();
@@ -15,26 +21,22 @@ describe('WelcomePage', () => {
   });
 
   it('renders the expected content in English', async () => {
-    const { asFragment } = render(
-      <Suspense fallback={<div />}>
-        <WelcomePage />
-      </Suspense>
-    );
-    await waitFor(() => screen.findByTestId('login-button'));
-    await waitFor(() => screen.findByText('Please sign in to continue.'));
-    await waitFor(() => screen.findByText('Welcome to Dog Log!'));
+    const { asFragment } = render(<WelcomePage />);
+
+    await screen.findByTestId('login-button');
+    await screen.findByText('Please sign in to continue.');
+    await screen.findByRole('heading', { name: 'Welcome to Dog Log!' });
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders the expected content in Spanish', async () => {
-    await i18n.changeLanguage('es');
-    const { asFragment } = render(
-      <Suspense fallback={<div />}>
-        <WelcomePage />
-      </Suspense>
-    );
-    await waitFor(() => screen.findByText('Inicia sesión para continuar.'));
-    await waitFor(() => screen.findByText('Bienvenido a Dog Log!'));
+    await testI18n.changeLanguage('es');
+
+    const { asFragment } = render(<WelcomePage />);
+
+    await screen.findByTestId('login-button');
+    await screen.findByText('Inicia sesión para continuar.');
+    await screen.findByRole('heading', { name: 'Bienvenido a Dog Log!' });
     expect(asFragment()).toMatchSnapshot();
   });
 });
