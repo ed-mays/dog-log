@@ -8,7 +8,6 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": "./src",
     "paths": {
-      "@App": ["App.tsx"],
       "@components/*": ["components/*"],
       "@firebase": ["firebase.tsx"],
       "@i18n": ["i18n.tsx"],
