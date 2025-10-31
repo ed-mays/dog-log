@@ -81,7 +81,7 @@ describe('PetList integration', () => {
     await user.click(noBtn);
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     expect(storeActions.deletePet).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe('PetList integration', () => {
       expect(
         screen.queryByRole('cell', { name: 'Fido' })
       ).not.toBeInTheDocument();
-      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 

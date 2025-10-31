@@ -254,7 +254,7 @@ Below is a plan to improve test quality, consistency, and alignment with React 1
 
 6. Sustaining quality
 
-- Add ESLint plugins: `eslint-plugin-testing-library` and `eslint-plugin-jest-dom` with recommended configs to enforce
+- [:white_check_mark:]Add ESLint plugins: `eslint-plugin-testing-library` and `eslint-plugin-jest-dom` with recommended configs to enforce
   best practices.
 - Set/adjust coverage thresholds in `vitest.config.ts` (e.g., 80% lines/branches) and add `npm run test:coverage` to
   CI.

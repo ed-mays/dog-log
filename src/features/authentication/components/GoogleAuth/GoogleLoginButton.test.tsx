@@ -4,8 +4,7 @@ import userEvent from '@testing-library/user-event';
 import GoogleLoginButton from './GoogleLoginButton';
 import { useAuthStore } from '@store/auth.store';
 import { AuthState } from '@store/auth.store';
-import { act, Suspense } from 'react';
-import { waitFor } from '@testing-library/react';
+import { act } from 'react';
 
 describe('GoogleLoginButton', () => {
   let signInMock: ReturnType<typeof vi.fn>;
@@ -21,7 +20,7 @@ describe('GoogleLoginButton', () => {
   it('calls signInWithGoogle on click', async () => {
     render(<GoogleLoginButton />);
     const btn = await screen.findByRole('button', {
-      dataTestId: 'login-button',
+      'data-testid': 'login-button',
     });
     await userEvent.click(btn);
     expect(signInMock).toHaveBeenCalledTimes(1);
@@ -30,33 +29,24 @@ describe('GoogleLoginButton', () => {
   describe('Initialization behavior', () => {
     it('is disabled while initializing', async () => {
       useAuthStore.setState((prev) => ({ ...prev, initializing: true }));
-      const { asFragment, findByTestId } = render(
-        <Suspense fallback={<div />}>
-          <GoogleLoginButton />
-          );
-        </Suspense>
-      );
+      render(<GoogleLoginButton />);
 
-      await waitFor(() => findByTestId('login-button'));
-      expect(asFragment()).toMatchSnapshot();
+      const button = await screen.findByTestId('login-button');
+      expect(button).toBeDisabled();
     });
   });
 
   it('is enabled after initializing', async () => {
     useAuthStore.setState((prev) => ({ ...prev, initializing: true }));
-    const { asFragment, findByTestId } = render(
-      <Suspense fallback={<div />}>
-        <GoogleLoginButton />
-      </Suspense>
-    );
+    render(<GoogleLoginButton />);
 
-    await waitFor(() => findByTestId('login-button'));
+    const button = await screen.findByTestId('login-button');
 
     act(() =>
       useAuthStore.setState((prev) => ({ ...prev, initializing: false }))
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(button).toBeEnabled();
   });
 
   describe('i18N behavior', () => {
@@ -64,29 +54,19 @@ describe('GoogleLoginButton', () => {
 
     it('translates the button text in English', async () => {
       useAuthStore.setState((prev) => ({ ...prev, initializing: false }));
-      const { asFragment, findByTestId } = render(
-        <Suspense fallback={<div />}>
-          <GoogleLoginButton />
-        </Suspense>
-      );
+      render(<GoogleLoginButton />);
 
-      const button = await waitFor(() => findByTestId('login-button'));
+      const button = await screen.findByTestId('login-button');
       expect(button).toHaveTextContent('Continue with Google');
-      expect(asFragment()).toMatchSnapshot();
     });
 
     it('translates the button text in Spanish', async () => {
       useAuthStore.setState((prev) => ({ ...prev, initializing: false }));
       await withLocale('es', async () => {
-        const { asFragment, findByTestId } = render(
-          <Suspense fallback={<div />}>
-            <GoogleLoginButton />
-          </Suspense>
-        );
+        render(<GoogleLoginButton />);
 
-        const button = await waitFor(() => findByTestId('login-button'));
+        const button = await screen.findByTestId('login-button');
         expect(button).toHaveTextContent('Continuar con Google');
-        expect(asFragment()).toMatchSnapshot();
       });
     });
   });

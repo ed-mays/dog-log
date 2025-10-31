@@ -3,7 +3,6 @@ import { render, screen, withLocale } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import LogoutButton from './LogoutButton';
 import { useAuthStore } from '@store/auth.store';
-import { Suspense } from 'react';
 
 const resetStoresMock = vi.fn();
 vi.mock('@store/useResetStores.tsx', () => ({
@@ -88,12 +87,8 @@ describe('LogoutButton', () => {
       'renders with correct text for language "$lang"',
       async ({ lang, expectedText, expectedAriaLabel }) => {
         await withLocale(lang, async () => {
-          const { findByRole } = render(
-            <Suspense>
-              <LogoutButton />
-            </Suspense>
-          );
-          const button = await findByRole('button', {
+          render(<LogoutButton />);
+          const button = await screen.findByRole('button', {
             name: expectedAriaLabel,
           });
           expect(button).toHaveTextContent(expectedText);

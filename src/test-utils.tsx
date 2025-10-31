@@ -16,7 +16,6 @@ type AllTheProvidersProps = {
   initialRoutes?: string[];
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 const AllTheProviders = ({
   children,
   i18nInstance,
@@ -66,7 +65,6 @@ const customRender = (
     ...options,
   });
 
-// eslint-disable-next-line react-refresh/only-export-components
 export * from '@testing-library/react';
 export { customRender as render };
 export { withLocale } from '@testUtils/withLocale';

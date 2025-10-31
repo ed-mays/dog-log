@@ -24,7 +24,7 @@ describe('ErrorIndicator', () => {
   test('renders with custom test-id', async () => {
     render(<ErrorIndicator data-testid="custom-test-id" />);
     await waitFor(() => {
-      expect(screen.getByTestId('custom-test-id')).toBeTruthy();
+      expect(screen.getByTestId('custom-test-id')).toBeInTheDocument();
     });
   });
 });

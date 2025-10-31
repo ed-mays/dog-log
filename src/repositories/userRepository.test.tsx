@@ -17,9 +17,11 @@ const mockUser: User = {
 
 vi.mock('./base/BaseRepository', () => {
   class MockBaseRepository {
-    getById = vi.fn(async (id: string) =>
-      id === mockUser.id ? mockUser : undefined
-    );
+    getById = vi
+      .fn()
+      .mockImplementation(async (id: string): Promise<User | undefined> => {
+        return id === mockUser.id ? mockUser : undefined;
+      });
     create = vi.fn(async (user: User) => {
       if (user.id === 'existing') {
         throw new Error('Document already exists');
@@ -38,12 +40,14 @@ describe('UserRepository', () => {
   });
 
   it('should get a user by id', async () => {
+    // eslint-disable-next-line testing-library/no-await-sync-queries
     const user = await userRepository.getById('123');
     expect(user).toEqual(mockUser);
     expect(userRepository.getById).toHaveBeenCalledWith('123');
   });
 
   it('should return undefined for a non-existent user', async () => {
+    // eslint-disable-next-line testing-library/no-await-sync-queries
     const user = await userRepository.getById('456');
     expect(user).toBeUndefined();
     expect(userRepository.getById).toHaveBeenCalledWith('456');
