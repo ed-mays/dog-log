@@ -63,7 +63,11 @@ describe('PetListRow', () => {
       { featureFlags: { petActionsEnabled: false } }
     );
 
-    expect(screen.queryByRole('button', { name: /edit/i })).toBeNull();
-    expect(screen.queryByRole('button', { name: /delete/i })).toBeNull();
+    expect(
+      screen.queryByRole('button', { name: /edit/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /delete/i })
+    ).not.toBeInTheDocument();
   });
 });

@@ -1,26 +1,42 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
+import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import { globalIgnores } from 'eslint/config';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import { defineConfig } from 'eslint/config';
-import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import pluginReact from 'eslint-plugin-react';
+import jsxRuntime from 'eslint-plugin-react/configs/jsx-runtime.js';
+import testingLibrary from 'eslint-plugin-testing-library';
+import jestDom from 'eslint-plugin-jest-dom';
 
-export default defineConfig([
-  js.configs.recommended,
+export default [
+  // Global ignores
+  { ignores: ['dist', 'coverage'] },
+
+  // Base JS and TS configs
+  pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  reactHooks.configs['recommended-latest'],
-  reactRefresh.configs.vite,
-  prettierRecommended,
-  jsxA11y.flatConfigs.recommended,
+
+  // React configuration for all relevant files
   {
     files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+    plugins: {
+      react: pluginReact,
+    },
+    rules: {
+      ...pluginReact.configs.recommended.rules,
+      ...jsxRuntime.rules,
+    },
+    settings: {
+      react: {
+        version: 'detect', // Automatically detect the React version
+      },
     },
   },
-  globalIgnores(['dist']),
-]);
+
+  // Testing Library and Jest-DOM configuration for test files
+  {
+    files: ['**/*.test.tsx', '**/*.test.ts'],
+    plugins: { 'testing-library': testingLibrary, 'jest-dom': jestDom },
+    rules: {
+      ...testingLibrary.configs.react.rules,
+      ...jestDom.configs.recommended.rules,
+    },
+  },
+];

@@ -59,7 +59,7 @@ describe('PetForm', () => {
     await userEvent.type(await screen.findByLabelText(/name/i), 'Fido');
     await userEvent.type(await screen.findByLabelText(/breed/i), 'Beagle');
     const okButton = screen.getByRole('button', { name: /ok/i });
-    expect(okButton).not.toBeDisabled();
+    expect(okButton).toBeEnabled();
   });
 
   it('calls onSubmit with pet data and disables on invalid', async () => {
@@ -108,7 +108,7 @@ describe('PetForm', () => {
     await userEvent.type(await screen.findByLabelText(/name/i), 'Fido');
     await userEvent.type(await screen.findByLabelText(/breed/i), 'Beagle');
     const okButton = await screen.findByRole('button', { name: /ok/i });
-    expect(okButton).not.toBeDisabled();
+    expect(okButton).toBeEnabled();
     await userEvent.click(okButton);
     expect(onSubmit).toHaveBeenCalledWith({ name: 'Fido', breed: 'Beagle' });
   });

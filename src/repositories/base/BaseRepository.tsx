@@ -151,9 +151,6 @@ export abstract class BaseRepository<T extends BaseEntity>
     };
   }
 
-  /**
-   * Get a single entity by ID
-   */
   async getById(id: string): Promise<T | null> {
     try {
       const docRef = doc(db, this.collectionName, id);

@@ -155,7 +155,7 @@ describe('EditPetPage', () => {
     fireEvent.click(noBtn);
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog')).toBeNull();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     expect(navSpy).not.toHaveBeenCalled();

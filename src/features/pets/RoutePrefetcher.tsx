@@ -14,7 +14,6 @@ export function RoutePrefetcher() {
     if (onPetsRoute && pets.length === 0 && !loading) {
       void fetchPets();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, pets.length, fetchPets]);
 
   return null;
