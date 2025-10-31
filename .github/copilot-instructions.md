@@ -97,10 +97,13 @@ When writing or refactoring tests, please adhere to the following conventions to
 
 ## Editing guidance for AI agents (do this on every PR)
 
-- Run unit tests locally: `npm run test` and `npm run test:coverage` for changed code.
-- Fix lint issues with `npm run lint:fix` before committing.
-- When changing store shape or selectors, update tests that mock those stores (search for `vi.mock('@store/` and follow the `selector ? selector(state) : state` pattern).
-- For changes touching Firebase integration or auth flows, prefer to run emulators and add integration tests rather than change emulator wiring.
+After making any code changes, you must verify that the following commands succeed without errors:
+
+- `npm run build` (type-check and build)
+- `npm run lint` (lint for issues)
+- `npm run test` (run all unit and integration tests)
+
+Fix any issues that arise before considering the task complete.
 
 ## Files to consult for examples and patterns
 

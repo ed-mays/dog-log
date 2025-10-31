@@ -221,6 +221,7 @@ This keeps your codebase maintainable, testable, and flexible for future changes
 ## 10. Pull Requests — Quick Checklist
 
 - [ ] Unit/component tests added/updated; coverage still reasonable
+- [ ] `npm run build` passes without errors
 - [ ] npm run lint and npm run format pass
 - [ ] Screens and strings are i18n-ready (no hardcoded user-facing text)
 - [ ] Follows feature-first structure and uses aliases
