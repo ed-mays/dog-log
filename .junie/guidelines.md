@@ -60,15 +60,39 @@ Guidelines:
 
 ## 4. Testing Guidelines (Vitest + Testing Library)
 
-- Prefer behavior-driven tests via @testing-library/react and user-event.
-- Use the shared render wrapper for providers (i18n + feature flags):
-  import { render, screen } from '@test-utils';
-  // You can override flags or i18n per test when needed
-  // render(<MyComponent />, { featureFlags: { addPetEnabled: false }, i18nInstance });
-- Keep tests next to code: Component.tsx and Component.test.tsx in same folder.
-- Use getByRole and accessible queries; avoid brittle text selectors.
-- Snapshot sparingly; assert meaningful behavior and state.
+When writing or refactoring tests, please adhere to the following conventions to ensure consistency, reliability, and maintainability.
+
+1.  **Prefer `user-event` for Interactions**: Always use `@testing-library/user-event` for simulating user interactions (e.g., `userEvent.click`, `userEvent.type`). Avoid `@testing-library/fire-event` as it does not fully replicate real user browser behavior. All `user-event` calls are asynchronous and must be `await`ed.
+
+2.  **Use `findBy*` for Async Elements**: For asserting the appearance of an element that is not present immediately, prefer `findBy*` queries (e.g., `await screen.findByRole(...)`). Avoid wrapping `getBy*` queries in `waitFor` for simple presence checks.
+
+3.  **Prioritize Accessible Queries**: Query elements in a way that reflects user experience. The preferred query order is:
+    1.  `getByRole` (with an accessible name if possible, e.g., `{ name: /submit/i }`)
+    2.  `getByLabelText`
+    3.  `getByPlaceholderText`
+    4.  `getByText`
+    5.  `getByTestId` (use this as a last resort when no other accessible query is suitable).
+
+4.  **Avoid Snapshot Testing**: Do not use snapshot tests (`.toMatchSnapshot()`, `asFragment()`). Instead, write explicit assertions that check for specific, meaningful output, such as visible text, ARIA attributes, or component state. This makes tests more robust and less brittle, especially with i18n.
+
+5.  **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task is to implement them. These represent important scenarios that need coverage.
+
+6.  **Follow Consistent Mocking Patterns**:
+    - For Zustand stores, use `vi.mock` at the top of the test file. Provide a mock implementation that allows state to be injected for each test.
+    - If a test requires a unique mock implementation that differs from other tests in the same file, use `vi.doMock` inside the test block, followed by a dynamic `await import()` of the component under test. Remember to call `vi.resetModules()` in a `beforeEach` or `afterEach` block to ensure test isolation.
+
+7.  **Expand Test Coverage**: Go beyond "happy path" scenarios. Add tests for:
+    - **Error States**: What happens when a service call fails or returns an error?
+    - **Edge Cases**: Test with empty lists, invalid inputs, or unusual data shapes.
+    - **Feature Flags**: Verify that UI elements and routes are correctly enabled or disabled based on feature flag states.
+    - **Accessibility (a11y)**: For interactive components like modals, assert that focus is managed correctly, keyboard navigation works (e.g., `Escape` key closes the modal), and relevant ARIA attributes (`aria-modal`) are present.
+
+**General Conventions:**
+
+- Use the shared render wrapper from `@test-utils` for providers (i18n + feature flags).
+- Keep tests next to code: `Component.tsx` and `Component.test.tsx` in the same folder.
 - Create unit tests while implementing functionality, not afterward.
+- In tests, prefer `test(...)` to `it(...)`.
 
 Setup notes:
 
