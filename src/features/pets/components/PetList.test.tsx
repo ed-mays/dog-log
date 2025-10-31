@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, waitFor } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '../types';
+import { makePet } from '@testUtils/factories/makePet';
+import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
 
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
@@ -18,20 +20,6 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-function makePet(overrides: Partial<Pet> = {}): Pet {
-  return {
-    id: '1',
-    name: 'Fido',
-    breed: 'Mix',
-    birthDate: new Date('2020-01-01'),
-    createdAt: new Date('2020-01-01'),
-    updatedAt: new Date('2020-01-01'),
-    createdBy: 'user1',
-    isArchived: false,
-    ...overrides,
-  };
-}
-
 afterEach(() => {
   vi.clearAllMocks();
 });
@@ -41,27 +29,11 @@ describe('PetList integration', () => {
 
   async function setup(
     flags: { petActionsEnabled?: boolean; addPetEnabled?: boolean } = {},
-    initialPets: Pet[] = [makePet()]
+    initialPets: Pet[] = [makePet({ id: '1' })]
   ) {
-    let statePets = [...initialPets];
-    const storeActions = {
-      updatePet: vi.fn(
-        async (id: string, values: { name: string; breed: string }) => {
-          statePets = statePets.map((p) =>
-            p.id === id ? { ...p, ...values } : p
-          );
-        }
-      ),
-      deletePet: vi.fn(async (id: string) => {
-        statePets = statePets.filter((p) => p.id !== id);
-      }),
-    };
+    const petsMock = createPetsStoreMock({ pets: initialPets });
+    (usePetsStore as unknown as vi.Mock).mockImplementation(petsMock.impl);
 
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
-      selector({ pets: statePets, ...storeActions })
-    );
-
-    // The component now fetches pets from the store directly, so the prop is not needed.
     const { PetList } = await import('./PetList');
     render(<PetList />, {
       featureFlags: {
@@ -71,7 +43,10 @@ describe('PetList integration', () => {
       },
     });
 
-    return { storeActions, getPets: () => statePets };
+    return {
+      storeActions: petsMock.actions,
+      getPets: () => petsMock.getState().pets,
+    };
   }
 
   test.skip('navigates to the new pet page when Add Pet is clicked', async () => {

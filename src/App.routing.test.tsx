@@ -2,6 +2,11 @@ import { render, screen } from '@test-utils';
 import App from './App';
 import { useAuthStore } from '@store/auth.store';
 import { usePetsStore } from '@store/pets.store';
+import type { AppUser } from '@services/auth/authService';
+import {
+  createAuthStoreMock,
+  createPetsStoreMock,
+} from '@testUtils/mocks/mockStores';
 
 // Mock child components with side-effects
 vi.mock('@features/authentication/AuthBootstrap', () => ({
@@ -17,23 +22,26 @@ describe('Routing and navigation hygiene', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // Provide default mocks for stores to prevent side-effects
-    const authState = { user: null, initializing: false };
-    mockUseAuthStore.mockImplementation((selector) =>
-      selector ? selector(authState) : authState
+    mockUseAuthStore.mockImplementation(
+      createAuthStoreMock({ user: null, initializing: false })
+        .impl as unknown as typeof useAuthStore
     );
-    const petsState = { pets: [], fetchPets: vi.fn() };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector ? selector(petsState) : petsState
+    mockUsePetsStore.mockImplementation(
+      createPetsStoreMock({ pets: [] }).impl as unknown as typeof usePetsStore
     );
   });
 
   it('shows a localized feature-unavailable screen when pet list is disabled', async () => {
-    const authState = {
-      user: { uid: 'test-user' },
-      initializing: false,
-    };
-    mockUseAuthStore.mockImplementation((selector) =>
-      selector ? selector(authState) : authState
+    mockUseAuthStore.mockImplementation(
+      createAuthStoreMock({
+        user: {
+          uid: 'test-user',
+          displayName: null,
+          email: null,
+          photoURL: null,
+        } satisfies AppUser,
+        initializing: false,
+      }).impl as unknown as typeof useAuthStore
     );
     render(<App />, {
       featureFlags: { petListEnabled: false, authEnabled: true },

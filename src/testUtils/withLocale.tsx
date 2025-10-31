@@ -1,5 +1,6 @@
 import type { i18n as I18nInstance } from 'i18next';
 import defaultI18n from '@testUtils/test-i18n';
+import { act } from 'react';
 
 /**
  * Run a test block under a specific locale, then restore the previous locale.
@@ -17,11 +18,15 @@ export async function withLocale<T>(
   i18nInstance: I18nInstance = defaultI18n
 ): Promise<T> {
   const previous = i18nInstance.language;
-  await i18nInstance.changeLanguage(lng);
+  await act(async () => {
+    await i18nInstance.changeLanguage(lng);
+  });
   try {
     return await fn();
   } finally {
     // Always restore previous language, even if the test block throws
-    await i18nInstance.changeLanguage(previous);
+    await act(async () => {
+      await i18nInstance.changeLanguage(previous);
+    });
   }
 }

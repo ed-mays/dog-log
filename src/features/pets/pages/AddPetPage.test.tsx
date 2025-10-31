@@ -1,17 +1,13 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import type { PetCreateInput } from '@features/pets/types';
 import AddPetPage from './AddPetPage';
 import { render } from '@test-utils';
+import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
+import { usePetsStore } from '@store/pets.store';
 
-const addPetMock = vi.fn<[PetCreateInput], Promise<void>>(() =>
-  Promise.resolve()
-);
-
-vi.mock('@store/pets.store', async () => ({
-  usePetsStore: (selector: (state: { addPet: typeof addPetMock }) => unknown) =>
-    selector({ addPet: addPetMock }),
+vi.mock('@store/pets.store', () => ({
+  usePetsStore: vi.fn(),
 }));
 
 const mockNavigate = vi.fn();
@@ -72,8 +68,15 @@ const testPet = {
 }));*/
 
 describe('AddPetPage', async () => {
+  const mockUsePetsStore = usePetsStore as vi.Mock;
+  let petsMock: ReturnType<typeof createPetsStoreMock>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    petsMock = createPetsStoreMock();
+    mockUsePetsStore.mockImplementation(
+      petsMock.impl as unknown as typeof usePetsStore
+    );
   });
 
   it('renders the PetForm', async () => {

@@ -5,6 +5,13 @@ import '@testing-library/jest-dom';
 import { usePetsStore } from '@store/pets.store';
 import { useAuthStore } from '@store/auth.store';
 import { useUiStore } from '@store/ui.store';
+import {
+  createAuthStoreMock,
+  createPetsStoreMock,
+  createUiStoreMock,
+} from '@testUtils/mocks/mockStores';
+import type { AppUser } from '@services/auth/authService';
+import { makePet } from '@testUtils/factories/makePet';
 
 // Mock child components with side-effects
 vi.mock('@features/authentication/AuthBootstrap', () => ({
@@ -20,30 +27,42 @@ describe('App', () => {
   const mockUsePetsStore = usePetsStore as vi.Mock;
   const mockUseAuthStore = useAuthStore as vi.Mock;
   const mockUseUiStore = useUiStore as vi.Mock;
-  const fetchPetsSpy = vi.fn();
 
-  const defaultAuthState = {
-    user: { uid: 'test' },
-    initializing: false,
-    error: null,
-  };
+  let petsMock: ReturnType<typeof createPetsStoreMock>;
+  let authMock = createAuthStoreMock({
+    user: {
+      uid: 'test',
+      displayName: null,
+      email: null,
+      photoURL: null,
+    } satisfies AppUser,
+  });
+  let uiMock = createUiStoreMock({ loading: false, error: null });
 
-  const defaultPetsState = { pets: [], fetchPets: fetchPetsSpy };
-  const defaultUiState = { loading: false, error: null };
   beforeEach(() => {
     vi.resetAllMocks();
-    // Setup default mocks for each test
+    // Fresh mocks each test
+    petsMock = createPetsStoreMock({ pets: [] });
+    authMock = createAuthStoreMock({
+      user: {
+        uid: 'test',
+        displayName: null,
+        email: null,
+        photoURL: null,
+      } satisfies AppUser,
+      initializing: false,
+      error: null,
+    });
+    uiMock = createUiStoreMock({ loading: false, error: null });
 
-    mockUseAuthStore.mockImplementation((selector) =>
-      selector ? selector(defaultAuthState) : defaultAuthState
+    mockUseAuthStore.mockImplementation(
+      authMock.impl as unknown as typeof useAuthStore
     );
-
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector ? selector(defaultPetsState) : defaultPetsState
+    mockUsePetsStore.mockImplementation(
+      petsMock.impl as unknown as typeof usePetsStore
     );
-
-    mockUseUiStore.mockImplementation((selector) =>
-      selector ? selector(defaultUiState) : defaultUiState
+    mockUseUiStore.mockImplementation(
+      uiMock.impl as unknown as typeof useUiStore
     );
   });
 
@@ -52,18 +71,20 @@ describe('App', () => {
   }
 
   test('renders loading state', async () => {
-    const loadingState = { loading: true, error: null };
-    mockUseUiStore.mockImplementation((selector) =>
-      selector ? selector(loadingState) : loadingState
+    mockUseUiStore.mockImplementation(
+      createUiStoreMock({ loading: true, error: null })
+        .impl as unknown as typeof useUiStore
     );
-
-    const uiState = {
-      ...defaultUiState,
-      initializing: true,
-    };
-
-    mockUseAuthStore.mockImplementation((selector) =>
-      selector ? selector(uiState) : uiState
+    mockUseAuthStore.mockImplementation(
+      createAuthStoreMock({
+        initializing: true,
+        user: {
+          uid: 'test',
+          displayName: null,
+          email: null,
+          photoURL: null,
+        } satisfies AppUser,
+      }).impl as unknown as typeof useAuthStore
     );
 
     renderComponent();
@@ -72,9 +93,9 @@ describe('App', () => {
   });
 
   test('renders error state', async () => {
-    const errorState = { ...defaultUiState, error: new Error('Boom') };
-    mockUseUiStore.mockImplementation((selector) =>
-      selector ? selector(errorState) : errorState
+    mockUseUiStore.mockImplementation(
+      createUiStoreMock({ error: new Error('Boom'), loading: false })
+        .impl as unknown as typeof useUiStore
     );
     renderComponent();
     const el = await screen.findByTestId('error-indicator');
@@ -84,15 +105,13 @@ describe('App', () => {
   });
 
   test('renders pet list', async () => {
-    const petsState = {
-      ...defaultPetsState,
-      pets: [
-        { id: '1', name: 'Fido', breed: 'Labrador' },
-        { id: '2', name: 'Bella', breed: 'Beagle' },
-      ],
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector ? selector(petsState) : petsState
+    mockUsePetsStore.mockImplementation(
+      createPetsStoreMock({
+        pets: [
+          makePet({ id: '1', name: 'Fido', breed: 'Labrador' }),
+          makePet({ id: '2', name: 'Bella', breed: 'Beagle' }),
+        ],
+      }).impl as unknown as typeof usePetsStore
     );
     renderComponent();
     expect(await screen.findByTestId('pet-list')).toBeInTheDocument();
@@ -100,6 +119,6 @@ describe('App', () => {
 
   test('fetches pets on mount', () => {
     renderComponent();
-    expect(fetchPetsSpy).toHaveBeenCalledTimes(1);
+    expect(petsMock.actions.fetchPets).toHaveBeenCalledTimes(1);
   });
 });
