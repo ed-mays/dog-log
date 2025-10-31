@@ -241,7 +241,7 @@ Below is a plan to improve test quality, consistency, and alignment with React 1
   with clear unit-test assertions.
 - `AddPetPage` submit/cancel/dirty flows using user-event and dialog assertions.
 
-4. Expand coverage on cross-cutting concerns
+4. [In GitHub] Expand coverage on cross-cutting concerns
 
 - Routing: unauthenticated redirects, 404 route, `authEnabled=false` behavior.
 - i18n: one per-namespace sanity test in `en` and one alternate locale using `withLocale`.
@@ -271,9 +271,9 @@ Below is a plan to improve test quality, consistency, and alignment with React 1
   remove snapshots, and update queries in the files listed above.
 - [:white_check_mark:] Introduce `testUtils/factories` and `mockZustand` helpers; refactor `PetList` and `AddPetPage`
   tests to use them.
-- Restore the skipped/commented tests for the add and cancel flows with robust, user-centric interactions.
+- [:white_check_mark:] Restore the skipped/commented tests for the add and cancel flows with robust, user-centric interactions.
 - Add routing edge tests and one focused a11y test for the confirm dialog.
-- Add testing ESLint plugins and, if desired, a coverage threshold in Vitest config.
+- [:white_check_mark:] Add testing ESLint plugins and, if desired, a coverage threshold in Vitest config.
 
 If you’d like, I can start by refactoring one target file (e.g., `AddPetPage.test.tsx`) to demonstrate the updated
 patterns, then proceed feature-by-feature.
