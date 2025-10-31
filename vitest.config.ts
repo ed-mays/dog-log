@@ -8,7 +8,7 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.tsx'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
+      reporter: ['text'],
       reportsDirectory: 'coverage',
       exclude: [
         'node_modules/',
