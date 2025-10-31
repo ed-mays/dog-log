@@ -108,18 +108,18 @@ Setup notes:
 
 - Create small, focused stores in src/store/ with typed state/actions.
 - Keep async side-effects inside store actions when practical.
-- Prefer a small data/service layer in src/services/\* to encapsulate fetch logic.
+- Prefer a small service layer in src/services/\* to encapsulate fetch logic.
 - Avoid leaking store shape across app; read via selectors: useStore(s => s.part).
 
 ## 6. Data Access Strategy: Firestore
 
 **Principle:**  
-All interactions with Firestore must be abstracted through a service/repository layer (e.g., src/services) and custom
+All interactions with Firestore must be abstracted through a service layer (e.g., src/services) and custom
 hooks. React components, stores, and business logic should never depend directly on Firestore APIs or objects.
 
 **Patterns:**
 
-- Use repository modules (in `src/services`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.) and
+- Use repository modules (in `src/repositories`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.) and
   always return plain JavaScript objects.
 - Create custom React hooks (e.g., `usePetList`) that call the repository functions and expose application data, not
   Firestore types.
