@@ -1,9 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@test-utils';
+import { render, screen, withLocale } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import LogoutButton from './LogoutButton';
 import { useAuthStore } from '@store/auth.store';
-import i18n from '@i18n';
 import { Suspense } from 'react';
 
 const resetStoresMock = vi.fn();
@@ -88,14 +87,17 @@ describe('LogoutButton', () => {
     ])(
       'renders with correct text for language "$lang"',
       async ({ lang, expectedText, expectedAriaLabel }) => {
-        await i18n.changeLanguage(lang);
-        const { findByRole } = render(
-          <Suspense>
-            <LogoutButton />
-          </Suspense>
-        );
-        const button = await findByRole('button', { name: expectedAriaLabel });
-        expect(button).toHaveTextContent(expectedText);
+        await withLocale(lang, async () => {
+          const { findByRole } = render(
+            <Suspense>
+              <LogoutButton />
+            </Suspense>
+          );
+          const button = await findByRole('button', {
+            name: expectedAriaLabel,
+          });
+          expect(button).toHaveTextContent(expectedText);
+        });
       }
     );
   });

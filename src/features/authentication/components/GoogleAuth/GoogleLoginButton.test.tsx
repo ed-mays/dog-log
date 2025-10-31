@@ -1,12 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@test-utils';
+import { render, screen, withLocale } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import GoogleLoginButton from './GoogleLoginButton';
 import { useAuthStore } from '@store/auth.store';
 import { AuthState } from '@store/auth.store';
 import { act, Suspense } from 'react';
 import { waitFor } from '@testing-library/react';
-import i18n from '@i18n';
 
 describe('GoogleLoginButton', () => {
   let signInMock: ReturnType<typeof vi.fn>;
@@ -65,7 +64,6 @@ describe('GoogleLoginButton', () => {
 
     it('translates the button text in English', async () => {
       useAuthStore.setState((prev) => ({ ...prev, initializing: false }));
-      await i18n.changeLanguage('en');
       const { asFragment, findByTestId } = render(
         <Suspense fallback={<div />}>
           <GoogleLoginButton />
@@ -79,16 +77,17 @@ describe('GoogleLoginButton', () => {
 
     it('translates the button text in Spanish', async () => {
       useAuthStore.setState((prev) => ({ ...prev, initializing: false }));
-      await i18n.changeLanguage('es');
-      const { asFragment, findByTestId } = render(
-        <Suspense fallback={<div />}>
-          <GoogleLoginButton />
-        </Suspense>
-      );
+      await withLocale('es', async () => {
+        const { asFragment, findByTestId } = render(
+          <Suspense fallback={<div />}>
+            <GoogleLoginButton />
+          </Suspense>
+        );
 
-      const button = await waitFor(() => findByTestId('login-button'));
-      expect(button).toHaveTextContent('Continuar con Google');
-      expect(asFragment()).toMatchSnapshot();
+        const button = await waitFor(() => findByTestId('login-button'));
+        expect(button).toHaveTextContent('Continuar con Google');
+        expect(asFragment()).toMatchSnapshot();
+      });
     });
   });
 });

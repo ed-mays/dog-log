@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from '@test-utils';
-import i18n from '@testUtils/test-i18n';
 import App from './App';
 import { useAuthStore } from '@store/auth.store';
 import { usePetsStore } from '@store/pets.store';
@@ -17,7 +16,6 @@ describe('Routing and navigation hygiene', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    i18n.changeLanguage('en');
     // Provide default mocks for stores to prevent side-effects
     const authState = { user: null, initializing: false };
     mockUseAuthStore.mockImplementation((selector) =>
@@ -39,7 +37,6 @@ describe('Routing and navigation hygiene', () => {
     );
     render(<App />, {
       featureFlags: { petListEnabled: false, authEnabled: true },
-      i18nInstance: i18n,
       initialRoutes: ['/pets'],
     });
     await waitFor(() => {

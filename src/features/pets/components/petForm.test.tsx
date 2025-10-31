@@ -3,8 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PetForm } from './PetForm';
 import type { Pet } from './PetForm';
-import { render } from '@test-utils';
-import i18n from '@testUtils/test-i18n';
+import { render, withLocale } from '@test-utils';
 
 describe('PetForm', () => {
   const initialPet: Pet = { name: '', breed: '' };
@@ -20,8 +19,7 @@ describe('PetForm', () => {
     onDirtyChange = vi.fn();
   });
 
-  function renderForm(vals: Pet = initialPet, lng: 'en' | 'es' = 'en') {
-    i18n.changeLanguage(lng);
+  function renderForm(vals: Pet = initialPet) {
     render(
       <PetForm
         initialValues={vals}
@@ -33,7 +31,7 @@ describe('PetForm', () => {
   }
 
   it('renders the correct (English) labels and buttons', async () => {
-    renderForm(initialPet, 'en');
+    renderForm(initialPet);
     expect(await screen.findByLabelText('Name')).toBeInTheDocument();
     expect(await screen.findByLabelText('Breed')).toBeInTheDocument();
     expect(await screen.findByText('OK')).toBeInTheDocument();
@@ -41,11 +39,13 @@ describe('PetForm', () => {
   });
 
   it('renders the correct (Spanish) labels and buttons', async () => {
-    renderForm(initialPet, 'es');
-    expect(await screen.findByLabelText('Nombre')).toBeInTheDocument();
-    expect(await screen.findByLabelText('Raza')).toBeInTheDocument();
-    expect(await screen.findByText('Aceptar')).toBeInTheDocument();
-    expect(await screen.findByText('Cancelar')).toBeInTheDocument();
+    await withLocale('es', async () => {
+      renderForm(initialPet);
+      expect(await screen.findByLabelText('Nombre')).toBeInTheDocument();
+      expect(await screen.findByLabelText('Raza')).toBeInTheDocument();
+      expect(await screen.findByText('Aceptar')).toBeInTheDocument();
+      expect(await screen.findByText('Cancelar')).toBeInTheDocument();
+    });
   });
 
   it('disables OK when form is invalid', async () => {
