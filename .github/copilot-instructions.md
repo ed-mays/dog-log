@@ -3,7 +3,7 @@
 This file contains the concrete, repo-specific rules and pointers to make focused, correct edits in the Dog Log app.
 
 - Tech stack: React 19 + TypeScript (strict), Vite, Zustand for state, i18next, Vitest + Testing Library.
-- Key directories: `src/` (app code), `src/store/` (Zustand stores, `*.store.tsx`), `src/features/`, `src/repositories/`, `src/services/`, `src/testUtils/`.
+- Key directories: `src/` (app code), `src/store/` (Zustand stores), `src/features/` (feature-scoped modules), `src/repositories/` (data access), `src/services/` (business logic), `src/testUtils/`.
 
 ## High-level architecture / data flow
 

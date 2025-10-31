@@ -13,12 +13,13 @@ Short, practical guidance to get productive quickly.
 ## 2. Project Structure & Conventions
 
 - src/components/common/\*: Reusable, stateless UI building blocks
-- src/features/<domain>/\*: Feature‑scoped pages, UI, and types (e.g., petManagement)
+- src/features/<domain>/\*: Feature-scoped modules containing pages, components, hooks, and types (e.g., `pets`).
 - src/store/\*: Zustand stores and related types
+- src/repositories/\*: Data access layer (e.g., `PetRepository`) that interacts directly with Firestore.
+- src/services/\*: Business logic layer that uses repositories. Components and stores should use services, not repositories.
 - src/styles/\*: CSS modules (prefer module.css for component/feature styles)
 - src/locales/<lang>/\*: Namespaced JSON translations
 - src/featureFlags/\*: Feature flag provider, config, and hooks
-- src/services/\*: Data/service layer modules (API calls, adapters)
 - src/test-utils.tsx: Preconfigured render wrapper for tests
 - src/testUtils/test-i18n.tsx: Shared test i18n setup
 
