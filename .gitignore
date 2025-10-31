@@ -26,3 +26,4 @@ dist-ssr
 
 guide.md
 coverage/
+.vite

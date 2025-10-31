@@ -20,6 +20,25 @@ This file contains a backlog of desired changes to the DogLog project.
 
 ---
 
+## Tech Debt
+
+- Clean up /components/common folder
+  - Where should PrivateRoute live? It doesn't seem to make sense here
+  - Maybe a folder structure like this:
+    - components
+      - ConfirmModal
+      - ErrorIndicator
+      - LoadingIndicator
+      - NavigationBar
+        index.ts
+- Clean up features folder
+  - Rename pets feature to petManagement
+  - Add index.ts to export pages (I don't think I need to export anything else for now)
+- Clean up aliases in both test config and tsconfig
+- Figure out what the stuff in /utils is about and if it is used or not
+- Fix VSCode problems, e.g. type resolution errors that came back
+  - As I recall from last time, this was related to vitest global types
+
 ## Ready for Dev
 
 ## Unrefined

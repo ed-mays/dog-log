@@ -9,7 +9,18 @@
     "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
-      "@services/*": ["services/*"]
+      "@firebase": ["firebase.tsx"],
+      "@i18n": ["i18n.tsx"],
+      "@store/*": ["store/*"],
+      "@test-utils": ["test-utils.tsx"],
+      "@testUtils/*": ["testUtils/*"],
+      "@featureFlags/*": ["featureFlags/*"],
+      "@features/*": ["features/*"],
+      "@models/*": ["models/*"],
+      "@repositories/*": ["repositories/*"],
+      "@services/*": ["services/*"],
+      "@styles/*": ["styles/*"],
+      "@utils/*": ["utils/*"]
     },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
