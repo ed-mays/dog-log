@@ -61,14 +61,17 @@ Guidelines:
 ## 3. Scripts You’ll Use Daily
 
 - npm run dev — start Vite dev server
-- npm run def:with-emulators — start Vite dev server with firebase emulators
+- npm run dev:with-emulators — start Vite dev server with firebase emulators
 - npm run build — type-check then build for production
 - npm run preview — preview the production build locally
 - npm run lint — run ESLint
 - npm run lint:fix — auto-fix lint issues
 - npm run format — format with Prettier
-- npm run test — run unit/component tests (watch mode supported)
-- npm run test:coverage — run tests and generate coverage (coverage/)
+- npm run test — run all tests (unit and integration)
+- npm run test:unit — run only unit/component tests
+- npm run test:watch — run unit tests in watch mode
+- npm run test:integration — run only integration tests
+- npm run test:coverage — run unit tests and generate coverage report (coverage/)
 
 ## 4. Testing Guidelines (Vitest + Testing Library)
 

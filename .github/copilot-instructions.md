@@ -17,7 +17,11 @@ This file contains the concrete, repo-specific rules and pointers to make focuse
 - Dev server: `npm run dev`
 - Dev with emulators: `npm run dev:with-emulators` (or start emulators first: `npm run start:firebase` then `npm run dev`)
 - Build/type-check: `npm run build`
-- Tests: `npm run test` (Vitest). Watch: `npm run test:watch`. Coverage: `npm run test:coverage`.
+- Tests:
+  - `npm run test`: Run all tests (unit and integration).
+  - `npm run test:unit`: Run only unit/component tests.
+  - `npm run test:watch`: Run unit tests in watch mode.
+  - `npm run test:coverage`: Run unit tests and generate a coverage report.
 - Lint: `npm run lint`; auto-fix: `npm run lint:fix`; format: `npm run format`.
 
 When making changes that affect runtime behavior or integration tests, start the Firebase emulators (`npm run start:firebase`) before running integration flows.

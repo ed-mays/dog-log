@@ -47,10 +47,11 @@ npm install
 | `npm run lint`               | Run ESLint for code linting             |
 | `npm run lint:fix`           | Auto-fix lint issues                    |
 | `npm run format`             | Format codebase with Prettier           |
-| `npm run test`               | Run unit & component tests (Vitest)     |
-| `npm run test:watch`         | Run tests in watch mode                 |
-| `npm run test:integration`   | Run integration tests                   |
-| `npm run test:coverage`      | Run tests with code coverage            |
+| `npm run test`               | Run all tests (unit and integration)    |
+| `npm run test:unit`          | Run only unit & component tests         |
+| `npm run test:watch`         | Run unit tests in watch mode            |
+| `npm run test:integration`   | Run only integration tests              |
+| `npm run test:coverage`      | Run unit tests with code coverage       |
 | `npm run start:firebase`     | Start Firebase emulators locally        |
 
 ---
