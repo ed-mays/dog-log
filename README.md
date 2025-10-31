@@ -9,9 +9,9 @@ A modern **React** application scaffolded with **Vite** and written in **TypeScr
 - **TypeScript** with strict type checking and modern bundler settings
 - **Vite** for fast development & optimized builds
 - Support for **path aliases**:
-  - `@App → src/App.tsx`
   - `@components/* → src/components/*`
   - `@firebase → src/firebase.tsx`
+  - `@i18n → src/i18n.tsx`
   - `@store/* → src/store/*`
   - `@test-utils → src/test-utils.tsx`
   - `@testUtils/* → src/testUtils/*`
@@ -21,7 +21,6 @@ A modern **React** application scaffolded with **Vite** and written in **TypeScr
   - `@repositories/* → src/repositories/*`
   - `@services/* → src/services/*`
   - `@styles/* → src/styles/*`
-  - `@utils/* → src/utils/*`
 - See: docs/directory-structure-review.md for a focused directory structure review and proposals.
 - Test setup with **Vitest** & **Testing Library**
 - Linting & formatting with **ESLint** & **Prettier**
@@ -121,9 +120,9 @@ Notes:
 
 - Configured in `tsconfig.app.json` (moduleResolution: "bundler").
 - Aliases:
-  - `@App` → `src/App.tsx`
   - `@components/*` → `src/components/*`
   - `@firebase` → `src/firebase.tsx`
+  - `@i18n` → `src/i18n.tsx`
   - `@store/*` → `src/store/*`
   - `@test-utils` → `src/test-utils.tsx`
   - `@testUtils/*` → `src/testUtils/*`
@@ -133,7 +132,6 @@ Notes:
   - `@repositories/*` → `src/repositories/*`
   - `@services/*` → `src/services/*`
   - `@styles/*` → `src/styles/*`
-  - `@utils/*` → `src/utils/*`
 - Prefer extensionless imports with these aliases.
 
 ---

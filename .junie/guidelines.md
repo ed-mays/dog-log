@@ -24,19 +24,19 @@ Short, practical guidance to get productive quickly.
 
 Aliases (from tsconfig.app.json):
 
-- @App → src/App.tsx
-- @components/_ → src/components/_
-- @firebase → src/firebase.tsx
-- @store/_ → src/store/_
-- @test-utils → src/test-utils.tsx
-- @testUtils/_ → src/testUtils/_
-- @featureFlags/_ → src/featureFlags/_
-- @features/_ → src/features/_
-- @models/_ → src/models/_
-- @repositories/_ → src/repositories/_
-- @services/_ → src/services/_
-- @styles/_ → src/styles/_
-- @utils/_ → src/utils/_
+- `@components/*` → `src/components/*`
+- `@firebase` → `src/firebase.tsx`
+- `@i18n` → `src/i18n.tsx`
+- `@store/*` → `src/store/*`
+- `@test-utils` → `src/test-utils.tsx`
+- `@testUtils/*` → `src/testUtils/*`
+- `@featureFlags/*` → `src/featureFlags/*`
+- `@features/*` → `src/features/*`
+- `@models/*` → `src/models/*`
+- `@repositories/*` → `src/repositories/*`
+- `@services/*` → `src/services/*`
+- `@styles/*` → `src/styles/*`
+- `@utils/*` → `src/utils/*`
 
 Guidelines:
 

@@ -66,7 +66,20 @@ When writing or refactoring tests, please adhere to the following conventions to
 
 ## Path aliases and imports
 
-- Path aliases are defined in `tsconfig.app.json` — prefer alias imports such as `@store/pets.store`, `@services/*`, `@features/*` over deep relative paths.
+- Path aliases are defined in `tsconfig.app.json`. Prefer these over deep relative paths.
+- `@components/*` → `src/components/*`
+- `@firebase` → `src/firebase.tsx`
+- `@i18n` → `src/i18n.tsx`
+- `@store/*` → `src/store/*`
+- `@test-utils` → `src/test-utils.tsx`
+- `@testUtils/*` → `src/testUtils/*`
+- `@featureFlags/*` → `src/featureFlags/*`
+- `@features/*` → `src/features/*`
+- `@models/*` → `src/models/*`
+- `@repositories/*` → `src/repositories/*`
+- `@services/*` → `src/services/*`
+- `@styles/*` → `src/styles/*`
+- `@utils/*` → `src/utils/*`
 
 ## Feature flags & i18n
 
