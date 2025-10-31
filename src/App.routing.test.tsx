@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@test-utils';
+import { render, screen } from '@test-utils';
 import App from './App';
 import { useAuthStore } from '@store/auth.store';
 import { usePetsStore } from '@store/pets.store';
@@ -39,8 +39,6 @@ describe('Routing and navigation hygiene', () => {
       featureFlags: { petListEnabled: false, authEnabled: true },
       initialRoutes: ['/pets'],
     });
-    await waitFor(() => {
-      expect(screen.getByText('Feature not enabled')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Feature not enabled')).toBeInTheDocument();
   });
 });

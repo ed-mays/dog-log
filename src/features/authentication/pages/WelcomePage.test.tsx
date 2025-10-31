@@ -20,23 +20,30 @@ describe('WelcomePage', () => {
     expect(await screen.findByTestId('login-button')).toBeInTheDocument();
   });
 
-  it('renders the expected content in English', async () => {
-    const { asFragment } = render(<WelcomePage />);
+  it('renders the expected content in English (no snapshots)', async () => {
+    render(<WelcomePage />);
 
-    await screen.findByTestId('login-button');
-    await screen.findByText('Please sign in to continue.');
-    await screen.findByRole('heading', { name: 'Welcome to Dog Log!' });
-    expect(asFragment()).toMatchSnapshot();
+    expect(
+      await screen.findByRole('heading', { name: 'Welcome to Dog Log!' })
+    ).toBeVisible();
+    expect(
+      await screen.findByText('Please sign in to continue.')
+    ).toBeVisible();
+    // Prefer role-based button query if possible; keeping testid for now
+    expect(await screen.findByTestId('login-button')).toBeEnabled();
   });
 
-  it('renders the expected content in Spanish', async () => {
+  it('renders the expected content in Spanish (no snapshots)', async () => {
     await withLocale('es', async () => {
-      const { asFragment } = render(<WelcomePage />);
+      render(<WelcomePage />);
 
-      await screen.findByTestId('login-button');
-      await screen.findByText('Inicia sesión para continuar.');
-      await screen.findByRole('heading', { name: 'Bienvenido a Dog Log!' });
-      expect(asFragment()).toMatchSnapshot();
+      expect(
+        await screen.findByRole('heading', { name: 'Bienvenido a Dog Log!' })
+      ).toBeVisible();
+      expect(
+        await screen.findByText('Inicia sesión para continuar.')
+      ).toBeVisible();
+      expect(await screen.findByTestId('login-button')).toBeInTheDocument();
     });
   });
 });

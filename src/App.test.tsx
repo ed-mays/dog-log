@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { render } from '@test-utils';
 import App from './App';
 import '@testing-library/jest-dom';
@@ -68,9 +68,7 @@ describe('App', () => {
 
     renderComponent();
 
-    await waitFor(() => {
-      expect(screen.getByTestId('loading-indicator')).toBeInTheDocument();
-    });
+    expect(await screen.findByTestId('loading-indicator')).toBeInTheDocument();
   });
 
   test('renders error state', async () => {
@@ -79,12 +77,10 @@ describe('App', () => {
       selector ? selector(errorState) : errorState
     );
     renderComponent();
-    await waitFor(() => {
-      const el = screen.getByTestId('error-indicator');
-      expect(el).toBeInTheDocument();
-      expect(el).toHaveTextContent(/Error/);
-      expect(el).toHaveTextContent(/Boom/);
-    });
+    const el = await screen.findByTestId('error-indicator');
+    expect(el).toBeInTheDocument();
+    expect(el).toHaveTextContent(/Error/);
+    expect(el).toHaveTextContent(/Boom/);
   });
 
   test('renders pet list', async () => {
@@ -99,9 +95,7 @@ describe('App', () => {
       selector ? selector(petsState) : petsState
     );
     renderComponent();
-    await waitFor(() => {
-      expect(screen.getByTestId('pet-list')).toBeInTheDocument();
-    });
+    expect(await screen.findByTestId('pet-list')).toBeInTheDocument();
   });
 
   test('fetches pets on mount', () => {

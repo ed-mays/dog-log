@@ -1,4 +1,5 @@
-import { screen, fireEvent } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import type { PetCreateInput } from '@features/pets/types';
 import AddPetPage from './AddPetPage';
@@ -135,8 +136,9 @@ describe('AddPetPage', async () => {
         </div>
       ),
     }));
+    const user = userEvent.setup();
     render(<AddPetPage />);
-    fireEvent.click(await screen.findByText('Cancel'));
+    await user.click(await screen.findByText('Cancel'));
     expect(mockNavigate).toHaveBeenCalledWith('/pets');
   });
 });
