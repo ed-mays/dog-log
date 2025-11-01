@@ -1,4 +1,4 @@
-import { PetRepository } from '@repositories/petRepository';
+import { PetRepository } from '@repositories/petRepository.ts';
 import type {
   PetCreateInput,
   PetUpdateInput,

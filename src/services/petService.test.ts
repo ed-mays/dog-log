@@ -3,37 +3,53 @@ import { PetService } from './petService';
 import { PetRepository } from '@repositories/petRepository';
 import type { Pet, PetCreateInput } from '@features/pets/types';
 
-// Mock the repository dependency
+// Mock the entire PetRepository module. Vitest will automatically mock the class constructor.
 vi.mock('@repositories/petRepository');
 
 describe('PetService', () => {
   let service: PetService;
   const testUserId = 'user-123';
 
-  // Mock implementation for PetRepository methods
-  const mockGetActivePets = vi.fn();
-  const mockGetArchivedPets = vi.fn();
-  const mockCreatePet = vi.fn();
-  const mockUpdatePet = vi.fn();
-  const mockArchivePet = vi.fn();
+  // Declare variables to hold the mock methods for the *current* test run.
+  // These will be re-initialized in beforeEach.
+  let mockGetActivePets: ReturnType<typeof vi.fn>;
+  let mockGetArchivedPets: ReturnType<typeof vi.fn>;
+  let mockCreatePet: ReturnType<typeof vi.fn>;
+  let mockUpdatePet: ReturnType<typeof vi.fn>;
+  let mockArchivePet: ReturnType<typeof vi.fn>;
 
-  // Before each test, reset mocks and service instance
   beforeEach(() => {
-    // Make the PetRepository mock return our mock methods
-    PetRepository.mockImplementation(() => {
-      return {
+    // Clear all mocks, including the PetRepository constructor mock's call history
+    // and any previous mock implementations.
+    vi.clearAllMocks();
+
+    // Create fresh vi.fn() mocks for each test run.
+    // This ensures that each test starts with isolated mock functions.
+    mockGetActivePets = vi.fn();
+    mockGetArchivedPets = vi.fn();
+    mockCreatePet = vi.fn();
+    mockUpdatePet = vi.fn();
+    mockArchivePet = vi.fn();
+
+    // Configure the PetRepository constructor mock to return an instance
+    // with these fresh mock methods. This is crucial for each test to have
+    // its own configurable mock instance.
+    (PetRepository as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      () => ({
         getActivePets: mockGetActivePets,
         getArchivedPets: mockGetArchivedPets,
         createPet: mockCreatePet,
         updatePet: mockUpdatePet,
         archivePet: mockArchivePet,
-      };
-    });
+      })
+    );
 
+    // Instantiate the service AFTER setting up the PetRepository mock for this test.
     service = new PetService();
   });
 
   afterEach(() => {
+    // Restore all mocks to their original implementations after each test suite.
     vi.restoreAllMocks();
   });
 

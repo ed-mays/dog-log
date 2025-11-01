@@ -77,7 +77,7 @@ in `src/services/` as distinct layers._
 - Place repository tests alongside their implementation files (e.g. `src/repositories/base/BaseRepository.test.ts` next
   to `BaseRepository.ts`)
 - Place feature repository tests alongside their implementation (e.g. `src/repositories/petRepository.test.ts` next to
-  `petRepository.tsx`)
+  `petRepository.ts`)
 - Implement mock data generators for pets and other entities
 - Create repository layer unit tests with mocked Firestore operations
 - Test error handling and data transformation logic

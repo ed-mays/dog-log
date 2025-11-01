@@ -20,7 +20,7 @@
 
 ### 3. Feature-Specific Repository and Service Development
 
-- [x] Implement pet repository in `src/repositories/petRepository.tsx` extending `BaseRepository`, with its test in
+- [x] Implement pet repository in `src/repositories/petRepository.ts` extending `BaseRepository`, with its test in
       `petRepository.test.ts`.
 - [x] Implement pet feature service in `src/services/petService.tsx` that uses the pet repository for business logic,
       with its test in `petService.test.ts`.
