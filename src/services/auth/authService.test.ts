@@ -1,29 +1,20 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  ensurePersistence,
-  signInWithGoogle,
-  signOut,
-  subscribeToAuth,
-} from './authService';
-import { userRepository } from '@repositories/userRepository';
-import type { User } from '@models/User';
+vi.mock('@repositories/userRepository', () => {
+  const mockGetById = vi.fn();
+  const mockCreate = vi.fn();
+  return {
+    userRepository: {
+      getById: mockGetById,
+      create: mockCreate,
+    },
+    mockGetById,
+    mockCreate,
+  };
+});
 
 vi.mock('@firebase', () => ({
   auth: {},
   db: {},
 }));
-
-// Mock the entire userRepository object
-vi.mock('@repositories/userRepository', () => ({
-  userRepository: {
-    getById: vi.fn(),
-    create: vi.fn(),
-  },
-}));
-
-// Now, reference the mocked methods directly from the imported userRepository
-const mockGetById = userRepository.getById as vi.Mock;
-const mockCreate = userRepository.create as vi.Mock;
 
 const setPersistenceMock = vi.fn<Promise<void>, unknown[]>();
 setPersistenceMock.mockResolvedValue();
@@ -41,6 +32,16 @@ vi.mock('firebase/auth', async () => {
     onAuthStateChanged: (...args: unknown[]) => onAuthStateChangedMock(...args),
   } as unknown;
 });
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {
+  ensurePersistence,
+  signInWithGoogle,
+  signOut,
+  subscribeToAuth,
+} from './authService';
+import { mockGetById, mockCreate } from '@repositories/userRepository';
+import type { User } from '@models/User';
 
 beforeEach(() => {
   vi.clearAllMocks();

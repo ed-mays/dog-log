@@ -25,7 +25,7 @@
 - Firestore interactions abstracted through repositories/services:
   - `src/repositories/base/BaseRepository.ts` implements CRUD and converts Firestore `Timestamp` to `Date` (lines
     48–86) and vice versa (lines 92–114).
-  - Services consume repositories: `src/services/petService.tsx` and `src/services/auth/authService.ts`.
+  - Services consume repositories: `src/services/petService.ts` and `src/services/auth/authService.ts`.
 - Zustand used for shared client state and calls services (e.g., `src/store/pets.store.tsx` lines 24–37).
 - React Router in use with feature-first routes: `src/AppRoutes.tsx`.
 - Centralized i18n setup with namespaces: `src/i18n.ts`.

@@ -22,7 +22,7 @@
 
 - [x] Implement pet repository in `src/repositories/petRepository.ts` extending `BaseRepository`, with its test in
       `petRepository.test.ts`.
-- [x] Implement pet feature service in `src/services/petService.tsx` that uses the pet repository for business logic,
+- [x] Implement pet feature service in `src/services/petService.ts` that uses the pet repository for business logic,
       with its test in `petService.test.ts`.
 - [x] Add typed Pet definitions to `src/features/petManagement/types.ts`.
 - [ ] Implement pet validation and transformation functions within the repository (with tests next to these functions).

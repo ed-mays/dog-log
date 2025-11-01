@@ -23,7 +23,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 
 ### 1) Service Layer
 
-- [ ] Create or update `src/services/petService.tsx` to include update/delete APIs.
+- [ ] Create or update `src/services/petService.ts` to include update/delete APIs.
   - [ ] Add types and functions:
 
     ```ts
