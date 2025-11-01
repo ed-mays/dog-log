@@ -23,7 +23,7 @@
 - Path aliases configured and Vite resolves them: `tsconfig.app.json` lines 25–40; `vite.config.ts` uses
   `vite-tsconfig-paths` (line 7); `vitest.config.ts` sets `resolve.alias` (lines 33–52).
 - Firestore interactions abstracted through repositories/services:
-  - `src/repositories/base/BaseRepository.tsx` implements CRUD and converts Firestore `Timestamp` to `Date` (lines
+  - `src/repositories/base/BaseRepository.ts` implements CRUD and converts Firestore `Timestamp` to `Date` (lines
     48–86) and vice versa (lines 92–114).
   - Services consume repositories: `src/services/petService.tsx` and `src/services/auth/authService.tsx`.
 - Zustand used for shared client state and calls services (e.g., `src/store/pets.store.tsx` lines 24–37).
@@ -68,7 +68,7 @@
 
 - Best-practice: Repositories/services should have narrow, explicit interfaces; avoid cross-cutting global dependencies
   inside low-level modules when it increases coupling.
-- Evidence: `src/repositories/base/BaseRepository.tsx` reads current auth user during `create()` (lines 205–213) via
+- Evidence: `src/repositories/base/BaseRepository.ts` reads current auth user during `create()` (lines 205–213) via
   `getAuth()` (line 29) to set `createdBy`. This makes the generic repository depend on Firebase Auth and a global
   state. Many projects prefer passing `createdBy` from the caller (service/store) to keep the repository pure and
   testable.
@@ -252,7 +252,7 @@
     provided by the caller).
   - Example refactor:
     ```ts
-    // BaseRepository.tsx (create)
+    // BaseRepository.ts (create)
     async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
       try {
         const now = new Date();

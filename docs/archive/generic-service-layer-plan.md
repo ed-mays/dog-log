@@ -11,7 +11,7 @@ Create the foundational files in `src/repositories/`:
 - Define error handling types and response wrappers
 - Include pagination and filtering interfaces for future scalability
 
-**[Done] 1.2 Create `src/repositories/base/BaseRepository.tsx`**
+**[Done] 1.2 Create `src/repositories/base/BaseRepository.ts`**
 
 - Implement abstract base class with common Firestore operations
 - Include generic CRUD methods that specific repositories can extend
@@ -75,7 +75,7 @@ in `src/services/` as distinct layers._
 **6.1 Repository tests**
 
 - Place repository tests alongside their implementation files (e.g. `src/repositories/base/BaseRepository.test.ts` next
-  to `BaseRepository.tsx`)
+  to `BaseRepository.ts`)
 - Place feature repository tests alongside their implementation (e.g. `src/repositories/petRepository.test.tsx` next to
   `petRepository.tsx`)
 - Implement mock data generators for pets and other entities

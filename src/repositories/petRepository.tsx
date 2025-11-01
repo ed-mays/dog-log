@@ -1,4 +1,4 @@
-import { ArchivableBaseRepository } from './base/BaseRepository';
+import { ArchivableBaseRepository } from './base/BaseRepository.ts';
 import type {
   Pet,
   PetCreateInput,

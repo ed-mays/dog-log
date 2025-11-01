@@ -3,7 +3,7 @@
 ### 1. Repository Layer Setup
 
 - [x] Create `src/repositories/types.ts` with base entity and repository interfaces.
-- [x] Create `src/repositories/base/BaseRepository.tsx` as the abstract, generic repository (CRUD, error conversion,
+- [x] Create `src/repositories/base/BaseRepository.ts` as the abstract, generic repository (CRUD, error conversion,
       transformations).
 - [x] Place repository unit tests (e.g. `BaseRepository.test.ts`) directly alongside their implementations using
       Vitest, with backend-independence and no **tests** folders.
