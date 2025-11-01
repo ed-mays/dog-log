@@ -1,6 +1,6 @@
 # 30. Test File Naming Convention
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2025-11-01
 
 ## Context

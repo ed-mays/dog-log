@@ -1,6 +1,6 @@
 # 32. userEvent.setup() Scoping Guidance
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2025-11-01
 
 ## Context

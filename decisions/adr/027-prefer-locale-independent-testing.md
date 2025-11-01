@@ -1,6 +1,6 @@
 # 27. Prefer Locale-Independent Testing
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2025-11-01
 
 ## Context
