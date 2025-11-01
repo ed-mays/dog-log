@@ -49,7 +49,7 @@
     - `mockPetsStore(stateOverrides)` returns a `usePetsStore` mock that respects selectors.
   - Example selector-friendly mock:
     ```ts
-    // src/testUtils/mocks/mockZustand.tsx
+    // src/testUtils/mocks/mockZustand.ts
     export function makeZustandSelectorMock<TState>(state: TState) {
       return (selector?: (s: TState) => unknown) =>
         selector ? selector(state) : state;
