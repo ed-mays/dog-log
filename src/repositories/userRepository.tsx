@@ -1,6 +1,6 @@
 import type { User } from '@models/User';
 import { BaseRepository } from './base/BaseRepository.ts';
-import { COLLECTIONS } from '@repositories/config.tsx';
+import { COLLECTIONS } from '@repositories/config.ts';
 
 export class UserRepository extends BaseRepository<User> {
   constructor() {
