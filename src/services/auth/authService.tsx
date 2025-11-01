@@ -7,7 +7,7 @@ import {
   signOut as fbSignOut,
   type User as FirebaseUser,
 } from 'firebase/auth';
-import { auth } from '@firebase';
+import { auth } from '../../firebase.ts';
 import { userRepository } from '@repositories/userRepository';
 import type { User } from '@models/User';
 

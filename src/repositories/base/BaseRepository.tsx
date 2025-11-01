@@ -14,7 +14,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import type { DocumentData, WhereFilterOp } from 'firebase/firestore';
-import { db } from '@firebase';
+import { db } from '../../firebase.ts';
 import { ErrorCodes } from '@repositories/types';
 import type {
   BaseEntity,

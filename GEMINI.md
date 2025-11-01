@@ -27,7 +27,8 @@ Short, practical guidance to get productive quickly.
 - src/features/<domain>/\*: Feature-scoped modules containing pages, components, hooks, and types (e.g., `pets`).
 - src/store/\*: Zustand stores and related types
 - src/repositories/\*: Data access layer (e.g., `PetRepository`) that interacts directly with Firestore.
-- src/services/\*: Business logic layer that uses repositories. Components and stores should use services, not repositories.
+- src/services/\*: Business logic layer that uses repositories. Components and stores should use services, not
+  repositories.
 - src/styles/\*: CSS modules (prefer module.css for component/feature styles)
 - src/locales/<lang>/\*: Namespaced JSON translations
 - src/featureFlags/\*: Feature flag provider, config, and hooks
@@ -37,7 +38,7 @@ Short, practical guidance to get productive quickly.
 Aliases (from tsconfig.app.json):
 
 - `@components/*` → `src/components/*`
-- `@firebase` → `src/firebase.tsx`
+- `@firebase` → `src/firebase.ts`
 - `@i18n` → `src/i18n.tsx`
 - `@store/*` → `src/store/*`
 - `@test-utils` → `src/test-utils.tsx`
@@ -75,32 +76,48 @@ Guidelines:
 
 ## 4. Testing Guidelines (Vitest + Testing Library)
 
-When writing or refactoring tests, please adhere to the following conventions to ensure consistency, reliability, and maintainability.
+When writing or refactoring tests, please adhere to the following conventions to ensure consistency, reliability, and
+maintainability.
 
-1.  **Prefer `user-event` for Interactions**: Always use `@testing-library/user-event` for simulating user interactions (e.g., `userEvent.click`, `userEvent.type`). Avoid `@testing-library/fire-event` as it does not fully replicate real user browser behavior. All `user-event` calls are asynchronous and must be `await`ed.
+1. **Prefer `user-event` for Interactions**: Always use `@testing-library/user-event` for simulating user interactions (
+   e.g., `userEvent.click`, `userEvent.type`). Avoid `@testing-library/fire-event` as it does not fully replicate real
+   user browser behavior. All `user-event` calls are asynchronous and must be `await`ed.
 
-2.  **Use `findBy*` for Async Elements**: For asserting the appearance of an element that is not present immediately, prefer `findBy*` queries (e.g., `await screen.findByRole(...)`). Avoid wrapping `getBy*` queries in `waitFor` for simple presence checks.
+2. **Use `findBy*` for Async Elements**: For asserting the appearance of an element that is not present immediately,
+   prefer `findBy*` queries (e.g., `await screen.findByRole(...)`). Avoid wrapping `getBy*` queries in `waitFor` for
+   simple presence checks.
 
-3.  **Prioritize Accessible Queries**: Query elements in a way that reflects user experience. The preferred query order is:
-    1.  `getByRole` (with an accessible name if possible, e.g., `{ name: /submit/i }`)
-    2.  `getByLabelText`
-    3.  `getByPlaceholderText`
-    4.  `getByText`
-    5.  `getByTestId` (use this as a last resort when no other accessible query is suitable).
+3. **Prioritize Accessible Queries**: Query elements in a way that reflects user experience. The preferred query order
+   is:
+4. `getByRole` (with an accessible name if possible, e.g., `{ name: /submit/i }`)
+5. `getByLabelText`
+6. `getByPlaceholderText`
+7. `getByText`
+8. `getByTestId` (use this as a last resort when no other accessible query is suitable).
 
-4.  **Avoid Snapshot Testing**: Do not use snapshot tests (`.toMatchSnapshot()`, `asFragment()`). Instead, write explicit assertions that check for specific, meaningful output, such as visible text, ARIA attributes, or component state. This makes tests more robust and less brittle, especially with i18n.
+9. **Avoid Snapshot Testing**: Do not use snapshot tests (`.toMatchSnapshot()`, `asFragment()`). Instead, write explicit
+   assertions that check for specific, meaningful output, such as visible text, ARIA attributes, or component state.
+   This makes tests more robust and less brittle, especially with i18n.
 
-5.  **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task is to implement them. These represent important scenarios that need coverage.
+10. **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task is
+    to implement them. These represent important scenarios that need coverage.
 
-6.  **Follow Consistent Mocking Patterns**:
-    - For Zustand stores, use `vi.mock` at the top of the test file. Provide a mock implementation that allows state to be injected for each test.
-    - If a test requires a unique mock implementation that differs from other tests in the same file, use `vi.doMock` inside the test block, followed by a dynamic `await import()` of the component under test. Remember to call `vi.resetModules()` in a `beforeEach` or `afterEach` block to ensure test isolation.
+11. **Follow Consistent Mocking Patterns**:
 
-7.  **Expand Test Coverage**: Go beyond "happy path" scenarios. Add tests for:
-    - **Error States**: What happens when a service call fails or returns an error?
-    - **Edge Cases**: Test with empty lists, invalid inputs, or unusual data shapes.
-    - **Feature Flags**: Verify that UI elements and routes are correctly enabled or disabled based on feature flag states.
-    - **Accessibility (a11y)**: For interactive components like modals, assert that focus is managed correctly, keyboard navigation works (e.g., `Escape` key closes the modal), and relevant ARIA attributes (`aria-modal`) are present.
+- For Zustand stores, use `vi.mock` at the top of the test file. Provide a mock implementation that allows state to be
+  injected for each test.
+- If a test requires a unique mock implementation that differs from other tests in the same file, use `vi.doMock`
+  inside the test block, followed by a dynamic `await import()` of the component under test. Remember to call
+  `vi.resetModules()` in a `beforeEach` or `afterEach` block to ensure test isolation.
+
+7. **Expand Test Coverage**: Go beyond "happy path" scenarios. Add tests for:
+
+- **Error States**: What happens when a service call fails or returns an error?
+- **Edge Cases**: Test with empty lists, invalid inputs, or unusual data shapes.
+- **Feature Flags**: Verify that UI elements and routes are correctly enabled or disabled based on feature flag
+  states.
+- **Accessibility (a11y)**: For interactive components like modals, assert that focus is managed correctly, keyboard
+  navigation works (e.g., `Escape` key closes the modal), and relevant ARIA attributes (`aria-modal`) are present.
 
 **General Conventions:**
 
@@ -130,7 +147,8 @@ hooks. React components, stores, and business logic should never depend directly
 
 **Patterns:**
 
-- Use repository modules (in `src/repositories`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.) and
+- Use repository modules (in `src/repositories`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.)
+  and
   always return plain JavaScript objects.
 - Create custom React hooks (e.g., `usePetList`) that call the repository functions and expose application data, not
   Firestore types.

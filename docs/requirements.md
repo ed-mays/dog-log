@@ -115,7 +115,7 @@ Pet owners need a way to track health-related details about their pets.
 
 #### Firebase Data Layer Infrastructure
 
--[x] Firestore is initialized in a dedicated module (`src/firebase.tsx`), with no direct imports in features or
+-[x] Firestore is initialized in a dedicated module (`src/firebase.ts`), with no direct imports in features or
 components. -[x] Consolidate PetList types into `features/petManagement/types.ts` -[ ] A generic base
 repository/service pattern is established in `src/services/`, ready to support feature-specific modules. -[ ]
 TypeScript interfaces for entities and repository outputs are defined in a shared domain/types location. -[ ] Custom

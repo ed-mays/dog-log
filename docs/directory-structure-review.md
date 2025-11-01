@@ -17,7 +17,7 @@ Current layout recap (high level):
   - styles/\* (CSS modules / global styles)
   - locales/<lang>/\* (i18n namespaces)
   - test-utils.tsx and testUtils/\* (testing helpers)
-  - firebase.tsx (client init)
+  - firebase.ts (client init)
 - docs/ (project documentation)
 - config & tooling: vite.config.ts, vitest.config.ts, tsconfig.\*.json, eslint.config.js
 
