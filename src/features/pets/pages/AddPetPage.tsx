@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PetForm } from '@features/pets/components/PetForm.tsx';
-import type { Pet } from '../types.tsx';
+import type { Pet } from '../types.ts';
 import { usePetsStore } from '@store/pets.store.tsx';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
 import { useTranslation } from 'react-i18next';

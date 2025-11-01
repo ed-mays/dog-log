@@ -4,7 +4,7 @@ import type {
   PetUpdateInput,
   PetQueryOptions,
   Pet,
-} from '@features/pets/types';
+} from '@features/pets/types.ts';
 
 export type UpdatePetInput = {
   name: string;

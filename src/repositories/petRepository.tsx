@@ -4,7 +4,7 @@ import type {
   PetCreateInput,
   PetQueryOptions,
   PetUpdateInput,
-} from '@features/pets/types';
+} from '@features/pets/types.ts';
 
 export class PetRepository extends ArchivableBaseRepository<Pet> {
   private readonly userId: string;

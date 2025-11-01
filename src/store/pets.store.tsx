@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import type { Pet, PetCreateInput, PetUpdateInput } from '@features/pets/types';
+import type {
+  Pet,
+  PetCreateInput,
+  PetUpdateInput,
+} from '@features/pets/types.ts';
 import { petService } from '@services/petService';
 import { useAuthStore } from './auth.store';
 

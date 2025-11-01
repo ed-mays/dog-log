@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './PetList.module.css';
-import type { Pet } from '../types';
+import type { Pet } from '../types.ts';
 import { loadNamespace } from '@i18n';
 import { useTranslation } from 'react-i18next';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
