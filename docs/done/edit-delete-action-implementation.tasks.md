@@ -200,7 +200,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 
 ### 6) Feature Flag
 
-- [ ] Confirm a `petActionsEnabled` flag exists in `src/featureFlags/config.tsx` (default may come from env `VITE_*`).
+- [ ] Confirm a `petActionsEnabled` flag exists in `src/featureFlags/config.ts` (default may come from env `VITE_*`).
 - [ ] Update tests to cover both `true` and `false` cases.
 
 ---

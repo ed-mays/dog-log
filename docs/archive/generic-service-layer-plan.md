@@ -20,7 +20,7 @@ Create the foundational files in `src/repositories/`:
 
 ### 2. Implement Repository Configuration and Utilities
 
-**2.1 Create `src/repositories/config.tsx`**
+**2.1 Create `src/repositories/config.ts`**
 
 - Define collection names and database configuration constants.
 - Include environment-specific settings.
@@ -32,7 +32,8 @@ Create the foundational files in `src/repositories/`:
 - Handle timestamp conversions and data sanitization, scoped for repository logic.
 - Include validation helpers to support repository-level data requirements.
 
-_Repositories and related utilities are located in `src/repositories/`, while services for business logic reside in `src/services/` as distinct layers._
+_Repositories and related utilities are located in `src/repositories/`, while services for business logic reside
+in `src/services/` as distinct layers._
 
 ### 3. Create Feature-Specific Service Implementation
 
@@ -73,8 +74,10 @@ _Repositories and related utilities are located in `src/repositories/`, while se
 
 **6.1 Repository tests**
 
-- Place repository tests alongside their implementation files (e.g. `src/repositories/base/BaseRepository.test.tsx` next to `BaseRepository.tsx`)
-- Place feature repository tests alongside their implementation (e.g. `src/repositories/petRepository.test.tsx` next to `petRepository.tsx`)
+- Place repository tests alongside their implementation files (e.g. `src/repositories/base/BaseRepository.test.tsx` next
+  to `BaseRepository.tsx`)
+- Place feature repository tests alongside their implementation (e.g. `src/repositories/petRepository.test.tsx` next to
+  `petRepository.tsx`)
 - Implement mock data generators for pets and other entities
 - Create repository layer unit tests with mocked Firestore operations
 - Test error handling and data transformation logic
@@ -82,14 +85,16 @@ _Repositories and related utilities are located in `src/repositories/`, while se
 
 **6.2 Service tests**
 
-- Place service tests alongside their implementation files (e.g. `src/services/petService.test.tsx` next to `petService.test.tsx`)
+- Place service tests alongside their implementation files (e.g. `src/services/petService.test.tsx` next to
+  `petService.test.tsx`)
 - Test business logic and service layer functionality
 - Mock repository dependencies to isolate service logic
 - Validate complex business rules and cross-cutting concerns
 
 **6.3 Hook tests**
 
-- Place hook tests alongside their implementation (e.g. `src/features/petManagement/hooks/usePetList.test.tsx` next to `usePetList.tsx`)
+- Place hook tests alongside their implementation (e.g. `src/features/petManagement/hooks/usePetList.test.tsx` next to
+  `usePetList.tsx`)
 - Test custom hooks with mocked service dependencies
 - Validate hook behavior under various loading and error states
 - Test component integration with hooks using the shared render wrapper
@@ -143,4 +148,7 @@ _Repositories and related utilities are located in `src/repositories/`, while se
 - Ensure strict TypeScript compliance throughout the service layer
 - Validate that all public APIs have explicit type definitions
 
-This implementation plan follows the established project conventions, including the feature-first organization, strict TypeScript usage, comprehensive testing with Vitest, and the data access strategy outlined in the guidelines. The service layer will provide a clean abstraction over Firestore while maintaining testability and supporting future feature development.
+This implementation plan follows the established project conventions, including the feature-first organization, strict
+TypeScript usage, comprehensive testing with Vitest, and the data access strategy outlined in the guidelines. The
+service layer will provide a clean abstraction over Firestore while maintaining testability and supporting future
+feature development.
