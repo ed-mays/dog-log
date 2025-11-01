@@ -21,7 +21,7 @@ A `User` model will be created to represent the data stored in the `users` colle
 
 A new repository will be created to manage user data in Firestore, following the existing `petRepository` pattern.
 
-- **File:** `src/repositories/userRepository.tsx`
+- **File:** `src/repositories/userRepository.ts`
 - **Class:** `UserRepository`
 - **Extends:** `BaseRepository<User>`
 - **Methods:**

@@ -8,7 +8,7 @@ import {
   type User as FirebaseUser,
 } from 'firebase/auth';
 import { auth } from '../../firebase.ts';
-import { userRepository } from '@repositories/userRepository';
+import { userRepository } from '@repositories/userRepository.ts';
 import type { User } from '@models/User';
 
 export type AppUser = {

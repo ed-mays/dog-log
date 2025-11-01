@@ -13,12 +13,17 @@ vi.mock('@firebase', () => ({
   db: {},
 }));
 
+// Mock the entire userRepository object
 vi.mock('@repositories/userRepository', () => ({
   userRepository: {
     getById: vi.fn(),
     create: vi.fn(),
   },
 }));
+
+// Now, reference the mocked methods directly from the imported userRepository
+const mockGetById = userRepository.getById as vi.Mock;
+const mockCreate = userRepository.create as vi.Mock;
 
 const setPersistenceMock = vi.fn<Promise<void>, unknown[]>();
 setPersistenceMock.mockResolvedValue();
@@ -61,13 +66,13 @@ describe('authService', () => {
       });
     });
     it('creates a new user if one does not exist', async () => {
-      (userRepository.getById as vi.Mock).mockResolvedValue(undefined);
+      mockGetById.mockResolvedValue(undefined);
 
       await signInWithGoogle();
       expect(signInWithPopupMock).toHaveBeenCalledTimes(1);
-      expect(userRepository.getById).toHaveBeenCalledWith('u1');
+      expect(mockGetById).toHaveBeenCalledWith('u1');
 
-      expect(userRepository.create).toHaveBeenCalledTimes(1);
+      expect(mockCreate).toHaveBeenCalledTimes(1);
     });
 
     it('does not create a user if one already exists', async () => {
@@ -77,12 +82,12 @@ describe('authService', () => {
         email: 'old@example.com',
         photoURL: 'http://y',
       };
-      (userRepository.getById as vi.Mock).mockResolvedValue(existingUser);
+      mockGetById.mockResolvedValue(existingUser);
 
       await signInWithGoogle();
 
-      expect(userRepository.getById).toHaveBeenCalledWith('u1');
-      expect(userRepository.create).not.toHaveBeenCalled();
+      expect(mockGetById).toHaveBeenCalledWith('u1');
+      expect(mockCreate).not.toHaveBeenCalled();
     });
   });
 
