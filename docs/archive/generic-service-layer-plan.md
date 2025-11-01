@@ -37,7 +37,7 @@ in `src/services/` as distinct layers._
 
 ### 3. Create Feature-Specific Service Implementation
 
-**3.1 Create `src/services/petService.test.tsx`**
+**3.1 Create `src/services/petService.test.ts`**
 
 - Extend the base repository for pet-specific operations
 - Implement `getList`, `getById`, `create`, `update`, `archive` methods
@@ -85,8 +85,8 @@ in `src/services/` as distinct layers._
 
 **6.2 Service tests**
 
-- Place service tests alongside their implementation files (e.g. `src/services/petService.test.tsx` next to
-  `petService.test.tsx`)
+- Place service tests alongside their implementation files (e.g. `src/services/petService.test.ts` next to
+  `petService.test.ts`)
 - Test business logic and service layer functionality
 - Mock repository dependencies to isolate service logic
 - Validate complex business rules and cross-cutting concerns
