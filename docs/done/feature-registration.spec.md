@@ -97,7 +97,7 @@ are required.
 
 The existing testing patterns will be maintained:
 
-- **Unit Tests (`authService.test.ts`, `auth.store.test.tsx`):** Firebase Auth will be completely mocked to test the
+- **Unit Tests (`authService.test.ts`, `auth.store.test.ts`):** Firebase Auth will be completely mocked to test the
   service layer and store logic in isolation.
 - **Component Tests (`GoogleLoginButton.test.tsx`, `WelcomePage.test.tsx`):** The `auth.store` will be mocked to
   simulate different states (e.g., `initializing`, `user: null`, `user: AppUser`) and verify the UI renders correctly.
