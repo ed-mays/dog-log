@@ -1,15 +1,22 @@
 import { render, screen, withLocale } from '@test-utils';
 import { WelcomePage } from './WelcomePage';
-import { afterEach } from 'vitest';
+import { afterEach, beforeAll } from 'vitest';
 import testI18n from '@testUtils/test-i18n';
+import { act } from 'react';
+
+beforeAll(async () => {
+  await testI18n.init();
+});
 
 afterEach(async () => {
-  await testI18n.changeLanguage('en');
+  await act(async () => {
+    await testI18n.changeLanguage('en');
+  });
 });
 
 describe('WelcomePage', () => {
   it('renders the welcome message and login button', async () => {
-    render(<WelcomePage />);
+    await render(<WelcomePage />);
 
     expect(
       await screen.findByRole('heading', { name: 'Welcome to Dog Log!' })
@@ -21,7 +28,7 @@ describe('WelcomePage', () => {
   });
 
   it('renders the expected content in English (no snapshots)', async () => {
-    render(<WelcomePage />);
+    await render(<WelcomePage />);
 
     expect(
       await screen.findByRole('heading', { name: 'Welcome to Dog Log!' })
@@ -35,7 +42,7 @@ describe('WelcomePage', () => {
 
   it('renders the expected content in Spanish (no snapshots)', async () => {
     await withLocale('es', async () => {
-      render(<WelcomePage />);
+      await render(<WelcomePage />);
 
       expect(
         await screen.findByRole('heading', { name: 'Bienvenido a Dog Log!' })

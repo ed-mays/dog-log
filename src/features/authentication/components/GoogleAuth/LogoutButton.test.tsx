@@ -5,7 +5,7 @@ import LogoutButton from './LogoutButton';
 import { useAuthStore } from '@store/auth.store';
 
 const resetStoresMock = vi.fn();
-vi.mock('@store/useResetStores.tsx', () => ({
+vi.mock('@store/useResetStores', () => ({
   useResetStores: () => resetStoresMock,
 }));
 

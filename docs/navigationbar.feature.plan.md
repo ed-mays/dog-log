@@ -191,7 +191,7 @@ vi.mock('@store/auth.store.ts', () => ({
     selector({ signOut: vi.fn(), initializing: false }),
 }));
 
-vi.mock('@store/useResetStores.tsx', () => ({
+vi.mock('@store/useResetStores.ts', () => ({
   useResetStores: () => vi.fn(),
 }));
 

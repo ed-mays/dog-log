@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@store/auth.store.ts';
-import { useResetStores } from '@store/useResetStores.tsx';
+import { useAuthStore } from '@store/auth.store';
+import { useResetStores } from '@store/useResetStores';
 import { useNavigate } from 'react-router-dom';
 import { loadNamespace } from '../../../../i18n.ts';
 import { Button } from '@mui/material';
