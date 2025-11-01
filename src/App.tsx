@@ -4,7 +4,7 @@ import { useUiStore } from '@store/ui.store';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 import { useTranslation } from 'react-i18next';
-import { toErrorMessage } from './utils/errors';
+import { toErrorMessage } from '@utils/errors.ts';
 import { useAuthStore } from '@store/auth.store';
 import { RoutePrefetcher } from '@features/pets/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
