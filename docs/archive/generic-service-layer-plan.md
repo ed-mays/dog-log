@@ -74,7 +74,7 @@ in `src/services/` as distinct layers._
 
 **6.1 Repository tests**
 
-- Place repository tests alongside their implementation files (e.g. `src/repositories/base/BaseRepository.test.tsx` next
+- Place repository tests alongside their implementation files (e.g. `src/repositories/base/BaseRepository.test.ts` next
   to `BaseRepository.tsx`)
 - Place feature repository tests alongside their implementation (e.g. `src/repositories/petRepository.test.tsx` next to
   `petRepository.tsx`)

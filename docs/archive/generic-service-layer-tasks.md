@@ -5,7 +5,7 @@
 - [x] Create `src/repositories/types.ts` with base entity and repository interfaces.
 - [x] Create `src/repositories/base/BaseRepository.tsx` as the abstract, generic repository (CRUD, error conversion,
       transformations).
-- [x] Place repository unit tests (e.g. `BaseRepository.test.tsx`) directly alongside their implementations using
+- [x] Place repository unit tests (e.g. `BaseRepository.test.ts`) directly alongside their implementations using
       Vitest, with backend-independence and no **tests** folders.
 
 ### 2. Repository Configuration and Utilities
