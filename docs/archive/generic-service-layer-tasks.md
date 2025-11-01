@@ -12,9 +12,9 @@
 
 - [x] Create `src/repositories/config.ts` for collection names, database constants, and environment configs.
 - [x] Implement query builders and validators in `config.ts` as needed for repository logic.
-- [x] Create `src/repositories/utils/dataTransformers.tsx` for converting Firestore documents, handling timestamps, and
+- [x] Create `src/repositories/utils/dataTransformers.ts` for converting Firestore documents, handling timestamps, and
       data sanitization.
-- [x] Add repository-level validation helpers in `dataTransformers.tsx` or separate utils.
+- [x] Add repository-level validation helpers in `dataTransformers.ts` or separate utils.
 - [x] Write unit tests for all repository utilities and config functions as co-located `.test.tsx` files next to their
       code.
 

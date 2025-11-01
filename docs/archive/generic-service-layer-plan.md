@@ -26,7 +26,7 @@ Create the foundational files in `src/repositories/`:
 - Include environment-specific settings.
 - Set up common query builders and validators for repository usage.
 
-**2.2 Create `src/repositories/utils/dataTransformers.tsx`**
+**2.2 Create `src/repositories/utils/dataTransformers.ts`**
 
 - Implement utilities to convert Firestore documents to plain objects in repositories.
 - Handle timestamp conversions and data sanitization, scoped for repository logic.
