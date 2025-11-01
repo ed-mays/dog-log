@@ -3,7 +3,7 @@
 ## Add a Feature Flag
 
 - Add a new Vite environment variable. For local development put it in `.env.local`
-- Update `types.tsx` to add the new feature flag to the `FeatureFlags` type
+- Update `types.ts` to add the new feature flag to the `FeatureFlags` type
 - Edit `config.ts` to add the flag to `DefaultFeatureFlags`, reading from the Vite environment
 
 ## Consume a Feature Flag
@@ -24,4 +24,4 @@
 
 - Find usages of the flag and remove them. If the flag was toggling between legacy and new behaviors, remove the dead
   code
-- Remove references to the flag from `.env.local`, `types.tsx`, and `config.ts`
+- Remove references to the flag from `.env.local`, `types.ts`, and `config.ts`

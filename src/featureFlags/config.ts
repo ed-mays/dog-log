@@ -1,4 +1,4 @@
-import type { FeatureFlags } from './types.tsx';
+import type { FeatureFlags } from './types.ts';
 
 export const defaultFeatureFlags: FeatureFlags = {
   petListEnabled: import.meta.env.VITE_FLAG_PET_LIST_ENABLED === 'true',

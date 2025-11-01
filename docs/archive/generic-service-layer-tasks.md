@@ -2,7 +2,7 @@
 
 ### 1. Repository Layer Setup
 
-- [x] Create `src/repositories/types.tsx` with base entity and repository interfaces.
+- [x] Create `src/repositories/types.ts` with base entity and repository interfaces.
 - [x] Create `src/repositories/base/BaseRepository.tsx` as the abstract, generic repository (CRUD, error conversion,
       transformations).
 - [x] Place repository unit tests (e.g. `BaseRepository.test.tsx`) directly alongside their implementations using
@@ -24,13 +24,13 @@
       `petRepository.test.tsx`.
 - [x] Implement pet feature service in `src/services/petService.tsx` that uses the pet repository for business logic,
       with its test in `petService.test.tsx`.
-- [x] Add typed Pet definitions to `src/features/petManagement/types.tsx`.
+- [x] Add typed Pet definitions to `src/features/petManagement/types.ts`.
 - [ ] Implement pet validation and transformation functions within the repository (with tests next to these functions).
 - [ ] Create and export feature-related queries (e.g. active/archived pets) from the repository.
 
 ### 4. Domain Types and Common Utilities
 
-- [x] Update or create `src/features/petManagement/types.tsx` with all pet domain types and API interfaces.
+- [x] Update or create `src/features/petManagement/types.ts` with all pet domain types and API interfaces.
 - [ ] Add reusable API and entity types in `src/types/common.tsx`.
 
 ### 5. React Hooks Layer

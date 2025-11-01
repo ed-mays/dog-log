@@ -22,7 +22,7 @@ export default defineConfig({
         '**/*.config.js',
         'vite.config.*',
         'vitest.config.*',
-        'src/**/*.types.tsx',
+        'src/**/*.types.ts',
         'src/main.tsx',
         'src/i18n.tsx',
         '**/*.d.ts',

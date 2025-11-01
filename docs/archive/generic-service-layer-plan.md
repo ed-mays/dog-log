@@ -4,7 +4,7 @@
 
 Create the foundational files in `src/repositories/`:
 
-**[Done] 1.1 Create `src/repositories/types.tsx`**
+**[Done] 1.1 Create `src/repositories/types.ts`**
 
 - Define generic repository interfaces and common entity types
 - Include base CRUD operations: `create`, `read`, `update`, `delete`/`archive`
@@ -43,11 +43,11 @@ in `src/services/` as distinct layers._
 - Implement `getList`, `getById`, `create`, `update`, `archive` methods
 - Include pet-specific queries (active vs archived pets)
 - Handle pet data validation and transformation
-- Return typed Pet objects as defined in `src/features/petManagement/types.tsx`
+- Return typed Pet objects as defined in `src/features/petManagement/types.ts`
 
 ### 4. Establish Domain Types Structure
 
-**4.1 Update `src/features/petManagement/types.tsx`**
+**4.1 Update `src/features/petManagement/types.ts`**
 
 - Consolidate all pet-related types as mentioned in requirements
 - Define Pet entity interface with all required fields
