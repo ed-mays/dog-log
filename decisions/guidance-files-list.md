@@ -1,0 +1,4 @@
+- .github/copilot-instructions.md
+- .junie/guidelines.md
+- GEMINI.md
+- README.md
