@@ -22,4 +22,6 @@ Follow this process:
 6. Use markdown formatting.
 
 Output ONLY the markdown content for the new ADR, ready to be saved as described, and ensure it uses the injected date {{date}} in the appropriate field.
+
+IMPORTANT: The `decisions` folder already exists at the root of the project. Do not try to create a new folder.
 """

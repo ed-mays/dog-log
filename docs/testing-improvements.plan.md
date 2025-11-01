@@ -30,56 +30,92 @@ Below is a plan to improve test quality, consistency, and alignment with React 1
 
 1. Overuse of `waitFor` where `findBy*` would be cleaner
 
-- Example: `src/App.test.tsx` waits for elements via `waitFor` but these are discoverable via `findByTestId`/
-  `findByRole`. Prefer direct `findBy*` to simplify and reduce flakiness.
+- See ADR 020-prefer-accessible-queries-over-implementation-specific-assertions.md
+- Affected Files
+  - `./src/features/pets/pages/AddPetPage.test.tsx`
+  - `./src/components/common/ErrorIndicator/ErrorIndicator.test.tsx`
+  - `./src/features/pets/pages/EditPetPage.test.tsx`
+  - `./src/App.authGuard.test.tsx`
+  - `./src/features/pets/components/PetList.test.tsx`
+  - `./src/components/common/LoadingIndicator/LoadingIndicator.test.tsx`
 
-2. Mixing `fireEvent` with `userEvent` and non-user-like interactions
+2. Skipped and commented-out tests indicate unmet scenarios
 
-- Example: `AddPetPage.test.tsx` uses `fireEvent` and attempts to set `.textContent` on inputs. Replace with
-  `userEvent.type`, `userEvent.click`, etc., to simulate real user behavior.
+- 026-prohibit-skipped-and-commented-out-tests-in-mainline-code.md
+- Affected Files
+  - ./src/features/pets/components/PetList.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx
+  - ./src/features/pets/pages/AddPetPage.test.tsx
 
-3. Skipped and commented-out tests indicate unmet scenarios
+3. Inconsistent mocking patterns
 
-- `PetList.test.tsx` has `test.skip` for add flow and relies on navigation side-effects.
-- `AddPetPage.test.tsx` contains commented scenarios for submit/cancel/dirty modal flows. These are valuable paths and
-  should be restored with better utilities.
+- See ADR 019-adopt-stable-patterns-for-jest-vitest-module-mocking.md
+- Affected Files
+  - ./src/store/useResetStores.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/GoogleAuth.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/LogoutButton.test.tsx
+  - ./src/features/pets/pages/AddPetPage.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx
 
-4. Inconsistent mocking patterns
+4. Assertions tied to implementation details or data-testid when accessible queries exist
 
-- Both `vi.mock` at module scope and `vi.doMock` in-test appear (`AddPetPage.test.tsx`). Module rewire requires
-  `vi.resetModules` and dynamic import. Prefer stable patterns:
-  - Default: `vi.mock` at top + inject state via selectors/spies.
-  - If per-test mock variations are needed, use `vi.doMock` + dynamic `await import()` after resetting modules.
+- See ADR 020-prefer-accessible-queries-over-implementation-specific-assertions.md
+- Affected Files
+  - ./src/featureFlags/hooks/useFeatureFlag.test.tsx
+  - ./src/components/common/LoadingIndicator/LoadingIndicator.test.tsx
+  - ./src/featureFlags/hooks/useFeatureFlagsContext.test.tsx
+  - ./src/featureFlags/components/FeatureFlagsProvider.test.tsx
+  - ./src/components/common/ErrorIndicator/ErrorIndicator.test.tsx
+  - ./src/features/authentication/pages/WelcomePage.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/GoogleAuth.test.tsx
+  - ./src/App.test.tsx
+  - ./src/App.authGuard.test.tsx
 
-5. Assertions tied to implementation details or data-testid when accessible queries exist
+5. [:white_check_mark:] Snapshot testing used where behavior checks would be clearer
 
-- Example: `WelcomePage.test.tsx` uses `data-testid` for login button and snapshots; prefer role-based queries (
-  `getByRole('button', { name: /sign in/i })`) and explicit assertions over snapshots.
+- See ADR 022-limit-snapshot-tests-to-appropriate-use-cases.md
 
-6. Snapshot testing used where behavior checks would be clearer
+6. Async store mocking is hand-rolled in each test
 
-- `WelcomePage.test.tsx` uses `asFragment()` snapshot in two locales. Favor explicit assertions for visible text and
-  important ARIA states. Snapshots tend to be brittle for i18n content.
+- See ADR 021-adopt-reusable-factory-pattern-for-async-store-mocking.md
+- Affected Files
+  - ./src/features/pets/components/PetList.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/LogoutButton.test.tsx
+  - ./src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx
 
-7. Async store mocking is hand-rolled in each test
+7. Limited a11y behavior assertions
 
-- `PetList.test.tsx` builds a small state machine for `updatePet` and `deletePet`. This is good, but repeated patterns
-  across files could be abstracted into small helpers/factories.
-
-8. Limited a11y behavior assertions
-
-- Confirm dialogs are checked for presence/absence but not focus trap order, `aria-modal`, ESC to close, or keyboard
-  activation of buttons.
+- See ADR 023-enforce-comprehensive-accessibility-testing-practices.md
+- Affected Files
+  - ./src/features/pets/components/PetList.test.tsx
+  - ./src/features/pets/pages/AddPetPage.test.tsx
+  - ./src/features/pets/pages/EditPetPage.test.tsx
+  - ./src/components/common/ConfirmModal/ConfirmModal.test.tsx
+  - ./src/features/pets/components/petForm.test.tsx
 
 9. Flag and routing coverage can expand
 
-- You test `petListEnabled=false` at `/pets`. Consider more navigation edges: unknown routes (404), unauthenticated
-  redirect, `authEnabled=false` behavior, and locale-specific route titles.
+- See ADR 024-implement-rigorous-testing-for-feature-flags-and-routing.md
+- Affected Files
+  - `./src/App.routing.test.tsx`
+  - `./src/App.authGuard.test.tsx`
+  - `./src/features/pets/components/PetList.test.tsx`
+  - `./src/features/pets/components/PetListRow.test.tsx`
+  - `./src/AppRoutes.test.tsx`
+  - `./src/App.test.tsx`
 
 10. Data-layer: happy-path focused; more error-paths and mapping edge cases could be covered
 
-- `BaseRepository.test.tsx` covers mapping and specific error codes; consider IO errors, partial entity shapes, and
-  ordering/limit/query composition helpers if present.
+- See ADR 025-mandate-error-and-edge-case-coverage-in-data-layer-testing.md
+- Affected Files
+  - `./src/repositories/base/BaseRepository.test.tsx`
+  - `./src/repositories/PetRepository.test.tsx`
+  - `./src/features/pets/components/PetList.test.tsx`
+  - `./src/features/pets/pages/AddPetPage.test.tsx`
+  - `./src/features/pets/pages/EditPetPage.test.tsx`
+  - `./src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx`
+  - `./src/features/authentication/components/GoogleAuth/LogoutButton.test.tsx`
 
 ### React 19 + Vitest best-practice guidelines to adopt
 
@@ -254,7 +290,8 @@ Below is a plan to improve test quality, consistency, and alignment with React 1
 
 6. Sustaining quality
 
-- [:white_check_mark:]Add ESLint plugins: `eslint-plugin-testing-library` and `eslint-plugin-jest-dom` with recommended configs to enforce
+- [:white_check_mark:]Add ESLint plugins: `eslint-plugin-testing-library` and `eslint-plugin-jest-dom` with recommended
+  configs to enforce
   best practices.
 - Set/adjust coverage thresholds in `vitest.config.ts` (e.g., 80% lines/branches) and add `npm run test:coverage` to
   CI.
@@ -271,7 +308,8 @@ Below is a plan to improve test quality, consistency, and alignment with React 1
   remove snapshots, and update queries in the files listed above.
 - [:white_check_mark:] Introduce `testUtils/factories` and `mockZustand` helpers; refactor `PetList` and `AddPetPage`
   tests to use them.
-- [:white_check_mark:] Restore the skipped/commented tests for the add and cancel flows with robust, user-centric interactions.
+- [:white_check_mark:] Restore the skipped/commented tests for the add and cancel flows with robust, user-centric
+  interactions.
 - Add routing edge tests and one focused a11y test for the confirm dialog.
 - [:white_check_mark:] Add testing ESLint plugins and, if desired, a coverage threshold in Vitest config.
 
