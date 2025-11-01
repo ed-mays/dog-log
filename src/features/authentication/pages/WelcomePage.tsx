@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { loadNamespace } from '@i18n';
+import { loadNamespace } from '../../../i18n.ts';
 import { Stack } from '@mui/material';
 import { GoogleAuth } from '@features/authentication/components/GoogleAuth';
 

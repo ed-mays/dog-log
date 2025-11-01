@@ -22,13 +22,13 @@ Short, practical guidance to get productive quickly.
 - src/locales/<lang>/\*: Namespaced JSON translations
 - src/featureFlags/\*: Feature flag provider, config, and hooks
 - src/test-utils.tsx: Preconfigured render wrapper for tests
-- src/testUtils/test-i18n.tsx: Shared test i18n setup
+- src/testUtils/test-i18n.ts: Shared test i18n setup
 
 Aliases (from tsconfig.app.json):
 
 - `@components/*` → `src/components/*`
 - `@firebase` → `src/firebase.ts`
-- `@i18n` → `src/i18n.tsx`
+- `@i18n` → `src/i18n.ts`
 - `@store/*` → `src/store/*`
 - `@test-utils` → `src/test-utils.tsx`
 - `@testUtils/*` → `src/testUtils/*`
@@ -88,7 +88,8 @@ maintainability.
    assertions that check for specific, meaningful output, such as visible text, ARIA attributes, or component state.
    This makes tests more robust and less brittle, especially with i18n.
 
-10. **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task is
+10. **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task
+    is
     to implement them. These represent important scenarios that need coverage.
 
 11. **Follow Consistent Mocking Patterns**:
@@ -117,7 +118,7 @@ maintainability.
 
 Setup notes:
 
-- Shared test i18n lives at src/testUtils/test-i18n.tsx (wired through the render wrapper).
+- Shared test i18n lives at src/testUtils/test-i18n.ts (wired through the render wrapper).
 - JSDOM environment, jest-dom matchers preloaded via vitest.setup.tsx.
 - Coverage reports: coverage/ (HTML + text). Excludes config files and setup.
 
@@ -237,9 +238,9 @@ This keeps your codebase maintainable, testable, and flexible for future changes
 ## 11. Troubleshooting
 
 - Alias import not resolving: ensure path matches tsconfig.app.json and restart Vite.
-- i18n key missing: verify namespace/key and locale file loaded in src/i18n.tsx.
+- i18n key missing: verify namespace/key and locale file loaded in src/i18n.ts.
 - Tests can’t find providers: import render from '@test-utils'.
 - Test i18n warning (NO_I18NEXT_INSTANCE): render via '@test-utils' or wrap with I18nextProvider and a shared i18n
-  instance (src/testUtils/test-i18n.tsx).
+  instance (src/testUtils/test-i18n.ts).
 
 Welcome aboard! Keep it simple, typed, and testable.

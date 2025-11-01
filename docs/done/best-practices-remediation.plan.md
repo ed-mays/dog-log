@@ -28,9 +28,9 @@
   - Services consume repositories: `src/services/petService.tsx` and `src/services/auth/authService.tsx`.
 - Zustand used for shared client state and calls services (e.g., `src/store/pets.store.tsx` lines 24–37).
 - React Router in use with feature-first routes: `src/AppRoutes.tsx`.
-- Centralized i18n setup with namespaces: `src/i18n.tsx`.
+- Centralized i18n setup with namespaces: `src/i18n.ts`.
 - Testing stack and shared test utils in place: `vitest.config.ts` sets JSDOM and coverage (lines 6–13); shared wrapper
-  `src/test-utils.tsx`; test i18n `src/testUtils/test-i18n.tsx`.
+  `src/test-utils.tsx`; test i18n `src/testUtils/test-i18n.ts`.
 
 ---
 
@@ -51,7 +51,7 @@
 3. i18n resources are eagerly loaded; namespaces aren’t lazy-loaded
 
 - Best-practice: “Lazy-load namespaces when features/routes mount to reduce initial bundles.”
-- Evidence: `src/i18n.tsx` imports all `en` and `es` JSON files up-front (lines 4–12) and initializes with all
+- Evidence: `src/i18n.ts` imports all `en` and `es` JSON files up-front (lines 4–12) and initializes with all
   resources (lines 14–34). Also, `ns` omits `petProperties` even though it is provided in `resources` (lines 31–33 vs.
   lines 7–12, 20–27).
 
@@ -83,7 +83,7 @@
 7. Minor i18n config inconsistency
 
 - Best-practice: Keep namespaces aligned and stable.
-- Evidence: `src/i18n.tsx` registers `petProperties` resources (lines 7–12, 20–27) but the `ns` list excludes it (line
+- Evidence: `src/i18n.ts` registers `petProperties` resources (lines 7–12, 20–27) but the `ns` list excludes it (line
   31), which can cause missing key warnings when `defaultNS` fallback is not desired.
 
 8. Duplicate alias definitions between `tsconfig.json` and `tsconfig.app.json`
@@ -201,11 +201,11 @@
 
 - Why: Reduce initial bundle; align with “lazy-load namespaces when features mount.”
 - How:
-  - Switch `src/i18n.tsx` to dynamic import of JSON per namespace/language or use `i18next-http-backend` for real files.
+  - Switch `src/i18n.ts` to dynamic import of JSON per namespace/language or use `i18next-http-backend` for real files.
     With static JSON, you can do:
 
     ```ts
-    // src/i18n.tsx
+    // src/i18n.ts
     import i18n from 'i18next';
     import { initReactI18next } from 'react-i18next';
 
@@ -294,7 +294,7 @@
 - How:
   - Ensure `ns` includes all base namespaces you intend to preload or remove them from preload:
     ```ts
-    // src/i18n.tsx
+    // src/i18n.ts
     ns: ['common', 'home', 'petList', 'petProperties'],
     ```
   - If adopting lazy-loading (step 3), keep `ns: ['common']` at boot and load others per feature.

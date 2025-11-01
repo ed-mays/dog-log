@@ -5,7 +5,7 @@ import type { Pet } from '../types.ts';
 import { usePetsStore } from '@store/pets.store.tsx';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
 import { useTranslation } from 'react-i18next';
-import { loadNamespace } from '@i18n';
+import { loadNamespace } from '../../../i18n.ts';
 
 const newPetInitialValues: Pet = {
   id: '',

@@ -13,7 +13,7 @@ translation libraries.
 - Support for **path aliases**:
   - `@components/* → src/components/*`
   - `@firebase → src/firebase.ts`
-  - `@i18n → src/i18n.tsx`
+  - `@i18n → src/i18n.ts`
   - `@store/* → src/store/*`
   - `@test-utils → src/test-utils.tsx`
   - `@testUtils/* → src/testUtils/*`
@@ -109,7 +109,7 @@ Notes:
 - **i18next** & **react-i18next** with namespaced translations: `common`, `home`, `petList`, `petProperties`.
 - Default language from Vite env: `VITE_DEFAULT_LOCALE` (fallback: `en`).
 - In components: `const { t } = useTranslation('<namespace>');` and `t('key')`.
-- Shared test i18n lives at `src/testUtils/test-i18n.tsx` and is wired through the test render wrapper.
+- Shared test i18n lives at `src/testUtils/test-i18n.ts` and is wired through the test render wrapper.
 
 ---
 
@@ -131,7 +131,7 @@ Notes:
 - Aliases:
   - `@components/*` → `src/components/*`
   - `@firebase` → `src/firebase.ts`
-  - `@i18n` → `src/i18n.tsx`
+  - `@i18n` → `src/i18n.ts`
   - `@store/*` → `src/store/*`
   - `@test-utils` → `src/test-utils.tsx`
   - `@testUtils/*` → `src/testUtils/*`

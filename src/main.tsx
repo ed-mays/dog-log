@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
-import './i18n';
+import './i18n.ts';
 import { FeatureFlagsProvider } from '@featureFlags/components/FeatureFlagsProvider.tsx';
 import { ErrorBoundary } from '@components/common/ErrorBoundary/ErrorBoundary';
 import AuthBootstrap from '@features/authentication/AuthBootstrap';

@@ -71,7 +71,8 @@ maintainability.
    assertions that check for specific, meaningful output, such as visible text, ARIA attributes, or component state.
    This makes tests more robust and less brittle, especially with i18n.
 
-10. **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task is
+10. **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task
+    is
     to implement them. These represent important scenarios that need coverage.
 
 11. **Follow Consistent Mocking Patterns**:
@@ -96,7 +97,7 @@ maintainability.
 - Path aliases are defined in `tsconfig.app.json`. Prefer these over deep relative paths.
 - `@components/*` → `src/components/*`
 - `@firebase` → `src/firebase.ts`
-- `@i18n` → `src/i18n.tsx`
+- `@i18n` → `src/i18n.ts`
 - `@store/*` → `src/store/*`
 - `@test-utils` → `src/test-utils.tsx`
 - `@testUtils/*` → `src/testUtils/*`
@@ -112,7 +113,7 @@ maintainability.
 
 - Feature flags are provided by `src/featureFlags/FeatureFlagsProvider` and read via `useFeatureFlag('<flagName>')`.
 - In tests, override flags through the render wrapper: `render(<App />, { featureFlags: { petListEnabled: false } });`.
-- i18n namespaces live under `locales/` and the shared test i18n setup is `src/testUtils/test-i18n.tsx`.
+- i18n namespaces live under `locales/` and the shared test i18n setup is `src/testUtils/test-i18n.ts`.
 
 ## Safety, env, and secrets
 
@@ -132,7 +133,7 @@ Fix any issues that arise before considering the task complete.
 ## Files to consult for examples and patterns
 
 - `src/App.test.tsx` — store-mocking and render examples
-- `src/test-utils.tsx` and `src/testUtils/test-i18n.tsx` — test wrappers and i18n test wiring
+- `src/test-utils.tsx` and `src/testUtils/test-i18n.ts` — test wrappers and i18n test wiring
 - `src/firebase.ts` — emulator detection and initialization
 - `src/featureFlags/FeatureFlagsProvider` — feature flag defaults and provider
 - `tsconfig.app.json` — path alias mappings

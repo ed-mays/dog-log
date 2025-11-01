@@ -56,7 +56,7 @@ intentional: start with quick wins that reduce churn, then proceed to type safet
 
 10. [x] Centralize test i18n setup
 
-- [x] Move feature-scoped `mocki18n.tsx` to a shared test i18n (e.g., `src/testUtils/test-i18n.tsx`)
+- [x] Move feature-scoped `mocki18n.tsx` to a shared test i18n (e.g., `src/testUtils/test-i18n.ts`)
 - [x] Wire it through `src/test-utils.tsx` so all tests share consistent i18n
 - [x] Remove local duplicates
 
