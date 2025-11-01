@@ -1,0 +1,25 @@
+# This TOML file generates a new ADR using Gemini CLI or Code Assist.
+# Required arguments:
+#   {{args}} - The base decision description
+#   {{date}} - The date to use for the ADR (inject manually)
+# The ADR is numbered sequentially and uses a Markdown template.
+# The ADR is written to ./decisions/adr
+#
+# Usage: /generate-adr "decision title" --date 01-01-1980
+
+description = "Generate a sequentially numbered Architectural Decision Record using the technical design template."
+
+prompt = """
+You are an expert software architect.
+Generate a new Architectural Decision Record (ADR) for the following decision: {{args}}
+Use this date for the ADR's date field: {{date}}
+Follow this process:
+1. Read the template at './decisions/templates/technical-design-decision.md' and use its format.
+2. Check existing ADR files in './decisions/adr'. Find the highest numbered file (format: 'NNN-title.md').
+3. Create the new ADR with the next sequential number, e.g., if the last is '017-adopt-material-design-ecosystem.md', use '018'.
+4. Place the new ADR in './decisions/adr/' named as '[number]-[decision-title].md'
+5. Fill out all template fields for this decision.
+6. Use markdown formatting.
+
+Output ONLY the markdown content for the new ADR, ready to be saved as described, and ensure it uses the injected date {{date}} in the appropriate field.
+"""
