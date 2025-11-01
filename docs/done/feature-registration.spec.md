@@ -72,7 +72,7 @@ are required.
 
 #### 3.3 Service Layer (Abstraction)
 
-- **/src/services/auth/authService.tsx**: This module correctly abstracts all Firebase Auth interactions, as per the
+- **/src/services/auth/authService.ts**: This module correctly abstracts all Firebase Auth interactions, as per the
   developer guidelines.
   - **`signInWithGoogle()`**: This function will orchestrate the sign-in process by:
     1. Calling `ensurePersistence()` to set `browserLocalPersistence`.

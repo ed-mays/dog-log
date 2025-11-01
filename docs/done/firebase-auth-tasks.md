@@ -26,7 +26,7 @@ documentation. Check each box as you complete it.
 
 4. [x] Implement Firebase auth provider wiring
 
-- [x] Create `src/services/auth/authService.tsx` to encapsulate Google provider, sign-in, sign-out, and
+- [x] Create `src/services/auth/authService.ts` to encapsulate Google provider, sign-in, sign-out, and
       onAuthStateChanged subscription
 - [x] Use `GoogleAuthProvider` and `setPersistence(auth, browserLocalPersistence)` to persist sessions across reloads
 - [x] Ensure emulator connection is respected (already supported via src/firebase.ts)
