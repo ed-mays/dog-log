@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@store/auth.store.tsx';
+import { useAuthStore } from '@store/auth.store.ts';
 import { loadNamespace } from '../../../../i18n.ts';
 import { Button } from '@mui/material';
 import { logger } from '@services/logService.ts';

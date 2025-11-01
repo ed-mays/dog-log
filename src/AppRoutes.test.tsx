@@ -1,5 +1,7 @@
 vi.mock('./featureFlags/hooks/useFeatureFlag');
-vi.mock('@store/auth.store');
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
+}));
 
 import { render, screen } from '@test-utils';
 import { AppRoutes } from './AppRoutes';
@@ -9,14 +11,14 @@ import '@testing-library/jest-dom';
 
 describe('AppRoutes', () => {
   const mockUseFeatureFlag = useFeatureFlag as unknown as vi.Mock;
-  const mockUseAuthStore = useAuthStore as unknown as vi.Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
     const authStoreState = { initializing: false, user: { uid: 'test' } };
-    mockUseAuthStore.mockImplementation((selector?: (s: never) => never) =>
-      selector ? selector(authStoreState) : authStoreState
+    vi.mocked(useAuthStore).mockImplementation(
+      (selector?: (s: never) => never) =>
+        selector ? selector(authStoreState) : authStoreState
     );
 
     mockUseFeatureFlag.mockReturnValue(true);

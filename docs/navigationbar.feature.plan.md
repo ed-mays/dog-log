@@ -186,7 +186,7 @@ vi.mock('@i18n', () => ({
 }));
 
 // Optionally mock auth store to avoid real side-effects
-vi.mock('@store/auth.store.tsx', () => ({
+vi.mock('@store/auth.store.ts', () => ({
   useAuthStore: (selector: any) =>
     selector({ signOut: vi.fn(), initializing: false }),
 }));

@@ -62,7 +62,7 @@ are required.
 
 #### 3.2 State Management (Zustand)
 
-- **/src/store/auth.store.tsx**: This store remains the single source of truth for authentication state.
+- **/src/store/auth.store.ts**: This store remains the single source of truth for authentication state.
   - `user: AppUser | null`: Holds the currently authenticated user's data.
   - `initializing: boolean`: Tracks the initial `onAuthStateChanged` listener status.
   - `signInWithGoogle: () => Promise<void>`: The action that UI components will call. It delegates the call to the

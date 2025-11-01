@@ -5,7 +5,7 @@ import type {
   PetUpdateInput,
 } from '@features/pets/types.ts';
 import { petService } from '@services/petService.ts';
-import { useAuthStore } from './auth.store';
+import { useAuthStore } from './auth.store.ts';
 
 interface PetsState {
   pets: Pet[];

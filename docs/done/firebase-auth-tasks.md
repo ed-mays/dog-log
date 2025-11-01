@@ -37,7 +37,7 @@ documentation. Check each box as you complete it.
 
 - [ ] If using Context: `src/features/authentication/AuthProvider.tsx` that subscribes to onAuthStateChanged and
       exposes user/loading/error
-- [x] If using Zustand: `src/store/auth.store.tsx` with user, initializing, error, actions: initAuthListener(),
+- [x] If using Zustand: `src/store/auth.store.ts` with user, initializing, error, actions: initAuthListener(),
       signInWithGoogle(), signOut()
 - [x] Export typed User shape derived from Firebase `User` with a minimal app-facing model (uid, displayName, email,
       photoURL)

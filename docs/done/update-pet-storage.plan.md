@@ -31,7 +31,7 @@ collection in Firestore. This change will follow the existing architectural patt
   always passing the required `userId`.
 - **Action:** Create a `clearPets` action to reset the state.
 
-### 4. `auth.store.tsx` (Orchestration Hook)
+### 4. `auth.store.ts` (Orchestration Hook)
 
 - **Goal:** Trigger the loading and clearing of pet data in response to authentication state changes.
 - **Change:** Integrate the `pets.store`'s actions into the authentication lifecycle.
