@@ -43,7 +43,7 @@
   "exclude": [
     "src/**/*.test.*",
     "src/**/*.spec.*",
-    "vitest.setup.tsx",
+    "vitest.setup.ts",
     "src/testUtils/**",
     "src/test-utils.tsx"
   ]

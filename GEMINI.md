@@ -130,7 +130,7 @@ maintainability.
 Setup notes:
 
 - Shared test i18n lives at src/testUtils/test-i18n.ts (wired through the render wrapper).
-- JSDOM environment, jest-dom matchers preloaded via vitest.setup.tsx.
+- JSDOM environment, jest-dom matchers preloaded via vitest.setup.ts.
 - Coverage reports: coverage/ (HTML + text). Excludes config files and setup.
 
 ## 5. State & Data (Zustand)
