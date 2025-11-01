@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { loadNamespace } from '../../../i18n.ts';
-import { usePetsStore } from '@store/pets.store.tsx';
+import { usePetsStore } from '@store/pets.store.ts';
 import type { Pet } from '@features/pets/types.ts';
 import { PetForm } from '@features/pets/components/PetForm.tsx';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';

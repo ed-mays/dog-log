@@ -12,35 +12,46 @@ import {
 } from '@testUtils/mocks/mockStores';
 import type { AppUser } from '@services/auth/authService';
 import { makePet } from '@testUtils/factories/makePet';
+import { vi } from 'vitest';
 
 // Mock child components with side-effects
 vi.mock('@features/authentication/AuthBootstrap', () => ({
   default: () => null,
 }));
 
-// Mock stores
-vi.mock('@store/pets.store');
-vi.mock('@store/auth.store');
-vi.mock('@store/ui.store');
+// Explicitly mock stores to ensure vi.fn() instances are used
+vi.mock('@store/pets.store', () => ({
+  usePetsStore: vi.fn(),
+}));
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
+}));
+vi.mock('@store/ui.store', () => ({
+  useUiStore: vi.fn(),
+}));
 
 describe('App', () => {
-  const mockUsePetsStore = usePetsStore as vi.Mock;
-  const mockUseAuthStore = useAuthStore as vi.Mock;
-  const mockUseUiStore = useUiStore as vi.Mock;
+  // Declare these as `let` so they can be assigned the actual mock functions
+  let mockUsePetsStore: typeof usePetsStore;
+  let mockUseAuthStore: typeof useAuthStore;
+  let mockUseUiStore: typeof useUiStore;
 
   let petsMock: ReturnType<typeof createPetsStoreMock>;
-  let authMock = createAuthStoreMock({
-    user: {
-      uid: 'test',
-      displayName: null,
-      email: null,
-      photoURL: null,
-    } satisfies AppUser,
-  });
-  let uiMock = createUiStoreMock({ loading: false, error: null });
+  let authMock: ReturnType<typeof createAuthStoreMock>;
+  let uiMock: ReturnType<typeof createUiStoreMock>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks();
+    // Removed vi.resetModules() as it can interfere with context providers
+
+    // Dynamically import the mocked modules to get the vi.fn() instances
+    const petsStoreModule = await import('@store/pets.store');
+    mockUsePetsStore = petsStoreModule.usePetsStore;
+    const authStoreModule = await import('@store/auth.store');
+    mockUseAuthStore = authStoreModule.useAuthStore;
+    const uiStoreModule = await import('@store/ui.store');
+    mockUseUiStore = uiStoreModule.useUiStore;
+
     // Fresh mocks each test
     petsMock = createPetsStoreMock({ pets: [] });
     authMock = createAuthStoreMock({
@@ -55,13 +66,13 @@ describe('App', () => {
     });
     uiMock = createUiStoreMock({ loading: false, error: null });
 
-    mockUseAuthStore.mockImplementation(
+    (mockUseAuthStore as vi.Mock).mockImplementation(
       authMock.impl as unknown as typeof useAuthStore
     );
-    mockUsePetsStore.mockImplementation(
+    (mockUsePetsStore as vi.Mock).mockImplementation(
       petsMock.impl as unknown as typeof usePetsStore
     );
-    mockUseUiStore.mockImplementation(
+    (mockUseUiStore as vi.Mock).mockImplementation(
       uiMock.impl as unknown as typeof useUiStore
     );
   });
@@ -71,11 +82,11 @@ describe('App', () => {
   }
 
   test('renders loading state', async () => {
-    mockUseUiStore.mockImplementation(
+    (mockUseUiStore as vi.Mock).mockImplementation(
       createUiStoreMock({ loading: true, error: null })
         .impl as unknown as typeof useUiStore
     );
-    mockUseAuthStore.mockImplementation(
+    (mockUseAuthStore as vi.Mock).mockImplementation(
       createAuthStoreMock({
         initializing: true,
         user: {
@@ -93,7 +104,7 @@ describe('App', () => {
   });
 
   test('renders error state', async () => {
-    mockUseUiStore.mockImplementation(
+    (mockUseUiStore as vi.Mock).mockImplementation(
       createUiStoreMock({ error: new Error('Boom'), loading: false })
         .impl as unknown as typeof useUiStore
     );
@@ -105,7 +116,7 @@ describe('App', () => {
   });
 
   test('renders pet list', async () => {
-    mockUsePetsStore.mockImplementation(
+    (mockUsePetsStore as vi.Mock).mockImplementation(
       createPetsStoreMock({
         pets: [
           makePet({ id: '1', name: 'Fido', breed: 'Labrador' }),

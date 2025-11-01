@@ -8,25 +8,38 @@ import { usePetsStore } from '@store/pets.store';
 vi.mock('@features/authentication/AuthBootstrap', () => ({
   default: () => null,
 }));
-vi.mock('@store/auth.store');
-vi.mock('@store/pets.store');
+
+// Explicitly mock useAuthStore and usePetsStore as vi.fn()
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
+}));
+vi.mock('@store/pets.store', () => ({
+  usePetsStore: vi.fn(),
+}));
 
 describe('App auth route protection', () => {
-  const mockUseAuthStore = useAuthStore as vi.Mock;
-  const mockUsePetsStore = usePetsStore as vi.Mock;
+  // Declare these as `let` so they can be assigned the actual mock functions
+  let mockUseAuthStore: typeof useAuthStore;
+  let mockUsePetsStore: typeof usePetsStore;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks();
+    // Dynamically import the mocked modules to get the vi.fn() instances
+    const authStoreModule = await import('@store/auth.store');
+    mockUseAuthStore = authStoreModule.useAuthStore;
+    const petsStoreModule = await import('@store/pets.store');
+    mockUsePetsStore = petsStoreModule.usePetsStore;
+
     // Prevent pet pre-fetcher from looping
     const petsState = { pets: [{ id: '1' }] };
-    mockUsePetsStore.mockImplementation((selector) =>
+    (mockUsePetsStore as vi.Mock).mockImplementation((selector) =>
       selector ? selector(petsState) : petsState
     );
   });
 
   it('redirects unauthenticated users to /welcome for /pets', async () => {
     const authStoreState = { user: null, initializing: false };
-    mockUseAuthStore.mockImplementation((selector) =>
+    (mockUseAuthStore as vi.Mock).mockImplementation((selector) =>
       selector ? selector(authStoreState) : authStoreState
     );
 
@@ -41,7 +54,7 @@ describe('App auth route protection', () => {
 
   it('allows authenticated users to access /pets', async () => {
     const authStoreState = { user: { uid: '1' }, initializing: false };
-    mockUseAuthStore.mockImplementation((selector) =>
+    (mockUseAuthStore as vi.Mock).mockImplementation((selector) =>
       selector ? selector(authStoreState) : authStoreState
     );
 

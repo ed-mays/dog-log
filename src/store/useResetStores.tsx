@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { usePetsStore } from './pets.store';
+import { usePetsStore } from './pets.store.ts';
 import { useAuthStore } from './auth.store';
 import { useUiStore } from '@store/ui.store.ts';
 

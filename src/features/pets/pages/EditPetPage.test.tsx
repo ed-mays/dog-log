@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@test-utils';
 import type { Pet } from '@features/pets/types';
+import { vi } from 'vitest';
 
+// Mock the module at the top level
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
-
-const { usePetsStore } = await import('@store/pets.store');
 
 function makePet(overrides: Partial<Pet> = {}): Pet {
   return {
@@ -23,9 +23,15 @@ function makePet(overrides: Partial<Pet> = {}): Pet {
 }
 
 describe('EditPetPage', () => {
-  beforeEach(() => {
+  let mockUsePetsStore: vi.Mock;
+
+  beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+
+    // Dynamically import the mocked module after resetModules
+    const petsStoreModule = await import('@store/pets.store');
+    mockUsePetsStore = petsStoreModule.usePetsStore as vi.Mock;
   });
 
   it('renders existing pet and submits updates then navigates to /pets', async () => {
@@ -33,7 +39,7 @@ describe('EditPetPage', () => {
     const actions = {
       updatePet: vi.fn(async () => {}),
     };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
+    mockUsePetsStore.mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
@@ -68,7 +74,7 @@ describe('EditPetPage', () => {
     const actions = {
       updatePet: vi.fn(async () => {}),
     };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
+    mockUsePetsStore.mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
@@ -99,7 +105,7 @@ describe('EditPetPage', () => {
     const actions = {
       updatePet: vi.fn(async () => {}),
     };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
+    mockUsePetsStore.mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
@@ -123,7 +129,7 @@ describe('EditPetPage', () => {
     const actions = {
       updatePet: vi.fn(async () => {}),
     };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
+    mockUsePetsStore.mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 
@@ -167,7 +173,7 @@ describe('EditPetPage', () => {
     const actions = {
       updatePet: vi.fn(async () => {}),
     };
-    (usePetsStore as unknown as vi.Mock).mockImplementation((selector) =>
+    mockUsePetsStore.mockImplementation((selector) =>
       selector({ pets: statePets, ...actions })
     );
 

@@ -19,7 +19,7 @@ collection in Firestore. This change will follow the existing architectural patt
   constructor (e.g., `new PetRepository(userId)`). This ensures every database operation is correctly scoped to the
   user.
 
-### 3. `pets.store.tsx` (State Management Layer)
+### 3. `pets.store.ts` (State Management Layer)
 
 - **Goal:** Manage the state of the current user's pets and interact with the `petService`.
 - **Change:** Decouple the store from the `petRepository`.

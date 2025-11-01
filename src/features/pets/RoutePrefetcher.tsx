@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { usePetsStore } from '@store/pets.store';
+import { usePetsStore } from '@store/pets.store.ts';
 import { useUiStore } from '@store/ui.store';
 
 export function RoutePrefetcher() {

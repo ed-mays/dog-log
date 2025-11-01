@@ -7,7 +7,7 @@ import { PetListRow } from '@features/pets/components/PetListRow.tsx';
 import { loadNamespace } from '../../../i18n.ts';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
-import { usePetsStore } from '@store/pets.store.tsx';
+import { usePetsStore } from '@store/pets.store.ts';
 import { IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
