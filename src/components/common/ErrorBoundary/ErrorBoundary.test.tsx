@@ -17,6 +17,10 @@ describe('ErrorBoundary', () => {
     const fallback = screen.getByTestId('error-boundary-fallback');
     expect(fallback).toBeInTheDocument();
     expect(fallback).toHaveTextContent('Something went wrong');
+    // a11y: fallback is an assertive alert region
+    const alert = screen.getByRole('alert');
+    expect(alert).toBe(fallback);
+    expect(alert).toHaveAttribute('aria-live', 'assertive');
   });
 
   it('renders Spanish fallback when locale is es', async () => {
@@ -28,6 +32,10 @@ describe('ErrorBoundary', () => {
       );
       const fallback = screen.getByTestId('error-boundary-fallback');
       expect(fallback).toHaveTextContent('Algo salió mal');
+      // a11y: alert role present in es as well
+      const alert = screen.getByRole('alert');
+      expect(alert).toBe(fallback);
+      expect(alert).toHaveAttribute('aria-live', 'assertive');
     });
   });
 });
