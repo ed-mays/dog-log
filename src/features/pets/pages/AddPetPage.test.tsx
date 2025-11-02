@@ -1,4 +1,8 @@
-import { screen } from '@testing-library/react';
+import {
+  screen,
+  within,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { render } from '@test-utils';
@@ -16,6 +20,10 @@ describe('AddPetPage', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     vi.resetModules();
+
+    // Ensure no lingering per-test mocks from previous tests
+    vi.unmock('@features/pets/components/PetForm');
+    vi.unmock('@features/pets/components/PetForm.tsx');
 
     // Prepare store mock instance for this test run
     petsMock = createPetsStoreMock();
@@ -122,6 +130,102 @@ describe('AddPetPage', () => {
     // Clear and also verify mouse click path
     mockNavigate.mockClear();
     await user.click(cancel);
+    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+  });
+
+  it('opens confirm on dirty cancel with correct a11y; focus, trap, and Escape close without navigation', async () => {
+    // Provide a minimal PetForm that can toggle dirty state and trigger cancel
+    vi.doMock('@features/pets/components/PetForm', () => ({
+      PetForm: (props: {
+        onCancel: () => void;
+        onDirtyChange: (v: boolean) => void;
+      }) => (
+        <div>
+          <button onClick={() => props.onDirtyChange(true)}>Make Dirty</button>
+          <button onClick={props.onCancel}>Cancel</button>
+        </div>
+      ),
+    }));
+
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
+
+    const user = userEvent.setup();
+    render(<AddPetPage />);
+
+    // Make form dirty via explicit control
+    await userEvent.click(
+      await screen.findByRole('button', { name: /make dirty/i })
+    );
+
+    // Click Cancel to open confirm dialog
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    // Heading provides the accessible name inside dialog
+    expect(within(dialog).getByRole('heading')).toBeInTheDocument();
+
+    const noBtn = within(dialog).getByRole('button', { name: /no/i });
+    const yesBtn = within(dialog).getByRole('button', { name: /yes/i });
+
+    // Initial focus on No
+    expect(noBtn).toHaveFocus();
+
+    // Focus trap: Tab to Yes, Shift+Tab back to No
+    await user.tab();
+    expect(yesBtn).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(noBtn).toHaveFocus();
+
+    // Escape closes without navigation
+    await user.keyboard('{Escape}');
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    }
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('accepts dirty cancel via keyboard: Tab to Yes and Space to confirm; navigates to /pets', async () => {
+    // Provide a minimal PetForm that can toggle dirty state and trigger cancel
+    vi.doMock('@features/pets/components/PetForm', () => ({
+      PetForm: (props: {
+        onCancel: () => void;
+        onDirtyChange: (v: boolean) => void;
+      }) => (
+        <div>
+          <button onClick={() => props.onDirtyChange(true)}>Make Dirty</button>
+          <button onClick={props.onCancel}>Cancel</button>
+        </div>
+      ),
+    }));
+
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
+
+    const user = userEvent.setup();
+    render(<AddPetPage />);
+
+    // Make form dirty via explicit control
+    await user.click(
+      await screen.findByRole('button', { name: /make dirty/i })
+    );
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+    const dialog = await screen.findByRole('dialog');
+
+    // Move focus to Yes and activate with Space
+    await user.tab();
+    const yesBtn = within(dialog).getByRole('button', { name: /yes/i });
+    expect(yesBtn).toHaveFocus();
+    await user.keyboard(' ');
+
+    // Guard for async removal and assert navigation
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    }
     expect(mockNavigate).toHaveBeenCalledWith('/pets');
   });
 });
