@@ -22,7 +22,13 @@ export default defineConfig({
         '**/*.config.js',
         'vite.config.*',
         'vitest.config.*',
+        // Exclude all type-only modules
+        'src/**/types.ts',
         'src/**/*.types.ts',
+        // Exclude all models folders
+        'src/models/**',
+        // Exclude test utilities
+        'src/testUtils/**',
         'src/main.tsx',
         'src/i18n.ts',
         '**/*.d.ts',
