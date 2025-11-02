@@ -96,7 +96,7 @@ describe('AddPetPage', () => {
   //   expect(mockNavigate).not.toHaveBeenCalled();
   // });
 
-  it('navigates away immediately if cancel is clicked and not dirty', async () => {
+  it('navigates away immediately if cancel is activated (click or keyboard) and not dirty', async () => {
     // Provide a per-test mock of the PetForm that only renders a Cancel button
     vi.doMock('@features/pets/components/PetForm', () => ({
       PetForm: (props: { onCancel: () => void }) => (
@@ -112,7 +112,16 @@ describe('AddPetPage', () => {
     const user = userEvent.setup();
     render(<AddPetPage />);
 
-    await user.click(await screen.findByText('Cancel'));
+    const cancel = await screen.findByRole('button', { name: /cancel/i });
+
+    // Activate via keyboard (Enter)
+    cancel.focus();
+    await user.keyboard('{Enter}');
+    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+
+    // Clear and also verify mouse click path
+    mockNavigate.mockClear();
+    await user.click(cancel);
     expect(mockNavigate).toHaveBeenCalledWith('/pets');
   });
 });

@@ -1,6 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@test-utils';
-import { waitForElementToBeRemoved } from '@testing-library/react';
+import { render, screen, waitFor } from '@test-utils';
+import { waitForElementToBeRemoved, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { Pet } from '@features/pets/types';
 import { vi } from 'vitest';
 
@@ -57,9 +58,11 @@ describe('EditPetPage', () => {
     const { default: EditPetPage } = await import('./EditPetPage');
     render(<EditPetPage />);
 
+    const user = userEvent.setup();
     const nameInput = await screen.findByLabelText(/name/i);
-    fireEvent.change(nameInput, { target: { value: 'Buddy' } });
-    fireEvent.click(screen.getByRole('button', { name: /ok/i }));
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Buddy');
+    await user.click(screen.getByRole('button', { name: /ok/i }));
 
     await waitFor(() => {
       expect(actions.updatePet).toHaveBeenCalledWith('1', {
@@ -93,7 +96,8 @@ describe('EditPetPage', () => {
     render(<EditPetPage />);
 
     const cancelBtn = await screen.findByRole('button', { name: /cancel/i });
-    fireEvent.click(cancelBtn);
+    const user = userEvent.setup();
+    await user.click(cancelBtn);
 
     await waitFor(() => {
       expect(navSpy).toHaveBeenCalledWith('/pets');
@@ -125,7 +129,7 @@ describe('EditPetPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/not found/i);
   });
 
-  it('shows confirm modal on cancel when form is dirty; decline closes without navigation', async () => {
+  it('shows confirm modal on cancel when form is dirty; has correct a11y and decline closes without navigation', async () => {
     const statePets = [makePet()];
     const actions = {
       updatePet: vi.fn(async () => {}),
@@ -145,21 +149,28 @@ describe('EditPetPage', () => {
     });
 
     const { default: EditPetPage } = await import('./EditPetPage');
+    const user = userEvent.setup();
     render(<EditPetPage />);
 
     const nameInput = await screen.findByLabelText(/name/i);
-    fireEvent.change(nameInput, { target: { value: 'Buddy' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Buddy');
 
     const cancelBtn = screen.getByRole('button', { name: /cancel/i });
-    fireEvent.click(cancelBtn);
+    await user.click(cancelBtn);
 
-    // Confirm modal appears
+    // Confirm modal appears with correct ARIA
     const dialog = await screen.findByRole('dialog');
     expect(dialog).toBeInTheDocument();
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    // Accessible name/heading inside the dialog
+    const { getByRole: getByRoleInDialog } = within(dialog);
+    expect(getByRoleInDialog('heading')).toBeInTheDocument();
 
-    // Click No (decline)
+    // Initial focus on No; press Enter to decline
     const noBtn = screen.getByRole('button', { name: /no/i });
-    fireEvent.click(noBtn);
+    expect(noBtn).toHaveFocus();
+    await user.keyboard('{Enter}');
 
     // Guard for sync/async removal of the dialog
     const maybeDialog = screen.queryByRole('dialog');
@@ -193,17 +204,21 @@ describe('EditPetPage', () => {
     });
 
     const { default: EditPetPage } = await import('./EditPetPage');
+    const user = userEvent.setup();
     render(<EditPetPage />);
 
     const nameInput = await screen.findByLabelText(/name/i);
-    fireEvent.change(nameInput, { target: { value: 'Buddy' } });
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Buddy');
 
-    fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
     await screen.findByRole('dialog');
 
-    // Click Yes (accept)
+    // Move focus to Yes (Tab) and press Space to accept
+    await user.tab();
     const yesBtn = screen.getByRole('button', { name: /yes/i });
-    fireEvent.click(yesBtn);
+    expect(yesBtn).toHaveFocus();
+    await user.keyboard(' ');
 
     // Guard for sync/async removal of the dialog
     const maybeDialog2 = screen.queryByRole('dialog');
@@ -217,5 +232,44 @@ describe('EditPetPage', () => {
       expect(navSpy).toHaveBeenCalledWith('/pets');
     });
     expect(actions.updatePet).not.toHaveBeenCalled();
+  });
+
+  it('Escape closes the confirm modal without navigating', async () => {
+    const statePets = [makePet()];
+    const actions = {
+      updatePet: vi.fn(async () => {}),
+    };
+    mockUsePetsStore.mockImplementation((selector) =>
+      selector({ pets: statePets, ...actions })
+    );
+
+    const navSpy = vi.fn();
+    vi.doMock('react-router-dom', async (importOriginal) => {
+      const mod: never = await importOriginal();
+      return {
+        ...mod,
+        useParams: () => ({ id: '1' }),
+        useNavigate: () => navSpy,
+      };
+    });
+
+    const { default: EditPetPage } = await import('./EditPetPage');
+    const user = userEvent.setup();
+    render(<EditPetPage />);
+
+    const nameInput = await screen.findByLabelText(/name/i);
+    await user.type(nameInput, 'X');
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+    await screen.findByRole('dialog');
+
+    await user.keyboard('{Escape}');
+
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    }
+
+    expect(navSpy).not.toHaveBeenCalled();
   });
 });
