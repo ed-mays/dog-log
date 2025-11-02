@@ -97,6 +97,9 @@ describe('useResetStores', () => {
     rerender(<TestWrapper someProp={2} />);
 
     // Wait for the useEffect to run again and potentially update capturedResetStores
+    // Note: We intentionally use waitFor here to await a hook effect (not DOM changes).
+    // There is no accessible DOM indicator for this state change, so replacing with
+    // findBy* queries is not applicable per our testing guidelines.
     await waitFor(() => {
       // Assert that the captured reference is still the same (stable)
       expect(capturedResetStores).toBe(firstCaptured);
