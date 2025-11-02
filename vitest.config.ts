@@ -8,8 +8,10 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
-      reporter: ['text'],
+      reporter: ['text', 'html'],
       reportsDirectory: 'coverage',
+      all: true,
+      include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'node_modules/',
         'test/',
@@ -22,11 +24,24 @@ export default defineConfig({
         '**/*.config.js',
         'vite.config.*',
         'vitest.config.*',
+        // Exclude all type-only modules
+        'src/**/types.ts',
         'src/**/*.types.ts',
+        // Exclude all models folders
+        'src/models/**',
+        // Exclude test utilities
+        'src/testUtils/**',
         'src/main.tsx',
         'src/i18n.ts',
         '**/*.d.ts',
       ],
+      thresholds: {
+        perFile: true,
+        lines: 90,
+        functions: 90,
+        branches: 90,
+        statements: 90,
+      },
     },
   },
   resolve: {

@@ -54,8 +54,6 @@ describe('GoogleLoginButton', () => {
   });
 
   describe('i18N behavior', () => {
-    it.todo('loads translations from the i18n provider', async () => {});
-
     it('translates the button text in English', async () => {
       render(<GoogleLoginButton />);
 

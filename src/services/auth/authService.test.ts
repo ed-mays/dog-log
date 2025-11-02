@@ -90,6 +90,11 @@ describe('authService', () => {
       expect(mockGetById).toHaveBeenCalledWith('u1');
       expect(mockCreate).not.toHaveBeenCalled();
     });
+
+    it('throws when Firebase returns no user in the popup result', async () => {
+      signInWithPopupMock.mockResolvedValueOnce({ user: null });
+      await expect(signInWithGoogle()).rejects.toThrow(/no user returned/i);
+    });
   });
 
   it('signInWithGoogle rethrows errors', async () => {
@@ -103,6 +108,12 @@ describe('authService', () => {
   it('signOut calls Firebase signOut', async () => {
     await signOut();
     expect(signOutMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('signOut rethrows when Firebase signOut fails', async () => {
+    const err = new Error('network down');
+    signOutMock.mockRejectedValueOnce(err);
+    await expect(signOut()).rejects.toBe(err);
   });
 
   it('subscribeToAuth forwards mapped user and returns unsubscribe', () => {

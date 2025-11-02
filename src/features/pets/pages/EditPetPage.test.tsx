@@ -272,4 +272,43 @@ describe('EditPetPage', () => {
 
     expect(navSpy).not.toHaveBeenCalled();
   });
+  it('shows error message when update fails and stops saving', async () => {
+    const statePets = [makePet()];
+    const actions = {
+      updatePet: vi.fn(async () => {
+        throw new Error('update failed');
+      }),
+    };
+    mockUsePetsStore.mockImplementation((selector) =>
+      selector({ pets: statePets, ...actions })
+    );
+
+    const navSpy = vi.fn();
+    vi.doMock('react-router-dom', async (importOriginal) => {
+      const mod: never = await importOriginal();
+      return {
+        ...mod,
+        useParams: () => ({ id: '1' }),
+        useNavigate: () => navSpy,
+      };
+    });
+
+    const { default: EditPetPage } = await import('./EditPetPage');
+    const user = userEvent.setup();
+    render(<EditPetPage />);
+
+    const nameInput = await screen.findByLabelText(/name/i);
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Buddy');
+
+    await user.click(screen.getByRole('button', { name: /ok/i }));
+
+    // error alert should appear; saving indicator should not remain visible
+    const err = await screen.findByTestId('edit-pet-error');
+    expect(err).toHaveTextContent(/update/i);
+    expect(screen.queryByTestId('edit-pet-saving')).not.toBeInTheDocument();
+
+    // no navigation happened on failure
+    expect(navSpy).not.toHaveBeenCalled();
+  });
 });
