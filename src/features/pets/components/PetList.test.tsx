@@ -3,7 +3,8 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
-} from '@testing-library/react'; // Import screen, waitFor, and waitForElementToBeRemoved directly
+  within,
+} from '@testing-library/react'; // Import screen, waitFor, waitForElementToBeRemoved, and within directly
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '../types';
 import { makePet } from '@testUtils/factories/makePet';
@@ -83,7 +84,7 @@ describe('PetList integration', () => {
     expect(navigateMock).toHaveBeenCalledWith('/pets/1/edit');
   });
 
-  test('opens delete confirm, decline closes without action, confirm deletes and closes', async () => {
+  test('opens delete confirm with correct a11y, decline closes without action, confirm deletes and closes', async () => {
     const { storeActions } = await setup();
 
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
@@ -91,12 +92,19 @@ describe('PetList integration', () => {
 
     const confirmDialog = await screen.findByRole('dialog');
     expect(confirmDialog).toBeInTheDocument();
+    expect(confirmDialog).toHaveAttribute('aria-modal', 'true');
 
-    // Decline first
+    // Accessible name provided via heading text content
+    expect(screen.getByRole('heading')).toBeInTheDocument();
+
+    // Initial focus should be on the "No" button per modal behavior
     const noBtn = screen.getByRole('button', { name: /no/i });
-    await user.click(noBtn);
+    expect(noBtn).toHaveFocus();
 
-    // Dialog appears and clicking No should close it immediately or very quickly
+    // Decline first by keyboard (Enter)
+    await user.keyboard('{Enter}');
+
+    // Dialog appears and pressing Enter on focused No should close it immediately or soon
     // Guard: if it's still present, wait for removal; otherwise assert end-state.
     const maybeDialog = screen.queryByRole('dialog');
     if (maybeDialog) {
@@ -107,10 +115,15 @@ describe('PetList integration', () => {
 
     expect(storeActions.deletePet).not.toHaveBeenCalled();
 
-    // Open again and confirm
+    // Open again and confirm via Space key on Yes
     await user.click(deleteBtn);
-    const yesBtn = screen.getByRole('button', { name: /yes/i });
-    await user.click(yesBtn);
+    const dialog2 = await screen.findByRole('dialog');
+    // Move focus to Yes and activate with Space; re-query within the current dialog
+    const { getByRole: getByRoleInDialog2 } = within(dialog2);
+    const yesBtn2 = getByRoleInDialog2('button', { name: /yes/i });
+    await user.tab();
+    expect(yesBtn2).toHaveFocus();
+    await user.keyboard(' ');
 
     // Guard for synchronous/asynchronous removal
     const maybeDialog2 = screen.queryByRole('dialog');
@@ -128,6 +141,22 @@ describe('PetList integration', () => {
     });
 
     expect(storeActions.deletePet).toHaveBeenCalledWith('1');
+  });
+
+  test('Escape closes the delete confirm without deleting', async () => {
+    const { storeActions } = await setup();
+
+    await user.click(await screen.findByRole('button', { name: /delete/i }));
+
+    await screen.findByRole('dialog');
+    await user.keyboard('{Escape}');
+
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    }
+
+    expect(storeActions.deletePet).not.toHaveBeenCalled();
   });
 
   test('shows error and keeps confirm open on delete failure', async () => {

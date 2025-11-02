@@ -34,8 +34,12 @@ describe('PetForm', () => {
     renderForm(initialPet);
     expect(await screen.findByLabelText('Name')).toBeInTheDocument();
     expect(await screen.findByLabelText('Breed')).toBeInTheDocument();
-    expect(await screen.findByText('OK')).toBeInTheDocument();
-    expect(await screen.findByText('Cancel')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: 'OK' })
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: 'Cancel' })
+    ).toBeInTheDocument();
   });
 
   it('renders the correct (Spanish) labels and buttons', async () => {
@@ -43,9 +47,21 @@ describe('PetForm', () => {
       renderForm(initialPet);
       expect(await screen.findByLabelText('Nombre')).toBeInTheDocument();
       expect(await screen.findByLabelText('Raza')).toBeInTheDocument();
-      expect(await screen.findByText('Aceptar')).toBeInTheDocument();
-      expect(await screen.findByText('Cancelar')).toBeInTheDocument();
+      expect(
+        await screen.findByRole('button', { name: 'Aceptar' })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByRole('button', { name: 'Cancelar' })
+      ).toBeInTheDocument();
     });
+  });
+
+  it('marks inputs as required and associates labels correctly', async () => {
+    renderForm();
+    const nameInput = await screen.findByLabelText(/name/i);
+    const breedInput = await screen.findByLabelText(/breed/i);
+    expect(nameInput).toBeRequired();
+    expect(breedInput).toBeRequired();
   });
 
   it('disables OK when form is invalid', async () => {
@@ -62,7 +78,19 @@ describe('PetForm', () => {
     expect(okButton).toBeEnabled();
   });
 
-  it('calls onSubmit with pet data and disables on invalid', async () => {
+  it('submits with Enter key from an input when valid', async () => {
+    renderForm();
+    const nameInput = await screen.findByLabelText(/name/i);
+    const breedInput = await screen.findByLabelText(/breed/i);
+    await userEvent.type(nameInput, 'Rex');
+    await userEvent.type(breedInput, 'Lab');
+
+    // Press Enter while focused in input should submit the form
+    await userEvent.keyboard('{Enter}');
+    expect(onSubmit).toHaveBeenCalledWith({ name: 'Rex', breed: 'Lab' });
+  });
+
+  it('calls onSubmit with pet data when clicking OK', async () => {
     renderForm();
     await userEvent.type(await screen.findByLabelText(/name/i), 'Rex');
     await userEvent.type(await screen.findByLabelText(/breed/i), 'Lab');
@@ -71,11 +99,17 @@ describe('PetForm', () => {
     expect(onSubmit).toHaveBeenCalledWith({ name: 'Rex', breed: 'Lab' });
   });
 
-  it('calls onCancel when Cancel is clicked', async () => {
+  it('calls onCancel when Cancel is clicked or activated via keyboard', async () => {
     renderForm();
     const cancelButton = await screen.findByRole('button', { name: /cancel/i });
     await userEvent.click(cancelButton);
-    expect(onCancel).toHaveBeenCalled();
+    expect(onCancel).toHaveBeenCalledTimes(1);
+
+    // Focus and activate via keyboard
+    cancelButton.focus();
+    await userEvent.keyboard('{Enter}');
+    await userEvent.keyboard(' ');
+    expect(onCancel).toHaveBeenCalledTimes(3);
   });
 
   it('calls onDirtyChange(true) when form is modified, onDirtyChange(false) when reverted', async () => {
