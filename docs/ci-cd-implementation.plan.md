@@ -13,10 +13,10 @@
 
 Create two Firebase projects (region defaults are fine on Spark):
 
-- dev: `dog-log-dev` (for PR preview channels)
-- staging: `dog-log-staging` (for merges to `main`)
+- -[x] dev: `dog-log-dev` (for PR preview channels)
+- -[x] staging: `dog-log-staging` (for merges to `main`)
 
-Steps (do once):
+  -[x] Steps (do once):
 
 1. In the Firebase Console → Add project → name `dog-log-dev` → continue with defaults → Create.
 2. Repeat for `dog-log-staging`.
@@ -36,7 +36,7 @@ Notes
 
 You’ll need these two files in your repo to deploy from CI and locally.
 
-Example `firebase.json` (SPA-friendly):
+- [x] Example `firebase.json` (SPA-friendly):
 
 ```json
 {
@@ -73,7 +73,7 @@ Example `firebase.json` (SPA-friendly):
 }
 ```
 
-Example `.firebaserc` mapping local aliases to projects:
+- [x] Example `.firebaserc` mapping local aliases to projects:
 
 ```json
 {

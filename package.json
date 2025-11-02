@@ -19,7 +19,9 @@
     "test:coverage": "npm run test:unit -- --coverage",
     "test:watch": "vitest --exclude '**/*.integration.test.tsx'",
     "start:firebase": "firebase emulators:start",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy:dev": "firebase use dev && firebase deploy --only hosting",
+    "deploy:staging": "firebase use staging && firebase deploy --only hosting"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
