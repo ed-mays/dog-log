@@ -1,84 +1,46 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
-import AddPetPage from './AddPetPage';
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { render } from '@test-utils';
 import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
-import { usePetsStore } from '@store/pets.store';
 
-vi.mock('@store/pets.store', () => ({
-  usePetsStore: vi.fn(),
-}));
+// ADR-019 Per-Test Variation Pattern
+// - We use vi.resetModules() in beforeEach and set up vi.doMock(...) for
+//   dependencies before dynamically importing the component under test.
+// - No top-level import of AddPetPage or the real store module.
 
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<{ [key: string]: unknown }>();
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
-
-/*const testBirthDate = new Date('2023-01-01T00:00:00.000Z');
-const testPet = {
-  name: 'Rover',
-  breed: 'Hound',
-  birthDate: testBirthDate,
-} as Pet;*/
-
-/*vi.mock('@features/petManagement/components/PetForm', async () => ({
-  PetForm: (props: {
-    onSubmit: (pet: Pet) => void;
-    onCancel: () => void;
-    onDirtyChange?: (dirty: boolean) => void;
-  }) => (
-    <div>
-      <button
-        onClick={() => {
-          props.onDirtyChange?.(true);
-          props.onSubmit({
-            name: 'Rover',
-            breed: 'Hound',
-            birthDate: testBirthDate,
-          } as Pet);
-        }}
-      >
-        OK
-      </button>
-      <button
-        onClick={() => {
-          props.onDirtyChange?.(true);
-          props.onCancel();
-        }}
-      >
-        Cancel
-      </button>
-      <button onClick={() => props.onDirtyChange?.(true)}>Dirty</button>
-    </div>
-  ),
-}));*/
-
-/*vi.mock('@components/common/ConfirmModal/ConfirmModal', async () => ({
-  ConfirmModal: (props: { onAccept: () => void; onDecline: () => void }) => (
-    <div>
-      <button onClick={props.onAccept}>Accept</button>
-      <button onClick={props.onDecline}>Decline</button>
-    </div>
-  ),
-}));*/
-
-describe('AddPetPage', async () => {
+describe('AddPetPage', () => {
   let petsMock: ReturnType<typeof createPetsStoreMock>;
+  let mockNavigate: ReturnType<typeof vi.fn>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    vi.resetModules();
+
+    // Prepare store mock instance for this test run
     petsMock = createPetsStoreMock();
-    (usePetsStore as vi.Mock).mockImplementation(
-      petsMock.impl as unknown as typeof usePetsStore
-    );
+
+    // Mock the pets store for this module load
+    vi.doMock('@store/pets.store', () => ({
+      // Expose the mocked hook implementation; unknown avoids explicit any
+      usePetsStore: petsMock.impl as unknown,
+    }));
+
+    // Mock react-router's useNavigate for this module load
+    mockNavigate = vi.fn();
+    vi.doMock('react-router-dom', async (importOriginal) => {
+      const actual = await importOriginal<{ [key: string]: unknown }>();
+      return {
+        ...actual,
+        useNavigate: () => mockNavigate,
+      };
+    });
   });
 
   it('renders the PetForm', async () => {
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
+
     render(<AddPetPage />);
     expect(await screen.findByText('OK')).toBeInTheDocument();
     expect(await screen.findByText('Cancel')).toBeInTheDocument();
@@ -86,6 +48,8 @@ describe('AddPetPage', async () => {
 
   // TODO: Fix this test
   // it('submits form, adds pet to store, navigates to /pets', async () => {
+  //   const module = await import('./AddPetPage');
+  //   const AddPetPage = module.default;
   //   render(<AddPetPage />);
   //
   //   const nameInput = await screen.findByLabelText('Name');
@@ -109,8 +73,9 @@ describe('AddPetPage', async () => {
   // });
 
   // TODO: Fix this test
-  //
   // it('shows modal when cancel is clicked if dirty, then accepts and navigates', async () => {
+  //   const module = await import('./AddPetPage');
+  //   const AddPetPage = module.default;
   //   render(<AddPetPage />);
   //   fireEvent.click(await screen.findByText('Cancel'));
   //   expect(await screen.findByText('OK')).toBeInTheDocument();
@@ -118,11 +83,12 @@ describe('AddPetPage', async () => {
   //   fireEvent.click(await screen.findByText('OK'));
   //   expect(mockNavigate).toHaveBeenCalledWith('/pets');
   // });
-  //
+
   // TODO: Fix this test
   // it('shows modal on cancel if dirty, declines and stays on page', async () => {
+  //   const module = await import('./AddPetPage');
+  //   const AddPetPage = module.default;
   //   render(<AddPetPage />);
-  //
   //   const nameInput = await screen.findByLabelText('Name');
   //   nameInput.textContent = testPet.name;
   //   fireEvent.click(await screen.findByText('Cancel'));
@@ -131,15 +97,21 @@ describe('AddPetPage', async () => {
   // });
 
   it('navigates away immediately if cancel is clicked and not dirty', async () => {
-    vi.doMock('@features/pets/components/PetForm', async () => ({
+    // Provide a per-test mock of the PetForm that only renders a Cancel button
+    vi.doMock('@features/pets/components/PetForm', () => ({
       PetForm: (props: { onCancel: () => void }) => (
         <div>
           <button onClick={props.onCancel}>Cancel</button>
         </div>
       ),
     }));
+
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
+
     const user = userEvent.setup();
     render(<AddPetPage />);
+
     await user.click(await screen.findByText('Cancel'));
     expect(mockNavigate).toHaveBeenCalledWith('/pets');
   });
