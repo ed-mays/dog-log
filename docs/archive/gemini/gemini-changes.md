@@ -15,7 +15,7 @@ The main application component, `App.tsx`, was refactored to improve modularity 
 
 - **New Files Created:**
   - **`src/components/common/PrivateRoute.tsx`:** The `PrivateRoute` component was extracted into this new file.
-  - **`src/features/petManagement/RoutePrefetcher.tsx`:** The `RoutePrefetcher` component was extracted into this new
+  - **`src/features/petManagement/RoutePrefetcher.ts`:** The `RoutePrefetcher` component was extracted into this new
     file.
   - **`src/AppRoutes.tsx`:** The `<Routes>` logic was extracted from `App.tsx` into this new component.
 
@@ -26,7 +26,7 @@ The application's Zustand state management was refactored for better organizatio
 - **`src/store/pets.store.ts`:**
   - Removed the `loading` and `error` state properties. Logic was updated to use the new UI store.
 
-- **`src/features/petManagement/RoutePrefetcher.tsx`:**
+- **`src/features/petManagement/RoutePrefetcher.ts`:**
   - Updated to use a single `usePetsStore` selector with `shallow` to prevent unnecessary re-renders.
   - Updated to get loading state from the new UI store.
 

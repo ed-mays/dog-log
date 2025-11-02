@@ -10,7 +10,7 @@ readability and maintainability.
 - **Extracted `PrivateRoute`:** The `PrivateRoute` component was moved to its own file inside
   `src/components/common/PrivateRoute.tsx`.
 - **Extracted `RoutePrefetcher`:** The `RoutePrefetcher` component was moved to its own file at
-  `src/features/petManagement/RoutePrefetcher.tsx`.
+  `src/features/petManagement/RoutePrefetcher.ts`.
 - **Extracted `AppRoutes`:** The routing logic from the main `App` component was extracted into a separate `AppRoutes`
   component in `src/AppRoutes.tsx`.
 

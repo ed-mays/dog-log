@@ -6,7 +6,7 @@ import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator
 import { useTranslation } from 'react-i18next';
 import { toErrorMessage } from '@utils/errors.ts';
 import { useAuthStore } from '@store/auth.store.ts';
-import { RoutePrefetcher } from '@features/pets/RoutePrefetcher';
+import { RoutePrefetcher } from '@features/pets/RoutePrefetcher.ts';
 import { AppRoutes } from './AppRoutes';
 import { NavigationBar } from '@components/common/NavigationBar/NavigationBar.tsx';
 import { Toolbar } from '@mui/material';
