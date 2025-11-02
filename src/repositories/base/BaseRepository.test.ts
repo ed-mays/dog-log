@@ -6,6 +6,7 @@ import {
   AdvancedQueryOptions,
   ServiceError,
 } from '@repositories/types';
+import type { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 
 vi.mock('firebase/firestore', () => {
   class MockTimestamp {
@@ -197,6 +198,7 @@ describe('ArchivableBaseRepository', () => {
 
 // Additional coverage for CRUD methods and query builder
 import {
+  collection,
   getDoc,
   getDocs,
   addDoc,
@@ -422,6 +424,137 @@ describe('BaseRepository buildAdvancedQuery operators', () => {
   });
 });
 
+describe('buildAdvancedQuery no-options and collection args', () => {
+  it('uses collection(db, userId, collectionName) and applies no extras when options empty', () => {
+    const repository = new TestRepository();
+    vi.clearAllMocks();
+    // make query return something
+    vi.mocked(query).mockReturnValue({} as never);
+
+    // Call with empty options
+    (
+      repository as unknown as {
+        buildAdvancedQuery: (
+          userId: string,
+          options: AdvancedQueryOptions
+        ) => unknown;
+      }
+    ).buildAdvancedQuery('user-42', {});
+
+    // where/orderBy/limit should not be called
+    expect(where).not.toHaveBeenCalled();
+    expect(orderBy).not.toHaveBeenCalled();
+    expect(limit).not.toHaveBeenCalled();
+
+    // collection should be called with (db, userId, collectionName)
+    expect(collection).toHaveBeenCalledWith(
+      expect.anything(),
+      'user-42',
+      'test-collection'
+    );
+  });
+});
+
+describe('mapOperator full matrix', () => {
+  it('maps neq, gte, lt, lte, in operators', () => {
+    const repository = new TestRepository();
+    vi.mocked(query).mockReturnValue({} as never);
+    (
+      repository as unknown as {
+        buildAdvancedQuery: (
+          userId: string,
+          options: AdvancedQueryOptions
+        ) => unknown;
+      }
+    ).buildAdvancedQuery('u', {
+      filters: [
+        { field: 'status', operator: 'neq', value: 'x' },
+        { field: 'score', operator: 'gte', value: 10 },
+        { field: 'age', operator: 'lt', value: 5 },
+        { field: 'height', operator: 'lte', value: 100 },
+        { field: 'tag', operator: 'in', value: ['a', 'b'] },
+      ],
+    });
+
+    expect(where).toHaveBeenNthCalledWith(1, 'status', '!=', 'x');
+    expect(where).toHaveBeenNthCalledWith(2, 'score', '>=', 10);
+    expect(where).toHaveBeenNthCalledWith(3, 'age', '<', 5);
+    expect(where).toHaveBeenNthCalledWith(4, 'height', '<=', 100);
+    expect(where).toHaveBeenNthCalledWith(5, 'tag', 'in', ['a', 'b']);
+  });
+});
+
+describe('error mapping for getById/create/delete', () => {
+  it('getById rejection maps to FIRESTORE_ERROR with context', async () => {
+    const repository = new TestRepository();
+    vi.mocked(getDoc).mockRejectedValueOnce(new Error('kaboom'));
+    await expect(repository.getById('z')).rejects.toMatchObject({
+      code: 'FIRESTORE_ERROR',
+      message: 'kaboom',
+      details: expect.objectContaining({
+        context: expect.stringContaining('getById('),
+      }),
+    });
+  });
+
+  it('create rejection maps to FIRESTORE_ERROR with context', async () => {
+    const repository = new TestRepository();
+    vi.mocked(addDoc).mockRejectedValueOnce(new Error('nope'));
+    await expect(
+      repository.create({ name: 'X', description: 'd' } as unknown as Omit<
+        TestEntity,
+        keyof BaseEntity
+      >)
+    ).rejects.toMatchObject({
+      code: 'FIRESTORE_ERROR',
+      message: 'nope',
+      details: expect.objectContaining({ context: 'create' }),
+    });
+  });
+
+  it('delete rejection maps to FIRESTORE_ERROR with context', async () => {
+    const repository = new TestRepository();
+    vi.mocked(deleteDoc).mockRejectedValueOnce(new Error('denied'));
+    await expect(repository.delete('bad')).rejects.toMatchObject({
+      code: 'FIRESTORE_ERROR',
+      message: 'denied',
+      details: expect.objectContaining({
+        context: expect.stringContaining('delete('),
+      }),
+    });
+  });
+});
+
+describe('documentToEntity array timestamp conversion', () => {
+  it('converts timestamps nested inside arrays', () => {
+    const repository = new TestRepository();
+    const mockDoc = {
+      id: 'id1',
+      data: () => ({
+        name: 'N',
+        description: 'D',
+        visits: [
+          { at: { toDate: () => new Date('2024-01-01T00:00:00Z') } },
+          { at: { toDate: () => new Date('2024-02-02T00:00:00Z') } },
+        ],
+      }),
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot;
+
+    const entity = (
+      repository as unknown as {
+        documentToEntity: (
+          doc: QueryDocumentSnapshot<DocumentData>
+        ) => TestEntity;
+      }
+    ).documentToEntity(
+      mockDoc as unknown as QueryDocumentSnapshot<DocumentData>
+    );
+    expect(Array.isArray(entity.visits)).toBe(true);
+    expect(entity.visits[0].at).toEqual(new Date('2024-01-01T00:00:00Z'));
+    expect(entity.visits[1].at).toEqual(new Date('2024-02-02T00:00:00Z'));
+  });
+});
+
 describe('handleError additional mapping', () => {
   it('maps generic Error to FIRESTORE_ERROR with original message', () => {
     const repository = new TestRepository();
@@ -433,5 +566,86 @@ describe('handleError additional mapping', () => {
     ).handleError(err, 'ctx');
     expect(mapped.code).toBe('FIRESTORE_ERROR');
     expect(mapped.message).toBe('boom');
+  });
+});
+
+// ArchivableBaseRepository additional coverage for lists
+describe('ArchivableBaseRepository lists', () => {
+  let repo: TestArchivableRepository;
+  beforeEach(() => {
+    repo = new TestArchivableRepository();
+    vi.clearAllMocks();
+  });
+
+  it('getActiveList returns mapped entities and applies orderBy/limit when provided', async () => {
+    const docA = {
+      id: 'a',
+      data: () => ({
+        name: 'A',
+        description: 'd',
+        isArchived: false,
+        createdAt: Timestamp.fromDate(new Date('2024-01-01T00:00:00Z')),
+        updatedAt: Timestamp.fromDate(new Date('2024-01-02T00:00:00Z')),
+      }),
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot;
+
+    vi.mocked(getDocs).mockResolvedValueOnce({ docs: [docA] } as never);
+
+    const items = await repo.getActiveList({ orderBy: 'name', limit: 1 });
+
+    expect(where).toHaveBeenCalledWith('isArchived', '==', false);
+    expect(orderBy).toHaveBeenCalledWith('name', 'asc');
+    expect(limit).toHaveBeenCalledWith(1);
+    expect(items[0].id).toBe('a');
+    expect(items[0].createdAt).toEqual(new Date('2024-01-01T00:00:00Z'));
+  });
+
+  it('getActiveList error path maps to FIRESTORE_ERROR', async () => {
+    vi.mocked(getDocs).mockRejectedValueOnce(new Error('active-fail'));
+    await expect(repo.getActiveList()).rejects.toMatchObject({
+      code: 'FIRESTORE_ERROR',
+      message: 'active-fail',
+      details: expect.objectContaining({ context: 'getActiveList' }),
+    });
+  });
+
+  it('getArchivedList returns mapped entities and applies orderBy/limit when provided', async () => {
+    const docB = {
+      id: 'b',
+      data: () => ({
+        name: 'B',
+        description: 'd',
+        isArchived: true,
+        createdAt: Timestamp.fromDate(new Date('2024-02-01T00:00:00Z')),
+        updatedAt: Timestamp.fromDate(new Date('2024-02-02T00:00:00Z')),
+      }),
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot;
+
+    vi.mocked(getDocs).mockResolvedValueOnce({ docs: [docB] } as never);
+
+    const items = await repo.getArchivedList({ orderBy: 'name', limit: 2 });
+
+    expect(where).toHaveBeenCalledWith('isArchived', '==', true);
+    expect(orderBy).toHaveBeenCalledWith('name', 'asc');
+    expect(limit).toHaveBeenCalledWith(2);
+    expect(items[0].id).toBe('b');
+    expect(items[0].createdAt).toEqual(new Date('2024-02-01T00:00:00Z'));
+  });
+
+  it('getArchivedList error path maps to FIRESTORE_ERROR', async () => {
+    vi.mocked(getDocs).mockRejectedValueOnce(new Error('archived-fail'));
+    await expect(repo.getArchivedList()).rejects.toMatchObject({
+      code: 'FIRESTORE_ERROR',
+      message: 'archived-fail',
+      details: expect.objectContaining({ context: 'getArchivedList' }),
+    });
+  });
+
+  it('getList delegates to getActiveList', async () => {
+    const spy = vi.spyOn(repo, 'getActiveList').mockResolvedValueOnce([]);
+    const opts = { orderBy: 'createdAt' as const };
+    const res = await repo.getList(opts);
+    expect(spy).toHaveBeenCalledWith(opts);
+    expect(res).toEqual([]);
   });
 });

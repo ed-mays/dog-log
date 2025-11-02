@@ -62,6 +62,22 @@ describe('auth.store', () => {
     expect(firstUnsub).toHaveBeenCalledTimes(1);
   });
 
+  it('initAuthListener catches errors thrown by previous unsubscribe and still re-subscribes', () => {
+    const init = useAuthStore.getState().initAuthListener;
+    // first subscription
+    init();
+    const firstUnsub = lastUnsubSpy!;
+    // make first unsubscribe throw
+    firstUnsub.mockImplementationOnce(() => {
+      throw new Error('unsubscribe failed');
+    });
+
+    // re-init should not throw, and should install a new unsubscribe
+    expect(() => init()).not.toThrow();
+    const secondUnsub = lastUnsubSpy!;
+    expect(secondUnsub).not.toBe(firstUnsub);
+  });
+
   it('initAuthListener handles error path', async () => {
     const init = useAuthStore.getState().initAuthListener;
     init();
@@ -78,6 +94,14 @@ describe('auth.store', () => {
     signInSvcMock.mockRejectedValueOnce(err);
     await expect(useAuthStore.getState().signInWithGoogle()).rejects.toBe(err);
     expect(useAuthStore.getState().error).toBe(err);
+  });
+
+  it('signInWithGoogle resolves without setting error on success', async () => {
+    signInSvcMock.mockResolvedValueOnce();
+    await expect(
+      useAuthStore.getState().signInWithGoogle()
+    ).resolves.toBeUndefined();
+    expect(useAuthStore.getState().error).toBeNull();
   });
 
   it('signOut delegates to service and keeps state until listener updates', async () => {

@@ -86,6 +86,23 @@ describe('usePetsStore', () => {
       expect(usePetsStore.getState().fetchError).toBe(err);
       expect(usePetsStore.getState().pets).toEqual(existing);
     });
+
+    it('uses fallback error when service rejects with undefined (nullish coalescing branch)', async () => {
+      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
+      usePetsStore.setState({ pets: [], isFetching: false, fetchError: null });
+      // reject with undefined to trigger the fallback new Error('Failed to load pets.')
+      mockedPetService.fetchActivePets.mockRejectedValueOnce(
+        undefined as unknown as Error
+      );
+
+      await usePetsStore.getState().fetchPets();
+
+      expect(usePetsStore.getState().isFetching).toBe(false);
+      expect(usePetsStore.getState().fetchError).toBeInstanceOf(Error);
+      expect(usePetsStore.getState().fetchError?.message).toBe(
+        'Failed to load pets.'
+      );
+    });
   });
 
   describe('updatePet', () => {
@@ -205,6 +222,23 @@ describe('usePetsStore', () => {
         newPetInput
       );
       expect(usePetsStore.getState().pets).toContainEqual(newPet);
+    });
+  });
+
+  describe('reset', () => {
+    it('restores initial state (pets=[], isFetching=false, fetchError=null)', () => {
+      // set non-initial state
+      usePetsStore.setState({
+        pets: [{ id: 'p1', name: 'X' }] as unknown as Pet[],
+        isFetching: true,
+        fetchError: new Error('x'),
+      });
+      // call reset
+      usePetsStore.getState().reset();
+      const { pets, isFetching, fetchError } = usePetsStore.getState();
+      expect(pets).toEqual([]);
+      expect(isFetching).toBe(false);
+      expect(fetchError).toBeNull();
     });
   });
 });
