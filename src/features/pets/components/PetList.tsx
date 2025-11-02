@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import styles from './PetList.module.css';
-import type { Pet } from '../types.tsx';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
+import type { Pet } from '../types.ts';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 import { Link, useNavigate } from 'react-router-dom';
 import { PetListRow } from '@features/pets/components/PetListRow.tsx';
-import { loadNamespace } from '@i18n';
+import { loadNamespace } from '../../../i18n.ts';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
-import { usePetsStore } from '@store/pets.store.tsx';
+import { usePetsStore } from '@store/pets.store.ts';
 import { IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 

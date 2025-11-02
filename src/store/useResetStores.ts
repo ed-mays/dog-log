@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { usePetsStore } from './pets.store';
-import { useAuthStore } from './auth.store';
+import { usePetsStore } from './pets.store.ts';
+import { useAuthStore } from './auth.store.ts';
 import { useUiStore } from '@store/ui.store.ts';
 
 // Import other store hooks as needed

@@ -34,5 +34,5 @@ AUTHOR: Gemini
 
 RELATED:
 
-- `src/i18n.tsx`
+- `src/i18n.ts`
 - `src/locales/`

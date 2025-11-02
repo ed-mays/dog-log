@@ -5,11 +5,12 @@ import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import '@testing-library/jest-dom';
 
 // Mock the hooks
-vi.mock('@store/auth.store');
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
+}));
 vi.mock('@featureFlags/hooks/useFeatureFlag');
 
 describe('PrivateRoute', () => {
-  const mockUseAuthStore = useAuthStore as vi.Mock;
   const mockUseFeatureFlag = useFeatureFlag as vi.Mock;
 
   beforeEach(() => {
@@ -20,7 +21,9 @@ describe('PrivateRoute', () => {
     mockUseFeatureFlag.mockReturnValue(false);
     // user state shouldn't matter
     const authStoreState = { user: null };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector(authStoreState)
+    );
 
     render(
       <PrivateRoute>
@@ -34,7 +37,9 @@ describe('PrivateRoute', () => {
   it('should render null if auth is enabled and user is not authenticated', () => {
     mockUseFeatureFlag.mockReturnValue(true);
     const authStoreState = { user: null };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector(authStoreState)
+    );
 
     const { container } = render(
       <PrivateRoute>
@@ -48,7 +53,9 @@ describe('PrivateRoute', () => {
   it('should render children if auth is enabled and user is authenticated', () => {
     mockUseFeatureFlag.mockReturnValue(true);
     const authStoreState = { user: { uid: 'test' } };
-    mockUseAuthStore.mockImplementation((selector) => selector(authStoreState));
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector(authStoreState)
+    );
 
     render(
       <PrivateRoute>

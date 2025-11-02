@@ -68,13 +68,12 @@ const testPet = {
 }));*/
 
 describe('AddPetPage', async () => {
-  const mockUsePetsStore = usePetsStore as vi.Mock;
   let petsMock: ReturnType<typeof createPetsStoreMock>;
 
   beforeEach(() => {
     vi.clearAllMocks();
     petsMock = createPetsStoreMock();
-    mockUsePetsStore.mockImplementation(
+    (usePetsStore as vi.Mock).mockImplementation(
       petsMock.impl as unknown as typeof usePetsStore
     );
   });

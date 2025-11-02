@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./vitest.setup.tsx'],
+    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text'],
@@ -22,9 +22,9 @@ export default defineConfig({
         '**/*.config.js',
         'vite.config.*',
         'vitest.config.*',
-        'src/**/*.types.tsx',
+        'src/**/*.types.ts',
         'src/main.tsx',
-        'src/i18n.tsx',
+        'src/i18n.ts',
         '**/*.d.ts',
       ],
     },
@@ -44,8 +44,8 @@ export default defineConfig({
       '@services': path.resolve(__dirname, './src/services'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@models': path.resolve(__dirname, './src/models'),
-      '@firebase': path.resolve(__dirname, './src/firebase.tsx'),
-      '@i18n': path.resolve(__dirname, './src/i18n.tsx'),
+      '@firebase': path.resolve(__dirname, './src/firebase.ts'),
+      '@i18n': path.resolve(__dirname, './src/i18n.ts'),
 
       // Convenience alias used in tests pointing to the render wrapper file
       '@test-utils': path.resolve(__dirname, './src/test-utils.tsx'),

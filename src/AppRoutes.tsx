@@ -1,10 +1,10 @@
 // src/AppRoutes.tsx
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
-import { PrivateRoute } from '@components/common/PrivateRoute';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
+import { PrivateRoute } from '@components/common/PrivateRoute.ts';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@store/auth.store';
+import { useAuthStore } from '@store/auth.store.ts';
 import { WelcomePage } from '@features/authentication/pages/WelcomePage.tsx';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
 

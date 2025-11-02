@@ -14,8 +14,8 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import type { DocumentData, WhereFilterOp } from 'firebase/firestore';
-import { db } from '@firebase';
-import { ErrorCodes } from '@repositories/types';
+import { db } from '../../firebase.ts';
+import { ErrorCodes } from '@repositories/types.ts';
 import type {
   BaseEntity,
   ArchivableEntity,
@@ -25,7 +25,7 @@ import type {
   ServiceError,
   AdvancedQueryOptions,
   FilterCriteria,
-} from '@repositories/types';
+} from '@repositories/types.ts';
 
 /**
  * Abstract base repository that provides common Firestore operations

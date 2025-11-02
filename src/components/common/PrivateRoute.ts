@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuthStore } from '@store/auth.store';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
+import { useAuthStore } from '@store/auth.store.ts';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 
 export function PrivateRoute({ children }: { children: React.ReactElement }) {
   const authEnabled = useFeatureFlag('authEnabled');

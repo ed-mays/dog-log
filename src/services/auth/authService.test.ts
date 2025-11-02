@@ -1,23 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  ensurePersistence,
-  signInWithGoogle,
-  signOut,
-  subscribeToAuth,
-} from './authService';
-import { userRepository } from '@repositories/userRepository';
-import type { User } from '@models/User';
+vi.mock('@repositories/userRepository', () => {
+  const mockGetById = vi.fn();
+  const mockCreate = vi.fn();
+  return {
+    userRepository: {
+      getById: mockGetById,
+      create: mockCreate,
+    },
+    mockGetById,
+    mockCreate,
+  };
+});
 
 vi.mock('@firebase', () => ({
   auth: {},
   db: {},
-}));
-
-vi.mock('@repositories/userRepository', () => ({
-  userRepository: {
-    getById: vi.fn(),
-    create: vi.fn(),
-  },
 }));
 
 const setPersistenceMock = vi.fn<Promise<void>, unknown[]>();
@@ -36,6 +32,16 @@ vi.mock('firebase/auth', async () => {
     onAuthStateChanged: (...args: unknown[]) => onAuthStateChangedMock(...args),
   } as unknown;
 });
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {
+  ensurePersistence,
+  signInWithGoogle,
+  signOut,
+  subscribeToAuth,
+} from './authService';
+import { mockGetById, mockCreate } from '@repositories/userRepository';
+import type { User } from '@models/User';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -61,13 +67,13 @@ describe('authService', () => {
       });
     });
     it('creates a new user if one does not exist', async () => {
-      (userRepository.getById as vi.Mock).mockResolvedValue(undefined);
+      mockGetById.mockResolvedValue(undefined);
 
       await signInWithGoogle();
       expect(signInWithPopupMock).toHaveBeenCalledTimes(1);
-      expect(userRepository.getById).toHaveBeenCalledWith('u1');
+      expect(mockGetById).toHaveBeenCalledWith('u1');
 
-      expect(userRepository.create).toHaveBeenCalledTimes(1);
+      expect(mockCreate).toHaveBeenCalledTimes(1);
     });
 
     it('does not create a user if one already exists', async () => {
@@ -77,12 +83,12 @@ describe('authService', () => {
         email: 'old@example.com',
         photoURL: 'http://y',
       };
-      (userRepository.getById as vi.Mock).mockResolvedValue(existingUser);
+      mockGetById.mockResolvedValue(existingUser);
 
       await signInWithGoogle();
 
-      expect(userRepository.getById).toHaveBeenCalledWith('u1');
-      expect(userRepository.create).not.toHaveBeenCalled();
+      expect(mockGetById).toHaveBeenCalledWith('u1');
+      expect(mockCreate).not.toHaveBeenCalled();
     });
   });
 

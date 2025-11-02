@@ -23,14 +23,14 @@
 - Path aliases configured and Vite resolves them: `tsconfig.app.json` lines 25–40; `vite.config.ts` uses
   `vite-tsconfig-paths` (line 7); `vitest.config.ts` sets `resolve.alias` (lines 33–52).
 - Firestore interactions abstracted through repositories/services:
-  - `src/repositories/base/BaseRepository.tsx` implements CRUD and converts Firestore `Timestamp` to `Date` (lines
+  - `src/repositories/base/BaseRepository.ts` implements CRUD and converts Firestore `Timestamp` to `Date` (lines
     48–86) and vice versa (lines 92–114).
-  - Services consume repositories: `src/services/petService.tsx` and `src/services/auth/authService.tsx`.
-- Zustand used for shared client state and calls services (e.g., `src/store/pets.store.tsx` lines 24–37).
+  - Services consume repositories: `src/services/petService.ts` and `src/services/auth/authService.ts`.
+- Zustand used for shared client state and calls services (e.g., `src/store/pets.store.ts` lines 24–37).
 - React Router in use with feature-first routes: `src/AppRoutes.tsx`.
-- Centralized i18n setup with namespaces: `src/i18n.tsx`.
+- Centralized i18n setup with namespaces: `src/i18n.ts`.
 - Testing stack and shared test utils in place: `vitest.config.ts` sets JSDOM and coverage (lines 6–13); shared wrapper
-  `src/test-utils.tsx`; test i18n `src/testUtils/test-i18n.tsx`.
+  `src/test-utils.tsx`; test i18n `src/testUtils/test-i18n.ts`.
 
 ---
 
@@ -51,7 +51,7 @@
 3. i18n resources are eagerly loaded; namespaces aren’t lazy-loaded
 
 - Best-practice: “Lazy-load namespaces when features/routes mount to reduce initial bundles.”
-- Evidence: `src/i18n.tsx` imports all `en` and `es` JSON files up-front (lines 4–12) and initializes with all
+- Evidence: `src/i18n.ts` imports all `en` and `es` JSON files up-front (lines 4–12) and initializes with all
   resources (lines 14–34). Also, `ns` omits `petProperties` even though it is provided in `resources` (lines 31–33 vs.
   lines 7–12, 20–27).
 
@@ -61,14 +61,14 @@
 - Evidence:
   - `src/App.tsx` uses relative path for feature flag hook: `./features/petManagement/RoutePrefetcher` (line 10) and
     `./featureFlags/useFeatureFlag` (line 2) instead of `@features/...` and `@featureFlags/...`.
-  - `src/components/common/PrivateRoute.tsx` imports `useFeatureFlag` with a relative path
+  - `src/components/common/PrivateRoute.ts` imports `useFeatureFlag` with a relative path
     `../../featureFlags/useFeatureFlag` (line 3).
 
 5. Repository layer couples to Firebase Auth directly
 
 - Best-practice: Repositories/services should have narrow, explicit interfaces; avoid cross-cutting global dependencies
   inside low-level modules when it increases coupling.
-- Evidence: `src/repositories/base/BaseRepository.tsx` reads current auth user during `create()` (lines 205–213) via
+- Evidence: `src/repositories/base/BaseRepository.ts` reads current auth user during `create()` (lines 205–213) via
   `getAuth()` (line 29) to set `createdBy`. This makes the generic repository depend on Firebase Auth and a global
   state. Many projects prefer passing `createdBy` from the caller (service/store) to keep the repository pure and
   testable.
@@ -83,7 +83,7 @@
 7. Minor i18n config inconsistency
 
 - Best-practice: Keep namespaces aligned and stable.
-- Evidence: `src/i18n.tsx` registers `petProperties` resources (lines 7–12, 20–27) but the `ns` list excludes it (line
+- Evidence: `src/i18n.ts` registers `petProperties` resources (lines 7–12, 20–27) but the `ns` list excludes it (line
   31), which can cause missing key warnings when `defaultNS` fallback is not desired.
 
 8. Duplicate alias definitions between `tsconfig.json` and `tsconfig.app.json`
@@ -201,11 +201,11 @@
 
 - Why: Reduce initial bundle; align with “lazy-load namespaces when features mount.”
 - How:
-  - Switch `src/i18n.tsx` to dynamic import of JSON per namespace/language or use `i18next-http-backend` for real files.
+  - Switch `src/i18n.ts` to dynamic import of JSON per namespace/language or use `i18next-http-backend` for real files.
     With static JSON, you can do:
 
     ```ts
-    // src/i18n.tsx
+    // src/i18n.ts
     import i18n from 'i18next';
     import { initReactI18next } from 'react-i18next';
 
@@ -241,7 +241,7 @@
   - Change relative imports to aliases:
     - `src/App.tsx` line 2: `import { useFeatureFlag } from '@featureFlags/useFeatureFlag';`
     - `src/App.tsx` line 10: `import { RoutePrefetcher } from '@features/petManagement/RoutePrefetcher';`
-    - `src/components/common/PrivateRoute.tsx` line 3: `import { useFeatureFlag } from '@featureFlags/useFeatureFlag';`
+    - `src/components/common/PrivateRoute.ts` line 3: `import { useFeatureFlag } from '@featureFlags/useFeatureFlag';`
   - Add an ESLint rule or custom lint to discourage deep relative imports when an alias exists.
 
 #### [:white_check_mark:] 5) Decouple BaseRepository from Firebase Auth
@@ -252,7 +252,7 @@
     provided by the caller).
   - Example refactor:
     ```ts
-    // BaseRepository.tsx (create)
+    // BaseRepository.ts (create)
     async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
       try {
         const now = new Date();
@@ -272,7 +272,7 @@
     ```
   - Populate `createdBy` in the service/store layer where you already have the authenticated user:
     ```ts
-    // src/store/pets.store.tsx (before calling service)
+    // src/store/pets.store.ts (before calling service)
     const newPet = await petService.addPet(user.uid, {
       ...pet,
       createdBy: user.uid,
@@ -294,7 +294,7 @@
 - How:
   - Ensure `ns` includes all base namespaces you intend to preload or remove them from preload:
     ```ts
-    // src/i18n.tsx
+    // src/i18n.ts
     ns: ['common', 'home', 'petList', 'petProperties'],
     ```
   - If adopting lazy-loading (step 3), keep `ns: ['common']` at boot and load others per feature.

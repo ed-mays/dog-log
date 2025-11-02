@@ -1,6 +1,8 @@
 ## Dog Log
 
-A modern **React** application scaffolded with **Vite** and written in **TypeScript**. It supports robust linting and testing, and leverages modular path aliases and i18n. This project uses the latest React 19+ and popular state and translation libraries.
+A modern **React** application scaffolded with **Vite** and written in **TypeScript**. It supports robust linting and
+testing, and leverages modular path aliases and i18n. This project uses the latest React 19+ and popular state and
+translation libraries.
 
 ---
 
@@ -10,8 +12,8 @@ A modern **React** application scaffolded with **Vite** and written in **TypeScr
 - **Vite** for fast development & optimized builds
 - Support for **path aliases**:
   - `@components/* → src/components/*`
-  - `@firebase → src/firebase.tsx`
-  - `@i18n → src/i18n.tsx`
+  - `@firebase → src/firebase.ts`
+  - `@i18n → src/i18n.ts`
   - `@store/* → src/store/*`
   - `@test-utils → src/test-utils.tsx`
   - `@testUtils/* → src/testUtils/*`
@@ -59,17 +61,23 @@ npm install
 ### Firebase Emulators & Auth (Local Development)
 
 1. Start Firebase emulators first in a dedicated terminal:
-   - `npm run start:firebase`
-   - Auth emulator runs on http://localhost:9099 and the Emulator UI will be available as configured in firebase.json.
+
+- `npm run start:firebase`
+- Auth emulator runs on http://localhost:9099 and the Emulator UI will be available as configured in firebase.json.
+
 2. In a second terminal, start the Vite dev server:
-   - `npm run dev`
-3. The app auto-connects to the Auth emulator when running on `localhost` (see `src/firebase.tsx`).
+
+- `npm run dev`
+
+3. The app auto-connects to the Auth emulator when running on `localhost` (see `src/firebase.ts`).
 4. For test users, use the Emulator UI to create accounts. Do not use real accounts in local testing.
 
 Notes:
 
-- Ensure `.env.local` has your Firebase client config. These are client-side keys and not secrets, but treat them as credentials for your project configuration.
-- Never commit real production credentials. If any key leaks, rotate/regenerate from the Firebase Console, update `.env.local`, and redeploy.
+- Ensure `.env.local` has your Firebase client config. These are client-side keys and not secrets, but treat them as
+  credentials for your project configuration.
+- Never commit real production credentials. If any key leaks, rotate/regenerate from the Firebase Console, update
+  `.env.local`, and redeploy.
 
 ---
 
@@ -101,7 +109,7 @@ Notes:
 - **i18next** & **react-i18next** with namespaced translations: `common`, `home`, `petList`, `petProperties`.
 - Default language from Vite env: `VITE_DEFAULT_LOCALE` (fallback: `en`).
 - In components: `const { t } = useTranslation('<namespace>');` and `t('key')`.
-- Shared test i18n lives at `src/testUtils/test-i18n.tsx` and is wired through the test render wrapper.
+- Shared test i18n lives at `src/testUtils/test-i18n.ts` and is wired through the test render wrapper.
 
 ---
 
@@ -122,8 +130,8 @@ Notes:
 - Configured in `tsconfig.app.json` (moduleResolution: "bundler").
 - Aliases:
   - `@components/*` → `src/components/*`
-  - `@firebase` → `src/firebase.tsx`
-  - `@i18n` → `src/i18n.tsx`
+  - `@firebase` → `src/firebase.ts`
+  - `@i18n` → `src/i18n.ts`
   - `@store/*` → `src/store/*`
   - `@test-utils` → `src/test-utils.tsx`
   - `@testUtils/*` → `src/testUtils/*`
@@ -139,7 +147,8 @@ Notes:
 
 ### Error Handling
 
-- A top-level `ErrorBoundary` (localized) wraps the app. Customize fallback via `fallbackText` prop; default text comes from the `common` namespace.
+- A top-level `ErrorBoundary` (localized) wraps the app. Customize fallback via `fallbackText` prop; default text comes
+  from the `common` namespace.
 
 ---
 

@@ -1,15 +1,18 @@
 import React from 'react';
-import { render, screen, waitFor } from '@test-utils';
+import { screen, waitFor } from '@testing-library/react'; // Import screen and waitFor directly
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '../types';
 import { makePet } from '@testUtils/factories/makePet';
 import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
+import { vi } from 'vitest';
 
+// Mock the module at the top level
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
 
-const { usePetsStore } = await import('@store/pets.store');
+let mockUsePetsStore: vi.Mock;
+let renderTestUtils: typeof import('@test-utils').render; // Declare type for render
 
 const navigateMock = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -20,22 +23,31 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-afterEach(() => {
-  vi.clearAllMocks();
-});
-
 describe('PetList integration', () => {
   const user = userEvent.setup();
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.resetModules(); // Reset modules to ensure fresh mocks
+
+    // Dynamically import the mocked module after resetModules
+    const petsStoreModule = await import('@store/pets.store');
+    mockUsePetsStore = petsStoreModule.usePetsStore as vi.Mock;
+
+    // Dynamically import render from @test-utils after resetModules
+    const testUtilsModule = await import('@test-utils');
+    renderTestUtils = testUtilsModule.render;
+  });
 
   async function setup(
     flags: { petActionsEnabled?: boolean; addPetEnabled?: boolean } = {},
     initialPets: Pet[] = [makePet({ id: '1' })]
   ) {
     const petsMock = createPetsStoreMock({ pets: initialPets });
-    (usePetsStore as unknown as vi.Mock).mockImplementation(petsMock.impl);
+    mockUsePetsStore.mockImplementation(petsMock.impl);
 
     const { PetList } = await import('./PetList');
-    render(<PetList />, {
+    renderTestUtils(<PetList />, {
       featureFlags: {
         addPetEnabled: true,
         petActionsEnabled: true,

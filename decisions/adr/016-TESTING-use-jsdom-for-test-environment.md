@@ -36,4 +36,4 @@ AUTHOR: Gemini
 RELATED:
 
 - `vitest.config.ts`
-- `vitest.setup.tsx`
+- `vitest.setup.ts`

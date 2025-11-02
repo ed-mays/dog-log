@@ -11,7 +11,7 @@ documentation. Check each box as you complete it.
 
 2. [x] Validate environment variables for Firebase
 
-- [x] Ensure .env/.env.local include VITE\_ Firebase keys used in src/firebase.tsx
+- [x] Ensure .env/.env.local include VITE\_ Firebase keys used in src/firebase.ts
 - [x] Add a README note about not committing secrets and how to rotate/regenerate keys if leaked
 - [x] Confirm measurementId is optional and handled defensively in code
 
@@ -26,10 +26,10 @@ documentation. Check each box as you complete it.
 
 4. [x] Implement Firebase auth provider wiring
 
-- [x] Create `src/services/auth/authService.tsx` to encapsulate Google provider, sign-in, sign-out, and
+- [x] Create `src/services/auth/authService.ts` to encapsulate Google provider, sign-in, sign-out, and
       onAuthStateChanged subscription
 - [x] Use `GoogleAuthProvider` and `setPersistence(auth, browserLocalPersistence)` to persist sessions across reloads
-- [x] Ensure emulator connection is respected (already supported via src/firebase.tsx)
+- [x] Ensure emulator connection is respected (already supported via src/firebase.ts)
 - [ ] Implement appropriate unit tests for auth service and provider
 
 5.
@@ -37,7 +37,7 @@ documentation. Check each box as you complete it.
 
 - [ ] If using Context: `src/features/authentication/AuthProvider.tsx` that subscribes to onAuthStateChanged and
       exposes user/loading/error
-- [x] If using Zustand: `src/store/auth.store.tsx` with user, initializing, error, actions: initAuthListener(),
+- [x] If using Zustand: `src/store/auth.store.ts` with user, initializing, error, actions: initAuthListener(),
       signInWithGoogle(), signOut()
 - [x] Export typed User shape derived from Firebase `User` with a minimal app-facing model (uid, displayName, email,
       photoURL)

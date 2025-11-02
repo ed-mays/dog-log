@@ -1,4 +1,4 @@
-// src/repositories/config.tsx
+// src/repositories/config.ts
 
 /**
  * Centralized repository configuration and constants.

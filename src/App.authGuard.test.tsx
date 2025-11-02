@@ -8,25 +8,29 @@ import { usePetsStore } from '@store/pets.store';
 vi.mock('@features/authentication/AuthBootstrap', () => ({
   default: () => null,
 }));
-vi.mock('@store/auth.store');
-vi.mock('@store/pets.store');
+
+// Explicitly mock useAuthStore and usePetsStore as vi.fn()
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
+}));
+vi.mock('@store/pets.store', () => ({
+  usePetsStore: vi.fn(),
+}));
 
 describe('App auth route protection', () => {
-  const mockUseAuthStore = useAuthStore as vi.Mock;
-  const mockUsePetsStore = usePetsStore as vi.Mock;
-
   beforeEach(() => {
     vi.resetAllMocks();
+
     // Prevent pet pre-fetcher from looping
     const petsState = { pets: [{ id: '1' }] };
-    mockUsePetsStore.mockImplementation((selector) =>
+    vi.mocked(usePetsStore).mockImplementation((selector) =>
       selector ? selector(petsState) : petsState
     );
   });
 
   it('redirects unauthenticated users to /welcome for /pets', async () => {
     const authStoreState = { user: null, initializing: false };
-    mockUseAuthStore.mockImplementation((selector) =>
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
       selector ? selector(authStoreState) : authStoreState
     );
 
@@ -41,7 +45,7 @@ describe('App auth route protection', () => {
 
   it('allows authenticated users to access /pets', async () => {
     const authStoreState = { user: { uid: '1' }, initializing: false };
-    mockUseAuthStore.mockImplementation((selector) =>
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
       selector ? selector(authStoreState) : authStoreState
     );
 

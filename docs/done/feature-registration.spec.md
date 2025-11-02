@@ -53,7 +53,7 @@ are required.
   - Is disabled and shows a busy state while the authentication process is `initializing`.
   - Handles and displays localized text from the `common` i18n namespace.
 
-- **/src/components/common/PrivateRoute.tsx**: This route guard is critical for the flow. It will:
+- **/src/components/common/PrivateRoute.ts**: This route guard is critical for the flow. It will:
   - Check the `authEnabled` feature flag.
   - Check the `initializing` and `user` state from the `auth.store`.
   - Render a `LoadingIndicator` while the initial auth state is being determined.
@@ -62,7 +62,7 @@ are required.
 
 #### 3.2 State Management (Zustand)
 
-- **/src/store/auth.store.tsx**: This store remains the single source of truth for authentication state.
+- **/src/store/auth.store.ts**: This store remains the single source of truth for authentication state.
   - `user: AppUser | null`: Holds the currently authenticated user's data.
   - `initializing: boolean`: Tracks the initial `onAuthStateChanged` listener status.
   - `signInWithGoogle: () => Promise<void>`: The action that UI components will call. It delegates the call to the
@@ -72,7 +72,7 @@ are required.
 
 #### 3.3 Service Layer (Abstraction)
 
-- **/src/services/auth/authService.tsx**: This module correctly abstracts all Firebase Auth interactions, as per the
+- **/src/services/auth/authService.ts**: This module correctly abstracts all Firebase Auth interactions, as per the
   developer guidelines.
   - **`signInWithGoogle()`**: This function will orchestrate the sign-in process by:
     1. Calling `ensurePersistence()` to set `browserLocalPersistence`.
@@ -97,7 +97,7 @@ are required.
 
 The existing testing patterns will be maintained:
 
-- **Unit Tests (`authService.test.tsx`, `auth.store.test.tsx`):** Firebase Auth will be completely mocked to test the
+- **Unit Tests (`authService.test.ts`, `auth.store.test.ts`):** Firebase Auth will be completely mocked to test the
   service layer and store logic in isolation.
 - **Component Tests (`GoogleLoginButton.test.tsx`, `WelcomePage.test.tsx`):** The `auth.store` will be mocked to
   simulate different states (e.g., `initializing`, `user: null`, `user: AppUser`) and verify the UI renders correctly.

@@ -1,5 +1,5 @@
-import { useFeatureFlagsContext } from './useFeatureFlagsContext.tsx';
-import type { FeatureFlag } from '../types.tsx';
+import { useFeatureFlagsContext } from './useFeatureFlagsContext.ts';
+import type { FeatureFlag } from '../types.ts';
 
 // Typed hook for easy access in components
 export function useFeatureFlag(flag: FeatureFlag): boolean {

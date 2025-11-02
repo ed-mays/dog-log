@@ -1,96 +1,105 @@
 import React, { useEffect } from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, cleanup } from '@test-utils';
-import { useResetStores } from './useResetStores';
-import { usePetsStore } from './pets.store';
-import { useAuthStore } from './auth.store';
-import { useUiStore } from '@store/ui.store';
+import { render, cleanup, waitFor } from '@test-utils';
 
-function Harness({ onReady }: { onReady: (fn: () => void) => void }) {
-  const resetStores = useResetStores();
-  useEffect(() => {
-    onReady(resetStores);
-  }, [onReady, resetStores]);
-  return null;
+// Declare spies globally, but don't initialize them here
+// They will be initialized in beforeEach
+let petsResetSpy: vi.Mock;
+let authResetSpy: vi.Mock;
+let uiResetSpy: vi.Mock;
+
+// Helper function to create a mock Zustand store object
+// Defined as a function to avoid hoisting issues
+function createMockZustandStore(resetSpy: vi.Mock) {
+  return {
+    getState: () => ({ reset: resetSpy }),
+    setState: vi.fn(),
+    subscribe: vi.fn(),
+    destroy: vi.fn(),
+  };
 }
 
-// Keep originals to restore after tests
-let originalPetsReset: () => void;
-let originalAuthReset: () => void;
-let originalUiReset: () => void;
-
-beforeEach(() => {
-  cleanup();
-  // Capture original reset functions
-  originalPetsReset = usePetsStore.getState().reset;
-  originalAuthReset = useAuthStore.getState().reset;
-  originalUiReset = useUiStore.getState().reset;
-});
-
-afterEach(() => {
-  // Restore originals
-  usePetsStore.setState((s) => ({ ...s, reset: originalPetsReset }));
-  useAuthStore.setState((s) => ({ ...s, reset: originalAuthReset }));
-  useUiStore.setState((s) => ({ ...s, reset: originalUiReset }));
-  vi.restoreAllMocks();
-  cleanup();
-});
-
 describe('useResetStores', () => {
-  it('calls reset on pets, auth, and ui stores', () => {
-    const petsReset = vi.fn();
-    const authReset = vi.fn();
-    const uiReset = vi.fn();
+  // Declare a variable to hold the dynamically imported useResetStores hook
+  let useResetStoresActualHook: () => () => void;
 
-    // Swap in our mock reset functions on each store
-    usePetsStore.setState((s) => ({ ...s, reset: petsReset }));
-    useAuthStore.setState((s) => ({ ...s, reset: authReset }));
-    useUiStore.setState((s) => ({ ...s, reset: uiReset }));
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    vi.resetModules(); // Ensure a clean slate for module imports
 
-    let callback: (() => void) | null = null;
+    // Initialize spies for the current test run
+    petsResetSpy = vi.fn();
+    authResetSpy = vi.fn();
+    uiResetSpy = vi.fn();
 
-    render(<Harness onReady={(fn) => (callback = fn)} />);
+    // Use vi.doMock to mock the store modules dynamically within beforeEach
+    // The factory function must return an object with the named export.
+    vi.doMock('./pets.store', () => ({
+      usePetsStore: createMockZustandStore(petsResetSpy),
+    }));
+    vi.doMock('./auth.store', () => ({
+      useAuthStore: createMockZustandStore(authResetSpy),
+    }));
+    vi.doMock('@store/ui.store', () => ({
+      useUiStore: createMockZustandStore(uiResetSpy),
+    }));
 
-    expect(callback).toBeInstanceOf(Function);
-    // Invoke the reset function returned by the hook
-    callback();
-    expect(petsReset).toHaveBeenCalledTimes(1);
-    expect(authReset).toHaveBeenCalledTimes(1);
-    expect(uiReset).toHaveBeenCalledTimes(1);
+    // Dynamically import useResetStores *after* mocks are set up
+    // This ensures useResetStores gets the mocked versions of the stores
+    const module = await import('./useResetStores');
+    useResetStoresActualHook = module.useResetStores;
   });
 
-  it('returns a stable callback reference across re-renders', () => {
-    const firstReset = vi.fn();
-    const secondReset = vi.fn();
-    const thirdReset = vi.fn();
-    // Even if underlying store reset references change, the hook result should be stable
-    usePetsStore.setState((s) => ({ ...s, reset: firstReset }));
-    useAuthStore.setState((s) => ({ ...s, reset: secondReset }));
-    useUiStore.setState((s) => ({ ...s, reset: thirdReset }));
+  afterEach(() => {
+    cleanup();
+  });
 
-    let first: (() => void) | null = null;
-    let second: (() => void) | null = null;
+  it('calls reset on pets, auth, and ui stores', () => {
+    let callback: (() => void) | null = null;
 
-    const { rerender } = render(
-      <Harness
-        onReady={(fn) => {
-          first = fn;
-        }}
-      />
-    );
+    // Render a wrapper component that calls the hook
+    const TestWrapper = () => {
+      const resetStores = useResetStoresActualHook();
+      useEffect(() => {
+        callback = resetStores;
+      }, [resetStores]);
+      return null;
+    };
 
-    // Force a re-render with a new onReady instance
-    rerender(
-      <Harness
-        onReady={(fn) => {
-          second = fn;
-        }}
-      />
-    );
+    render(<TestWrapper />);
 
-    expect(first).toBeInstanceOf(Function);
-    expect(second).toBeInstanceOf(Function);
-    // useCallback with [] should keep the same reference
-    expect(second).toBe(first);
+    expect(callback).toBeInstanceOf(Function);
+    callback!(); // Invoke the reset function returned by the hook
+
+    expect(petsResetSpy).toHaveBeenCalledTimes(1);
+    expect(authResetSpy).toHaveBeenCalledTimes(1);
+    expect(uiResetSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns a stable callback reference across re-renders', async () => {
+    let capturedResetStores: (() => void) | null = null;
+
+    const TestWrapper = ({ someProp }: { someProp: number }) => {
+      const resetStores = useResetStoresActualHook();
+      useEffect(() => {
+        capturedResetStores = resetStores;
+      }, [resetStores, someProp]); // Add someProp to dependencies to force useEffect on rerender
+      return null;
+    };
+
+    const { rerender } = render(<TestWrapper someProp={1} />);
+
+    // After initial render, capturedResetStores should be set
+    expect(capturedResetStores).toBeInstanceOf(Function);
+    const firstCaptured = capturedResetStores;
+
+    // Force a re-render with a different prop to ensure the component updates
+    rerender(<TestWrapper someProp={2} />);
+
+    // Wait for the useEffect to run again and potentially update capturedResetStores
+    await waitFor(() => {
+      // Assert that the captured reference is still the same (stable)
+      expect(capturedResetStores).toBe(firstCaptured);
+    });
   });
 });

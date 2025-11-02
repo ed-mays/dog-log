@@ -4,7 +4,9 @@ import { usePetsStore } from '@store/pets.store';
 import { useUiStore } from '@store/ui.store';
 import { vi } from 'vitest';
 
-vi.mock('@store/pets.store');
+vi.mock('@store/pets.store', () => ({
+  usePetsStore: vi.fn(),
+}));
 vi.mock('@store/ui.store');
 
 describe('RoutePrefetcher', () => {

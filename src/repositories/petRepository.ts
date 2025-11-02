@@ -1,10 +1,10 @@
-import { ArchivableBaseRepository } from './base/BaseRepository';
+import { ArchivableBaseRepository } from './base/BaseRepository.ts';
 import type {
   Pet,
   PetCreateInput,
   PetQueryOptions,
   PetUpdateInput,
-} from '@features/pets/types';
+} from '@features/pets/types.ts';
 
 export class PetRepository extends ArchivableBaseRepository<Pet> {
   private readonly userId: string;

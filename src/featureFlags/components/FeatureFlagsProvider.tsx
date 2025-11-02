@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { FeatureFlagsContext } from './FeatureFlagsContext.tsx';
-import type { FeatureFlags } from '../types.tsx';
-import { defaultFeatureFlags } from '../config.tsx';
+import { FeatureFlagsContext } from './FeatureFlagsContext';
+import type { FeatureFlags } from '../types.ts';
+import { defaultFeatureFlags } from '../config.ts';
 
 type Props = {
   children: React.ReactNode;

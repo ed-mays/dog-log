@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import formStyles from '@styles/FormStyles.module.css';
-import type { Pet } from '../types.tsx';
-import { loadNamespace } from '@i18n';
+import type { Pet } from '../types.ts';
+import { loadNamespace } from '../../../i18n.ts';
 
 interface PetFormProps {
   initialValues: Pet;
@@ -112,4 +112,4 @@ export function PetForm({
   );
 }
 
-export type { Pet } from '../types.tsx';
+export type { Pet } from '../types.ts';

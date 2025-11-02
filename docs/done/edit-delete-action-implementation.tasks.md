@@ -23,7 +23,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 
 ### 1) Service Layer
 
-- [ ] Create or update `src/services/petService.tsx` to include update/delete APIs.
+- [ ] Create or update `src/services/petService.ts` to include update/delete APIs.
   - [ ] Add types and functions:
 
     ```ts
@@ -200,7 +200,7 @@ Target file for this checklist: `docs/edit-delete-action-tasks.md`
 
 ### 6) Feature Flag
 
-- [ ] Confirm a `petActionsEnabled` flag exists in `src/featureFlags/config.tsx` (default may come from env `VITE_*`).
+- [ ] Confirm a `petActionsEnabled` flag exists in `src/featureFlags/config.ts` (default may come from env `VITE_*`).
 - [ ] Update tests to cover both `true` and `false` cases.
 
 ---

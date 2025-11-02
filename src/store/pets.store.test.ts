@@ -4,7 +4,7 @@ import { useAuthStore } from './auth.store';
 import { petService } from '@services/petService';
 import type { PetCreateInput } from '@features/pets/types';
 
-// Mock the petService with a factory
+// Mock the petService with a factory that defines its mock functions internally
 vi.mock('@services/petService', () => ({
   petService: {
     fetchActivePets: vi.fn(),
@@ -26,17 +26,19 @@ describe('usePetsStore', () => {
     displayName: 'Test User',
   };
 
-  // Cast the mocked services to be able to attach mock implementations
-  const mockedPetService = petService as vi.Mocked<typeof petService>;
-  const mockedAuthStore = useAuthStore as vi.Mocked<typeof useAuthStore>;
+  // Use vi.mocked to get a typed mocked version of petService and useAuthStore
+  const mockedPetService = vi.mocked(petService);
+  const mockedAuthStore = vi.mocked(useAuthStore);
 
   beforeEach(() => {
     // Reset the store state before each test
     usePetsStore.setState({ pets: [], isFetching: false, fetchError: null });
+    // Clear all mocks before each test to reset call counts and return values
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('fetchPets', () => {

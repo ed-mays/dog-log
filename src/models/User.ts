@@ -1,4 +1,4 @@
-import type { BaseEntity } from '@repositories/types.tsx';
+import type { BaseEntity } from '@repositories/types.ts';
 
 export interface User extends BaseEntity {
   id: string;
