@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FeatureFlagsContext } from './FeatureFlagsContext.tsx';
+import { FeatureFlagsContext } from './FeatureFlagsContext';
 import type { FeatureFlags } from '../types.ts';
 import { defaultFeatureFlags } from '../config.ts';
 
