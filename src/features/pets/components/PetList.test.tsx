@@ -1,5 +1,9 @@
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react'; // Import screen and waitFor directly
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'; // Import screen, waitFor, and waitForElementToBeRemoved directly
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '../types';
 import { makePet } from '@testUtils/factories/makePet';
@@ -92,29 +96,38 @@ describe('PetList integration', () => {
     const noBtn = screen.getByRole('button', { name: /no/i });
     await user.click(noBtn);
 
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    });
+    // Dialog appears and clicking No should close it immediately or very quickly
+    // Guard: if it's still present, wait for removal; otherwise assert end-state.
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    } else {
+      expect(maybeDialog).not.toBeInTheDocument();
+    }
 
     expect(storeActions.deletePet).not.toHaveBeenCalled();
 
     // Open again and confirm
     await user.click(deleteBtn);
-    await screen.findByRole('dialog');
     const yesBtn = screen.getByRole('button', { name: /yes/i });
     await user.click(yesBtn);
 
-    await waitFor(() => {
-      expect(storeActions.deletePet).toHaveBeenCalledWith('1');
-    });
+    // Guard for synchronous/asynchronous removal
+    const maybeDialog2 = screen.queryByRole('dialog');
+    if (maybeDialog2) {
+      await waitForElementToBeRemoved(maybeDialog2);
+    } else {
+      expect(maybeDialog2).not.toBeInTheDocument();
+    }
 
+    // Wait for the row to be removed (could be async via store update)
     await waitFor(() => {
-      // The component re-renders from the store, so we check the UI
       expect(
         screen.queryByRole('cell', { name: 'Fido' })
       ).not.toBeInTheDocument();
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
+
+    expect(storeActions.deletePet).toHaveBeenCalledWith('1');
   });
 
   test('shows error and keeps confirm open on delete failure', async () => {

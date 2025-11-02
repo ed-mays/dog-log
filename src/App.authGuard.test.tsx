@@ -1,5 +1,5 @@
-import { describe, it, beforeEach, expect } from 'vitest';
-import { render, screen, waitFor } from '@test-utils';
+import { describe, it, beforeEach } from 'vitest';
+import { render, screen } from '@test-utils';
 import App from './App';
 import { useAuthStore } from '@store/auth.store';
 import { usePetsStore } from '@store/pets.store';
@@ -36,11 +36,7 @@ describe('App auth route protection', () => {
 
     render(<App />, { initialRoutes: ['/pets'] });
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: /welcome/i })
-      ).toBeInTheDocument();
-    });
+    await screen.findByRole('heading', { name: /welcome/i });
   });
 
   it('allows authenticated users to access /pets', async () => {
@@ -51,8 +47,6 @@ describe('App auth route protection', () => {
 
     render(<App />, { initialRoutes: ['/pets'] });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('pet-list')).toBeInTheDocument();
-    });
+    await screen.findByRole('table');
   });
 });

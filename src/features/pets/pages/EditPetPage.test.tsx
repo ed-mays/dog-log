@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@test-utils';
+import { waitForElementToBeRemoved } from '@testing-library/react';
 import type { Pet } from '@features/pets/types';
 import { vi } from 'vitest';
 
@@ -160,9 +161,13 @@ describe('EditPetPage', () => {
     const noBtn = screen.getByRole('button', { name: /no/i });
     fireEvent.click(noBtn);
 
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    });
+    // Guard for sync/async removal of the dialog
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    } else {
+      expect(maybeDialog).not.toBeInTheDocument();
+    }
 
     expect(navSpy).not.toHaveBeenCalled();
     expect(actions.updatePet).not.toHaveBeenCalled();
@@ -199,6 +204,14 @@ describe('EditPetPage', () => {
     // Click Yes (accept)
     const yesBtn = screen.getByRole('button', { name: /yes/i });
     fireEvent.click(yesBtn);
+
+    // Guard for sync/async removal of the dialog
+    const maybeDialog2 = screen.queryByRole('dialog');
+    if (maybeDialog2) {
+      await waitForElementToBeRemoved(maybeDialog2);
+    } else {
+      expect(maybeDialog2).not.toBeInTheDocument();
+    }
 
     await waitFor(() => {
       expect(navSpy).toHaveBeenCalledWith('/pets');
