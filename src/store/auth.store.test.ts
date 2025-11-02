@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useAuthStore } from './auth.store';
+import type { AppUser } from '@services/auth/authService';
 
 const signInSvcMock = vi.fn<Promise<void>, unknown[]>();
 const signOutSvcMock = vi.fn<Promise<void>, unknown[]>();
 let lastCb: ((u: unknown) => void) | null = null;
 let lastErrCb: ((e: unknown) => void) | null = null;
+let lastUnsubSpy: vi.Mock | null = null;
 
 vi.mock('@services/auth/authService', () => ({
   signInWithGoogle: (...args: unknown[]) => signInSvcMock(...args),
@@ -15,9 +17,8 @@ vi.mock('@services/auth/authService', () => ({
   ) => {
     lastCb = cb;
     lastErrCb = onError ?? null;
-    return () => {
-      // unsubscribe noop
-    };
+    lastUnsubSpy = vi.fn();
+    return lastUnsubSpy;
   },
 }));
 
@@ -28,6 +29,7 @@ beforeEach(() => {
   signOutSvcMock.mockReset();
   lastCb = null;
   lastErrCb = null;
+  lastUnsubSpy = null;
 });
 
 describe('auth.store', () => {
@@ -48,6 +50,16 @@ describe('auth.store', () => {
     expect(initializing).toBe(false);
     expect(error).toBeNull();
     expect(user?.uid).toBe('u1');
+  });
+
+  it('re-initializing auth listener unsubscribes previous subscription', () => {
+    const init = useAuthStore.getState().initAuthListener;
+    init();
+    const firstUnsub = lastUnsubSpy!;
+    expect(typeof firstUnsub).toBe('function');
+    // call init again should call previous unsubscribe
+    init();
+    expect(firstUnsub).toHaveBeenCalledTimes(1);
   });
 
   it('initAuthListener handles error path', async () => {
@@ -72,5 +84,25 @@ describe('auth.store', () => {
     signOutSvcMock.mockResolvedValueOnce();
     await useAuthStore.getState().signOut();
     expect(signOutSvcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('signOut sets error when service rejects and rethrows', async () => {
+    const err = new Error('network');
+    signOutSvcMock.mockRejectedValueOnce(err);
+    await expect(useAuthStore.getState().signOut()).rejects.toBe(err);
+    expect(useAuthStore.getState().error).toBe(err);
+  });
+
+  it('reset restores initial state', () => {
+    useAuthStore.setState({
+      user: { uid: 'x' } as unknown as AppUser,
+      initializing: true,
+      error: new Error('e'),
+    });
+    useAuthStore.getState().reset();
+    const { user, initializing, error } = useAuthStore.getState();
+    expect(user).toBeNull();
+    expect(initializing).toBe(false);
+    expect(error).toBeNull();
   });
 });

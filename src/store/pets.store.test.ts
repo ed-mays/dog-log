@@ -2,13 +2,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { usePetsStore } from './pets.store';
 import { useAuthStore } from './auth.store';
 import { petService } from '@services/petService';
-import type { PetCreateInput } from '@features/pets/types';
+import type { Pet, PetCreateInput } from '@features/pets/types';
 
 // Mock the petService with a factory that defines its mock functions internally
 vi.mock('@services/petService', () => ({
   petService: {
     fetchActivePets: vi.fn(),
     addPet: vi.fn(),
+    editPet: vi.fn(),
+    archivePet: vi.fn(),
   },
 }));
 
@@ -63,6 +65,108 @@ describe('usePetsStore', () => {
       );
       expect(usePetsStore.getState().pets).toEqual(mockPets);
       expect(usePetsStore.getState().isFetching).toBe(false);
+    });
+  });
+
+  describe('fetchPets (errors)', () => {
+    it('sets fetchError and clears isFetching when service rejects; preserves pets', async () => {
+      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
+      const existing = [{ id: 'e1', name: 'Existing' }];
+      usePetsStore.setState({
+        pets: existing as unknown as Pet[],
+        isFetching: false,
+        fetchError: null,
+      });
+      const err = new Error('load failed');
+      mockedPetService.fetchActivePets.mockRejectedValueOnce(err);
+
+      await usePetsStore.getState().fetchPets();
+
+      expect(usePetsStore.getState().isFetching).toBe(false);
+      expect(usePetsStore.getState().fetchError).toBe(err);
+      expect(usePetsStore.getState().pets).toEqual(existing);
+    });
+  });
+
+  describe('updatePet', () => {
+    it('throws if user not authenticated', async () => {
+      mockedAuthStore.getState.mockReturnValue({ user: null });
+      await expect(
+        usePetsStore.getState().updatePet('1', { name: 'New' })
+      ).rejects.toThrow('User is not authenticated.');
+      expect(mockedPetService.editPet).not.toHaveBeenCalled();
+    });
+
+    it('updates an existing pet when service resolves', async () => {
+      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
+      const initialPet = {
+        id: 'p1',
+        name: 'Old',
+        breed: 'Hound',
+        birthDate: new Date('2020-01-01'),
+      } as unknown as Pet;
+      usePetsStore.setState({
+        pets: [initialPet],
+        isFetching: false,
+        fetchError: null,
+      });
+      const updated = {
+        name: 'New',
+        breed: 'Mix',
+        birthDate: new Date('2021-01-01'),
+      };
+      mockedPetService.editPet.mockResolvedValueOnce(
+        updated as unknown as Partial<Pet>
+      );
+
+      await usePetsStore.getState().updatePet('p1', { name: 'New' });
+
+      const [saved] = usePetsStore.getState().pets as unknown as Array<{
+        id: string;
+        name: string;
+        breed: string;
+      }>;
+      expect(saved.id).toBe('p1');
+      expect(saved.name).toBe('New');
+      expect(saved.breed).toBe('Mix');
+      expect(mockedPetService.editPet).toHaveBeenCalledWith(
+        mockUser.uid,
+        'p1',
+        expect.objectContaining({ name: 'New' })
+      );
+    });
+  });
+
+  describe('deletePet', () => {
+    it('throws if user not authenticated', async () => {
+      mockedAuthStore.getState.mockReturnValue({ user: null });
+      await expect(usePetsStore.getState().deletePet('p1')).rejects.toThrow(
+        'User is not authenticated.'
+      );
+      expect(mockedPetService.archivePet).not.toHaveBeenCalled();
+    });
+
+    it('removes a pet when service resolves', async () => {
+      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
+      const p1 = { id: 'p1', name: 'A' } as unknown as Pet;
+      const p2 = { id: 'p2', name: 'B' } as unknown as Pet;
+      usePetsStore.setState({
+        pets: [p1, p2],
+        isFetching: false,
+        fetchError: null,
+      });
+      mockedPetService.archivePet.mockResolvedValueOnce(undefined);
+
+      await usePetsStore.getState().deletePet('p1');
+
+      const ids = (
+        usePetsStore.getState().pets as unknown as Array<{ id: string }>
+      ).map((p) => p.id);
+      expect(ids).toEqual(['p2']);
+      expect(mockedPetService.archivePet).toHaveBeenCalledWith(
+        mockUser.uid,
+        'p1'
+      );
     });
   });
 
