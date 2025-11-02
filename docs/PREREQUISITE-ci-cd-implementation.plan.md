@@ -277,11 +277,11 @@ if: github.event.pull_request.head.repo.full_name == github.repository
 
 ### Quick verification checklist (copy into your tracking issue)
 
-- [ ] `firestore.rules` added, committed, and deployed; manual tests confirm user A cannot read/write user B’s docs.
-- [ ] `storage.rules` deny-by-default committed and deployed.
+- [x] `firestore.rules` added, committed, and deployed; manual tests confirm user A cannot read/write user B’s docs.
+- [x] `storage.rules` deny-by-default committed and deployed.
 - [ ] App Check enabled in monitor mode, then enforced after observation period.
 - [ ] `deploy-preview.yml` guarded against forks; internal PRs get preview URL, external PRs skip deploy.
-- [ ] `firebase.json` updated with security headers and CSP; site renders correctly under CSP.
+- [x] `firebase.json` updated with security headers and CSP; site renders correctly under CSP.
 - [ ] `VITE_FIREBASE_MESSAGING_SENDER(_ID)` naming aligned across code and CI variables.
 - [ ] UI surfaces generic error messages only; no stack traces or Firestore error strings shown to end-users.
 - [ ] Dependabot/Renovate enabled; `npm ci` used in CI; lockfile committed.

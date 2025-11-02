@@ -20,8 +20,8 @@
     "test:watch": "vitest --exclude '**/*.integration.test.tsx'",
     "start:firebase": "firebase emulators:start",
     "prepare": "husky",
-    "deploy:dev": "firebase use dev && firebase deploy --only hosting",
-    "deploy:staging": "firebase use staging && firebase deploy --only hosting"
+    "deploy:dev": "firebase use dev && firebase deploy --only hosting,firestore.rules,storage",
+    "deploy:staging": "firebase use staging && firebase deploy --only hosting,firestore.rules,storage"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
