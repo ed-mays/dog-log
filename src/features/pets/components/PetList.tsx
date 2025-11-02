@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import styles from './PetList.module.css';
 import type { Pet } from '../types.ts';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 import { Link, useNavigate } from 'react-router-dom';
 import { PetListRow } from '@features/pets/components/PetListRow.tsx';
 import { loadNamespace } from '../../../i18n.ts';

@@ -3,7 +3,7 @@ import styles from './PetList.module.css';
 import type { Pet } from '../types.ts';
 import { loadNamespace } from '../../../i18n.ts';
 import { useTranslation } from 'react-i18next';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 import { useNavigate } from 'react-router-dom';
 
 type PetListRowProps = {

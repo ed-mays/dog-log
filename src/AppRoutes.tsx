@@ -1,7 +1,7 @@
 // src/AppRoutes.tsx
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.tsx';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 import { PrivateRoute } from '@components/common/PrivateRoute';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store.ts';
