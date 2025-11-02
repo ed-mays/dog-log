@@ -189,3 +189,166 @@ describe('ArchivableBaseRepository', () => {
     });
   });
 });
+
+// Additional coverage for CRUD methods and query builder
+import {
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  Timestamp,
+} from 'firebase/firestore';
+
+describe('BaseRepository CRUD and queries', () => {
+  let repository: TestRepository;
+
+  beforeEach(() => {
+    repository = new TestRepository();
+    vi.clearAllMocks();
+  });
+
+  it('getById returns mapped entity when document exists', async () => {
+    // Arrange: mock doc() and getDoc()
+    vi.mocked(getDoc).mockResolvedValueOnce({
+      exists: () => true,
+      id: 'abc123',
+      data: () => ({
+        name: 'X',
+        description: 'Y',
+        createdAt: Timestamp.fromDate(new Date('2024-01-01T00:00:00Z')),
+        updatedAt: Timestamp.fromDate(new Date('2024-01-02T00:00:00Z')),
+      }),
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot);
+
+    // eslint-disable-next-line testing-library/no-await-sync-queries
+    const entity = await repository.getById('abc123');
+
+    expect(entity).not.toBeNull();
+    expect(entity?.id).toBe('abc123');
+    expect(entity?.name).toBe('X');
+    expect(entity?.createdAt).toEqual(new Date('2024-01-01T00:00:00Z'));
+    expect(getDoc).toHaveBeenCalledTimes(1);
+  });
+
+  it('getById returns null when document does not exist', async () => {
+    vi.mocked(getDoc).mockResolvedValueOnce({
+      exists: () => false,
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot);
+
+    // eslint-disable-next-line testing-library/no-await-sync-queries
+    const entity = await repository.getById('missing');
+    expect(entity).toBeNull();
+  });
+
+  it('getList applies orderBy and limit and maps results', async () => {
+    // Arrange list results
+    const docA = {
+      id: 'a',
+      data: () => ({
+        name: 'A',
+        description: 'desc',
+        createdAt: Timestamp.fromDate(new Date('2024-02-01T00:00:00Z')),
+        updatedAt: Timestamp.fromDate(new Date('2024-02-02T00:00:00Z')),
+      }),
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot;
+    const docB = {
+      id: 'b',
+      data: () => ({
+        name: 'B',
+        description: 'desc',
+        createdAt: Timestamp.fromDate(new Date('2024-03-01T00:00:00Z')),
+        updatedAt: Timestamp.fromDate(new Date('2024-03-02T00:00:00Z')),
+      }),
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot;
+    vi.mocked(getDocs).mockResolvedValueOnce({ docs: [docA, docB] } as never);
+
+    const items = await repository.getList({ orderBy: 'name', limit: 2 });
+
+    expect(orderBy).toHaveBeenCalledWith('name', 'asc');
+    expect(limit).toHaveBeenCalledWith(2);
+    expect(items.map((i) => i.id)).toEqual(['a', 'b']);
+    expect(items[0].createdAt).toEqual(new Date('2024-02-01T00:00:00Z'));
+  });
+
+  it('create writes to collection and returns entity with id and dates', async () => {
+    vi.mocked(addDoc).mockResolvedValueOnce({ id: 'new-1' } as never);
+
+    const result = await repository.create({
+      name: 'Created',
+      description: 'New desc',
+    } as Omit<TestEntity, keyof BaseEntity>);
+
+    expect(addDoc).toHaveBeenCalledTimes(1);
+    expect(result.id).toBe('new-1');
+    expect(result.createdAt).toBeInstanceOf(Date);
+    expect(result.updatedAt).toBeInstanceOf(Date);
+  });
+
+  it('update updates existing document and returns the mapped entity', async () => {
+    // First getDoc() says it exists
+    vi.mocked(getDoc).mockResolvedValueOnce({ exists: () => true } as never);
+    // updateDoc resolves
+    vi.mocked(updateDoc).mockResolvedValueOnce(undefined as never);
+    // Second getDoc() returns updated snapshot
+    vi.mocked(getDoc).mockResolvedValueOnce({
+      exists: () => true,
+      id: 'u1',
+      data: () => ({
+        name: 'Updated',
+        description: 'desc',
+        updatedAt: Timestamp.fromDate(new Date('2024-04-02T00:00:00Z')),
+        createdAt: Timestamp.fromDate(new Date('2024-04-01T00:00:00Z')),
+      }),
+    } as unknown as import('firebase/firestore').QueryDocumentSnapshot);
+
+    const entity = await repository.update('u1', { name: 'Updated' });
+
+    expect(updateDoc).toHaveBeenCalledTimes(1);
+    expect(entity.id).toBe('u1');
+    expect(entity.name).toBe('Updated');
+  });
+
+  it('delete delegates to deleteDoc', async () => {
+    vi.mocked(deleteDoc).mockResolvedValueOnce(undefined as never);
+    await repository.delete('gone');
+    expect(deleteDoc).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('BaseRepository buildAdvancedQuery', () => {
+  let repository: TestRepository;
+
+  beforeEach(() => {
+    repository = new TestRepository();
+    vi.clearAllMocks();
+  });
+
+  it('maps filter operators, sort, and limit into Firestore query calls', () => {
+    // Ensure our mocked `query` function returns a non-undefined value for chaining
+    vi.mocked(query).mockReturnValue({} as never);
+    const q = repository['buildAdvancedQuery']('user-1', {
+      filters: [
+        { field: 'name', operator: 'eq', value: 'A' },
+        { field: 'age', operator: 'gt', value: 1 },
+        { field: 'tags', operator: 'contains', value: 'x' },
+      ],
+      sort: [
+        { field: 'createdAt', direction: 'desc' },
+        { field: 'name', direction: 'asc' },
+      ],
+      limit: 10,
+    });
+
+    // Ensure builder returns something (opaque in our mock), and where/orderBy/limit were invoked
+    expect(query).toHaveBeenCalled();
+    expect(where).toHaveBeenCalledTimes(3);
+    expect(orderBy).toHaveBeenCalledTimes(2);
+    expect(limit).toHaveBeenCalledWith(10);
+    expect(q).toBeDefined();
+  });
+});
