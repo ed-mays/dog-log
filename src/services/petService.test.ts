@@ -110,3 +110,28 @@ describe('PetService', () => {
     expect(mockArchivePet).toHaveBeenCalledWith('pet-1');
   });
 });
+
+// Additional coverage to exercise simple placeholder methods not hitting the repository
+
+describe('PetService (simple local methods)', () => {
+  let service: PetService;
+  beforeEach(() => {
+    vi.clearAllMocks();
+    service = new PetService();
+  });
+
+  test('getList returns an empty array by default', async () => {
+    const result = await service.getList();
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(0);
+  });
+
+  test('updatePet returns a Pet with provided id and fields', async () => {
+    const id = 'pet-xyz';
+    const result = await service.updatePet(id, {
+      name: 'Buddy',
+      breed: 'Husky',
+    });
+    expect(result).toMatchObject({ id, name: 'Buddy', breed: 'Husky' });
+  });
+});
