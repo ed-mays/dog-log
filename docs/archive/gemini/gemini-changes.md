@@ -14,7 +14,7 @@ The main application component, `App.tsx`, was refactored to improve modularity 
     resolved testing issues.
 
 - **New Files Created:**
-  - **`src/components/common/PrivateRoute.tsx`:** The `PrivateRoute` component was extracted into this new file.
+  - **`src/components/common/PrivateRoute.ts`:** The `PrivateRoute` component was extracted into this new file.
   - **`src/features/petManagement/RoutePrefetcher.ts`:** The `RoutePrefetcher` component was extracted into this new
     file.
   - **`src/AppRoutes.tsx`:** The `<Routes>` logic was extracted from `App.tsx` into this new component.

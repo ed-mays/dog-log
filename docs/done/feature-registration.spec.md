@@ -53,7 +53,7 @@ are required.
   - Is disabled and shows a busy state while the authentication process is `initializing`.
   - Handles and displays localized text from the `common` i18n namespace.
 
-- **/src/components/common/PrivateRoute.tsx**: This route guard is critical for the flow. It will:
+- **/src/components/common/PrivateRoute.ts**: This route guard is critical for the flow. It will:
   - Check the `authEnabled` feature flag.
   - Check the `initializing` and `user` state from the `auth.store`.
   - Render a `LoadingIndicator` while the initial auth state is being determined.

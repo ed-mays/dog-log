@@ -8,7 +8,7 @@ The `App.tsx` file contained several components and logic that have been extract
 readability and maintainability.
 
 - **Extracted `PrivateRoute`:** The `PrivateRoute` component was moved to its own file inside
-  `src/components/common/PrivateRoute.tsx`.
+  `src/components/common/PrivateRoute.ts`.
 - **Extracted `RoutePrefetcher`:** The `RoutePrefetcher` component was moved to its own file at
   `src/features/petManagement/RoutePrefetcher.ts`.
 - **Extracted `AppRoutes`:** The routing logic from the main `App` component was extracted into a separate `AppRoutes`

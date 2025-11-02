@@ -61,7 +61,7 @@
 - Evidence:
   - `src/App.tsx` uses relative path for feature flag hook: `./features/petManagement/RoutePrefetcher` (line 10) and
     `./featureFlags/useFeatureFlag` (line 2) instead of `@features/...` and `@featureFlags/...`.
-  - `src/components/common/PrivateRoute.tsx` imports `useFeatureFlag` with a relative path
+  - `src/components/common/PrivateRoute.ts` imports `useFeatureFlag` with a relative path
     `../../featureFlags/useFeatureFlag` (line 3).
 
 5. Repository layer couples to Firebase Auth directly
@@ -241,7 +241,7 @@
   - Change relative imports to aliases:
     - `src/App.tsx` line 2: `import { useFeatureFlag } from '@featureFlags/useFeatureFlag';`
     - `src/App.tsx` line 10: `import { RoutePrefetcher } from '@features/petManagement/RoutePrefetcher';`
-    - `src/components/common/PrivateRoute.tsx` line 3: `import { useFeatureFlag } from '@featureFlags/useFeatureFlag';`
+    - `src/components/common/PrivateRoute.ts` line 3: `import { useFeatureFlag } from '@featureFlags/useFeatureFlag';`
   - Add an ESLint rule or custom lint to discourage deep relative imports when an alias exists.
 
 #### [:white_check_mark:] 5) Decouple BaseRepository from Firebase Auth
