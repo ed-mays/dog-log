@@ -169,3 +169,58 @@ Notes:
 This project is private and not currently intended for open-source distribution.
 
 ---
+
+---
+
+### Coverage Reports (HTML)
+
+This project uses Vitest with the V8 coverage provider and generates an HTML coverage report for quick inspection.
+
+How to generate coverage:
+
+```bash
+npm run test:coverage
+```
+
+Where to find the report:
+
+- Output directory: `coverage/`
+- Open the dashboard: `coverage/index.html`
+
+Quick ways to open the report:
+
+- macOS:
+  ```bash
+  open coverage/index.html
+  ```
+- Windows (PowerShell):
+  ```powershell
+  start .\coverage\index.html
+  ```
+- Linux:
+  ```bash
+  xdg-open coverage/index.html
+  ```
+
+Optional: serve the report via a local static server (useful if your browser blocks `file://` URLs):
+
+```bash
+npx http-server coverage -o
+```
+
+This will open the report at `http://localhost:8080` (port may vary).
+
+Troubleshooting HTML coverage:
+
+- Ensure versions are aligned (see `package.json`):
+  - `vitest` and `@vitest/coverage-v8` should be compatible (we use the V8 provider).
+- Configuration is defined in `vitest.config.ts` under `test.coverage`:
+  - `provider: 'v8'`
+  - `reporter: ['text', 'html']`
+  - `all: true`, `include: ['src/**/*.{ts,tsx}']`, and a conservative `exclude` list to avoid non-source files.
+- If the report looks stale or fails to open, try regenerating from a clean slate:
+  ```bash
+  rm -rf coverage && npm run test:coverage
+  ```
+
+The CI will enforce minimum per-file coverage thresholds (branches, functions, statements, and lines at ≥90%). See `decisions/adr/033-TESTING-minimum-test-coverage-thresholds.md` for rationale.
