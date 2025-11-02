@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store.ts';
 import { WelcomePage } from '@features/authentication/pages/WelcomePage.tsx';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
+import { NotFoundPage } from '@features/misc/pages/NotFoundPage.tsx';
 
 const PetListPage = lazy(() => import('@features/pets/pages/petListPage.tsx'));
 const AddPetPage = lazy(() => import('@features/pets/pages/AddPetPage.tsx'));
@@ -14,6 +15,8 @@ const EditPetPage = lazy(() => import('@features/pets/pages/EditPetPage.tsx'));
 
 export function AppRoutes() {
   const enablePetList = useFeatureFlag('petListEnabled');
+  const enableAddPet = useFeatureFlag('addPetEnabled');
+  const enablePetActions = useFeatureFlag('petActionsEnabled');
   const { t } = useTranslation('common');
   const { user } = useAuthStore();
 
@@ -21,7 +24,8 @@ export function AppRoutes() {
     return (
       <Routes>
         <Route path="/welcome" element={<WelcomePage />} />
-        <Route path="*" element={<Navigate to="/welcome" />} />
+        <Route path="/pets/*" element={<Navigate to="/welcome" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     );
   }
@@ -44,24 +48,32 @@ export function AppRoutes() {
         <Route
           path="/pets/new"
           element={
-            <PrivateRoute>
-              <AddPetPage />
-            </PrivateRoute>
+            enableAddPet ? (
+              <PrivateRoute>
+                <AddPetPage />
+              </PrivateRoute>
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
           }
         />
         <Route
           path="/pets/:id/edit"
           element={
-            <PrivateRoute>
-              <EditPetPage />
-            </PrivateRoute>
+            enablePetActions ? (
+              <PrivateRoute>
+                <EditPetPage />
+              </PrivateRoute>
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
           }
         />
         <Route
           path="/feature-unavailable"
           element={<div>{t('featureNotEnabled', 'Feature not enabled')}</div>}
         />
-        <Route path="*" element={<Navigate to="/pets" />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   );

@@ -64,7 +64,7 @@ describe('App', () => {
   });
 
   function renderComponent() {
-    render(<App />);
+    render(<App />, { initialRoutes: ['/pets'] });
   }
 
   test('renders loading state', async () => {
@@ -118,4 +118,30 @@ describe('App', () => {
     renderComponent();
     expect(petsMock.actions.fetchPets).toHaveBeenCalledTimes(1);
   });
+});
+
+// Navigation bar visibility tests (authEnabled + user)
+test('shows NavigationBar header when user exists and authEnabled=true', async () => {
+  // defaults from beforeEach: user present; featureFlags default authEnabled=true
+  render(<App />, { initialRoutes: ['/pets'] });
+  expect(await screen.findByLabelText('user-controls')).toBeInTheDocument();
+});
+
+test('hides NavigationBar when user exists but authEnabled=false', async () => {
+  render(<App />, {
+    initialRoutes: ['/pets'],
+    featureFlags: { authEnabled: false },
+  });
+  expect(screen.queryByLabelText('user-controls')).not.toBeInTheDocument();
+});
+
+test('hides NavigationBar when user is null even if authEnabled=true', async () => {
+  // Override auth store to simulate no user
+  vi.mocked(useAuthStore).mockImplementation(
+    createAuthStoreMock({ user: null, initializing: false })
+      .impl as unknown as typeof useAuthStore
+  );
+
+  render(<App />, { initialRoutes: ['/pets'] });
+  expect(screen.queryByLabelText('user-controls')).not.toBeInTheDocument();
 });

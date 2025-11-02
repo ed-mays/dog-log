@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@test-utils';
+import { render, screen } from '@test-utils';
+import userEvent from '@testing-library/user-event';
 import type { Pet } from '../types';
 
 function makePet(overrides: Partial<Pet> = {}): Pet {
@@ -20,6 +21,7 @@ describe('PetListRow', () => {
   it('renders Edit/Delete buttons when petActionsEnabled=true; navigates on Edit and calls onDelete', async () => {
     const pet = makePet();
     const onDelete = vi.fn();
+    const user = userEvent.setup();
 
     // Spy on useNavigate
     const navSpy = vi.fn();
@@ -42,10 +44,10 @@ describe('PetListRow', () => {
     const editBtn = await screen.findByRole('button', { name: /edit/i });
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
 
-    fireEvent.click(editBtn);
+    await user.click(editBtn);
     expect(navSpy).toHaveBeenCalledWith(`/pets/${pet.id}/edit`);
 
-    fireEvent.click(deleteBtn);
+    await user.click(deleteBtn);
     expect(onDelete).toHaveBeenCalledWith(pet);
   });
 
