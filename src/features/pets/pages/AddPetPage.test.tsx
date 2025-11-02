@@ -54,55 +54,130 @@ describe('AddPetPage', () => {
     expect(await screen.findByText('Cancel')).toBeInTheDocument();
   });
 
-  // TODO: Fix this test
-  // it('submits form, adds pet to store, navigates to /pets', async () => {
-  //   const module = await import('./AddPetPage');
-  //   const AddPetPage = module.default;
-  //   render(<AddPetPage />);
-  //
-  //   const nameInput = await screen.findByLabelText('Name');
-  //   const breedInput = await screen.findByLabelText('Breed');
-  //
-  //   nameInput.textContent = testPet.name;
-  //   breedInput.textContent = testPet.breed;
-  //   fireEvent.click(await screen.findByText('OK'));
-  //
-  //   await waitFor(() => {
-  //     expect(addPetMock).toHaveBeenCalledWith({
-  //       name: 'Rover',
-  //       breed: 'Hound',
-  //       birthDate: testBirthDate,
-  //     });
-  //   });
-  //
-  //   await waitFor(() => {
-  //     expect(mockNavigate).toHaveBeenCalledWith('/pets');
-  //   });
-  // });
+  it('submits form, adds pet to store, then navigates to /pets', async () => {
+    // Mock PetForm to submit a known Pet payload when clicking OK
+    vi.doMock('@features/pets/components/PetForm', () => ({
+      PetForm: (props: {
+        onSubmit: (pet: unknown) => void | Promise<void>;
+      }) => {
+        const testBirthDate = new Date('2020-01-02T00:00:00.000Z');
+        const testPet = {
+          name: 'Rover',
+          breed: 'Hound',
+          birthDate: testBirthDate,
+        };
+        return (
+          <div>
+            <button onClick={() => props.onSubmit(testPet)}>OK</button>
+          </div>
+        );
+      },
+    }));
 
-  // TODO: Fix this test
-  // it('shows modal when cancel is clicked if dirty, then accepts and navigates', async () => {
-  //   const module = await import('./AddPetPage');
-  //   const AddPetPage = module.default;
-  //   render(<AddPetPage />);
-  //   fireEvent.click(await screen.findByText('Cancel'));
-  //   expect(await screen.findByText('OK')).toBeInTheDocument();
-  //   expect(await screen.findByText('Cancel')).toBeInTheDocument();
-  //   fireEvent.click(await screen.findByText('OK'));
-  //   expect(mockNavigate).toHaveBeenCalledWith('/pets');
-  // });
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
 
-  // TODO: Fix this test
-  // it('shows modal on cancel if dirty, declines and stays on page', async () => {
-  //   const module = await import('./AddPetPage');
-  //   const AddPetPage = module.default;
-  //   render(<AddPetPage />);
-  //   const nameInput = await screen.findByLabelText('Name');
-  //   nameInput.textContent = testPet.name;
-  //   fireEvent.click(await screen.findByText('Cancel'));
-  //   fireEvent.click(await screen.findByText('Decline'));
-  //   expect(mockNavigate).not.toHaveBeenCalled();
-  // });
+    const user = userEvent.setup();
+    render(<AddPetPage />);
+
+    await user.click(await screen.findByRole('button', { name: /ok/i }));
+
+    // Assert store action was called with expected subset
+    expect(petsMock.actions.addPet).toHaveBeenCalledTimes(1);
+    const arg = petsMock.actions.addPet.mock.calls[0][0];
+    expect(arg).toMatchObject({ name: 'Rover', breed: 'Hound' });
+    expect(arg.birthDate).toBeInstanceOf(Date);
+
+    // After submit, navigate to /pets
+    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+  });
+
+  it('shows confirm when dirty cancel is clicked, then accepts and navigates', async () => {
+    // Provide a minimal PetForm that can toggle dirty state and trigger cancel
+    vi.doMock('@features/pets/components/PetForm', () => ({
+      PetForm: (props: {
+        onCancel: () => void;
+        onDirtyChange: (v: boolean) => void;
+      }) => (
+        <div>
+          <button onClick={() => props.onDirtyChange(true)}>Make Dirty</button>
+          <button onClick={props.onCancel}>Cancel</button>
+        </div>
+      ),
+    }));
+
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
+
+    const user = userEvent.setup();
+    render(<AddPetPage />);
+
+    // Make form dirty and click Cancel
+    await user.click(
+      await screen.findByRole('button', { name: /make dirty/i })
+    );
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+
+    // Confirm modal appears with Yes/No
+    const dialog = await screen.findByRole('dialog');
+    expect(
+      within(dialog).getByRole('button', { name: /yes/i })
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('button', { name: /no/i })
+    ).toBeInTheDocument();
+
+    // Click Yes to accept
+    await user.click(within(dialog).getByRole('button', { name: /yes/i }));
+
+    // Wait for dialog to go away and assert navigation
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    }
+    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+  });
+
+  it('shows confirm on dirty cancel, declines and stays on page', async () => {
+    // Provide a minimal PetForm that can toggle dirty state and trigger cancel
+    vi.doMock('@features/pets/components/PetForm', () => ({
+      PetForm: (props: {
+        onCancel: () => void;
+        onDirtyChange: (v: boolean) => void;
+      }) => (
+        <div>
+          <button onClick={() => props.onDirtyChange(true)}>Make Dirty</button>
+          <button onClick={props.onCancel}>Cancel</button>
+        </div>
+      ),
+    }));
+
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
+
+    const user = userEvent.setup();
+    render(<AddPetPage />);
+
+    // Make form dirty and click Cancel
+    await user.click(
+      await screen.findByRole('button', { name: /make dirty/i })
+    );
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+
+    // Confirm modal appears with Yes/No
+    const dialog = await screen.findByRole('dialog');
+    const noBtn = within(dialog).getByRole('button', { name: /no/i });
+
+    // Click No to decline
+    await user.click(noBtn);
+
+    // Dialog should close and no navigation should have occurred
+    const maybeDialog = screen.queryByRole('dialog');
+    if (maybeDialog) {
+      await waitForElementToBeRemoved(maybeDialog);
+    }
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
 
   it('navigates away immediately if cancel is activated (click or keyboard) and not dirty', async () => {
     // Provide a per-test mock of the PetForm that only renders a Cancel button
