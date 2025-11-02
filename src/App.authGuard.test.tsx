@@ -90,3 +90,17 @@ describe('App auth route protection', () => {
     ).toBeInTheDocument();
   });
 });
+
+// Positive case: unauthenticated user visiting /welcome sees Welcome page
+it('renders Welcome page for /welcome when unauthenticated', async () => {
+  const authStoreState = { user: null, initializing: false };
+  vi.mocked(useAuthStore).mockImplementation((selector) =>
+    selector ? selector(authStoreState) : authStoreState
+  );
+
+  render(<App />, { initialRoutes: ['/welcome'] });
+
+  expect(
+    await screen.findByRole('heading', { name: /welcome/i })
+  ).toBeInTheDocument();
+});
