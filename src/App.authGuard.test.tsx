@@ -49,6 +49,33 @@ describe('App auth route protection', () => {
 
     await screen.findByRole('table');
   });
+
+  it('redirects unauthenticated users to /welcome for /pets/new', async () => {
+    const authStoreState = { user: null, initializing: false };
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector ? selector(authStoreState) : authStoreState
+    );
+
+    render(<App />, { initialRoutes: ['/pets/new'] });
+
+    expect(
+      await screen.findByRole('heading', { name: /welcome/i })
+    ).toBeInTheDocument();
+  });
+
+  it('redirects unauthenticated users to /welcome for /pets/:id/edit', async () => {
+    const authStoreState = { user: null, initializing: false };
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector ? selector(authStoreState) : authStoreState
+    );
+
+    render(<App />, { initialRoutes: ['/pets/123/edit'] });
+
+    expect(
+      await screen.findByRole('heading', { name: /welcome/i })
+    ).toBeInTheDocument();
+  });
+
   it('renders NotFound page for unknown routes when unauthenticated', async () => {
     const authStoreState = { user: null, initializing: false };
     vi.mocked(useAuthStore).mockImplementation((selector) =>

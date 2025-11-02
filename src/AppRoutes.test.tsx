@@ -62,3 +62,27 @@ describe('AppRoutes', () => {
     ).toBeInTheDocument();
   });
 });
+
+it('redirects to feature-unavailable when addPetEnabled=false for /pets/new', async () => {
+  // Authenticated by default from beforeEach
+  (useFeatureFlag as unknown as vi.Mock).mockImplementation((flag: string) => {
+    // disable addPetEnabled, enable others
+    if (flag === 'addPetEnabled') return false;
+    return true;
+  });
+
+  render(<AppRoutes />, { initialRoutes: ['/pets/new'] });
+  expect(await screen.findByText('Feature not enabled')).toBeInTheDocument();
+});
+
+it('redirects to feature-unavailable when petActionsEnabled=false for /pets/:id/edit', async () => {
+  // Authenticated by default from beforeEach
+  (useFeatureFlag as unknown as vi.Mock).mockImplementation((flag: string) => {
+    // disable petActionsEnabled, enable others
+    if (flag === 'petActionsEnabled') return false;
+    return true;
+  });
+
+  render(<AppRoutes />, { initialRoutes: ['/pets/123/edit'] });
+  expect(await screen.findByText('Feature not enabled')).toBeInTheDocument();
+});

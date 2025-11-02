@@ -15,6 +15,8 @@ const EditPetPage = lazy(() => import('@features/pets/pages/EditPetPage.tsx'));
 
 export function AppRoutes() {
   const enablePetList = useFeatureFlag('petListEnabled');
+  const enableAddPet = useFeatureFlag('addPetEnabled');
+  const enablePetActions = useFeatureFlag('petActionsEnabled');
   const { t } = useTranslation('common');
   const { user } = useAuthStore();
 
@@ -46,17 +48,25 @@ export function AppRoutes() {
         <Route
           path="/pets/new"
           element={
-            <PrivateRoute>
-              <AddPetPage />
-            </PrivateRoute>
+            enableAddPet ? (
+              <PrivateRoute>
+                <AddPetPage />
+              </PrivateRoute>
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
           }
         />
         <Route
           path="/pets/:id/edit"
           element={
-            <PrivateRoute>
-              <EditPetPage />
-            </PrivateRoute>
+            enablePetActions ? (
+              <PrivateRoute>
+                <EditPetPage />
+              </PrivateRoute>
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
           }
         />
         <Route
