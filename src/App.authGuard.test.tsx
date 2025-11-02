@@ -49,4 +49,17 @@ describe('App auth route protection', () => {
 
     await screen.findByRole('table');
   });
+  it('renders NotFound page for unknown routes when unauthenticated', async () => {
+    const authStoreState = { user: null, initializing: false };
+    vi.mocked(useAuthStore).mockImplementation((selector) =>
+      selector ? selector(authStoreState) : authStoreState
+    );
+
+    render(<App />, { initialRoutes: ['/unknown'] });
+
+    expect(await screen.findByTestId('not-found-page')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: /not found/i })
+    ).toBeInTheDocument();
+  });
 });

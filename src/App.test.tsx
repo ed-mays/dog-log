@@ -64,7 +64,7 @@ describe('App', () => {
   });
 
   function renderComponent() {
-    render(<App />);
+    render(<App />, { initialRoutes: ['/pets'] });
   }
 
   test('renders loading state', async () => {

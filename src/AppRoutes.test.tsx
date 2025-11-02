@@ -50,4 +50,15 @@ describe('AppRoutes', () => {
     // 2) Await a label rendered by the form
     expect(await screen.findByLabelText('Name')).toBeInTheDocument();
   });
+  it('renders NotFound page for unknown routes when authenticated', async () => {
+    // Authenticated by default from beforeEach
+    mockUseFeatureFlag.mockReturnValue(true);
+
+    render(<AppRoutes />, { initialRoutes: ['/does-not-exist'] });
+
+    expect(await screen.findByTestId('not-found-page')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: /not found/i })
+    ).toBeInTheDocument();
+  });
 });
