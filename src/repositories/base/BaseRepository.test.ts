@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BaseRepository, ArchivableBaseRepository } from './BaseRepository';
-import { BaseEntity, ArchivableEntity } from '@repositories/types';
+import {
+  BaseEntity,
+  ArchivableEntity,
+  AdvancedQueryOptions,
+  ServiceError,
+} from '@repositories/types';
 
 vi.mock('firebase/firestore', () => {
   class MockTimestamp {
@@ -350,5 +355,83 @@ describe('BaseRepository buildAdvancedQuery', () => {
     expect(orderBy).toHaveBeenCalledTimes(2);
     expect(limit).toHaveBeenCalledWith(10);
     expect(q).toBeDefined();
+  });
+});
+
+// Additional branch coverage added by tests below
+
+describe('BaseRepository additional branches', () => {
+  it('update maps missing document to FIRESTORE_ERROR', async () => {
+    const repository = new TestRepository();
+    // First getDoc() -> not exists triggers throw in update
+    vi.mocked(getDoc).mockResolvedValueOnce({ exists: () => false } as never);
+
+    await expect(
+      repository.update('missing', { name: 'X' } as Partial<
+        Omit<TestEntity, keyof BaseEntity>
+      >)
+    ).rejects.toMatchObject({
+      code: 'FIRESTORE_ERROR',
+    });
+  });
+
+  it('getList error path maps to FIRESTORE_ERROR', async () => {
+    const repository = new TestRepository();
+    vi.mocked(getDocs).mockRejectedValueOnce(new Error('random failure'));
+    await expect(repository.getList()).rejects.toMatchObject({
+      code: 'FIRESTORE_ERROR',
+      message: 'random failure',
+    });
+  });
+});
+
+describe('BaseRepository buildAdvancedQuery operators', () => {
+  let repository: TestRepository;
+  beforeEach(() => {
+    repository = new TestRepository();
+    vi.clearAllMocks();
+  });
+
+  it('applies filters with mapped operators, sorting and limit', () => {
+    // Call the protected method via indexer
+    (
+      repository as unknown as {
+        buildAdvancedQuery: (
+          userId: string,
+          options: AdvancedQueryOptions
+        ) => unknown;
+      }
+    ).buildAdvancedQuery('user-1', {
+      filters: [
+        { field: 'age', operator: 'gt', value: 5 },
+        { field: 'tags', operator: 'contains', value: 'friendly' },
+      ],
+      sort: [{ field: 'name', direction: 'desc' }],
+      limit: 10,
+    });
+
+    expect(where).toHaveBeenNthCalledWith(1, 'age', '>', 5);
+    expect(where).toHaveBeenNthCalledWith(
+      2,
+      'tags',
+      'array-contains',
+      'friendly'
+    );
+    expect(orderBy).toHaveBeenCalledWith('name', 'desc');
+    expect(limit).toHaveBeenCalledWith(10);
+  });
+});
+
+describe('handleError additional mapping', () => {
+  it('maps generic Error to FIRESTORE_ERROR with original message', () => {
+    const repository = new TestRepository();
+    const err = new Error('boom');
+    const mapped = (
+      repository as unknown as {
+        handleError: (err: unknown, ctx: string) => ServiceError;
+      }
+    ).handleError(err, 'ctx');
+    expect(mapped.code).toBe('FIRESTORE_ERROR');
+    expect(mapped.message).toBe('boom');
   });
 });
