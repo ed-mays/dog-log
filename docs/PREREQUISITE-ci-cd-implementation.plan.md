@@ -282,7 +282,7 @@ if: github.event.pull_request.head.repo.full_name == github.repository
 - [ ] App Check enabled in monitor mode, then enforced after observation period.
 - [ ] `deploy-preview.yml` guarded against forks; internal PRs get preview URL, external PRs skip deploy.
 - [x] `firebase.json` updated with security headers and CSP; site renders correctly under CSP.
-- [ ] `VITE_FIREBASE_MESSAGING_SENDER(_ID)` naming aligned across code and CI variables.
+- [x] `VITE_FIREBASE_MESSAGING_SENDER(_ID)` naming aligned across code and CI variables.
 - [ ] UI surfaces generic error messages only; no stack traces or Firestore error strings shown to end-users.
 - [ ] Dependabot/Renovate enabled; `npm ci` used in CI; lockfile committed.
 - [ ] Firebase Auth authorized domains restricted to your actual Hosting domains.
