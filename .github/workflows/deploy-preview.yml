@@ -23,18 +23,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
           run_install: false
 
-      - run: pnpm install --frozen-lockfile=false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Verify pnpm
+        run: pnpm -v
+
+      - run: pnpm install --frozen-lockfile
 
       # Verify required repository variables are set (stable domain deploy)
       - name: Verify DEV_FIREBASE_PREVIEW_SITE and DEV_FIREBASE_PROJECT_ID are set
