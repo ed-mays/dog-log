@@ -48,7 +48,7 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
-          projectId: dog-log-dev
+          projectId: dog-log-dev-95fe5
           channelId: pr-${{ github.event.pull_request.number }}
           expires: 7d
           entryPoint: .
