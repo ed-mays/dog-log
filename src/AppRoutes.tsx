@@ -18,11 +18,16 @@ export function AppRoutes() {
   const enableAddPet = useFeatureFlag('addPetEnabled');
   const enablePetActions = useFeatureFlag('petActionsEnabled');
   const { t } = useTranslation('common');
-  const { user } = useAuthStore();
+  const { user, initializing } = useAuthStore();
+
+  if (initializing) {
+    return <LoadingIndicator />;
+  }
 
   if (!user) {
     return (
       <Routes>
+        <Route path="/" element={<Navigate to="/welcome" replace />} />
         <Route path="/welcome" element={<WelcomePage />} />
         <Route path="/pets/*" element={<Navigate to="/welcome" replace />} />
         <Route path="*" element={<NotFoundPage />} />
@@ -33,6 +38,8 @@ export function AppRoutes() {
   return (
     <Suspense fallback={<LoadingIndicator />}>
       <Routes>
+        <Route path="/" element={<Navigate to="/pets" replace />} />
+        <Route path="/welcome" element={<Navigate to="/pets" replace />} />
         <Route
           path="/pets"
           element={

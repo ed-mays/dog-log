@@ -112,14 +112,15 @@ it('renders localized Feature Unavailable text via shared test i18n', async () =
   expect(await screen.findByText(expected)).toBeInTheDocument();
 });
 
-// Authenticated user visiting /welcome should see NotFound (welcome is unauth-only)
-it('renders NotFound for /welcome when authenticated', async () => {
+// Authenticated user visiting /welcome should be redirected to /pets
+it('redirects /welcome to /pets when authenticated', async () => {
   // Authenticated by default
   (useFeatureFlag as unknown as vi.Mock).mockReturnValue(true);
 
   render(<AppRoutes />, { initialRoutes: ['/welcome'] });
 
-  expect(await screen.findByTestId('not-found-page')).toBeInTheDocument();
+  // Expect the pet list to render after redirect to /pets
+  expect(await screen.findByTestId('pet-list')).toBeInTheDocument();
 });
 
 // Positive case: edit route renders when petActionsEnabled=true
