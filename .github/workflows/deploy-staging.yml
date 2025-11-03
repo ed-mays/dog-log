@@ -45,7 +45,7 @@ jobs:
               process.exit(1);
             }
             if (saPid && saPid !== envPid) {
-              console.error(`Mismatch: STG_FIREBASE_PROJECT_ID ("${envPid}") != service account project_id ("${saPid}")`);
+              console.error('Mismatch: STG_FIREBASE_PROJECT_ID ("' + envPid + '") != service account project_id ("' + saPid + '")');
               process.exit(1);
             }
           "
