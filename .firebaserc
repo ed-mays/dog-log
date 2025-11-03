@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "dog-log-5d198"
+    "default": "dog-log-dev-95fe5",
+    "dev": "dog-log-dev-95fe5",
+    "staging": "dog-log-staging"
   }
 }

@@ -224,3 +224,128 @@ Troubleshooting HTML coverage:
   ```
 
 The CI will enforce minimum per-file coverage thresholds (branches, functions, statements, and lines at ≥90%). See `decisions/adr/033-TESTING-minimum-test-coverage-thresholds.md` for rationale.
+
+---
+
+## CI/CD and Hosting
+
+This project ships with a simple, robust GitHub Actions + Firebase Hosting setup. It enforces quality on pull requests and provides preview/staging deployments.
+
+### Workflows
+
+- CI (PR): `.github/workflows/ci-pr.yml`
+  - Triggers on pull requests to `main`.
+  - Steps: install → synthesize `.env` for tests → `lint` → `test:coverage` (90% gate via `vitest.config.ts`) → `build`.
+  - Uploads HTML coverage artifact (`coverage/`).
+
+- Deploy Preview (PR): `.github/workflows/deploy-preview.yml`
+  - Triggers on pull requests to `main`.
+  - Builds with DEV environment values and deploys a Firebase Hosting Preview Channel on the DEV project.
+  - Posts/refreshes a comment with the preview URL on the PR.
+  - Skips on forked PRs (secrets are not available to forks).
+
+- Deploy Staging (main): `.github/workflows/deploy-staging.yml`
+  - Triggers on pushes to `main`.
+  - Builds with STAGING environment values and deploys to the staging Firebase project (live channel by default).
+
+### Required checks and branch protection
+
+- Protect `main`:
+  - Require pull requests (block direct pushes).
+  - Require passing checks: lint, tests (coverage gate), build.
+  - Optionally, require conversation resolution.
+
+### Environments and Firebase projects
+
+- Separate Firebase projects recommended:
+  - DEV: used for PR preview channels (e.g., `dog-log-dev-xxxx`).
+  - STAGING: used for merges to `main` (e.g., `dog-log-staging-xxxx`).
+- Enable Hosting in each project at least once (Firebase Console → Build → Hosting → Get started).
+- The app is a SPA; Vite’s build output is `dist/`.
+  - `firebase.json` is configured with `public: "dist"`, SPA rewrites (`/** → /index.html`), and caching headers.
+
+### GitHub Actions configuration (vars and secrets)
+
+Because Vite embeds `VITE_*` values at build time, the workflows synthesize a temporary `.env` before running `npm run test:coverage` and `npm run build`.
+
+- Repository Variables (safe, non-secret — visible to CI):
+  - DEV variables: `DEV_VITE_APP_TITLE`, `DEV_VITE_DEFAULT_LOCALE`, feature flags, and Firebase web config: `DEV_VITE_FIREBASE_API_KEY`, `DEV_VITE_FIREBASE_AUTH_DOMAIN`, `DEV_VITE_FIREBASE_PROJECT_ID`, `DEV_VITE_FIREBASE_STORAGE_BUCKET`, `DEV_VITE_FIREBASE_MESSAGING_SENDER_ID`, `DEV_VITE_FIREBASE_APP_ID`, `DEV_VITE_FIREBASE_MEASUREMENT_ID`.
+  - STAGING variables: the same keys prefixed with `STG_...` (e.g., `STG_VITE_FIREBASE_PROJECT_ID`).
+  - Optional convenience: `DEV_FIREBASE_PROJECT_ID` to reference the exact Firebase Project ID in workflows.
+
+- Repository Secrets (sensitive):
+  - `FIREBASE_SERVICE_ACCOUNT_DEV` → JSON key for a service account in the DEV project.
+  - `FIREBASE_SERVICE_ACCOUNT_STAGING` → JSON key for a service account in the STAGING project.
+  - Minimum roles for each service account: `Firebase Hosting Admin` + `Viewer` (optionally `Service Account Token Creator`).
+
+- The workflows write a temporary `.env` like:
+  ```bash
+  {
+    echo "VITE_APP_TITLE=${{ vars.DEV_VITE_APP_TITLE }}";
+    echo "VITE_DEFAULT_LOCALE=${{ vars.DEV_VITE_DEFAULT_LOCALE }}";
+    echo "VITE_FLAG_ADD_PET_ENABLED=${{ vars.DEV_VITE_FLAG_ADD_PET_ENABLED }}";
+    echo "VITE_FIREBASE_API_KEY=${{ vars.DEV_VITE_FIREBASE_API_KEY }}";
+    echo "VITE_FIREBASE_AUTH_DOMAIN=${{ vars.DEV_VITE_FIREBASE_AUTH_DOMAIN }}";
+    echo "VITE_FIREBASE_PROJECT_ID=${{ vars.DEV_VITE_FIREBASE_PROJECT_ID }}";
+    echo "VITE_FIREBASE_STORAGE_BUCKET=${{ vars.DEV_VITE_FIREBASE_STORAGE_BUCKET }}";
+    echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ vars.DEV_VITE_FIREBASE_MESSAGING_SENDER_ID }}";
+    echo "VITE_FIREBASE_APP_ID=${{ vars.DEV_VITE_FIREBASE_APP_ID }}";
+    echo "VITE_FIREBASE_MEASUREMENT_ID=${{ vars.DEV_VITE_FIREBASE_MEASUREMENT_ID }}";
+    echo "VITE_USE_EMULATORS=false";
+  } > .env
+  ```
+
+### Firebase initialization in code (tests & CI friendly)
+
+- `src/firebase.ts` uses lazy initialization to avoid SDK assertions during test imports.
+- It reads `VITE_*` values and falls back to safe test strings if missing.
+- Emulators connect only when `VITE_USE_EMULATORS === 'true'` (recommended only for local dev).
+
+### Local development
+
+- Put your local values in `.env.local` (gitignored). Example keys:
+  - `VITE_APP_TITLE`, `VITE_DEFAULT_LOCALE`, feature flags
+  - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`, `VITE_FIREBASE_MEASUREMENT_ID`
+- Start emulators + dev server:
+  - `npm run start:firebase` (emulators)
+  - `npm run dev` (Vite)
+- To deploy manually from your machine (once authenticated via `firebase login`):
+  ```bash
+  firebase use dev && npm run build && firebase deploy
+  firebase use staging && npm run build && firebase deploy
+  ```
+
+### PR Previews and Staging behavior
+
+- PR Previews: each same‑repo PR gets a short‑lived preview channel URL on the DEV project. Forked PRs are skipped by design (no secrets on forks).
+- Staging: merges to `main` deploy to the STAGING project’s live channel (or a permanent `staging` channel if you choose to configure it).
+
+### Coverage requirements
+
+- The repository enforces a 90% coverage gate via `vitest.config.ts`.
+- CI runs `npm run test:coverage`; if below threshold, the job fails.
+
+### Troubleshooting CI/CD
+
+- Firebase project not found / permission errors:
+  - Ensure the workflow `projectId` exactly matches the Firebase Project ID from Console (IDs may have suffixes).
+  - Verify `FIREBASE_SERVICE_ACCOUNT_DEV` JSON’s `project_id` matches and that the service account has the required roles.
+  - Make sure Hosting is enabled in that project.
+
+- `auth/invalid-api-key` during tests:
+  - Ensure the CI workflow writes a `.env` before tests, or rely on the safe fallbacks in `src/firebase.ts`.
+
+- Preview deploy 403 on forks:
+  - Expected; previews intentionally skip forked PRs. The job is guarded to run only for same‑repo PRs.
+
+- CSP / headers:
+  - `firebase.json` can include security headers (CSP, Referrer-Policy, etc.). Tighten as needed for production.
+
+### ADRs
+
+See `/decisions/adr` for decisions related to:
+
+- Hosting choice (Firebase Hosting over App Hosting)
+- CI authentication method (service account JSON now, OIDC later)
+- Environment variable strategy (build-time `VITE_*` via GitHub Actions variables)
+- Branch protection and required checks

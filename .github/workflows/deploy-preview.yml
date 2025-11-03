@@ -1,0 +1,54 @@
+name: Deploy Preview (PR)
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write # to post/refresh PR comment with preview URL
+  checks: write
+  statuses: write
+  deployments: write
+
+jobs:
+  preview:
+    # Only run for PRs from the same repository (skip forks)
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Build with dev environment values
+      - name: Create .env for DEV build
+        run: |
+          {
+            echo "VITE_APP_TITLE=${{ vars.DEV_VITE_APP_TITLE || 'Dog-Log (PR Preview)' }}";
+            echo "VITE_DEFAULT_LOCALE=${{ vars.DEV_VITE_DEFAULT_LOCALE || 'en' }}";
+            echo "VITE_ADD_PET_ENABLED=${{ vars.DEV_VITE_ADD_PET_ENABLED || 'true' }}";
+            echo "VITE_FIREBASE_API_KEY=${{ vars.DEV_VITE_FIREBASE_API_KEY || 'test' }}";
+            echo "VITE_FIREBASE_AUTH_DOMAIN=${{ vars.DEV_VITE_FIREBASE_AUTH_DOMAIN || 'test.firebaseapp.com' }}";
+            echo "VITE_FIREBASE_PROJECT_ID=${{ vars.DEV_VITE_FIREBASE_PROJECT_ID || 'dev-project' }}";
+            echo "VITE_FIREBASE_STORAGE_BUCKET=${{ vars.DEV_VITE_FIREBASE_STORAGE_BUCKET || 'dev.appspot.com' }}";
+            echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ vars.DEV_VITE_FIREBASE_MESSAGING_SENDER_ID || '1234567890' }}";
+            echo "VITE_FIREBASE_APP_ID=${{ vars.DEV_VITE_FIREBASE_APP_ID || '1:123:web:abc' }}";
+            echo "VITE_FIREBASE_MEASUREMENT_ID=${{ vars.DEV_VITE_FIREBASE_MEASUREMENT_ID || 'G-TEST' }}";
+          } > .env
+      - run: npm run build
+      # Deploy the built artifacts to a PR-specific preview channel
+      - name: Deploy to Firebase Hosting Preview Channel
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
+          projectId: dog-log-dev-95fe5
+          channelId: pr-${{ github.event.pull_request.number }}
+          expires: 7d
+          entryPoint: .
