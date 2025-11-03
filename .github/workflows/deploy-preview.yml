@@ -77,7 +77,7 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
           projectId: ${{ vars.DEV_FIREBASE_PROJECT_ID }}
-          site: ${{ vars.DEV_FIREBASE_PREVIEW_SITE }}
+          target: preview
           channelId: live
           entryPoint: .
 

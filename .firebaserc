@@ -3,5 +3,12 @@
     "default": "dog-log-dev-95fe5",
     "dev": "dog-log-dev-95fe5",
     "staging": "dog-log-staging"
+  },
+  "targets": {
+    "dog-log-dev-95fe5": {
+      "hosting": {
+        "preview": ["dog-log-dev-95fe5-preview"]
+      }
+    }
   }
 }
