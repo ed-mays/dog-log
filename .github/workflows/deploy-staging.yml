@@ -1,0 +1,45 @@
+name: Deploy Staging (main)
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Build with staging environment values
+      - name: Create .env for STAGING build
+        run: |
+          {
+            echo "VITE_APP_TITLE=${{ vars.STG_VITE_APP_TITLE }}";
+            echo "VITE_DEFAULT_LOCALE=${{ vars.STG_VITE_DEFAULT_LOCALE }}";
+            echo "VITE_ADD_PET_ENABLED=${{ vars.STG_VITE_ADD_PET_ENABLED }}";
+            echo "VITE_FIREBASE_API_KEY=${{ vars.STG_VITE_FIREBASE_API_KEY }}";
+            echo "VITE_FIREBASE_AUTH_DOMAIN=${{ vars.STG_VITE_FIREBASE_AUTH_DOMAIN }}";
+            echo "VITE_FIREBASE_PROJECT_ID=${{ vars.STG_VITE_FIREBASE_PROJECT_ID }}";
+            echo "VITE_FIREBASE_STORAGE_BUCKET=${{ vars.STG_VITE_FIREBASE_STORAGE_BUCKET }}";
+            echo "VITE_FIREBASE_MESSAGING_SENDER_ID=${{ vars.STG_VITE_FIREBASE_MESSAGING_SENDER_ID }}";
+            echo "VITE_FIREBASE_APP_ID=${{ vars.STG_VITE_FIREBASE_APP_ID }}";
+            echo "VITE_FIREBASE_MEASUREMENT_ID=${{ vars.STG_VITE_FIREBASE_MEASUREMENT_ID }}";
+          } > .env
+      - run: npm run build
+      - name: Deploy to Firebase Hosting (staging live site)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
+          projectId: dog-log-staging
+          channelId: live
+          entryPoint: .
