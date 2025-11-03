@@ -26,9 +26,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: 'pnpm'
 
-      - run: npm ci
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - run: pnpm install --frozen-lockfile=false
 
       # Verify required repository variables are set (stable domain deploy)
       - name: Verify DEV_FIREBASE_PREVIEW_SITE and DEV_FIREBASE_PROJECT_ID are set
@@ -62,7 +68,7 @@ jobs:
             echo "VITE_FIREBASE_MEASUREMENT_ID=${{ vars.DEV_VITE_FIREBASE_MEASUREMENT_ID || 'G-TEST' }}";
             echo "VITE_USE_EMULATORS=false";
           } > .env
-      - run: npm run build
+      - run: pnpm run build
       # Verify required repository variables are set (stable domain deploy)
       - name: Verify DEV_FIREBASE_PREVIEW_SITE and DEV_FIREBASE_PROJECT_ID are set
         run: |

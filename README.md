@@ -35,26 +35,51 @@ translation libraries.
 ### Install dependencies
 
 ```bash
-npm install
+# Using Corepack (recommended)
+corepack enable
+corepack use pnpm@9.12.3
+pnpm install
 ```
+
+### Using pnpm with nvm
+
+If you use nvm, align with CI and the repo’s pinned package manager:
+
+```bash
+# Switch to Node 20 (matches CI)
+nvm install 20
+nvm use 20
+
+# Enable Corepack and activate the repo-pinned pnpm
+corepack enable
+corepack use pnpm@9.12.3   # uses the version declared in package.json
+
+# Verify
+pnpm -v
+```
+
+Troubleshooting:
+
+- If you see "command not found: pnpm", run the Corepack commands above in the same terminal after `nvm use 20`.
+- Some IDE terminals don’t initialize nvm; open a login shell or ensure your shell rc loads nvm.
 
 ### Available Scripts
 
-| Script                       | Description                             |
-| ---------------------------- | --------------------------------------- |
-| `npm run dev`                | Start development server (Vite)         |
-| `npm run dev:with-emulators` | Start dev server and Firebase emulators |
-| `npm run build`              | Type-check & build for production       |
-| `npm run preview`            | Preview local production build          |
-| `npm run lint`               | Run ESLint for code linting             |
-| `npm run lint:fix`           | Auto-fix lint issues                    |
-| `npm run format`             | Format codebase with Prettier           |
-| `npm run test`               | Run all tests (unit and integration)    |
-| `npm run test:unit`          | Run only unit & component tests         |
-| `npm run test:watch`         | Run unit tests in watch mode            |
-| `npm run test:integration`   | Run only integration tests              |
-| `npm run test:coverage`      | Run unit tests with code coverage       |
-| `npm run start:firebase`     | Start Firebase emulators locally        |
+| Script                        | Description                             |
+| ----------------------------- | --------------------------------------- |
+| `pnpm run dev`                | Start development server (Vite)         |
+| `pnpm run dev:with-emulators` | Start dev server and Firebase emulators |
+| `pnpm run build`              | Type-check & build for production       |
+| `pnpm run preview`            | Preview local production build          |
+| `pnpm run lint`               | Run ESLint for code linting             |
+| `pnpm run lint:fix`           | Auto-fix lint issues                    |
+| `pnpm run format`             | Format codebase with Prettier           |
+| `pnpm run test`               | Run all tests (unit and integration)    |
+| `pnpm run test:unit`          | Run only unit & component tests         |
+| `pnpm run test:watch`         | Run unit tests in watch mode            |
+| `pnpm run test:integration`   | Run only integration tests              |
+| `pnpm run test:coverage`      | Run unit tests with code coverage       |
+| `pnpm run start:firebase`     | Start Firebase emulators locally        |
 
 ---
 
@@ -62,12 +87,12 @@ npm install
 
 1. Start Firebase emulators first in a dedicated terminal:
 
-- `npm run start:firebase`
+- `pnpm run start:firebase`
 - Auth emulator runs on http://localhost:9099 and the Emulator UI will be available as configured in firebase.json.
 
 2. In a second terminal, start the Vite dev server:
 
-- `npm run dev`
+- `pnpm run dev`
 
 3. The app auto-connects to the Auth emulator when running on `localhost` (see `src/firebase.ts`).
 4. For test users, use the Emulator UI to create accounts. Do not use real accounts in local testing.
@@ -179,7 +204,7 @@ This project uses Vitest with the V8 coverage provider and generates an HTML cov
 How to generate coverage:
 
 ```bash
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 Where to find the report:
@@ -220,7 +245,7 @@ Troubleshooting HTML coverage:
   - `all: true`, `include: ['src/**/*.{ts,tsx}']`, and a conservative `exclude` list to avoid non-source files.
 - If the report looks stale or fails to open, try regenerating from a clean slate:
   ```bash
-  rm -rf coverage && npm run test:coverage
+  rm -rf coverage && pnpm run test:coverage
   ```
 
 The CI will enforce minimum per-file coverage thresholds (branches, functions, statements, and lines at ≥90%). See `decisions/adr/033-TESTING-minimum-test-coverage-thresholds.md` for rationale.
@@ -266,7 +291,7 @@ This project ships with a simple, robust GitHub Actions + Firebase Hosting setup
 
 ### GitHub Actions configuration (vars and secrets)
 
-Because Vite embeds `VITE_*` values at build time, the workflows synthesize a temporary `.env` before running `npm run test:coverage` and `npm run build`.
+Because Vite embeds `VITE_*` values at build time, the workflows synthesize a temporary `.env` before running `pnpm run test:coverage` and `pnpm run build`.
 
 - Repository Variables (safe, non-secret — visible to CI):
   - DEV variables: `DEV_VITE_APP_TITLE`, `DEV_VITE_DEFAULT_LOCALE`, feature flags, and Firebase web config: `DEV_VITE_FIREBASE_API_KEY`, `DEV_VITE_FIREBASE_AUTH_DOMAIN`, `DEV_VITE_FIREBASE_PROJECT_ID`, `DEV_VITE_FIREBASE_STORAGE_BUCKET`, `DEV_VITE_FIREBASE_MESSAGING_SENDER_ID`, `DEV_VITE_FIREBASE_APP_ID`, `DEV_VITE_FIREBASE_MEASUREMENT_ID`.
@@ -307,12 +332,12 @@ Because Vite embeds `VITE_*` values at build time, the workflows synthesize a te
   - `VITE_APP_TITLE`, `VITE_DEFAULT_LOCALE`, feature flags
   - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`, `VITE_FIREBASE_MEASUREMENT_ID`
 - Start emulators + dev server:
-  - `npm run start:firebase` (emulators)
-  - `npm run dev` (Vite)
+  - `pnpm run start:firebase` (emulators)
+  - `pnpm run dev` (Vite)
 - To deploy manually from your machine (once authenticated via `firebase login`):
   ```bash
-  firebase use dev && npm run build && firebase deploy
-  firebase use staging && npm run build && firebase deploy
+  firebase use dev && pnpm run build && firebase deploy
+  firebase use staging && pnpm run build && firebase deploy
   ```
 
 ### PR Previews and Staging behavior
@@ -326,7 +351,7 @@ Because Vite embeds `VITE_*` values at build time, the workflows synthesize a te
 ### Coverage requirements
 
 - The repository enforces a 90% coverage gate via `vitest.config.ts`.
-- CI runs `npm run test:coverage`; if below threshold, the job fails.
+- CI runs `pnpm run test:coverage`; if below threshold, the job fails.
 
 ### Troubleshooting CI/CD
 
