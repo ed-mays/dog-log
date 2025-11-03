@@ -46,13 +46,30 @@ jobs:
             echo "VITE_FIREBASE_MEASUREMENT_ID=${{ vars.DEV_VITE_FIREBASE_MEASUREMENT_ID || 'G-TEST' }}";
           } > .env
       - run: npm run build
-      # Deploy the built artifacts to a PR-specific preview channel
-      - name: Deploy to Firebase Hosting Preview Channel
+      # Verify required repository variables are set (stable domain deploy)
+      - name: Verify DEV_FIREBASE_PREVIEW_SITE and DEV_FIREBASE_PROJECT_ID are set
+        run: |
+          if [ -z "${{ vars.DEV_FIREBASE_PREVIEW_SITE }}" ]; then
+            echo "Repository variable DEV_FIREBASE_PREVIEW_SITE is not set. Set it to the Hosting site ID for the preview site (e.g., dog-log-dev-95fe5-preview)." >&2
+            exit 1
+          fi
+          if [ -z "${{ vars.DEV_FIREBASE_PROJECT_ID }}" ]; then
+            echo "Repository variable DEV_FIREBASE_PROJECT_ID is not set. Set it to your DEV Firebase project ID (e.g., dog-log-dev-95fe5)." >&2
+            exit 1
+          fi
+
+      # Deploy the built artifacts to a stable preview site (live channel)
+      - name: Deploy to Firebase Hosting (stable preview site live)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
-          projectId: dog-log-dev-95fe5
-          channelId: preview
-          expires: 7d
+          projectId: ${{ vars.DEV_FIREBASE_PROJECT_ID }}
+          site: ${{ vars.DEV_FIREBASE_PREVIEW_SITE }}
+          channelId: live
           entryPoint: .
+
+      # Echo the preview URL to the logs
+      - name: Show stable preview URL
+        run:
+          echo "Preview: https://${{ vars.DEV_FIREBASE_PREVIEW_SITE }}.web.app"
