@@ -30,6 +30,18 @@ jobs:
 
       - run: npm ci
 
+      # Verify required repository variables are set (stable domain deploy)
+      - name: Verify DEV_FIREBASE_PREVIEW_SITE and DEV_FIREBASE_PROJECT_ID are set
+        run: |
+          if [ -z "${{ vars.DEV_FIREBASE_PREVIEW_SITE }}" ]; then
+            echo "Repository variable DEV_FIREBASE_PREVIEW_SITE is not set. Set it to the Hosting site ID for the preview site (e.g., dog-log-dev-95fe5-preview)." >&2
+            exit 1
+          fi
+          if [ -z "${{ vars.DEV_FIREBASE_PROJECT_ID }}" ]; then
+            echo "Repository variable DEV_FIREBASE_PROJECT_ID is not set. Set it to your DEV Firebase project ID (e.g., dog-log-dev-95fe5)." >&2
+            exit 1
+          fi
+
       # Build with dev environment values
       - name: Create .env for DEV build
         run: |
@@ -71,5 +83,5 @@ jobs:
 
       # Echo the preview URL to the logs
       - name: Show stable preview URL
-        run:
+        run: |
           echo "Preview: https://${{ vars.DEV_FIREBASE_PREVIEW_SITE }}.web.app"
