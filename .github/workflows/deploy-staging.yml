@@ -31,6 +31,15 @@ jobs:
           if [ -z "${{ vars.STG_VITE_FIREBASE_PROJECT_ID }}" ]; then echo "Missing repo variable: STG_VITE_FIREBASE_PROJECT_ID" >&2; exit 1; fi
           if [ -z "${{ vars.STG_VITE_FIREBASE_APP_ID }}" ]; then echo "Missing repo variable: STG_VITE_FIREBASE_APP_ID" >&2; exit 1; fi
 
+      - name: Verify STAGING projectId and service account
+        run: |
+          if [ -z "${{ vars.STG_FIREBASE_PROJECT_ID }}" ]; then echo "Missing repo variable: STG_FIREBASE_PROJECT_ID" >&2; exit 1; fi
+          echo "Using STAGING projectId=${{ vars.STG_FIREBASE_PROJECT_ID }}"
+          # Write service account JSON to a temp file to read project_id safely
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}' > sa.json
+          node -e "const fs=require('fs');const sa=JSON.parse(fs.readFileSync('sa.json','utf8'));const pid=sa.project_id||'N/A';console.log('Service account project_id=',pid);if(sa.project_id && sa.project_id !== process.env.PROJECT_ID){console.error('Mismatch: STG_FIREBASE_PROJECT_ID != service account project_id');process.exit(1);}" PROJECT_ID=${{ vars.STG_FIREBASE_PROJECT_ID }}
+          rm -f sa.json
+
       # Build with staging environment values
       - name: Create .env for STAGING build
         run: |
