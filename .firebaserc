@@ -9,6 +9,11 @@
       "hosting": {
         "preview": ["dog-log-dev-95fe5-preview"]
       }
+    },
+    "dog-log-staging": {
+      "hosting": {
+        "staging": ["dog-log-staging"]
+      }
     }
   }
 }
