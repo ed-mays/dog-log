@@ -11,6 +11,10 @@ permissions:
   statuses: write
   deployments: write
 
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   preview:
     # Only run for PRs from the same repository (skip forks)
@@ -49,6 +53,6 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
           projectId: dog-log-dev-95fe5
-          channelId: pr-${{ github.event.pull_request.number }}
+          channelId: preview
           expires: 7d
           entryPoint: .
