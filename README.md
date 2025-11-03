@@ -317,7 +317,10 @@ Because Vite embeds `VITE_*` values at build time, the workflows synthesize a te
 
 ### PR Previews and Staging behavior
 
-- PR Previews: each same‑repo PR gets a short‑lived preview channel URL on the DEV project. Forked PRs are skipped by design (no secrets on forks).
+- PR Previews: all same‑repo PRs deploy to a single permanent preview channel on the DEV project with a stable URL:
+  - https://dog-log-dev-95fe5--preview.web.app
+  - https://dog-log-dev-95fe5--preview.firebaseapp.com
+    This stable domain is added to Firebase Auth → Authorized domains so Google sign‑in works on previews. Forked PRs are skipped by design (no secrets on forks).
 - Staging: merges to `main` deploy to the STAGING project’s live channel (or a permanent `staging` channel if you choose to configure it).
 
 ### Coverage requirements
