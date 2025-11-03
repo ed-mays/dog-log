@@ -399,8 +399,8 @@ Nothing here blocks you from deploying locally. After you add `firebase.json` an
 - [x] Add `firebase.json` and `.firebaserc` as shown.
 - [x] Create `github-actions-deployer` service account in each project; upload their JSON keys to repo secrets.
 - [x] Add GitHub Actions repo variables for DEV*\*/STG*\* `VITE_...` values.
+- [x] Commit the three workflows: `ci-pr.yml`, `deploy-preview.yml`, `deploy-staging.yml`.
 
-5. Commit the three workflows: `ci-pr.yml`, `deploy-preview.yml`, `deploy-staging.yml`.
 6. Add branch protection on `main` requiring CI checks.
 7. Open a PR → see CI and Preview URL. Merge to main → staging site updates automatically.
 
