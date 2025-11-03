@@ -19,13 +19,15 @@ export type AuthState = {
 let unsubscribe: Unsubscribe | null = null;
 const initialState = {
   user: null,
-  initializing: false,
+  initializing: true,
   error: null,
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
   ...initialState,
   initAuthListener: () => {
+    // Enter initializing state immediately
+    set({ initializing: true });
     // Reinitialize listener safely if already set (useful for tests or HMR)
     if (unsubscribe) {
       try {

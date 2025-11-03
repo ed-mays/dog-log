@@ -34,6 +34,9 @@ export default defineConfig({
         'src/main.tsx',
         'src/i18n.ts',
         '**/*.d.ts',
+        // Exclude barrel index files that only re-export
+        'src/**/index.ts',
+        'src/**/index.tsx',
       ],
       thresholds: {
         perFile: true,

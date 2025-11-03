@@ -34,7 +34,7 @@ function App() {
         </header>
       )}
       <Toolbar />
-      {appLoading && initializing && <LoadingIndicator />}
+      {appLoading && !initializing && <LoadingIndicator />}
       {errorDetail && <ErrorIndicator text={errorText} />}
       <AppRoutes />
     </div>

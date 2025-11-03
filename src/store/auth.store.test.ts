@@ -126,7 +126,7 @@ describe('auth.store', () => {
     useAuthStore.getState().reset();
     const { user, initializing, error } = useAuthStore.getState();
     expect(user).toBeNull();
-    expect(initializing).toBe(false);
+    expect(initializing).toBe(true);
     expect(error).toBeNull();
   });
 });

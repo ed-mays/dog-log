@@ -143,4 +143,26 @@ describe('App routing integration (additional)', () => {
 
     expect(await screen.findByText('Feature not enabled')).toBeInTheDocument();
   });
+
+  it('redirects from /welcome to /pets when authenticated', async () => {
+    (mockUseAuthStore as vi.Mock).mockImplementation(
+      createAuthStoreMock({
+        user: {
+          uid: 'test-user',
+          displayName: null,
+          email: null,
+          photoURL: null,
+        } as AppUser,
+        initializing: false,
+      }).impl as unknown as typeof useAuthStore
+    );
+
+    renderTestUtils(<AppComponent />, {
+      featureFlags: { petListEnabled: true, authEnabled: true },
+      initialRoutes: ['/welcome'],
+    });
+
+    // After auth, the /welcome route should redirect to /pets and render the pet list
+    expect(await screen.findByTestId('pet-list')).toBeInTheDocument();
+  });
 });

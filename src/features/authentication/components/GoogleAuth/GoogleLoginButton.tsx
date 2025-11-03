@@ -46,8 +46,7 @@ const GoogleLoginButton: React.FC<LoginButtonProps> = ({
       variant="contained"
       className={className}
       onClick={onClick}
-      disabled={disabled || initializing}
-      aria-busy={initializing || undefined}
+      disabled={disabled ?? initializing}
       aria-label={t('continueWithGoogle', 'Continue with Google')}
       data-testid="login-button"
     >
