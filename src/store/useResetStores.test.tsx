@@ -54,7 +54,7 @@ describe('useResetStores', () => {
     cleanup();
   });
 
-  it('calls reset on pets, auth, and ui stores', () => {
+  it('calls reset on pets and ui stores (auth is not reset)', () => {
     let callback: (() => void) | null = null;
 
     // Render a wrapper component that calls the hook
@@ -72,7 +72,7 @@ describe('useResetStores', () => {
     callback!(); // Invoke the reset function returned by the hook
 
     expect(petsResetSpy).toHaveBeenCalledTimes(1);
-    expect(authResetSpy).toHaveBeenCalledTimes(1);
+    expect(authResetSpy).not.toHaveBeenCalled();
     expect(uiResetSpy).toHaveBeenCalledTimes(1);
   });
 
