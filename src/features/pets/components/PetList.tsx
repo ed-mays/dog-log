@@ -73,7 +73,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
 
   return (
     <div data-testid={dataTestId}>
-      {addPetEnabled && (
+      {addPetEnabled && pets.length > 0 && (
         <>
           <div
             style={{
