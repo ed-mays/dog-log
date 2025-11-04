@@ -127,12 +127,12 @@ test('shows NavigationBar header when user exists and authEnabled=true', async (
   expect(await screen.findByLabelText('user-controls')).toBeInTheDocument();
 });
 
-test('hides NavigationBar when user exists but authEnabled=false', async () => {
+test('shows NavigationBar when authEnabled=false (bypass auth)', async () => {
   render(<App />, {
     initialRoutes: ['/pets'],
     featureFlags: { authEnabled: false },
   });
-  expect(screen.queryByLabelText('user-controls')).not.toBeInTheDocument();
+  expect(await screen.findByLabelText('user-controls')).toBeInTheDocument();
 });
 
 test('hides NavigationBar when user is null even if authEnabled=true', async () => {
