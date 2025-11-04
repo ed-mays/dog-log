@@ -1,20 +1,20 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { usePetsStore } from '@store/pets.store.ts';
-import { useUiStore } from '@store/ui.store';
+import { useAuthStore } from '@store/auth.store.ts';
 
 export function RoutePrefetcher() {
   const location = useLocation();
   const pets = usePetsStore((s) => s.pets);
   const fetchPets = usePetsStore((s) => s.fetchPets);
-  const loading = useUiStore((s) => s.loading);
+  const { user, initializing } = useAuthStore();
 
   React.useEffect(() => {
     const onPetsRoute = location.pathname.startsWith('/pets');
-    if (onPetsRoute && pets.length === 0 && !loading) {
+    if (onPetsRoute && !initializing && user && pets.length === 0) {
       void fetchPets();
     }
-  }, [location.pathname, pets.length, fetchPets]);
+  }, [location.pathname, pets.length, fetchPets, user, initializing]);
 
   return null;
 }
