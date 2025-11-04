@@ -1,8 +1,10 @@
 name: Deploy Preview (PR)
 
 on:
-  pull_request:
-    branches: [main]
+  workflow_run:
+    workflows: ['CI (PR)']
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -12,16 +14,19 @@ permissions:
   deployments: write
 
 concurrency:
-  group: preview-${{ github.ref }}
+  group: preview-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
   preview:
-    # Only run for PRs from the same repository (skip forks)
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    # Only run when CI succeeded for a same-repo pull request
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.head_repository.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
+      # Check out the exact commit that CI validated
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -72,18 +77,6 @@ jobs:
             echo "VITE_USE_EMULATORS=false";
           } > .env
       - run: pnpm run build
-      # Verify required repository variables are set (stable domain deploy)
-      - name: Verify DEV_FIREBASE_PREVIEW_SITE and DEV_FIREBASE_PROJECT_ID are set
-        run: |
-          if [ -z "${{ vars.DEV_FIREBASE_PREVIEW_SITE }}" ]; then
-            echo "Repository variable DEV_FIREBASE_PREVIEW_SITE is not set. Set it to the Hosting site ID for the preview site (e.g., dog-log-dev-95fe5-preview)." >&2
-            exit 1
-          fi
-          if [ -z "${{ vars.DEV_FIREBASE_PROJECT_ID }}" ]; then
-            echo "Repository variable DEV_FIREBASE_PROJECT_ID is not set. Set it to your DEV Firebase project ID (e.g., dog-log-dev-95fe5)." >&2
-            exit 1
-          fi
-
       # Deploy the built artifacts to a stable preview site (live channel)
       - name: Deploy to Firebase Hosting (stable preview site live)
         uses: FirebaseExtended/action-hosting-deploy@v0
