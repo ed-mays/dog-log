@@ -4,8 +4,8 @@ import type { Pet } from '../types.ts';
 import { loadNamespace } from '../../../i18n.ts';
 import { useTranslation } from 'react-i18next';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
-import { useNavigate } from 'react-router-dom';
-import { TableRow, TableCell, Button } from '@mui/material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { TableRow, TableCell, Button, Link } from '@mui/material';
 
 type PetListRowProps = {
   pet: Pet;
@@ -39,7 +39,11 @@ export function PetListRow({ pet, onDelete, onEdit }: PetListRowProps) {
 
   return (
     <TableRow key={pet.id}>
-      <TableCell className={styles.td}>{pet.name}</TableCell>
+      <TableCell className={styles.td}>
+        <Link component={RouterLink} to={`/pets/${pet.id}`} underline="hover">
+          {pet.name}
+        </Link>
+      </TableCell>
       <TableCell className={styles.td}>{pet.breed}</TableCell>
       {petActionsEnabled && (
         <TableCell className={styles.td}>

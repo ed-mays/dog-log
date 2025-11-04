@@ -13,6 +13,9 @@ import { Alert } from '@mui/material';
 const PetListPage = lazy(() => import('@features/pets/pages/petListPage.tsx'));
 const AddPetPage = lazy(() => import('@features/pets/pages/AddPetPage.tsx'));
 const EditPetPage = lazy(() => import('@features/pets/pages/EditPetPage.tsx'));
+const PetDetailsPage = lazy(
+  () => import('@features/pets/pages/PetDetailsPage.tsx')
+);
 
 export function AppRoutes() {
   const enablePetList = useFeatureFlag('petListEnabled');
@@ -57,6 +60,16 @@ export function AppRoutes() {
           element={
             enableAddPet ? (
               <AddPetPage />
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
+          }
+        />
+        <Route
+          path="/pets/:id"
+          element={
+            enablePetList ? (
+              <PetDetailsPage />
             ) : (
               <Navigate to="/feature-unavailable" replace />
             )
