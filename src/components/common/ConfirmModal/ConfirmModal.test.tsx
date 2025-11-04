@@ -162,3 +162,59 @@ describe('ConfirmModal', () => {
     expect(onAccept).toHaveBeenCalledTimes(2);
   });
 });
+
+import { withLocale } from '@test-utils';
+import i18n from '@testUtils/test-i18n';
+
+// i18n tests for default button labels (en, es)
+describe('ConfirmModal i18n defaults', () => {
+  test('uses localized default button labels in English', async () => {
+    await withLocale('en', async () => {
+      const text = 'Are you sure?';
+      render(
+        <ConfirmModal text={text} onAccept={vi.fn()} onDecline={vi.fn()} />
+      );
+
+      const yesLabel = i18n.t('responses.yes', {
+        ns: 'common',
+        defaultValue: 'Yes',
+      });
+      const noLabel = i18n.t('responses.no', {
+        ns: 'common',
+        defaultValue: 'No',
+      });
+
+      expect(
+        await screen.findByRole('button', { name: yesLabel })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByRole('button', { name: noLabel })
+      ).toBeInTheDocument();
+    });
+  });
+
+  test('uses localized default button labels in Spanish', async () => {
+    await withLocale('es', async () => {
+      const text = '¿Seguro?';
+      render(
+        <ConfirmModal text={text} onAccept={vi.fn()} onDecline={vi.fn()} />
+      );
+
+      const yesLabel = i18n.t('responses.yes', {
+        ns: 'common',
+        defaultValue: 'Sí',
+      });
+      const noLabel = i18n.t('responses.no', {
+        ns: 'common',
+        defaultValue: 'No',
+      });
+
+      expect(
+        await screen.findByRole('button', { name: yesLabel })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByRole('button', { name: noLabel })
+      ).toBeInTheDocument();
+    });
+  });
+});

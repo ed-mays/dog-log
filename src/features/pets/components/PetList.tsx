@@ -8,7 +8,13 @@ import { loadNamespace } from '../../../i18n.ts';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
 import { usePetsStore } from '@store/pets.store.ts';
-import { IconButton, Tooltip } from '@mui/material';
+import {
+  IconButton,
+  Tooltip,
+  Alert,
+  Typography,
+  Link as MuiLink,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 type PetListProps = {
@@ -89,15 +95,15 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
       )}
 
       {error && (
-        <div role="alert" data-testid="pet-list-error">
+        <Alert severity="error" role="alert" data-testid="pet-list-error">
           {error}
-        </div>
+        </Alert>
       )}
 
       {saving && (
-        <div role="alert" data-testid="pet-list-error">
+        <Alert severity="info" role="alert" data-testid="pet-list-error">
           Saving...
-        </div>
+        </Alert>
       )}
 
       {pets.length === 0 ? (
@@ -105,9 +111,13 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           data-testid="no-pets-indicator"
           style={{ marginTop: '1rem', textAlign: 'center' }}
         >
-          <p>{t('noPetsLabel', { ns: 'petList' })}</p>
+          <Typography variant="body1" component="p">
+            {t('noPetsLabel', { ns: 'petList' })}
+          </Typography>
           {addPetEnabled && (
-            <Link to="/pets/new">{t('addFirstPetCta', { ns: 'petList' })}</Link>
+            <MuiLink component={Link} to="/pets/new">
+              {t('addFirstPetCta', { ns: 'petList' })}
+            </MuiLink>
           )}
         </div>
       ) : (
