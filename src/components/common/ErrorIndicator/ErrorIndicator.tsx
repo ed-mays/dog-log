@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Alert } from '@mui/material';
 
 export type ErrorIndicatorProps = {
   text?: string; // optional override of localized default
@@ -16,8 +17,13 @@ export function ErrorIndicator({
   const { t } = useTranslation('common');
   const label = text ?? t('error', 'Error...');
   return (
-    <div data-testid={dataTestId} role={role} aria-live={ariaLive}>
+    <Alert
+      severity="error"
+      data-testid={dataTestId}
+      role={role}
+      aria-live={ariaLive}
+    >
       {label}
-    </div>
+    </Alert>
   );
 }

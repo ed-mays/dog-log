@@ -8,7 +8,18 @@ import { loadNamespace } from '../../../i18n.ts';
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
 import { usePetsStore } from '@store/pets.store.ts';
-import { IconButton, Tooltip } from '@mui/material';
+import {
+  IconButton,
+  Tooltip,
+  Alert,
+  Typography,
+  Link as MuiLink,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 type PetListProps = {
@@ -89,15 +100,15 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
       )}
 
       {error && (
-        <div role="alert" data-testid="pet-list-error">
+        <Alert severity="error" role="alert" data-testid="pet-list-error">
           {error}
-        </div>
+        </Alert>
       )}
 
       {saving && (
-        <div role="alert" data-testid="pet-list-error">
+        <Alert severity="info" role="alert" data-testid="pet-list-error">
           Saving...
-        </div>
+        </Alert>
       )}
 
       {pets.length === 0 ? (
@@ -105,29 +116,33 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           data-testid="no-pets-indicator"
           style={{ marginTop: '1rem', textAlign: 'center' }}
         >
-          <p>{t('noPetsLabel', { ns: 'petList' })}</p>
+          <Typography variant="body1" component="p">
+            {t('noPetsLabel', { ns: 'petList' })}
+          </Typography>
           {addPetEnabled && (
-            <Link to="/pets/new">{t('addFirstPetCta', { ns: 'petList' })}</Link>
+            <MuiLink component={Link} to="/pets/new">
+              {t('addFirstPetCta', { ns: 'petList' })}
+            </MuiLink>
           )}
         </div>
       ) : (
-        <table className={styles.tableFullWidth}>
-          <thead>
-            <tr>
-              <th scope="col" className={styles.th}>
+        <Table className={styles.tableFullWidth}>
+          <TableHead>
+            <TableRow>
+              <TableCell component="th" scope="col" className={styles.th}>
                 {t('name', { ns: 'petProperties' })}
-              </th>
-              <th scope="col" className={styles.th}>
+              </TableCell>
+              <TableCell component="th" scope="col" className={styles.th}>
                 {t('breed', { ns: 'petProperties' })}
-              </th>
+              </TableCell>
               {petActionsEnabled && (
-                <th scope="col" className={styles.th}>
+                <TableCell component="th" scope="col" className={styles.th}>
                   {t('actions', { ns: 'common' })}
-                </th>
+                </TableCell>
               )}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {pets.map((pet) => (
               <PetListRow
                 key={pet.id}
@@ -136,8 +151,8 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
                 onEdit={(p) => navigate(`/pets/${p.id}/edit`)}
               />
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       )}
 
       {deletingPet && (
@@ -148,6 +163,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           })}
           onAccept={confirmDelete}
           onDecline={() => setDeletingPet(null)}
+          error={error}
         />
       )}
     </div>

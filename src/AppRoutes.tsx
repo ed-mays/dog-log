@@ -8,6 +8,7 @@ import { WelcomePage } from '@features/authentication/pages/WelcomePage.tsx';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
 import { NotFoundPage } from '@features/misc/pages/NotFoundPage.tsx';
 import { useIsAuthenticated } from '@features/authentication/hooks/useIsAuthenticated';
+import { Alert } from '@mui/material';
 
 const PetListPage = lazy(() => import('@features/pets/pages/petListPage.tsx'));
 const AddPetPage = lazy(() => import('@features/pets/pages/AddPetPage.tsx'));
@@ -73,7 +74,11 @@ export function AppRoutes() {
         />
         <Route
           path="/feature-unavailable"
-          element={<div>{t('featureNotEnabled', 'Feature not enabled')}</div>}
+          element={
+            <Alert severity="warning" role="alert">
+              {t('featureNotEnabled', 'Feature not enabled')}
+            </Alert>
+          }
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

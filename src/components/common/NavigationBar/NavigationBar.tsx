@@ -9,10 +9,12 @@ import {
 import PetsIcon from '@mui/icons-material/Pets';
 import { Link as RouterLink } from 'react-router-dom';
 import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
+import { useTranslation } from 'react-i18next';
 
 export function NavigationBar() {
+  const { t } = useTranslation('common');
   const APP_TITLE = 'Dog Log';
-  const PETS_LABEL = 'Pets';
+  const PETS_LABEL = t('nav.pets', 'Pets Default');
 
   return (
     <AppBar position="fixed" component="nav" aria-label="Primary">

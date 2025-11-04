@@ -49,7 +49,7 @@ describe('AppRoutes', () => {
     render(<AppRoutes />, { initialRoutes: ['/pets/new'] });
 
     // 2) Await a label rendered by the form
-    expect(await screen.findByLabelText('Name')).toBeInTheDocument();
+    expect(await screen.findByLabelText(/name/i)).toBeInTheDocument();
   });
   it('renders NotFound page for unknown routes when authenticated with localized text', async () => {
     // Authenticated by default from beforeEach

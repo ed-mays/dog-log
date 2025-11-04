@@ -5,6 +5,7 @@ import { loadNamespace } from '../../../i18n.ts';
 import { useTranslation } from 'react-i18next';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 import { useNavigate } from 'react-router-dom';
+import { TableRow, TableCell, Button } from '@mui/material';
 
 type PetListRowProps = {
   pet: Pet;
@@ -37,25 +38,24 @@ export function PetListRow({ pet, onDelete, onEdit }: PetListRowProps) {
   const deleteClick = () => onDelete?.(pet);
 
   return (
-    <tr key={pet.id}>
-      <td className={styles.td}>{pet.name}</td>
-      <td className={styles.td}>{pet.breed}</td>
+    <TableRow key={pet.id}>
+      <TableCell className={styles.td}>{pet.name}</TableCell>
+      <TableCell className={styles.td}>{pet.breed}</TableCell>
       {petActionsEnabled && (
-        <td className={styles.td}>
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
-            onClick={editClick}
-          >
+        <TableCell className={styles.td}>
+          <Button variant="outlined" color="primary" onClick={editClick}>
             {t('edit', { ns: 'common' })}
-          </button>
-          <button
-            className="bg-red-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
             onClick={deleteClick}
+            sx={{ ml: 1 }}
           >
             {t('delete', { ns: 'common' })}
-          </button>
-        </td>
+          </Button>
+        </TableCell>
       )}
-    </tr>
+    </TableRow>
   );
 }

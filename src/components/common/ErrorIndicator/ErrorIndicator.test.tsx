@@ -1,14 +1,32 @@
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 
-import { render, screen } from '@test-utils';
+import { render, screen, withLocale } from '@test-utils';
 import { describe, test } from 'vitest';
+import i18n from '@testUtils/test-i18n';
 
 describe('ErrorIndicator', () => {
-  // TODO: Implement test for i18n on default error indicator for en and es locales
-  test('renders the default error indicator', async () => {
-    render(<ErrorIndicator />);
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('Error...');
+  test('renders the default error indicator (English)', async () => {
+    await withLocale('en', async () => {
+      render(<ErrorIndicator />);
+      const alert = await screen.findByRole('alert');
+      const expected = i18n.t('error', {
+        ns: 'common',
+        defaultValue: 'Error...',
+      });
+      expect(alert).toHaveTextContent(expected);
+    });
+  });
+
+  test('renders the default error indicator (Spanish)', async () => {
+    await withLocale('es', async () => {
+      render(<ErrorIndicator />);
+      const alert = await screen.findByRole('alert');
+      const expected = i18n.t('error', {
+        ns: 'common',
+        defaultValue: 'Error...',
+      });
+      expect(alert).toHaveTextContent(expected);
+    });
   });
 
   test('renders custom text', async () => {
