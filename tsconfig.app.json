@@ -27,7 +27,7 @@
     "paths": {
       "@components/*": ["components/*"],
       "@firebase": ["firebase.tsx"],
-      "@i18n": ["i18n.tsx"],
+      "@i18n": ["i18n.ts"],
       "@store/*": ["store/*"],
       "@test-utils": ["test-utils.tsx"],
       "@testUtils/*": ["testUtils/*"],

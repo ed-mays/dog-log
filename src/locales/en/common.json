@@ -25,6 +25,7 @@
     "welcomeSubtitle": "Please sign in to continue."
   },
   "nav": {
-    "pets": "Pets"
+    "pets": "Pets",
+    "language": "Language"
   }
 }

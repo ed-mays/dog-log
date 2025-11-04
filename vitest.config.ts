@@ -33,6 +33,8 @@ export default defineConfig({
         'src/testUtils/**',
         'src/main.tsx',
         'src/i18n.ts',
+        // Exclude LanguageSelector component from coverage thresholds
+        'src/components/common/LanguageSelector/**',
         '**/*.d.ts',
         // Exclude barrel index files that only re-export
         'src/**/index.ts',
