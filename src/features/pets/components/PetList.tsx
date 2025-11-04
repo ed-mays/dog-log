@@ -148,6 +148,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           })}
           onAccept={confirmDelete}
           onDecline={() => setDeletingPet(null)}
+          error={error}
         />
       )}
     </div>
