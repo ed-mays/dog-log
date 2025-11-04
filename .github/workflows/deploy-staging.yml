@@ -17,12 +17,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
-      - run: npm ci
+      - name: Verify pnpm
+        run: pnpm -v
+
+      - run: pnpm install --frozen-lockfile
 
       - name: Verify required STAGING variables are set
         run: |
@@ -74,7 +83,7 @@ jobs:
             echo "VITE_USE_EMULATORS=false";
           } > .env
 
-      - run: npm run build
+      - run: pnpm run build
 
       - name: Verify build output exists
         run: |
