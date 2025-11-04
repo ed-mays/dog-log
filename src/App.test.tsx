@@ -89,6 +89,31 @@ describe('App', () => {
     expect(await screen.findByTestId('loading-indicator')).toBeInTheDocument();
   });
 
+  test('renders app-level loading indicator when appLoading=true and initializing=false', async () => {
+    // App.tsx shows its own LoadingIndicator when appLoading && !initializing
+    vi.mocked(useUiStore).mockImplementation(
+      createUiStoreMock({ loading: true, error: null })
+        .impl as unknown as typeof useUiStore
+    );
+    vi.mocked(useAuthStore).mockImplementation(
+      createAuthStoreMock({
+        initializing: false,
+        user: {
+          uid: 'test',
+          displayName: null,
+          email: null,
+          photoURL: null,
+        } satisfies AppUser,
+      }).impl as unknown as typeof useAuthStore
+    );
+
+    renderComponent();
+
+    // With initializing=false, AppRoutes will not render its spinner.
+    // So any loading-indicator present must be rendered by App.tsx, covering that branch.
+    expect(await screen.findByTestId('loading-indicator')).toBeInTheDocument();
+  });
+
   test('renders error state', async () => {
     vi.mocked(useUiStore).mockImplementation(
       createUiStoreMock({ error: new Error('Boom'), loading: false })
@@ -127,12 +152,12 @@ test('shows NavigationBar header when user exists and authEnabled=true', async (
   expect(await screen.findByLabelText('user-controls')).toBeInTheDocument();
 });
 
-test('hides NavigationBar when user exists but authEnabled=false', async () => {
+test('shows NavigationBar when authEnabled=false (bypass auth)', async () => {
   render(<App />, {
     initialRoutes: ['/pets'],
     featureFlags: { authEnabled: false },
   });
-  expect(screen.queryByLabelText('user-controls')).not.toBeInTheDocument();
+  expect(await screen.findByLabelText('user-controls')).toBeInTheDocument();
 });
 
 test('hides NavigationBar when user is null even if authEnabled=true', async () => {

@@ -1,5 +1,4 @@
 import './App.css';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 import { useUiStore } from '@store/ui.store';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
@@ -10,13 +9,14 @@ import { RoutePrefetcher } from '@features/pets/RoutePrefetcher.ts';
 import { AppRoutes } from './AppRoutes';
 import { NavigationBar } from '@components/common/NavigationBar/NavigationBar.tsx';
 import { Toolbar } from '@mui/material';
+import { useIsAuthenticated } from '@features/authentication/hooks/useIsAuthenticated';
 
 function App() {
   const appLoading = useUiStore((state) => state.loading);
   const appError = useUiStore((state) => state.error);
-  const { user, initializing } = useAuthStore();
+  const { initializing } = useAuthStore();
+  const isAuthenticated = useIsAuthenticated();
 
-  const authEnabled = useFeatureFlag('authEnabled');
   const { t } = useTranslation('common');
 
   const errorTextBase = t('error', 'Error...');
@@ -28,7 +28,7 @@ function App() {
   return (
     <div className="h-full">
       <RoutePrefetcher />
-      {user && authEnabled && (
+      {isAuthenticated && (
         <header aria-label="user-controls">
           <NavigationBar />
         </header>
