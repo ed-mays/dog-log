@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import formStyles from '@styles/FormStyles.module.css';
 import type { Pet } from '../types.ts';
 import { loadNamespace } from '../../../i18n.ts';
+import { Button } from '@mui/material';
 
 interface PetFormProps {
   initialValues: Pet;
@@ -93,20 +94,22 @@ export function PetForm({
         />
       </div>
       <div className={formStyles.formActions}>
-        <button
+        <Button
           className={formStyles.formButton}
           type="button"
           onClick={onCancel}
         >
           {t('responses.cancel', { ns: 'common' })}
-        </button>
-        <button
+        </Button>
+        <Button
           className={`${formStyles.formButton} ${formStyles.formButtonPrimary}`}
           type="submit"
+          variant="contained"
+          color="primary"
           disabled={!isValid}
         >
           {t('responses.ok', { ns: 'common' })}
-        </button>
+        </Button>
       </div>
     </form>
   );
