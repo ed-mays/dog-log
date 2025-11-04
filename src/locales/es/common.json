@@ -23,5 +23,8 @@
   "welcomePage": {
     "welcomeHeader": "Bienvenido a Dog Log!",
     "welcomeSubtitle": "Inicia sesión para continuar."
+  },
+  "nav": {
+    "pets": "Mascotas"
   }
 }
