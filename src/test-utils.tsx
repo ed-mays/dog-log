@@ -8,6 +8,7 @@ import { FeatureFlagsProvider } from '@featureFlags/components/FeatureFlagsProvi
 import type { FeatureFlags } from '@featureFlags/featureFlags.types';
 import type { i18n } from 'i18next';
 import { MemoryRouter } from 'react-router-dom';
+import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 
 type AllTheProvidersProps = {
   children: React.ReactNode;
@@ -15,6 +16,12 @@ type AllTheProvidersProps = {
   featureFlags?: Partial<FeatureFlags>;
   initialRoutes?: string[];
 };
+
+const theme = createTheme({
+  typography: {
+    fontFamily: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(','),
+  },
+});
 
 const AllTheProviders = ({
   children,
@@ -32,7 +39,10 @@ const AllTheProviders = ({
       }}
     >
       <I18nextProvider i18n={i18nInstance ?? defaultI18n}>
-        {children}
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {children}
+        </ThemeProvider>
       </I18nextProvider>
     </FeatureFlagsProvider>
   </MemoryRouter>
