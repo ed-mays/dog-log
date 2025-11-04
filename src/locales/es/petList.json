@@ -1,3 +1,6 @@
 {
-  "addPet": "Agrega Mascota"
+  "addPet": "Agrega Mascota",
+  "editPetTitle": "Editar Mascota",
+  "noPetsLabel": "Aún no tienes mascotas.",
+  "addFirstPetCta": "Agrega tu primera mascota ahora"
 }

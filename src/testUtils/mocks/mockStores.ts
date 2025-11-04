@@ -73,29 +73,91 @@ export function createPetsStoreMock(initial: Partial<TestPetsState> = {}) {
     ...maybeActions,
   } as TestPetsState;
 
-  // Stable snapshot object; properties read through getters so reference is stable
+  // Snapshot with getters; we recreate it on state updates to change identity only when notifying subscribers
   type Snapshot = TestPetsState & {
     pets: Pet[];
     isFetching: boolean;
     fetchError: Error | null;
   };
-  const snapshot = {} as Snapshot;
-  Object.defineProperty(snapshot, 'pets', {
-    get: () => stateRef.pets,
-    enumerable: true,
-  });
-  Object.defineProperty(snapshot, 'isFetching', {
-    get: () => stateRef.isFetching,
-    enumerable: true,
-  });
-  Object.defineProperty(snapshot, 'fetchError', {
-    get: () => stateRef.fetchError,
-    enumerable: true,
-  });
-  // Attach action functions as stable methods
-  Object.assign(snapshot, actions);
 
-  const getSnapshot = () => snapshot;
+  const makeSnapshot = () => {
+    const snap = {} as Snapshot;
+    Object.defineProperty(snap, 'pets', {
+      get: () => stateRef.pets,
+      enumerable: true,
+    });
+    Object.defineProperty(snap, 'isFetching', {
+      get: () => stateRef.isFetching,
+      enumerable: true,
+    });
+    Object.defineProperty(snap, 'fetchError', {
+      get: () => stateRef.fetchError,
+      enumerable: true,
+    });
+    // Expose action functions via getters to always reflect the current spy instances
+    Object.defineProperty(snap, 'fetchPets', {
+      get: () => actions.fetchPets,
+      enumerable: true,
+    });
+    Object.defineProperty(snap, 'addPet', {
+      get: () => actions.addPet,
+      enumerable: true,
+    });
+    Object.defineProperty(snap, 'updatePet', {
+      get: () => actions.updatePet,
+      enumerable: true,
+    });
+    Object.defineProperty(snap, 'deletePet', {
+      get: () => actions.deletePet,
+      enumerable: true,
+    });
+    return snap;
+  };
+
+  let snapshotRef = makeSnapshot();
+
+  // Override notify to also rotate the snapshot reference so useSyncExternalStore sees a change
+  const originalNotify = notify;
+  const enhancedNotify = () => {
+    snapshotRef = makeSnapshot();
+    originalNotify();
+  };
+
+  // Reassign notify used in actions
+  // Replace calls in actions to use enhancedNotify
+  actions.addPet = vi.fn(async (pet: Partial<Pet>) => {
+    const newPet: Pet = {
+      id: 'new-id',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: 'test',
+      isArchived: false,
+      ...pet,
+    } as Pet;
+    stateRef.pets = [...stateRef.pets, newPet];
+    // Defer notification to the next macrotask so tests using waitForElementToBeRemoved
+    // can observe the element before it disappears.
+    setTimeout(() => enhancedNotify(), 0);
+  }) as unknown as TestPetsState['addPet'];
+
+  actions.updatePet = vi.fn(
+    async (
+      id: string,
+      updates: Partial<Pick<Pet, 'name' | 'breed' | 'birthDate'>>
+    ) => {
+      stateRef.pets = stateRef.pets.map((p) =>
+        p.id === id ? { ...p, ...updates } : p
+      );
+      enhancedNotify();
+    }
+  ) as unknown as TestPetsState['updatePet'];
+
+  actions.deletePet = vi.fn(async (id: string) => {
+    stateRef.pets = stateRef.pets.filter((p) => p.id !== id);
+    enhancedNotify();
+  }) as unknown as TestPetsState['deletePet'];
+
+  const getSnapshot = () => snapshotRef;
 
   // Zustand selector-compatible mock with subscription support
   function useTestPetsStoreMock<TSelected = Snapshot>(

@@ -61,7 +61,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
   }
 
   return (
-    <>
+    <div data-testid={dataTestId}>
       {addPetEnabled && (
         <>
           <div
@@ -71,14 +71,14 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
               justifyContent: 'flex-end',
             }}
           >
-            <Tooltip title={t('addPet')}>
+            <Tooltip title={t('addPet', { ns: 'petList' })}>
               <IconButton
                 component={Link}
                 to="/pets/new"
                 color="primary"
                 size="large"
                 data-testid="add-pet-button"
-                aria-label={t('addPet')}
+                aria-label={t('addPet', { ns: 'petList' })}
                 sx={{ ml: 1 }}
               >
                 <AddIcon />
@@ -99,33 +99,46 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           Saving...
         </div>
       )}
-      <table className={styles.tableFullWidth} data-testid={dataTestId}>
-        <thead>
-          <tr>
-            <th scope="col" className={styles.th}>
-              {t('name', { ns: 'petProperties' })}
-            </th>
-            <th scope="col" className={styles.th}>
-              {t('breed', { ns: 'petProperties' })}
-            </th>
-            {petActionsEnabled && (
+
+      {pets.length === 0 ? (
+        <div
+          data-testid="no-pets-indicator"
+          style={{ marginTop: '1rem', textAlign: 'center' }}
+        >
+          <p>{t('noPetsLabel', { ns: 'petList' })}</p>
+          {addPetEnabled && (
+            <Link to="/pets/new">{t('addFirstPetCta', { ns: 'petList' })}</Link>
+          )}
+        </div>
+      ) : (
+        <table className={styles.tableFullWidth}>
+          <thead>
+            <tr>
               <th scope="col" className={styles.th}>
-                {t('actions', { ns: 'common' })}
+                {t('name', { ns: 'petProperties' })}
               </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {pets.map((pet) => (
-            <PetListRow
-              key={pet.id}
-              pet={pet}
-              onDelete={setDeletingPet}
-              onEdit={(p) => navigate(`/pets/${p.id}/edit`)}
-            />
-          ))}
-        </tbody>
-      </table>
+              <th scope="col" className={styles.th}>
+                {t('breed', { ns: 'petProperties' })}
+              </th>
+              {petActionsEnabled && (
+                <th scope="col" className={styles.th}>
+                  {t('actions', { ns: 'common' })}
+                </th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {pets.map((pet) => (
+              <PetListRow
+                key={pet.id}
+                pet={pet}
+                onDelete={setDeletingPet}
+                onEdit={(p) => navigate(`/pets/${p.id}/edit`)}
+              />
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {deletingPet && (
         <ConfirmModal
@@ -137,6 +150,6 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           onDecline={() => setDeletingPet(null)}
         />
       )}
-    </>
+    </div>
   );
 }

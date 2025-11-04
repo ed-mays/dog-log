@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react';
 import {
   screen,
   waitFor,
@@ -12,7 +13,7 @@ import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
 import { vi } from 'vitest';
 
 // Mock the module at the top level
-vi.mock('@store/pets.store', () => ({
+vi.mock('@store/pets.store.ts', () => ({
   usePetsStore: vi.fn(),
 }));
 
@@ -139,6 +140,9 @@ describe('PetList integration', () => {
     });
 
     expect(storeActions.deletePet).toHaveBeenCalledWith('1');
+
+    // Since initial list had one pet, after deletion the empty indicator should appear
+    expect(await screen.findByTestId('no-pets-indicator')).toBeInTheDocument();
   });
 
   test('Escape closes the delete confirm without deleting', async () => {
@@ -191,5 +195,46 @@ describe('PetList integration', () => {
     await screen.findByRole('table');
 
     expect(screen.queryByTestId('add-pet-button')).not.toBeInTheDocument();
+  });
+
+  test('shows "No Pets" indicator when user has no pets', async () => {
+    await setup({}, []);
+
+    const indicator = await screen.findByTestId('no-pets-indicator');
+    expect(indicator).toBeInTheDocument();
+    // Table should not be present
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    // Has the label text
+    expect(
+      screen.getByText("You don't have any pets yet.")
+    ).toBeInTheDocument();
+  });
+
+  test('indicator shows CTA link to Add Pet that navigates to /pets/new', async () => {
+    await setup({ addPetEnabled: true }, []);
+
+    const indicator = await screen.findByTestId('no-pets-indicator');
+    expect(indicator).toBeInTheDocument();
+
+    const cta = screen.getByRole('link', { name: /add your first pet now/i });
+    expect(cta).toHaveAttribute('href', '/pets/new');
+  });
+
+  test('adding first pet switches from indicator to list', async () => {
+    const { storeActions } = await setup({}, []);
+
+    // Empty state initially
+    const indicator = await screen.findByTestId('no-pets-indicator');
+
+    // Add a pet via store mock
+    await act(async () => {
+      await storeActions.addPet({ id: '10', name: 'Rex' } as Partial<Pet>);
+    });
+
+    // Wait for the indicator to be removed (state update + re-render)
+    await waitForElementToBeRemoved(indicator);
+
+    // Should render the table now
+    expect(await screen.findByRole('table')).toBeInTheDocument();
   });
 });
