@@ -1,4 +1,6 @@
 {
   "addPet": "Add Pet",
-  "editPetTitle": "Edit Pet"
+  "editPetTitle": "Edit Pet",
+  "noPetsLabel": "You don't have any pets yet.",
+  "addFirstPetCta": "Add your first pet now"
 }

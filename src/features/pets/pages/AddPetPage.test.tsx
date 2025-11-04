@@ -29,7 +29,7 @@ describe('AddPetPage', () => {
     petsMock = createPetsStoreMock();
 
     // Mock the pets store for this module load
-    vi.doMock('@store/pets.store', () => ({
+    vi.doMock('@store/pets.store.ts', () => ({
       // Expose the mocked hook implementation; unknown avoids explicit any
       usePetsStore: petsMock.impl as unknown,
     }));
