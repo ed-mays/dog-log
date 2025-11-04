@@ -32,8 +32,8 @@ describe('PetForm', () => {
 
   it('renders the correct (English) labels and buttons', async () => {
     renderForm(initialPet);
-    expect(await screen.findByLabelText('Name')).toBeInTheDocument();
-    expect(await screen.findByLabelText('Breed')).toBeInTheDocument();
+    expect(await screen.findByLabelText(/name/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/breed/i)).toBeInTheDocument();
     expect(
       await screen.findByRole('button', { name: 'OK' })
     ).toBeInTheDocument();
@@ -45,8 +45,8 @@ describe('PetForm', () => {
   it('renders the correct (Spanish) labels and buttons', async () => {
     await withLocale('es', async () => {
       renderForm(initialPet);
-      expect(await screen.findByLabelText('Nombre')).toBeInTheDocument();
-      expect(await screen.findByLabelText('Raza')).toBeInTheDocument();
+      expect(await screen.findByLabelText(/nombre/i)).toBeInTheDocument();
+      expect(await screen.findByLabelText(/raza/i)).toBeInTheDocument();
       expect(
         await screen.findByRole('button', { name: 'Aceptar' })
       ).toBeInTheDocument();

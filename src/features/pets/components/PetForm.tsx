@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import formStyles from '@styles/FormStyles.module.css';
 import type { Pet } from '../types.ts';
 import { loadNamespace } from '../../../i18n.ts';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 
 interface PetFormProps {
   initialValues: Pet;
@@ -68,29 +68,27 @@ export function PetForm({
   return (
     <form className={formStyles.formRoot} onSubmit={handleSubmit}>
       <div className={formStyles.formGroup}>
-        <label className={formStyles.formLabel} htmlFor="pet-name">
-          {t('name', { ns: 'petProperties' })}
-        </label>
-        <input
-          className={formStyles.formInput}
+        <TextField
           id="pet-name"
           name="name"
+          label={t('name', { ns: 'petProperties' })}
           value={pet.name}
           onChange={handleChange}
           required
+          fullWidth
+          size="small"
         />
       </div>
       <div className={formStyles.formGroup}>
-        <label className={formStyles.formLabel} htmlFor="pet-breed">
-          {t('breed', { ns: 'petProperties' })}
-        </label>
-        <input
-          className={formStyles.formInput}
+        <TextField
           id="pet-breed"
           name="breed"
+          label={t('breed', { ns: 'petProperties' })}
           value={pet.breed}
           onChange={handleChange}
           required
+          fullWidth
+          size="small"
         />
       </div>
       <div className={formStyles.formActions}>

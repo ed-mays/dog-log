@@ -21,6 +21,13 @@ const theme = createTheme({
   typography: {
     fontFamily: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(','),
   },
+  components: {
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
+      },
+    },
+  },
 });
 
 const AllTheProviders = ({
