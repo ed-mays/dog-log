@@ -25,6 +25,7 @@
     "welcomeSubtitle": "Inicia sesión para continuar."
   },
   "nav": {
-    "pets": "Mascotas"
+    "pets": "Mascotas",
+    "language": "Idioma"
   }
 }

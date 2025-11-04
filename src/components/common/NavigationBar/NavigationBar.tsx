@@ -10,6 +10,7 @@ import PetsIcon from '@mui/icons-material/Pets';
 import { Link as RouterLink } from 'react-router-dom';
 import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
 import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '@components/common/LanguageSelector/LanguageSelector.tsx';
 
 export function NavigationBar() {
   const { t } = useTranslation('common');
@@ -53,6 +54,9 @@ export function NavigationBar() {
         >
           {PETS_LABEL}
         </Button>
+        <Box sx={{ ml: 2, mr: 1 }}>
+          <LanguageSelector />
+        </Box>
         <LogoutButton />
       </Toolbar>
     </AppBar>

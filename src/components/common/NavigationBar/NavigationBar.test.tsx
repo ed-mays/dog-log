@@ -30,6 +30,13 @@ describe('NavigationBar', () => {
     expect(link).toHaveAttribute('href', '/pets');
   });
 
+  it('renders a Language Selector in the navigation bar', async () => {
+    render(<NavigationBar />);
+    // MUI Select is exposed as combobox
+    const selector = await screen.findByRole('combobox', { name: /language/i });
+    expect(selector).toBeInTheDocument();
+  });
+
   it('renders the LogoutButton in the navigation bar', async () => {
     render(<NavigationBar />);
     const logoutButton = await screen.findByTestId('logout-button');
