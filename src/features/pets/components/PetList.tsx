@@ -14,6 +14,11 @@ import {
   Alert,
   Typography,
   Link as MuiLink,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -121,23 +126,23 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           )}
         </div>
       ) : (
-        <table className={styles.tableFullWidth}>
-          <thead>
-            <tr>
-              <th scope="col" className={styles.th}>
+        <Table className={styles.tableFullWidth}>
+          <TableHead>
+            <TableRow>
+              <TableCell component="th" scope="col" className={styles.th}>
                 {t('name', { ns: 'petProperties' })}
-              </th>
-              <th scope="col" className={styles.th}>
+              </TableCell>
+              <TableCell component="th" scope="col" className={styles.th}>
                 {t('breed', { ns: 'petProperties' })}
-              </th>
+              </TableCell>
               {petActionsEnabled && (
-                <th scope="col" className={styles.th}>
+                <TableCell component="th" scope="col" className={styles.th}>
                   {t('actions', { ns: 'common' })}
-                </th>
+                </TableCell>
               )}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {pets.map((pet) => (
               <PetListRow
                 key={pet.id}
@@ -146,8 +151,8 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
                 onEdit={(p) => navigate(`/pets/${p.id}/edit`)}
               />
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       )}
 
       {deletingPet && (
