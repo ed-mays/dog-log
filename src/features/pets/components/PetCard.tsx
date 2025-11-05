@@ -65,7 +65,7 @@ export function PetCard({ pet }: { pet: Pet }) {
           <CardMedia
             component="img"
             height="140"
-            image="https://via.placeholder.com/345x140?text=Pet+Image"
+            image="https://placehold.co/345x140?text=Pet+Image"
             alt="pet header"
           />
           <CardContent>
