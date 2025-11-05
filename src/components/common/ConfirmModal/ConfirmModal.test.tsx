@@ -161,6 +161,36 @@ describe('ConfirmModal', () => {
     await userEvent.keyboard(' ');
     expect(onAccept).toHaveBeenCalledTimes(2);
   });
+
+  test('renders an error alert when error prop is provided', () => {
+    const errorText = 'Something went wrong';
+    render(
+      <ConfirmModal
+        text={text}
+        onAccept={onAccept}
+        onDecline={onDecline}
+        error={errorText}
+      />
+    );
+    const alert = screen.getByRole('alert');
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(errorText);
+  });
+
+  test('ignores backdrop clicks (does not call onDecline) and remains open', async () => {
+    render(
+      <ConfirmModal text={text} onAccept={onAccept} onDecline={onDecline} />
+    );
+
+    // Backdrop is rendered with role="presentation" by MUI Backdrop
+    const backdrop = screen.getByTestId('dialog-backdrop');
+    await userEvent.click(backdrop);
+
+    // onDecline should NOT be called for backdrop clicks per implementation
+    expect(onDecline).not.toHaveBeenCalled();
+    // Dialog remains open because parent controls visibility and component always renders it with open
+    expect(screen.getByRole('dialog', { name: text })).toBeInTheDocument();
+  });
 });
 
 import { withLocale } from '@test-utils';

@@ -47,7 +47,7 @@ describe('App auth route protection', () => {
 
     render(<App />, { initialRoutes: ['/pets'] });
 
-    await screen.findByRole('table');
+    await screen.findByLabelText(/pet card grid/i);
   });
 
   it('redirects unauthenticated users to /welcome for /pets/new', async () => {
