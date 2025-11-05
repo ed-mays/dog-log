@@ -41,6 +41,7 @@ export function ConfirmModal({
       }}
       aria-labelledby={headingId}
       keepMounted
+      slotProps={{ backdrop: { 'data-testid': 'dialog-backdrop' } }}
     >
       <DialogTitle id={headingId}>{text}</DialogTitle>
       <DialogContent>

@@ -1,26 +1,19 @@
 import { useTranslation } from 'react-i18next';
-import styles from './PetList.module.css';
 import type { Pet } from '../types.ts';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
-import { Link, useNavigate } from 'react-router-dom';
-import { PetListRow } from '@features/pets/components/PetListRow.tsx';
+import { Link } from 'react-router-dom';
 import { loadNamespace } from '../../../i18n.ts';
 import { useEffect, useState } from 'react';
-import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
 import { usePetsStore } from '@store/pets.store.ts';
 import {
+  Box,
   IconButton,
   Tooltip,
-  Alert,
   Typography,
   Link as MuiLink,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import PetCard from './PetCard';
 
 type PetListProps = {
   pets: Pet[];
@@ -30,10 +23,6 @@ type PetListProps = {
 export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
   const [nsReady, setNsReady] = useState(false);
   const pets = usePetsStore((s) => s.pets);
-  const deletePetInStore = usePetsStore((s) => s.deletePet);
-  const [deletingPet, setDeletingPet] = useState<Pet | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -52,24 +41,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
   const { t } = useTranslation();
 
   const addPetEnabled = useFeatureFlag('addPetEnabled');
-  const petActionsEnabled = useFeatureFlag('petActionsEnabled');
-  const navigate = useNavigate();
   if (!nsReady) return null;
-
-  async function confirmDelete() {
-    if (!deletingPet) return;
-    setSaving(true);
-    setError(null);
-    try {
-      await deletePetInStore(deletingPet.id);
-      setDeletingPet(null);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      setError(t('errors.deleteFailed', { ns: 'common' }));
-    } finally {
-      setSaving(false);
-    }
-  }
 
   return (
     <div data-testid={dataTestId}>
@@ -99,18 +71,6 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
         </>
       )}
 
-      {error && (
-        <Alert severity="error" role="alert" data-testid="pet-list-error">
-          {error}
-        </Alert>
-      )}
-
-      {saving && (
-        <Alert severity="info" role="alert" data-testid="pet-list-error">
-          Saving...
-        </Alert>
-      )}
-
       {pets.length === 0 ? (
         <div
           data-testid="no-pets-indicator"
@@ -126,45 +86,23 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           )}
         </div>
       ) : (
-        <Table className={styles.tableFullWidth}>
-          <TableHead>
-            <TableRow>
-              <TableCell component="th" scope="col" className={styles.th}>
-                {t('name', { ns: 'petProperties' })}
-              </TableCell>
-              <TableCell component="th" scope="col" className={styles.th}>
-                {t('breed', { ns: 'petProperties' })}
-              </TableCell>
-              {petActionsEnabled && (
-                <TableCell component="th" scope="col" className={styles.th}>
-                  {t('actions', { ns: 'common' })}
-                </TableCell>
-              )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {pets.map((pet) => (
-              <PetListRow
-                key={pet.id}
-                pet={pet}
-                onDelete={setDeletingPet}
-                onEdit={(p) => navigate(`/pets/${p.id}/edit`)}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      )}
-
-      {deletingPet && (
-        <ConfirmModal
-          text={t('confirmDeleteMessage', {
-            ns: 'common',
-            petName: deletingPet.name,
-          })}
-          onAccept={confirmDelete}
-          onDecline={() => setDeletingPet(null)}
-          error={error}
-        />
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+            },
+            gap: 2,
+            mt: 2,
+          }}
+          aria-label="pet card grid"
+        >
+          {pets.map((pet) => (
+            <PetCard key={pet.id} pet={pet} />
+          ))}
+        </Box>
       )}
     </div>
   );
