@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PetCard from './PetCard';
+import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
 
 type PetListProps = {
   pets: Pet[];
@@ -23,6 +24,7 @@ type PetListProps = {
 export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
   const [nsReady, setNsReady] = useState(false);
   const pets = usePetsStore((s) => s.pets);
+  const isFetching = usePetsStore((s) => s.isFetching);
 
   useEffect(() => {
     let mounted = true;
@@ -42,6 +44,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
 
   const addPetEnabled = useFeatureFlag('addPetEnabled');
   if (!nsReady) return null;
+  if (isFetching) return <LoadingIndicator />;
 
   return (
     <div data-testid={dataTestId}>
