@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Card,
   CardActionArea,
   CardActions,
@@ -8,8 +7,11 @@ import {
   CardMedia,
   Typography,
   Alert,
+  Button,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import type { Pet } from '@features/pets/types';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
 import { useState } from 'react';
@@ -82,6 +84,7 @@ export function PetCard({ pet }: { pet: Pet }) {
                 variant="outlined"
                 color="primary"
                 onClick={() => navigate(`/pets/${pet.id}/edit`)}
+                startIcon={<EditIcon fontSize="small" />}
               >
                 {t('edit', { ns: 'common' })}
               </Button>
@@ -90,6 +93,7 @@ export function PetCard({ pet }: { pet: Pet }) {
                 color="error"
                 onClick={() => setDeleting(true)}
                 sx={{ ml: 1 }}
+                startIcon={<DeleteIcon fontSize="small" />}
               >
                 {t('delete', { ns: 'common' })}
               </Button>

@@ -16,6 +16,8 @@ import {
   Typography,
 } from '@mui/material';
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function PetDetailsPage() {
   const { id } = useParams();
@@ -116,6 +118,7 @@ export default function PetDetailsPage() {
             variant="outlined"
             color="primary"
             onClick={() => navigate(`/pets/${pet.id}/edit`)}
+            startIcon={<EditIcon fontSize="small" />}
           >
             {t('edit', { ns: 'common' })}
           </Button>
@@ -124,6 +127,7 @@ export default function PetDetailsPage() {
             color="error"
             onClick={() => setDeleting(true)}
             sx={{ ml: 1 }}
+            startIcon={<DeleteIcon fontSize="small" />}
           >
             {t('delete', { ns: 'common' })}
           </Button>
