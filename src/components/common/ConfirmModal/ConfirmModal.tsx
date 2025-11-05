@@ -41,7 +41,10 @@ export function ConfirmModal({
       }}
       aria-labelledby={headingId}
       keepMounted
-      slotProps={{ backdrop: { 'data-testid': 'dialog-backdrop' } }}
+      // Note: BackdropProps is deprecated in MUI and slotProps typing is restrictive.
+      // Narrow cast to never to attach a test id to the backdrop without using `any`.
+      // This is safe because it's a non-functional testing attribute.
+      slotProps={{ backdrop: { 'data-testid': 'dialog-backdrop' } as never }}
     >
       <DialogTitle id={headingId}>{text}</DialogTitle>
       <DialogContent>
