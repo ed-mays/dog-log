@@ -2,14 +2,11 @@ import { screen } from '@testing-library/react';
 import { render } from '@test-utils';
 import App from './App';
 import '@testing-library/jest-dom';
-import { usePetsStore } from '@store/pets.store';
-import { useAuthStore } from '@store/auth.store';
-import { useUiStore } from '@store/ui.store';
 import {
-  createAuthStoreMock,
-  createPetsStoreMock,
-  createUiStoreMock,
-} from '@testUtils/mocks/mockStores';
+  installAuthStoreMock,
+  installPetsStoreMock,
+  installUiStoreMock,
+} from '@testUtils/mocks/mockStoreInstallers';
 import type { AppUser } from '@services/auth/authService';
 import { makePet } from '@testUtils/factories/makePet';
 import { vi } from 'vitest';
@@ -26,16 +23,14 @@ vi.mock('@store/ui.store', () => ({
 }));
 
 describe('App', () => {
-  let petsMock: ReturnType<typeof createPetsStoreMock>;
-  let authMock: ReturnType<typeof createAuthStoreMock>;
-  let uiMock: ReturnType<typeof createUiStoreMock>;
+  let petsMock: ReturnType<typeof installPetsStoreMock>;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
     // Fresh mocks each test
-    petsMock = createPetsStoreMock({ pets: [] });
-    authMock = createAuthStoreMock({
+    petsMock = installPetsStoreMock({ pets: [] });
+    installAuthStoreMock({
       user: {
         uid: 'test',
         displayName: null,
@@ -45,17 +40,7 @@ describe('App', () => {
       initializing: false,
       error: null,
     });
-    uiMock = createUiStoreMock({ loading: false, error: null });
-
-    vi.mocked(useAuthStore).mockImplementation(
-      authMock.impl as unknown as typeof useAuthStore
-    );
-    vi.mocked(usePetsStore).mockImplementation(
-      petsMock.impl as unknown as typeof usePetsStore
-    );
-    vi.mocked(useUiStore).mockImplementation(
-      uiMock.impl as unknown as typeof useUiStore
-    );
+    installUiStoreMock({ loading: false, error: null });
   });
 
   function renderComponent() {
@@ -63,21 +48,16 @@ describe('App', () => {
   }
 
   test('renders loading state', async () => {
-    vi.mocked(useUiStore).mockImplementation(
-      createUiStoreMock({ loading: true, error: null })
-        .impl as unknown as typeof useUiStore
-    );
-    vi.mocked(useAuthStore).mockImplementation(
-      createAuthStoreMock({
-        initializing: true,
-        user: {
-          uid: 'test',
-          displayName: null,
-          email: null,
-          photoURL: null,
-        } satisfies AppUser,
-      }).impl as unknown as typeof useAuthStore
-    );
+    installUiStoreMock({ loading: true, error: null });
+    installAuthStoreMock({
+      initializing: true,
+      user: {
+        uid: 'test',
+        displayName: null,
+        email: null,
+        photoURL: null,
+      } satisfies AppUser,
+    });
 
     renderComponent();
 
@@ -86,21 +66,16 @@ describe('App', () => {
 
   test('renders app-level loading indicator when appLoading=true and initializing=false', async () => {
     // App.tsx shows its own LoadingIndicator when appLoading && !initializing
-    vi.mocked(useUiStore).mockImplementation(
-      createUiStoreMock({ loading: true, error: null })
-        .impl as unknown as typeof useUiStore
-    );
-    vi.mocked(useAuthStore).mockImplementation(
-      createAuthStoreMock({
-        initializing: false,
-        user: {
-          uid: 'test',
-          displayName: null,
-          email: null,
-          photoURL: null,
-        } satisfies AppUser,
-      }).impl as unknown as typeof useAuthStore
-    );
+    installUiStoreMock({ loading: true, error: null });
+    installAuthStoreMock({
+      initializing: false,
+      user: {
+        uid: 'test',
+        displayName: null,
+        email: null,
+        photoURL: null,
+      } satisfies AppUser,
+    });
 
     renderComponent();
 
@@ -110,10 +85,7 @@ describe('App', () => {
   });
 
   test('renders error state', async () => {
-    vi.mocked(useUiStore).mockImplementation(
-      createUiStoreMock({ error: new Error('Boom'), loading: false })
-        .impl as unknown as typeof useUiStore
-    );
+    installUiStoreMock({ error: new Error('Boom'), loading: false });
     renderComponent();
     const el = await screen.findByTestId('error-indicator');
     expect(el).toBeInTheDocument();
@@ -122,14 +94,12 @@ describe('App', () => {
   });
 
   test('renders pet list', async () => {
-    vi.mocked(usePetsStore).mockImplementation(
-      createPetsStoreMock({
-        pets: [
-          makePet({ id: '1', name: 'Fido', breed: 'Labrador' }),
-          makePet({ id: '2', name: 'Bella', breed: 'Beagle' }),
-        ],
-      }).impl as unknown as typeof usePetsStore
-    );
+    installPetsStoreMock({
+      pets: [
+        makePet({ id: '1', name: 'Fido', breed: 'Labrador' }),
+        makePet({ id: '2', name: 'Bella', breed: 'Beagle' }),
+      ],
+    });
     renderComponent();
     expect(await screen.findByTestId('pet-list')).toBeInTheDocument();
   });
@@ -157,10 +127,7 @@ test('shows NavigationBar when authEnabled=false (bypass auth)', async () => {
 
 test('hides NavigationBar when user is null even if authEnabled=true', async () => {
   // Override auth store to simulate no user
-  vi.mocked(useAuthStore).mockImplementation(
-    createAuthStoreMock({ user: null, initializing: false })
-      .impl as unknown as typeof useAuthStore
-  );
+  installAuthStoreMock({ user: null, initializing: false });
 
   render(<App />, { initialRoutes: ['/pets'] });
   expect(screen.queryByLabelText('user-controls')).not.toBeInTheDocument();
