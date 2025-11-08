@@ -1,27 +1,29 @@
-vi.mock('./featureFlags/hooks/useFeatureFlag');
+vi.mock('@featureFlags/hooks/useFeatureFlag');
 vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),
+}));
+vi.mock('@store/pets.store', () => ({
+  usePetsStore: vi.fn(),
 }));
 
 import { render, screen } from '@test-utils';
 import { AppRoutes } from './AppRoutes';
-import { useFeatureFlag } from './featureFlags/hooks/useFeatureFlag';
-import { useAuthStore } from '@store/auth.store';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import '@testing-library/jest-dom';
 import i18n from '@testUtils/test-i18n';
+import {
+  installAuthStoreMock,
+  installPetsStoreMock,
+} from '@testUtils/mocks/mockStoreInstallers';
 
 describe('AppRoutes', () => {
   const mockUseFeatureFlag = useFeatureFlag as unknown as vi.Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    const authStoreState = { initializing: false, user: { uid: 'test' } };
-    vi.mocked(useAuthStore).mockImplementation(
-      (selector?: (s: never) => never) =>
-        selector ? selector(authStoreState) : authStoreState
-    );
-
+    // Default: authenticated user, no pets required
+    installAuthStoreMock({ user: { uid: 'test' }, initializing: false });
+    installPetsStoreMock({ pets: [] });
     mockUseFeatureFlag.mockReturnValue(true);
   });
 
