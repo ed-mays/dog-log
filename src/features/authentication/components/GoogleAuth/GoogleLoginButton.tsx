@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@store/auth.store.ts';
+import { useAuthStore } from '@store/auth.store';
 import { loadNamespace } from '../../../../i18n.ts';
+import { logger } from '@services/logService';
 import { Button } from '@mui/material';
-import { logger } from '@services/logService.ts';
 
 export type LoginButtonProps = {
   className?: string;

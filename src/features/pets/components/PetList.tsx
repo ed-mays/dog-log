@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import type { Pet } from '../types.ts';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { Link } from 'react-router-dom';
 import { loadNamespace } from '../../../i18n.ts';
 import { useEffect, useState } from 'react';
-import { usePetsStore } from '@store/pets.store.ts';
+import { usePetsStore } from '@store/pets.store';
 import {
   Box,
   IconButton,

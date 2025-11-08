@@ -1,11 +1,7 @@
 import { create } from 'zustand';
-import type {
-  Pet,
-  PetCreateInput,
-  PetUpdateInput,
-} from '@features/pets/types.ts';
-import { petService } from '@services/petService.ts';
-import { useAuthStore } from './auth.store.ts';
+import type { Pet, PetCreateInput, PetUpdateInput } from '@features/pets/types';
+import { petService } from '@services/petService';
+import { useAuthStore } from '@store/auth.store';
 
 interface PetsState {
   pets: Pet[];

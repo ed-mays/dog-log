@@ -13,11 +13,11 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import type { Pet } from '@features/pets/types';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
-import { usePetsStore } from '@store/pets.store.ts';
+import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
+import { usePetsStore } from '@store/pets.store';
 
 // Basic Material UI PetCard structure
 // - Container wraps the card (per MUI docs guidance)

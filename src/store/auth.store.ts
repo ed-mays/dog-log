@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import type { AppUser, Unsubscribe } from '@services/auth/authService.ts';
+import type { AppUser, Unsubscribe } from '@services/auth/authService';
 import {
   signInWithGoogle as serviceSignInWithGoogle,
   signOut as serviceSignOut,
   subscribeToAuth,
-} from '@services/auth/authService.ts';
+} from '@services/auth/authService';
 
 export type AuthState = {
   user: AppUser | null;

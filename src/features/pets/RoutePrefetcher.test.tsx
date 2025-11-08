@@ -1,20 +1,19 @@
 import { render } from '@test-utils';
 import { RoutePrefetcher } from './RoutePrefetcher';
-import { usePetsStore } from '@store/pets.store.ts';
-import { vi } from 'vitest';
-import type { Pet } from '@features/pets/types.ts';
-import type { AuthState } from '@store/auth.store.ts';
+import { usePetsStore } from '@store/pets.store';
+import type { Pet } from '@features/pets/types';
+import type { AuthState } from '@store/auth.store';
 
 // Mock stores used by RoutePrefetcher
-vi.mock('@store/pets.store.ts', () => ({
+vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
-vi.mock('@store/auth.store.ts', () => ({
+vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),
 }));
 
 // Import after mocks so types resolve
-import { useAuthStore } from '@store/auth.store.ts';
+import { useAuthStore } from '@store/auth.store';
 
 // Minimal slice types for selector typing in tests
 type TestPetsSlice = { pets: Pet[]; fetchPets: () => void };
