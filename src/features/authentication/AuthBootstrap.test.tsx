@@ -21,6 +21,7 @@ import AuthBootstrap from './AuthBootstrap';
 describe('AuthBootstrap', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.resetModules();
     initAuthListenerMock = vi.fn();
   });
 
@@ -30,6 +31,7 @@ describe('AuthBootstrap', () => {
   });
 
   it('does not re-initialize on re-render', () => {
+    vi.unmock('@features/authentication/AuthBootstrap');
     const { rerender } = render(<AuthBootstrap />);
     expect(initAuthListenerMock).toHaveBeenCalledTimes(1);
 

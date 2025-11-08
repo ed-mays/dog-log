@@ -9,11 +9,6 @@ import {
 } from '@testUtils/mocks/mockStores';
 import { vi } from 'vitest';
 
-// Mock child components with side-effects
-vi.mock('@features/authentication/AuthBootstrap', () => ({
-  default: () => null,
-}));
-
 // Explicitly mock stores to ensure vi.fn() instances are used
 vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),

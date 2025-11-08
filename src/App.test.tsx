@@ -14,11 +14,6 @@ import type { AppUser } from '@services/auth/authService';
 import { makePet } from '@testUtils/factories/makePet';
 import { vi } from 'vitest';
 
-// Mock child components with side-effects
-vi.mock('@features/authentication/AuthBootstrap', () => ({
-  default: () => null,
-}));
-
 // Explicitly mock stores to ensure vi.fn() instances are used
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),

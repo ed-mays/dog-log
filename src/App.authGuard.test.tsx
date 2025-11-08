@@ -4,11 +4,6 @@ import App from './App';
 import { useAuthStore } from '@store/auth.store';
 import { usePetsStore } from '@store/pets.store';
 
-// Mock child components with side-effects
-vi.mock('@features/authentication/AuthBootstrap', () => ({
-  default: () => null,
-}));
-
 // Explicitly mock useAuthStore and usePetsStore as vi.fn()
 vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),
