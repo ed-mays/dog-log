@@ -248,13 +248,15 @@ Troubleshooting HTML coverage:
   rm -rf coverage && pnpm run test:coverage
   ```
 
-The CI will enforce minimum per-file coverage thresholds (branches, functions, statements, and lines at ≥90%). See `decisions/adr/033-TESTING-minimum-test-coverage-thresholds.md` for rationale.
+The CI will enforce minimum per-file coverage thresholds (branches, functions, statements, and lines at ≥90%). See
+`decisions/adr/033-TESTING-minimum-test-coverage-thresholds.md` for rationale.
 
 ---
 
 ## CI/CD and Hosting
 
-This project ships with a simple, robust GitHub Actions + Firebase Hosting setup. It enforces quality on pull requests and provides preview/staging deployments.
+This project ships with a simple, robust GitHub Actions + Firebase Hosting setup. It enforces quality on pull requests
+and provides preview/staging deployments.
 
 ### Workflows
 
@@ -291,17 +293,22 @@ This project ships with a simple, robust GitHub Actions + Firebase Hosting setup
 
 ### GitHub Actions configuration (vars and secrets)
 
-Because Vite embeds `VITE_*` values at build time, the workflows synthesize a temporary `.env` before running `pnpm run test:coverage` and `pnpm run build`.
+Because Vite embeds `VITE_*` values at build time, the workflows synthesize a temporary `.env` before running
+`pnpm run test:coverage` and `pnpm run build`.
 
 - Repository Variables (safe, non-secret — visible to CI):
-  - DEV variables: `DEV_VITE_APP_TITLE`, `DEV_VITE_DEFAULT_LOCALE`, feature flags, and Firebase web config: `DEV_VITE_FIREBASE_API_KEY`, `DEV_VITE_FIREBASE_AUTH_DOMAIN`, `DEV_VITE_FIREBASE_PROJECT_ID`, `DEV_VITE_FIREBASE_STORAGE_BUCKET`, `DEV_VITE_FIREBASE_MESSAGING_SENDER_ID`, `DEV_VITE_FIREBASE_APP_ID`, `DEV_VITE_FIREBASE_MEASUREMENT_ID`.
+  - DEV variables: `DEV_VITE_APP_TITLE`, `DEV_VITE_DEFAULT_LOCALE`, feature flags, and Firebase web config:
+    `DEV_VITE_FIREBASE_API_KEY`, `DEV_VITE_FIREBASE_AUTH_DOMAIN`, `DEV_VITE_FIREBASE_PROJECT_ID`,
+    `DEV_VITE_FIREBASE_STORAGE_BUCKET`, `DEV_VITE_FIREBASE_MESSAGING_SENDER_ID`, `DEV_VITE_FIREBASE_APP_ID`,
+    `DEV_VITE_FIREBASE_MEASUREMENT_ID`.
   - STAGING variables: the same keys prefixed with `STG_...` (e.g., `STG_VITE_FIREBASE_PROJECT_ID`).
   - Optional convenience: `DEV_FIREBASE_PROJECT_ID` to reference the exact Firebase Project ID in workflows.
 
 - Repository Secrets (sensitive):
   - `FIREBASE_SERVICE_ACCOUNT_DEV` → JSON key for a service account in the DEV project.
   - `FIREBASE_SERVICE_ACCOUNT_STAGING` → JSON key for a service account in the STAGING project.
-  - Minimum roles for each service account: `Firebase Hosting Admin` + `Viewer` (optionally `Service Account Token Creator`).
+  - Minimum roles for each service account: `Firebase Hosting Admin` + `Viewer` (optionally
+    `Service Account Token Creator`).
 
 - The workflows write a temporary `.env` like:
   ```bash
@@ -330,7 +337,8 @@ Because Vite embeds `VITE_*` values at build time, the workflows synthesize a te
 
 - Put your local values in `.env.local` (gitignored). Example keys:
   - `VITE_APP_TITLE`, `VITE_DEFAULT_LOCALE`, feature flags
-  - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`, `VITE_FIREBASE_MEASUREMENT_ID`
+  - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
+    `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID`, `VITE_FIREBASE_MEASUREMENT_ID`
 - Start emulators + dev server:
   - `pnpm run start:firebase` (emulators)
   - `pnpm run dev` (Vite)
@@ -345,8 +353,10 @@ Because Vite embeds `VITE_*` values at build time, the workflows synthesize a te
 - PR Previews: all same‑repo PRs deploy to a single permanent preview channel on the DEV project with a stable URL:
   - https://dog-log-dev-95fe5--preview.web.app
   - https://dog-log-dev-95fe5--preview.firebaseapp.com
-    This stable domain is added to Firebase Auth → Authorized domains so Google sign‑in works on previews. Forked PRs are skipped by design (no secrets on forks).
-- Staging: merges to `main` deploy to the STAGING project’s live channel (or a permanent `staging` channel if you choose to configure it).
+    This stable domain is added to Firebase Auth → Authorized domains so Google sign‑in works on previews. Forked PRs
+    are skipped by design (no secrets on forks).
+- Staging: merges to `main` deploy to the STAGING project’s live channel (or a permanent `staging` channel if you choose
+  to configure it).
 
 ### Coverage requirements
 
@@ -357,7 +367,8 @@ Because Vite embeds `VITE_*` values at build time, the workflows synthesize a te
 
 - Firebase project not found / permission errors:
   - Ensure the workflow `projectId` exactly matches the Firebase Project ID from Console (IDs may have suffixes).
-  - Verify `FIREBASE_SERVICE_ACCOUNT_DEV` JSON’s `project_id` matches and that the service account has the required roles.
+  - Verify `FIREBASE_SERVICE_ACCOUNT_DEV` JSON’s `project_id` matches and that the service account has the required
+    roles.
   - Make sure Hosting is enabled in that project.
 
 - `auth/invalid-api-key` during tests:
@@ -377,3 +388,53 @@ See `/decisions/adr` for decisions related to:
 - CI authentication method (service account JSON now, OIDC later)
 - Environment variable strategy (build-time `VITE_*` via GitHub Actions variables)
 - Branch protection and required checks
+
+### Testing Patterns
+
+Before (Do not follow this pattern):
+
+```ts
+vi.mock('@store/auth.store', () => ({ useAuthStore: vi.fn() }));
+vi.mock('@store/pets.store', () => ({ usePetsStore: vi.fn() }));
+
+let mockUseAuthStore: typeof useAuthStore;
+let mockUsePetsStore: typeof usePetsStore;
+
+beforeEach(async () => {
+  vi.resetAllMocks();
+  vi.resetModules();
+  const authStoreModule = await import('@store/auth.store');
+  mockUseAuthStore = authStoreModule.useAuthStore;
+  const petsStoreModule = await import('@store/pets.store');
+  mockUsePetsStore = petsStoreModule.usePetsStore;
+
+  (mockUseAuthStore as vi.Mock).mockImplementation(
+    createAuthStoreMock({ user: null, initializing: false }).impl as any
+  );
+  (mockUsePetsStore as vi.Mock).mockImplementation(
+    createPetsStoreMock({ pets: [] }).impl as any
+  );
+});
+```
+
+After (with installers):
+
+```ts
+vi.mock('@store/auth.store', () => ({ useAuthStore: vi.fn() }));
+vi.mock('@store/pets.store', () => ({ usePetsStore: vi.fn() }));
+
+import {
+  installAuthStoreMock,
+  installPetsStoreMock,
+} from '@testUtils/mocks/mockStoreInstallers';
+
+let authMock, petsMock;
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  authMock = installAuthStoreMock({ user: null, initializing: false });
+  petsMock = installPetsStoreMock({ pets: [] });
+});
+```
+
+Result: fewer moving parts, clearer intention, and consistent across the codebase.

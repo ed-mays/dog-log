@@ -294,3 +294,134 @@ Result: fewer moving parts, clearer intention, and consistent across the codebas
 - Audit interactions for `user-event` usage and accessible queries; add targeted a11y keyboard tests for interactive components.
 
 If you want, I can create the `mockStoreInstallers.ts` and `routes.ts` helpers and show how they would replace duplicated snippets across specific test files you pointed out.
+
+---
+
+### Adopted testing patterns (2025-11-09)
+
+This project has adopted the following testing conventions and utilities. These patterns are now considered the
+preferred approach for new and existing tests.
+
+#### 1) Store mocking via installers (Zustand)
+
+- Always declare store module mocks at the top of the test file so we can inject implementations.
+- Use the installer helpers from `@testUtils/mocks/mockStoreInstallers` inside `beforeEach` (or per‑test) to provide a
+  selector‑compatible implementation and expose `actions` for assertions.
+
+Example:
+
+```ts
+// Top of file
+vi.mock('@store/auth.store', () => ({ useAuthStore: vi.fn() }));
+vi.mock('@store/pets.store', () => ({ usePetsStore: vi.fn() }));
+vi.mock('@store/ui.store', () => ({ useUiStore: vi.fn() }));
+
+import {
+  installAuthStoreMock,
+  installPetsStoreMock,
+  installUiStoreMock,
+} from '@testUtils/mocks/mockStoreInstallers';
+
+let petsMock: ReturnType<typeof installPetsStoreMock>;
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  petsMock = installPetsStoreMock({ pets: [] });
+  installAuthStoreMock({ user: { uid: 'u1' }, initializing: false });
+  installUiStoreMock({ loading: false, error: null });
+});
+
+// Later in the test
+expect(petsMock.actions.fetchPets).toHaveBeenCalled();
+```
+
+Notes:
+
+- Keep real store unit tests unmocked; use installers only in component/integration tests.
+
+#### 2) Route/page assertion helpers
+
+Use helpers from `@testUtils/routes` to express intent and reduce selector duplication:
+
+```ts
+import { expectPetListVisible, expectFeatureUnavailable, expectWelcomePage } from '@testUtils/routes';
+
+render(<App />, { initialRoutes: ['/pets'] });
+await expectPetListVisible();
+```
+
+Available helpers today:
+
+- `expectWelcomePage()`
+- `expectFeatureUnavailable()`
+- `expectPetListVisible()`
+- `expectNotFoundPage()`
+
+#### 3) Unmock escape hatch for AuthBootstrap
+
+`AuthBootstrap` is globally mocked in `vitest.setup.ts` to avoid cross‑cutting side effects in most tests. In the
+component’s own suite, use the escape‑hatch pattern to load the real implementation and assert side‑effects at the
+service boundary:
+
+```ts
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.resetModules();
+});
+
+it('subscribes once and cleans up on unmount', async () => {
+  // 1) Unmock the component before importing it
+  vi.unmock('@features/authentication/AuthBootstrap');
+
+  // 2) Spy on the service boundary first to neutralize side‑effects
+  const authServiceModule = await import('@services/auth/authService');
+  const cleanup = vi.fn();
+  const subscribeSpy = vi
+    .spyOn(authServiceModule, 'subscribeToAuth')
+    .mockReturnValue(cleanup);
+
+  // 3) Dynamically import the real component after unmocking
+  const { default: AuthBootstrap } = await import(
+    '@features/authentication/AuthBootstrap'
+  );
+
+  // 4) Render and assert
+  const { unmount } = render(<AuthBootstrap />);
+  expect(subscribeSpy).toHaveBeenCalledTimes(1);
+  unmount();
+  expect(cleanup).toHaveBeenCalledTimes(1);
+});
+```
+
+#### 4) Interaction and async query guidelines
+
+- Prefer `@testing-library/user-event` for interactions; always `await` user actions.
+- For async appearance, use `findBy*` queries instead of wrapping `getBy*` in `waitFor`.
+- Use `waitFor` only for side‑effect synchronization (e.g., spies called, element disappears) when no accessible query
+  expresses the state directly.
+
+#### 5) Lint guardrails (Step 9)
+
+ESLint enforces two rules in test files (`**/*.test.ts?(x)`):
+
+- Disallow `vi.mock('… .ts')` specifiers — use aliases without the `.ts` extension.
+- Disallow `fireEvent` imports and calls — use `@testing-library/user-event` instead.
+
+See `eslint.config.js` for exact rules.
+
+#### 6) Aliases and imports
+
+- Use the configured aliases from `tsconfig.app.json` in tests and production code.
+- When mocking with `vi.mock`, do not include a file extension in the specifier (e.g., `@store/auth.store`, not
+  `@store/auth.store.ts`).
+
+#### 7) Optional helpers
+
+- If repeated app rendering boilerplate emerges, consider a thin `renderApp` wrapper under `src/testUtils/` that
+  defaults common options. Keep it optional to preserve test clarity.
+
+References:
+
+- Plan: `docs/test-architecture-review.plan.md`
+- Helpers: `src/testUtils/mocks/mockStoreInstallers.ts`, `src/testUtils/routes.tsx`
+- Suite examples: `src/App*.test.tsx`, `src/features/authentication/AuthBootstrap.test.tsx`
