@@ -10,6 +10,7 @@ import {
 import type { AppUser } from '@services/auth/authService';
 import { makePet } from '@testUtils/factories/makePet';
 import { vi } from 'vitest';
+import { expectPetListVisible } from '@testUtils/routes';
 
 // Explicitly mock stores to ensure vi.fn() instances are used
 vi.mock('@store/pets.store', () => ({
@@ -101,7 +102,7 @@ describe('App', () => {
       ],
     });
     renderComponent();
-    expect(await screen.findByTestId('pet-list')).toBeInTheDocument();
+    await expectPetListVisible();
   });
 
   test('fetches pets on mount', () => {

@@ -15,6 +15,10 @@ import {
   installAuthStoreMock,
   installPetsStoreMock,
 } from '@testUtils/mocks/mockStoreInstallers';
+import {
+  expectFeatureUnavailable,
+  expectPetListVisible,
+} from '@testUtils/routes';
 
 describe('AppRoutes', () => {
   const mockUseFeatureFlag = useFeatureFlag as unknown as vi.Mock;
@@ -34,7 +38,7 @@ describe('AppRoutes', () => {
 
     render(<AppRoutes />, { initialRoutes: ['/pets'] });
 
-    expect(await screen.findByTestId('pet-list')).toBeInTheDocument();
+    await expectPetListVisible();
   });
 
   it('redirects to feature-unavailable when pet list feature is disabled', async () => {
@@ -43,8 +47,7 @@ describe('AppRoutes', () => {
     );
     render(<AppRoutes />, { initialRoutes: ['/pets'] });
 
-    // If your feature-unavailable route/component renders this string:
-    expect(await screen.findByText('Feature not enabled')).toBeInTheDocument();
+    await expectFeatureUnavailable();
   });
 
   it('renders AddPetPage for /pets/new', async () => {

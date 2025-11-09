@@ -5,7 +5,11 @@ import {
   installAuthStoreMock,
   installPetsStoreMock,
 } from '@testUtils/mocks/mockStoreInstallers';
-import { expectWelcomePage, expectNotFoundPage } from '@testUtils/routes';
+import {
+  expectWelcomePage,
+  expectNotFoundPage,
+  expectPetListVisible,
+} from '@testUtils/routes';
 import { makePet } from '@testUtils/factories/makePet';
 
 // Explicitly mock useAuthStore and usePetsStore as vi.fn()
@@ -35,11 +39,7 @@ describe('App auth route protection', () => {
       initializing: false,
     });
     render(<App />, { initialRoutes: ['/pets'] });
-    // pet list page contains grid
-    // Using a more stable test id if available; otherwise rely on visible content/page-level element
-    // Here we assume the pet list renders `pet-list` test id as in other tests
-    // If not, keep the aria-label query as a fallback
-    // await screen.findByLabelText(/pet card grid/i);
+    await expectPetListVisible();
   });
 
   it('redirects unauthenticated users to /welcome for /pets/new', async () => {
