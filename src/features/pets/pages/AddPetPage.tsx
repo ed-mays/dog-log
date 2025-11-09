@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PetForm } from '@features/pets/components/PetForm';
-import type { Pet } from '../types.ts';
+import type { Pet } from '@features/pets/types';
 import { usePetsStore } from '@store/pets.store';
-import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
+import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
 import { useTranslation } from 'react-i18next';
-import { loadNamespace } from '../../../i18n.ts';
+import { loadNamespace } from '@i18n';
 
 const newPetInitialValues: Pet = {
   id: '',

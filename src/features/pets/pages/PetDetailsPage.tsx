@@ -15,7 +15,7 @@ import {
   TableHead,
   Typography,
 } from '@mui/material';
-import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
+import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 

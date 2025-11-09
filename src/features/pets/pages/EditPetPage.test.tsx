@@ -4,6 +4,7 @@ import { waitForElementToBeRemoved, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '@features/pets/types';
 import { vi } from 'vitest';
+import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 
 // Mock the module at the top level
 vi.mock('@store/pets.store', () => ({
@@ -25,47 +26,52 @@ function makePet(overrides: Partial<Pet> = {}): Pet {
 }
 
 describe('EditPetPage', () => {
-  let mockUsePetsStore: vi.Mock;
-
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.resetModules();
-
-    // Dynamically import the mocked module after resetModules
-    const petsStoreModule = await import('@store/pets.store');
-    mockUsePetsStore = petsStoreModule.usePetsStore as vi.Mock;
+  beforeEach(() => {
+    vi.resetAllMocks();
   });
 
-  it('renders existing pet and submits updates then navigates to /pets', async () => {
-    const statePets = [makePet()];
-    const actions = {
-      updatePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+  async function setup(
+    options: {
+      petId?: string;
+      pets?: Pet[];
+      storeOverrides?: Record<string, unknown>;
+    } = {}
+  ) {
+    const { petId = '1', pets = [makePet()], storeOverrides } = options;
+
+    // Ensure a fresh module graph for per-test vi.doMock hooks
+    vi.resetModules();
+
+    const petsMock = installPetsStoreMock({ pets, ...storeOverrides });
 
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
       return {
         ...mod,
-        useParams: () => ({ id: '1' }),
+        useParams: () => ({ id: petId }),
         useNavigate: () => navSpy,
       };
     });
 
     const { default: EditPetPage } = await import('./EditPetPage');
+    const { render } = await import('@test-utils');
+    const user = userEvent.setup();
+    return { petsMock, navSpy, EditPetPage, render, user };
+  }
+
+  it('renders existing pet and submits updates then navigates to /pets', async () => {
+    const { petsMock, navSpy, EditPetPage, render, user } = await setup();
+
     render(<EditPetPage />);
 
-    const user = userEvent.setup();
     const nameInput = await screen.findByLabelText(/name/i);
     await user.clear(nameInput);
     await user.type(nameInput, 'Buddy');
     await user.click(screen.getByRole('button', { name: /ok/i }));
 
     await waitFor(() => {
-      expect(actions.updatePet).toHaveBeenCalledWith('1', {
+      expect(petsMock.actions.updatePet).toHaveBeenCalledWith('1', {
         name: 'Buddy',
         breed: 'Mix',
       });
@@ -74,82 +80,30 @@ describe('EditPetPage', () => {
   });
 
   it('cancel navigates back to /pets', async () => {
-    const statePets = [makePet()];
-    const actions = {
-      updatePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+    const { petsMock, navSpy, EditPetPage, render, user } = await setup();
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
-    });
-
-    const { default: EditPetPage } = await import('./EditPetPage');
     render(<EditPetPage />);
 
     const cancelBtn = await screen.findByRole('button', { name: /cancel/i });
-    const user = userEvent.setup();
     await user.click(cancelBtn);
 
     await waitFor(() => {
       expect(navSpy).toHaveBeenCalledWith('/pets');
     });
-    expect(actions.updatePet).not.toHaveBeenCalled();
+    expect(petsMock.actions.updatePet).not.toHaveBeenCalled();
   });
 
   it('shows not found when pet id is invalid', async () => {
-    const statePets: Pet[] = [];
-    const actions = {
-      updatePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+    const { EditPetPage, render } = await setup({ petId: 'nope', pets: [] });
 
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: 'nope' }),
-        useNavigate: () => vi.fn(),
-      };
-    });
-
-    const { default: EditPetPage } = await import('./EditPetPage');
     render(<EditPetPage />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/not found/i);
   });
 
   it('shows confirm modal on cancel when form is dirty; has correct a11y and decline closes without navigation', async () => {
-    const statePets = [makePet()];
-    const actions = {
-      updatePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+    const { petsMock, navSpy, EditPetPage, render, user } = await setup();
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
-    });
-
-    const { default: EditPetPage } = await import('./EditPetPage');
-    const user = userEvent.setup();
     render(<EditPetPage />);
 
     const nameInput = await screen.findByLabelText(/name/i);
@@ -181,30 +135,12 @@ describe('EditPetPage', () => {
     }
 
     expect(navSpy).not.toHaveBeenCalled();
-    expect(actions.updatePet).not.toHaveBeenCalled();
+    expect(petsMock.actions.updatePet).not.toHaveBeenCalled();
   });
 
   it('accepting confirm after dirty cancel navigates back to /pets', async () => {
-    const statePets = [makePet()];
-    const actions = {
-      updatePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+    const { petsMock, navSpy, EditPetPage, render, user } = await setup();
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
-    });
-
-    const { default: EditPetPage } = await import('./EditPetPage');
-    const user = userEvent.setup();
     render(<EditPetPage />);
 
     const nameInput = await screen.findByLabelText(/name/i);
@@ -231,30 +167,12 @@ describe('EditPetPage', () => {
     await waitFor(() => {
       expect(navSpy).toHaveBeenCalledWith('/pets');
     });
-    expect(actions.updatePet).not.toHaveBeenCalled();
+    expect(petsMock.actions.updatePet).not.toHaveBeenCalled();
   });
 
   it('Escape closes the confirm modal without navigating', async () => {
-    const statePets = [makePet()];
-    const actions = {
-      updatePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+    const { navSpy, EditPetPage, render, user } = await setup();
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
-    });
-
-    const { default: EditPetPage } = await import('./EditPetPage');
-    const user = userEvent.setup();
     render(<EditPetPage />);
 
     const nameInput = await screen.findByLabelText(/name/i);
@@ -273,16 +191,14 @@ describe('EditPetPage', () => {
     expect(navSpy).not.toHaveBeenCalled();
   });
   it('shows error message when update fails and stops saving', async () => {
-    const statePets = [makePet()];
-    const actions = {
-      updatePet: vi.fn(async () => {
-        throw new Error('update failed');
-      }),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+    // Arrange pets store with a failing updatePet
+    const pets = [makePet()];
+    const failingUpdate = vi.fn(async () => {
+      throw new Error('update failed');
+    });
+    installPetsStoreMock({ pets, updatePet: failingUpdate });
 
+    // Mock router hooks for this test case
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
@@ -293,22 +209,25 @@ describe('EditPetPage', () => {
       };
     });
 
+    // Dynamically import after mocks are in place
     const { default: EditPetPage } = await import('./EditPetPage');
+
     const user = userEvent.setup();
     render(<EditPetPage />);
 
+    // Act
     const nameInput = await screen.findByLabelText(/name/i);
     await user.clear(nameInput);
     await user.type(nameInput, 'Buddy');
 
     await user.click(screen.getByRole('button', { name: /ok/i }));
 
-    // error alert should appear; saving indicator should not remain visible
+    // Assert: error alert appears and saving indicator is not present
     const err = await screen.findByTestId('edit-pet-error');
     expect(err).toHaveTextContent(/update/i);
     expect(screen.queryByTestId('edit-pet-saving')).not.toBeInTheDocument();
 
-    // no navigation happened on failure
+    // And no navigation on failure
     expect(navSpy).not.toHaveBeenCalled();
   });
 });

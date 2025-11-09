@@ -125,37 +125,62 @@ export function createPetsStoreMock(initial: Partial<TestPetsState> = {}) {
 
   // Reassign notify used in actions
   // Replace calls in actions to use enhancedNotify
-  actions.addPet = vi.fn(async (pet: Partial<Pet>) => {
-    const newPet: Pet = {
-      id: 'new-id',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      createdBy: 'test',
-      isArchived: false,
-      ...pet,
-    } as Pet;
-    stateRef.pets = [...stateRef.pets, newPet];
-    // Defer notification to the next macrotask so tests using waitForElementToBeRemoved
-    // can observe the element before it disappears.
-    setTimeout(() => enhancedNotify(), 0);
-  }) as unknown as TestPetsState['addPet'];
+  // Preserve or wrap provided overrides for actions so tests can assert on their spies.
+  // If no override is provided, use default state-mutating implementations.
+  if (!maybeActions.addPet) {
+    actions.addPet = vi.fn(async (pet: Partial<Pet>) => {
+      const newPet: Pet = {
+        id: 'new-id',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'test',
+        isArchived: false,
+        ...pet,
+      } as Pet;
+      stateRef.pets = [...stateRef.pets, newPet];
+      // Defer notification to the next macrotask so tests using waitForElementToBeRemoved
+      // can observe the element before it disappears.
+      setTimeout(() => enhancedNotify(), 0);
+    }) as unknown as TestPetsState['addPet'];
+  } else {
+    const provided = maybeActions.addPet as TestPetsState['addPet'];
+    actions.addPet = vi.fn(async (...args: Parameters<typeof provided>) => {
+      // Call the provided spy implementation; do not mutate local state implicitly.
+      return provided(...args);
+    }) as unknown as TestPetsState['addPet'];
+  }
 
-  actions.updatePet = vi.fn(
-    async (
-      id: string,
-      updates: Partial<Pick<Pet, 'name' | 'breed' | 'birthDate'>>
-    ) => {
-      stateRef.pets = stateRef.pets.map((p) =>
-        p.id === id ? { ...p, ...updates } : p
-      );
+  if (!maybeActions.updatePet) {
+    actions.updatePet = vi.fn(
+      async (
+        id: string,
+        updates: Partial<Pick<Pet, 'name' | 'breed' | 'birthDate'>>
+      ) => {
+        stateRef.pets = stateRef.pets.map((p) =>
+          p.id === id ? { ...p, ...updates } : p
+        );
+        enhancedNotify();
+      }
+    ) as unknown as TestPetsState['updatePet'];
+  } else {
+    const provided = maybeActions.updatePet as TestPetsState['updatePet'];
+    actions.updatePet = vi.fn(async (...args: Parameters<typeof provided>) => {
+      return provided(...args);
+    }) as unknown as TestPetsState['updatePet'];
+  }
+
+  if (!maybeActions.deletePet) {
+    actions.deletePet = vi.fn(async (id: string) => {
+      stateRef.pets = stateRef.pets.filter((p) => p.id !== id);
       enhancedNotify();
-    }
-  ) as unknown as TestPetsState['updatePet'];
-
-  actions.deletePet = vi.fn(async (id: string) => {
-    stateRef.pets = stateRef.pets.filter((p) => p.id !== id);
-    enhancedNotify();
-  }) as unknown as TestPetsState['deletePet'];
+    }) as unknown as TestPetsState['deletePet'];
+  } else {
+    const provided = maybeActions.deletePet as TestPetsState['deletePet'];
+    actions.deletePet = vi.fn(async (...args: Parameters<typeof provided>) => {
+      // Call provided spy (which may resolve or throw). Do not mutate local state here.
+      return provided(...args);
+    }) as unknown as TestPetsState['deletePet'];
+  }
 
   const getSnapshot = () => snapshotRef;
 

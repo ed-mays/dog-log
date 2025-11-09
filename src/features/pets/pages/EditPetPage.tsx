@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { loadNamespace } from '../../../i18n.ts';
+import { loadNamespace } from '@i18n';
 import { usePetsStore } from '@store/pets.store';
 import type { Pet } from '@features/pets/types';
-import { PetForm } from '@features/pets/components/PetForm.tsx';
-import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
+import { PetForm } from '@features/pets/components/PetForm';
+import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
 
 export default function EditPetPage() {
   const { id } = useParams<{ id: string }>();

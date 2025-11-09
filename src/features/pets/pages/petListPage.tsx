@@ -1,4 +1,4 @@
-import { PetList } from '../components/PetList.tsx';
+import { PetList } from '@features/pets/components/PetList';
 import { usePetsStore } from '@store/pets.store';
 
 export default function PetListPage() {

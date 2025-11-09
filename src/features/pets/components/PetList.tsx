@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import type { Pet } from '../types.ts';
+import type { Pet } from '@features/pets/types';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { Link } from 'react-router-dom';
-import { loadNamespace } from '../../../i18n.ts';
+import { loadNamespace } from '@i18n';
 import { useEffect, useState } from 'react';
 import { usePetsStore } from '@store/pets.store';
 import {
@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PetCard from './PetCard';
-import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
+import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
 
 type PetListProps = {
   pets: Pet[];

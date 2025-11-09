@@ -4,17 +4,17 @@ import { Suspense, lazy } from 'react';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
-import { WelcomePage } from '@features/authentication/pages/WelcomePage.tsx';
-import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator.tsx';
-import { NotFoundPage } from '@features/misc/pages/NotFoundPage.tsx';
+import { WelcomePage } from '@features/authentication/pages/WelcomePage';
+import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
+import { NotFoundPage } from '@features/misc/pages/NotFoundPage';
 import { useIsAuthenticated } from '@features/authentication/hooks/useIsAuthenticated';
 import { Alert } from '@mui/material';
 
-const PetListPage = lazy(() => import('@features/pets/pages/petListPage.tsx'));
-const AddPetPage = lazy(() => import('@features/pets/pages/AddPetPage.tsx'));
-const EditPetPage = lazy(() => import('@features/pets/pages/EditPetPage.tsx'));
+const PetListPage = lazy(() => import('@features/pets/pages/petListPage'));
+const AddPetPage = lazy(() => import('@features/pets/pages/AddPetPage'));
+const EditPetPage = lazy(() => import('@features/pets/pages/EditPetPage'));
 const PetDetailsPage = lazy(
-  () => import('@features/pets/pages/PetDetailsPage.tsx')
+  () => import('@features/pets/pages/PetDetailsPage')
 );
 
 export function AppRoutes() {

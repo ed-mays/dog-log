@@ -3,40 +3,28 @@ import { act } from 'react';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import type { Pet } from '../types';
 import { makePet } from '@testUtils/factories/makePet';
-import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
 import { vi } from 'vitest';
+import { render } from '@test-utils';
+import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import { PetList } from './PetList';
 
 // Mock the module at the top level
-vi.mock('@store/pets.store.ts', () => ({
+vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
 
-let mockUsePetsStore: vi.Mock;
-let renderTestUtils: typeof import('@test-utils').render; // Declare type for render
-
 describe('PetList card view', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks();
-    vi.resetModules(); // Reset modules to ensure fresh mocks
-
-    // Dynamically import the mocked module after resetModules
-    const petsStoreModule = await import('@store/pets.store');
-    mockUsePetsStore = petsStoreModule.usePetsStore as vi.Mock;
-
-    // Dynamically import render from @test-utils after resetModules
-    const testUtilsModule = await import('@test-utils');
-    renderTestUtils = testUtilsModule.render;
+  beforeEach(() => {
+    vi.resetAllMocks();
   });
 
   async function setup(
     flags: { addPetEnabled?: boolean } = {},
     initialPets: Pet[] = [makePet({ id: '1', name: 'Fido', breed: 'Mix' })]
   ) {
-    const petsMock = createPetsStoreMock({ pets: initialPets });
-    mockUsePetsStore.mockImplementation(petsMock.impl);
+    const petsMock = installPetsStoreMock({ pets: initialPets });
 
-    const { PetList } = await import('./PetList');
-    renderTestUtils(<PetList />, {
+    render(<PetList />, {
       featureFlags: {
         addPetEnabled: true,
         ...flags,
