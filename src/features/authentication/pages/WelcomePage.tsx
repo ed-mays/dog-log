@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { loadNamespace } from '../../../i18n.ts';
+import { loadNamespace } from '@i18n';
 import { Stack, Typography } from '@mui/material';
 import GoogleLoginButton from '@features/authentication/components/GoogleAuth/GoogleLoginButton';
 

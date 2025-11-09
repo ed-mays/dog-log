@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
-import { loadNamespace } from '../../../../i18n.ts';
+import { loadNamespace } from '@i18n';
 import { logger } from '@services/logService';
 import { Button } from '@mui/material';
 
@@ -47,12 +47,12 @@ const GoogleLoginButton: React.FC<LoginButtonProps> = ({
       className={className}
       onClick={onClick}
       disabled={disabled ?? initializing}
-      aria-label={t('continueWithGoogle', 'Continue with Google')}
-      data-testid="login-button"
-    >
-      {t('google.continueWithGoogle', 'Continue with Google Default', {
+      aria-label={t('google.continueWithGoogle', 'Continue with Google', {
         ns: 'auth',
       })}
+      data-testid="login-button"
+    >
+      {t('google.continueWithGoogle', 'Continue with Google', { ns: 'auth' })}
     </Button>
   );
 };

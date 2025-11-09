@@ -211,15 +211,47 @@ export type TestAuthState = Pick<
 };
 
 export function createAuthStoreMock(overrides: Partial<TestAuthState> = {}) {
+  const actions = {
+    initAuthListener: vi.fn(() => {}),
+    signInWithGoogle: vi.fn(async () => {}),
+    signOut: vi.fn(async () => {}),
+    reset: vi.fn(() => {}),
+  } as Required<
+    Pick<
+      TestAuthState,
+      'initAuthListener' | 'signInWithGoogle' | 'signOut' | 'reset'
+    >
+  >;
+
+  // Allow overrides to inject custom spy implementations without using `any`
+  if (typeof overrides.initAuthListener === 'function') {
+    actions.initAuthListener = overrides.initAuthListener;
+  }
+  if (typeof overrides.signInWithGoogle === 'function') {
+    actions.signInWithGoogle = overrides.signInWithGoogle;
+  }
+  if (typeof overrides.signOut === 'function') {
+    actions.signOut = overrides.signOut;
+  }
+  if (typeof overrides.reset === 'function') {
+    actions.reset = overrides.reset;
+  }
+
   const base: TestAuthState = {
     user: null,
     initializing: false,
     error: null,
     ...overrides,
+    // Ensure action functions in state reflect our spies
+    initAuthListener: actions.initAuthListener,
+    signInWithGoogle: actions.signInWithGoogle,
+    signOut: actions.signOut,
+    reset: actions.reset,
   };
   return {
     impl: makeZustandSelectorMock(base),
     state: base,
+    actions,
   };
 }
 

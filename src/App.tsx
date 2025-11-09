@@ -7,7 +7,7 @@ import { toErrorMessage } from '@utils/errors';
 import { useAuthStore } from '@store/auth.store';
 import { RoutePrefetcher } from '@features/pets/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
-import { NavigationBar } from '@components/common/NavigationBar/NavigationBar.tsx';
+import { NavigationBar } from '@components/common/NavigationBar/NavigationBar';
 import { Toolbar } from '@mui/material';
 import { useIsAuthenticated } from '@features/authentication/hooks/useIsAuthenticated';
 

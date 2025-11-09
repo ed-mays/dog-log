@@ -8,9 +8,9 @@ import {
 } from '@mui/material';
 import PetsIcon from '@mui/icons-material/Pets';
 import { Link as RouterLink } from 'react-router-dom';
-import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton.tsx';
+import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton';
 import { useTranslation } from 'react-i18next';
-import { LanguageSelector } from '@components/common/LanguageSelector/LanguageSelector.tsx';
+import { LanguageSelector } from '@components/common/LanguageSelector/LanguageSelector';
 
 export function NavigationBar() {
   const { t } = useTranslation('common');
