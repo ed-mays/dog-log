@@ -1,5 +1,5 @@
-import { PetList } from '../components/PetList.tsx';
-import { usePetsStore } from '@store/pets.store.ts';
+import { PetList } from '@features/pets/components/PetList';
+import { usePetsStore } from '@store/pets.store';
 
 export default function PetListPage() {
   const pets = usePetsStore((state) => state.pets);

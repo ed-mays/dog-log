@@ -1,6 +1,19 @@
 import { render, screen } from '@test-utils';
 import { NavigationBar } from './NavigationBar';
 import { within } from '@testing-library/react';
+import { vi, beforeEach } from 'vitest';
+import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+
+// Standardized store mock stub for components that read from the auth store
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
+}));
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  // Default: not initializing; no-op actions unless a test overrides
+  installAuthStoreMock({ initializing: false });
+});
 
 describe('NavigationBar', () => {
   it('renders without crashing in a Router context', () => {

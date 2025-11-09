@@ -41,7 +41,6 @@ import {
   subscribeToAuth,
 } from './authService';
 import { mockGetById, mockCreate } from '@repositories/userRepository';
-import type { User } from '@models/User';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -54,16 +53,16 @@ describe('authService', () => {
   });
 
   describe('signInWithGoogle', () => {
-    const user: User = {
+    // Simulated Firebase user object (minimal shape used by the service)
+    const fbUser = {
       uid: 'u1',
       displayName: 'Test User',
       email: 't@example.com',
       photoURL: 'http://x',
-      createdBy: '',
     };
     beforeEach(() => {
       signInWithPopupMock.mockResolvedValue({
-        user: user,
+        user: fbUser,
       });
     });
     it('creates a new user if one does not exist', async () => {
@@ -77,7 +76,7 @@ describe('authService', () => {
     });
 
     it('does not create a user if one already exists', async () => {
-      const existingUser: User = {
+      const existingUser = {
         id: 'u1',
         displayName: 'Old Name',
         email: 'old@example.com',

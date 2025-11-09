@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { loadNamespace } from '@i18n';
-import { usePetsStore } from '@store/pets.store.ts';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag.ts';
+import { usePetsStore } from '@store/pets.store';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import {
   Alert,
   Button,
@@ -15,7 +15,7 @@ import {
   TableHead,
   Typography,
 } from '@mui/material';
-import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal.tsx';
+import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 

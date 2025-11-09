@@ -1,43 +1,35 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, withLocale } from '@test-utils';
 import userEvent from '@testing-library/user-event';
+import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 
-// ADR-019 Default Pattern: Mock the auth store at module scope and drive state via variables
-let initializing = false;
-let signInMock: ReturnType<typeof vi.fn> = vi.fn();
-
-type AuthStateMock = {
-  initializing: boolean;
-  signInWithGoogle: () => Promise<void> | void;
-};
-
-vi.mock('@store/auth.store.ts', () => ({
-  useAuthStore: vi.fn((selector?: (s: AuthStateMock) => unknown) => {
-    const state: AuthStateMock = { initializing, signInWithGoogle: signInMock };
-    return typeof selector === 'function' ? selector(state) : state;
-  }),
+// Standardized pattern: expose a vi.fn() hook and install selector-compatible mocks per-test
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
 }));
 
-// Import after mocks so the component receives mocked modules per ADR-019
+// Import after mocks so the component receives mocked modules
 import GoogleLoginButton from './GoogleLoginButton';
 
 describe('GoogleLoginButton', () => {
+  let signInWithGoogle: ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
-    vi.clearAllMocks();
-    initializing = false;
-    signInMock = vi.fn().mockResolvedValue(undefined);
+    vi.resetAllMocks();
+    signInWithGoogle = vi.fn().mockResolvedValue(undefined);
+    installAuthStoreMock({ initializing: false, signInWithGoogle });
   });
 
   it('calls signInWithGoogle on click', async () => {
     render(<GoogleLoginButton />);
     const btn = await screen.findByTestId('login-button');
     await userEvent.click(btn);
-    expect(signInMock).toHaveBeenCalledTimes(1);
+    expect(signInWithGoogle).toHaveBeenCalledTimes(1);
   });
 
   describe('Initialization behavior', () => {
     it('is disabled while initializing', async () => {
-      initializing = true;
+      installAuthStoreMock({ initializing: true });
       render(<GoogleLoginButton />);
 
       const button = await screen.findByTestId('login-button');
@@ -46,7 +38,7 @@ describe('GoogleLoginButton', () => {
   });
 
   it('is enabled when not initializing', async () => {
-    initializing = false;
+    installAuthStoreMock({ initializing: false });
     render(<GoogleLoginButton />);
 
     const button = await screen.findByTestId('login-button');

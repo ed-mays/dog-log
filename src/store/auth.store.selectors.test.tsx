@@ -3,6 +3,7 @@ import { useAuthStore, useAuthUser } from './auth.store';
 import { useAuthStatus } from './auth.store';
 import type { AppUser } from '@services/auth/authService';
 import { render, screen } from '@test-utils';
+import { act } from '@testing-library/react';
 
 function SelProbe() {
   const user = useAuthUser();
@@ -38,18 +39,18 @@ describe('auth.store selector hooks', () => {
       email: null,
       photoURL: null,
     };
-    useAuthStore.setState({ user, initializing: false, error: null });
-
-    // Allow state propagation to the component
-    await Promise.resolve();
+    await act(async () => {
+      useAuthStore.setState({ user, initializing: false, error: null });
+    });
 
     expect(screen.getByTestId('uid')).toHaveTextContent('u1');
     expect(screen.getByTestId('init')).toHaveTextContent('false');
     expect(screen.getByTestId('err')).toHaveTextContent('null');
 
     // Simulate error update
-    useAuthStore.setState({ error: new Error('oops') });
-    await Promise.resolve();
+    await act(async () => {
+      useAuthStore.setState({ error: new Error('oops') });
+    });
     expect(screen.getByTestId('err')).toHaveTextContent('oops');
   });
 });

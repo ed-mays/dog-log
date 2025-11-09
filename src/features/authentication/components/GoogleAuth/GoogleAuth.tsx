@@ -1,6 +1,6 @@
 import GoogleLoginButton from './GoogleLoginButton';
 import LogoutButton from './LogoutButton';
-import { useAuthStore } from '@store/auth.store.ts';
+import { useAuthStore } from '@store/auth.store';
 import React from 'react';
 
 type Props = { disabled?: boolean };

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@store/auth.store';
 import { useResetStores } from '@store/useResetStores';
 import { useNavigate } from 'react-router-dom';
-import { loadNamespace } from '../../../../i18n.ts';
+import { loadNamespace } from '@i18n';
 import { Button } from '@mui/material';
 
 type Props = {

@@ -5,8 +5,10 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
-import { render } from '@test-utils';
-import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
+import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+
+// Mock the pets store hook at module level; installer will provide impl per-test
+vi.mock('@store/pets.store', () => ({ usePetsStore: vi.fn() }));
 
 // ADR-019 Per-Test Variation Pattern
 // - We use vi.resetModules() in beforeEach and set up vi.doMock(...) for
@@ -14,42 +16,43 @@ import { createPetsStoreMock } from '@testUtils/mocks/mockStores';
 // - No top-level import of AddPetPage or the real store module.
 
 describe('AddPetPage', () => {
-  let petsMock: ReturnType<typeof createPetsStoreMock>;
+  let petsMock: ReturnType<typeof installPetsStoreMock>;
   let mockNavigate: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     vi.resetModules();
 
     // Ensure no lingering per-test mocks from previous tests
     vi.unmock('@features/pets/components/PetForm');
-    vi.unmock('@features/pets/components/PetForm.tsx');
 
-    // Prepare store mock instance for this test run
-    petsMock = createPetsStoreMock();
+    // Install selector-compatible pets store mock for this test run
+    petsMock = installPetsStoreMock();
 
-    // Mock the pets store for this module load
-    vi.doMock('@store/pets.store.ts', () => ({
-      // Expose the mocked hook implementation; unknown avoids explicit any
-      usePetsStore: petsMock.impl as unknown,
-    }));
-
-    // Mock react-router's useNavigate for this module load
+    // Mock react-router's useNavigate for this module load on a fresh graph
     mockNavigate = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const actual = await importOriginal<{ [key: string]: unknown }>();
-      return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-      };
+    vi.doMock('react-router-dom', async () => {
+      const actual =
+        await vi.importActual<typeof import('react-router-dom')>(
+          'react-router-dom'
+        );
+      return { ...actual, useNavigate: () => mockNavigate };
     });
   });
+
+  async function renderWithProviders(
+    ui: React.ReactElement,
+    options?: Record<string, unknown>
+  ) {
+    const { render } = await import('@test-utils');
+    return render(ui, options as never);
+  }
 
   it('renders the PetForm', async () => {
     const module = await import('./AddPetPage');
     const AddPetPage = module.default;
 
-    render(<AddPetPage />);
+    await renderWithProviders(<AddPetPage />);
     expect(await screen.findByText('OK')).toBeInTheDocument();
     expect(await screen.findByText('Cancel')).toBeInTheDocument();
   });
@@ -78,7 +81,7 @@ describe('AddPetPage', () => {
     const AddPetPage = module.default;
 
     const user = userEvent.setup();
-    render(<AddPetPage />);
+    await renderWithProviders(<AddPetPage />);
 
     await user.click(await screen.findByRole('button', { name: /ok/i }));
 
@@ -110,7 +113,7 @@ describe('AddPetPage', () => {
     const AddPetPage = module.default;
 
     const user = userEvent.setup();
-    render(<AddPetPage />);
+    await renderWithProviders(<AddPetPage />);
 
     // Make form dirty and click Cancel
     await user.click(
@@ -156,7 +159,7 @@ describe('AddPetPage', () => {
     const AddPetPage = module.default;
 
     const user = userEvent.setup();
-    render(<AddPetPage />);
+    await renderWithProviders(<AddPetPage />);
 
     // Make form dirty and click Cancel
     await user.click(
@@ -193,7 +196,7 @@ describe('AddPetPage', () => {
     const AddPetPage = module.default;
 
     const user = userEvent.setup();
-    render(<AddPetPage />);
+    await renderWithProviders(<AddPetPage />);
 
     const cancel = await screen.findByRole('button', { name: /cancel/i });
 
@@ -226,10 +229,10 @@ describe('AddPetPage', () => {
     const AddPetPage = module.default;
 
     const user = userEvent.setup();
-    render(<AddPetPage />);
+    await renderWithProviders(<AddPetPage />);
 
     // Make form dirty via explicit control
-    await userEvent.click(
+    await user.click(
       await screen.findByRole('button', { name: /make dirty/i })
     );
 
@@ -280,7 +283,7 @@ describe('AddPetPage', () => {
     const AddPetPage = module.default;
 
     const user = userEvent.setup();
-    render(<AddPetPage />);
+    await renderWithProviders(<AddPetPage />);
 
     // Make form dirty via explicit control
     await user.click(
