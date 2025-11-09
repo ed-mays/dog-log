@@ -7,10 +7,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePetsStore } from '@store/pets.store';
 import {
   Box,
-  IconButton,
   Tooltip,
   Typography,
   Link as MuiLink,
+  Button,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PetCard from './PetCard';
@@ -92,7 +92,7 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
           <PetSortSelector value={sortOrder} onChange={setSortOrder} />
           {addPetEnabled && (
             <Tooltip title={t('addPet', { ns: 'petList' })}>
-              <IconButton
+              <Button
                 component={Link}
                 to="/pets/new"
                 color="primary"
@@ -100,9 +100,10 @@ export function PetList({ dataTestId = 'pet-list' }: PetListProps) {
                 data-testid="add-pet-button"
                 aria-label={t('addPet', { ns: 'petList' })}
                 sx={{ ml: 1 }}
+                startIcon={<AddIcon fontSize="small" />}
               >
-                <AddIcon />
-              </IconButton>
+                {t('addPet', { ns: 'petList' })}
+              </Button>
             </Tooltip>
           )}
         </div>
