@@ -2,5 +2,8 @@
   "addPet": "Agrega Mascota",
   "editPetTitle": "Editar Mascota",
   "noPetsLabel": "Aún no tienes mascotas.",
-  "addFirstPetCta": "Agrega tu primera mascota ahora"
+  "addFirstPetCta": "Agrega tu primera mascota ahora",
+  "sort.label": "Ordenar por nombre",
+  "sort.asc": "Ascendente (A→Z)",
+  "sort.desc": "Descendente (Z→A)"
 }

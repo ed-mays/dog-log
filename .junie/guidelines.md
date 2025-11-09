@@ -2,7 +2,8 @@
 
 Date: 2025-11-08
 
-Purpose: A fresh, practical guide for humans and LLMs collaborating on Dog Log. It encodes our current architecture and testing decisions (ADR-backed) and how to safely evolve the codebase with minimal churn.
+Purpose: A fresh, practical guide for humans and LLMs collaborating on Dog Log. It encodes our current architecture and
+testing decisions (ADR-backed) and how to safely evolve the codebase with minimal churn.
 
 What to optimize for:
 
@@ -12,13 +13,16 @@ What to optimize for:
 
 ---
 
+# Extremely Important for LLMs: DO NOT WASTE TIME/TOKENS UPDATING FILES or FOLDERS THAT ARE GITIGNORED
+
 ## 1) Architecture Principles (ADR-backed)
 
 - Data access layering (ADR-005):
   - Firestore access lives in src/repositories/\* and returns plain JS objects only.
   - Business logic lives in src/services/\* and depends on repositories.
   - UI (components, hooks, Zustand stores) talks to services only — never Firestore or repositories directly.
-  - Reasoning: separation of concerns, easier testing/migration; see decisions/adr/005-data-access-strategy-with-services-and-repositories.md
+  - Reasoning: separation of concerns, easier testing/migration; see
+    decisions/adr/005-data-access-strategy-with-services-and-repositories.md
 
 - UI system (ADR-017):
   - Prefer Material UI (MUI) primitives and theming for new UI work.
@@ -27,9 +31,11 @@ What to optimize for:
 
 - Testing for feature flags and routing (ADR-024, ADR-028):
   - Cover flag off/on states for both UI gating and routes.
-  - Prefer integration-style tests using @test-utils with MemoryRouter for flows; mock useNavigate only for isolated unit intent.
+  - Prefer integration-style tests using @test-utils with MemoryRouter for flows; mock useNavigate only for isolated
+    unit intent.
   - Always include a 404 route test and unauthenticated access checks where applicable.
-  - See decisions/adr/024-TESTING-implement-rigorous-testing-for-feature-flags-and-routing.md and decisions/adr/028-TESTING-router-testing-guidance.md
+  - See decisions/adr/024-TESTING-implement-rigorous-testing-for-feature-flags-and-routing.md and
+    decisions/adr/028-TESTING-router-testing-guidance.md
 
 ---
 
@@ -78,11 +84,13 @@ Feature flags and routing (ADR-024, ADR-028):
 - For gated routes, verify redirect or “Feature Unavailable” when flag is false.
 - Include tests for unauthenticated access redirects where relevant.
 - Include a 404 test that navigates to a non-existent URL and checks the Not Found UI.
-- Prefer integration tests with render from @test-utils and initialRoutes. Mock useNavigate only to verify “navigation intent” in isolated unit tests.
+- Prefer integration tests with render from @test-utils and initialRoutes. Mock useNavigate only to verify “navigation
+  intent” in isolated unit tests.
 
 Mocking patterns:
 
-- Zustand: vi.mock at top; provide injectable state per test. For per-test variants, use vi.doMock inside test with dynamic import and vi.resetModules() in beforeEach/afterEach.
+- Zustand: vi.mock at top; provide injectable state per test. For per-test variants, use vi.doMock inside test with
+  dynamic import and vi.resetModules() in beforeEach/afterEach.
 
 Setup:
 
@@ -99,7 +107,8 @@ Scripts:
 ## 4) Data & Side Effects
 
 - Keep async side-effects inside store actions when practical.
-- Prefer small service functions for fetch/CRUD; components call services via custom hooks where useful (e.g., usePetList).
+- Prefer small service functions for fetch/CRUD; components call services via custom hooks where useful (e.g.,
+  usePetList).
 - Never return Firestore SDK types from repositories/services; always plain objects with explicit types.
 
 ---
@@ -154,13 +163,16 @@ Scripts:
 When you (LLM) make changes:
 
 - Make the minimal change that satisfies the issue; prefer editing over large rewrites.
-- Conform to ADRs and this guide. If a request conflicts, explain the conflict and propose the smallest compliant alternative.
-- Co-locate tests next to code. Use @test-utils render wrapper. Add flag and router tests per ADRs when touching those areas.
+- Conform to ADRs and this guide. If a request conflicts, explain the conflict and propose the smallest compliant
+  alternative.
+- Co-locate tests next to code. Use @test-utils render wrapper. Add flag and router tests per ADRs when touching those
+  areas.
 - Keep commits/messages clear about intent and scope.
 
 When proposing new patterns:
 
-- Justify with trade-offs. If accepted, add or update an ADR under decisions/adr using the template in decisions/templates.
+- Justify with trade-offs. If accepted, add or update an ADR under decisions/adr using the template in
+  decisions/templates.
 
 ---
 
