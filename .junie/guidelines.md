@@ -1,246 +1,174 @@
-# Dog Log — Developer Guidelines
+# Dog Log — LLM Collaboration Guidelines
 
-Short, practical guidance to get productive quickly.
+Date: 2025-11-08
 
-## 1. Tech Stack Snapshot
+Purpose: A fresh, practical guide for humans and LLMs collaborating on Dog Log. It encodes our current architecture and testing decisions (ADR-backed) and how to safely evolve the codebase with minimal churn.
 
-- React 19 + TypeScript (strict)
-- Vite (dev/build), Vitest (+ Testing Library)
-- Zustand (state)
-- i18next + react-i18next (i18n)
-- ESLint + Prettier
+What to optimize for:
 
-## 2. Project Structure & Conventions
+- Small, focused changes with clear intent and tests.
+- Respect the approved ADRs before introducing new patterns.
+- Keep code feature-scoped, typed, testable, and i18n/flag ready.
 
-- src/components/common/\*: Reusable, stateless UI building blocks
-- src/features/<domain>/\*: Feature-scoped modules containing pages, components, hooks, and types (e.g., `pets`).
-- src/store/\*: Zustand stores and related types
-- src/repositories/\*: Data access layer (e.g., `PetRepository`) that interacts directly with Firestore.
-- src/services/\*: Business logic layer that uses repositories. Components and stores should use services, not
-  repositories.
-- src/styles/\*: CSS modules (prefer module.css for component/feature styles)
-- src/locales/<lang>/\*: Namespaced JSON translations
-- src/featureFlags/\*: Feature flag provider, config, and hooks
-- src/test-utils.tsx: Preconfigured render wrapper for tests
-- src/testUtils/test-i18n.ts: Shared test i18n setup
+---
 
-Aliases (from tsconfig.app.json):
+## 1) Architecture Principles (ADR-backed)
 
-- `@components/*` → `src/components/*`
-- `@firebase` → `src/firebase.ts`
-- `@i18n` → `src/i18n.ts`
-- `@store/*` → `src/store/*`
-- `@test-utils` → `src/test-utils.tsx`
-- `@testUtils/*` → `src/testUtils/*`
-- `@featureFlags/*` → `src/featureFlags/*`
-- `@features/*` → `src/features/*`
-- `@models/*` → `src/models/*`
-- `@repositories/*` → `src/repositories/*`
-- `@services/*` → `src/services/*`
-- `@styles/*` → `src/styles/*`
-- `@utils/*` → `src/utils/*`
+- Data access layering (ADR-005):
+  - Firestore access lives in src/repositories/\* and returns plain JS objects only.
+  - Business logic lives in src/services/\* and depends on repositories.
+  - UI (components, hooks, Zustand stores) talks to services only — never Firestore or repositories directly.
+  - Reasoning: separation of concerns, easier testing/migration; see decisions/adr/005-data-access-strategy-with-services-and-repositories.md
 
-Guidelines:
+- UI system (ADR-017):
+  - Prefer Material UI (MUI) primitives and theming for new UI work.
+  - Accessibility and Testing Library conventions apply.
+  - See decisions/adr/017-adopt-material-design-ecosystem-for-UI.md
 
-- Favor feature-first organization under src/features/<domain>.
-- When generating new TypeScript files, always use the .tsx extension
-- Keep shared UI in src/components/common.
+- Testing for feature flags and routing (ADR-024, ADR-028):
+  - Cover flag off/on states for both UI gating and routes.
+  - Prefer integration-style tests using @test-utils with MemoryRouter for flows; mock useNavigate only for isolated unit intent.
+  - Always include a 404 route test and unauthenticated access checks where applicable.
+  - See decisions/adr/024-TESTING-implement-rigorous-testing-for-feature-flags-and-routing.md and decisions/adr/028-TESTING-router-testing-guidance.md
+
+---
+
+## 2) Project Structure & Conventions
+
+- Feature-first under src/features/<domain> for pages, components, hooks, and types.
+- Shared stateless UI in src/components/common.
+- Zustand stores in src/store (keep small and typed; prefer selectors: useStore(s => s.part)).
+- Repositories in src/repositories, services in src/services.
+- Styles: CSS modules in src/styles or colocated module.css.
+- i18n namespaces live in src/locales/<lang>/<namespace>.json.
 - One public component per file; colocate its styles and tests.
-- Export minimal public APIs from index files when modules grow.
+- When adding new TypeScript files, use .tsx.
 
-## 3. Scripts You’ll Use Daily
+Aliases (tsconfig.app.json):
 
-- npm run dev — start Vite dev server
-- npm run dev:with-emulators — start Vite dev server with firebase emulators
-- npm run build — type-check then build for production
-- npm run preview — preview the production build locally
-- npm run lint — run ESLint
-- npm run lint:fix — auto-fix lint issues
-- npm run format — format with Prettier
-- npm run test — run all tests (unit and integration)
-- npm run test:unit — run only unit/component tests
-- npm run test:watch — run unit tests in watch mode
-- npm run test:integration — run only integration tests
-- npm run test:coverage — run unit tests and generate coverage report (coverage/)
+- @components/_ → src/components/_
+- @firebase → src/firebase.ts
+- @i18n → src/i18n.ts
+- @store/_ → src/store/_
+- @test-utils → src/test-utils.tsx
+- @testUtils/_ → src/testUtils/_
+- @featureFlags/_ → src/featureFlags/_
+- @features/_ → src/features/_
+- @models/_ → src/models/_
+- @repositories/_ → src/repositories/_
+- @services/_ → src/services/_
+- @styles/_ → src/styles/_
+- @utils/_ → src/utils/_
 
-## 4. Testing Guidelines (Vitest + Testing Library)
+---
 
-When writing or refactoring tests, please adhere to the following conventions to ensure consistency, reliability, and
-maintainability.
+## 3) Testing Policy (Vitest + Testing Library)
 
-1. **Prefer `user-event` for Interactions**: Always use `@testing-library/user-event` for simulating user interactions (
-   e.g., `userEvent.click`, `userEvent.type`). Avoid `@testing-library/fire-event` as it does not fully replicate real
-   user browser behavior. All `user-event` calls are asynchronous and must be `await`ed.
+General rules:
 
-2. **Use `findBy*` for Async Elements**: For asserting the appearance of an element that is not present immediately,
-   prefer `findBy*` queries (e.g., `await screen.findByRole(...)`). Avoid wrapping `getBy*` queries in `waitFor` for
-   simple presence checks.
+- Use @testing-library/user-event for interactions. Await all userEvent calls.
+- For async appearance, use findBy*. Do not wrap getBy* in waitFor for simple presence.
+- Prefer accessible queries in this order: getByRole → getByLabelText → getByPlaceholderText → getByText → getByTestId.
+- Avoid snapshots. Assert meaningful, accessible output/state.
+- Implement any skipped or commented-out tests.
 
-3. **Prioritize Accessible Queries**: Query elements in a way that reflects user experience. The preferred query order
-   is:
-4. `getByRole` (with an accessible name if possible, e.g., `{ name: /submit/i }`)
-5. `getByLabelText`
-6. `getByPlaceholderText`
-7. `getByText`
-8. `getByTestId` (use this as a last resort when no other accessible query is suitable).
+Feature flags and routing (ADR-024, ADR-028):
 
-9. **Avoid Snapshot Testing**: Do not use snapshot tests (`.toMatchSnapshot()`, `asFragment()`). Instead, write explicit
-   assertions that check for specific, meaningful output, such as visible text, ARIA attributes, or component state.
-   This makes tests more robust and less brittle, especially with i18n.
+- Add tests to prove UI is hidden/disabled when a flag is false and visible/active when true.
+- For gated routes, verify redirect or “Feature Unavailable” when flag is false.
+- Include tests for unauthenticated access redirects where relevant.
+- Include a 404 test that navigates to a non-existent URL and checks the Not Found UI.
+- Prefer integration tests with render from @test-utils and initialRoutes. Mock useNavigate only to verify “navigation intent” in isolated unit tests.
 
-10. **Implement Skipped or Commented Tests**: If you encounter skipped (`test.skip`) or commented-out tests, your task
-    is
-    to implement them. These represent important scenarios that need coverage.
+Mocking patterns:
 
-11. **Follow Consistent Mocking Patterns**:
+- Zustand: vi.mock at top; provide injectable state per test. For per-test variants, use vi.doMock inside test with dynamic import and vi.resetModules() in beforeEach/afterEach.
 
-- For Zustand stores, use `vi.mock` at the top of the test file. Provide a mock implementation that allows state to be
-  injected for each test.
-- If a test requires a unique mock implementation that differs from other tests in the same file, use `vi.doMock`
-  inside the test block, followed by a dynamic `await import()` of the component under test. Remember to call
-  `vi.resetModules()` in a `beforeEach` or `afterEach` block to ensure test isolation.
+Setup:
 
-7. **Expand Test Coverage**: Go beyond "happy path" scenarios. Add tests for:
+- Shared test i18n at src/testUtils/test-i18n.ts via the render wrapper.
+- JSDOM environment; jest-dom matchers preloaded in vitest.setup.ts.
+- Coverage output in coverage/; config/setup files excluded.
 
-- **Error States**: What happens when a service call fails or returns an error?
-- **Edge Cases**: Test with empty lists, invalid inputs, or unusual data shapes.
-- **Feature Flags**: Verify that UI elements and routes are correctly enabled or disabled based on feature flag
-  states.
-- **Accessibility (a11y)**: For interactive components like modals, assert that focus is managed correctly, keyboard
-  navigation works (e.g., `Escape` key closes the modal), and relevant ARIA attributes (`aria-modal`) are present.
+Scripts:
 
-**General Conventions:**
+- npm run test, test:unit, test:integration, test:watch, test:coverage
 
-- Use the shared render wrapper from `@test-utils` for providers (i18n + feature flags).
-- Keep tests next to code: `Component.tsx` and `Component.test.tsx` in the same folder.
-- Create unit tests while implementing functionality, not afterward.
-- In tests, prefer `test(...)` to `it(...)`.
+---
 
-Setup notes:
+## 4) Data & Side Effects
 
-- Shared test i18n lives at src/testUtils/test-i18n.ts (wired through the render wrapper).
-- JSDOM environment, jest-dom matchers preloaded via vitest.setup.ts.
-- Coverage reports: coverage/ (HTML + text). Excludes config files and setup.
-
-## 5. State & Data (Zustand)
-
-- Create small, focused stores in src/store/ with typed state/actions.
 - Keep async side-effects inside store actions when practical.
-- Prefer a small service layer in src/services/\* to encapsulate fetch logic.
-- Avoid leaking store shape across app; read via selectors: useStore(s => s.part).
+- Prefer small service functions for fetch/CRUD; components call services via custom hooks where useful (e.g., usePetList).
+- Never return Firestore SDK types from repositories/services; always plain objects with explicit types.
 
-## 6. Data Access Strategy: Firestore
+---
 
-**Principle:**  
-All interactions with Firestore must be abstracted through a service layer (e.g., src/services) and custom
-hooks. React components, stores, and business logic should never depend directly on Firestore APIs or objects.
-
-**Patterns:**
-
-- Use repository modules (in `src/repositories`) to encapsulate all Firestore CRUD logic (`getUser`, `savePet`, etc.)
-  and
-  always return plain JavaScript objects.
-- Create custom React hooks (e.g., `usePetList`) that call the repository functions and expose application data, not
-  Firestore types.
-- Provide repositories to the app through context providers if stateful or cross-feature access is needed.
-- Never expose Firestore types, Snapshots, or References outside service modules.
-- Strictly type all repository and hook outputs for reliable, testable contracts.
-
-**When To Use This Strategy:**
-
-- When building new features that need app or user Place all data-fetching and saving logic inside a dedicated
-  repository/service module and use from hooks or components.
-- When refactoring legacy code: Move Firestore calls out of components and consolidate them in service modules. Update
-  hooks to call these services.
-- When doing unit or integration testing: Mock repository functions, not Firestore SDK access, making tests
-  backend-independent.
-- When considering migration or backend changes: Abstracting Firestore lets you swap data sources by updating only the
-  repository logic.
-- Whenever sharing business logic or data transformations: Keep these in services or hooks, not inside UI components.
-
-**Example:**
-
-```typescript
-// src/services/petService.ts
-export const petService = {
-  getList: async () => {
-    /* Firestore query logic */
-  },
-  addPet: async (pet) => {
-    /* Firestore add logic */
-  },
-};
-
-// src/features/pets/usePetList.ts
-import { useEffect, useState } from 'react';
-import { petService } from '@services/petService';
-
-export function usePetList() {
-  const [pets, setPets] = useState([]);
-  useEffect(() => {
-    petService.getList().then(setPets);
-  }, []);
-  return pets;
-}
-```
-
-**Summary:**  
-Always access Firestore through abstracted repository/service modules and custom hooks, never directly in components.
-This keeps your codebase maintainable, testable, and flexible for future changes.
-
-## 6. Internationalization (i18next)
+## 5) Internationalization (i18next)
 
 - Namespaces: common, home, petList, petProperties.
-- Default language from Vite env: VITE_DEFAULT_LOCALE; fallback: en.
-- Add translations under src/locales/<lang>/<namespace>.json.
-- In components: const { t } = useTranslation('<namespace>'); and t('key').
+- Default language: import from VITE_DEFAULT_LOCALE, fallback en.
+- Add strings to src/locales/<lang>/<namespace>.json.
+- In components: const { t } = useTranslation('<namespace>'); and t('key'). No hardcoded user-facing text.
 
-## 7. Feature Flags
+---
+
+## 6) Feature Flags
 
 - See src/featureFlags/README.featureFlags.md for add/toggle/remove.
-- Defaults come from Vite env vars (VITE\_\*); override per-test via <FeatureFlagsProvider initialFlags={{ ... }}> or
-  render options.
-- Query flags with useFeatureFlag('flag_name').
-- Gate routes/UI paths conditionally; keep legacy/new code tidy.
+- Defaults from VITE\_\* envs; override in tests via <FeatureFlagsProvider initialFlags={{ ... }}> or render options.
+- Query with useFeatureFlag('flag_name'). Use flags to gate routes and modular UI; keep legacy/new paths tidy.
 
-## 8. Environment Variables (Vite)
+---
 
-- Create .env.local for local-only values. Examples:
-  VITE_APP_TITLE=Dog-Log
-  VITE_DEFAULT_LOCALE=en
-  VITE_FLAG_COUNT_BUTTON=false
-  VITE_ADD_PET_ENABLED=true
-  VITE_FIREBASE_API_KEY=''
-  VITE_FIREBASE_AUTH_DOMAIN=''
-  VITE_FIREBASE_PROJECT_ID=''
-  VITE_FIREBASE_STORAGE_BUCKET=''
-  VITE_FIREBASE_MESSAGING_SENDER_ID=''
-  VITE_FIREBASE_APP_ID=''
-  VITE_FIREBASE_MEASUREMENT_ID=''
-- All app-consumed env vars must be prefixed with VITE\_.
-- Restart the dev server after changing env vars.
+## 7) Environment Variables (Vite)
 
-## 9. Linting, Formatting, and Type Safety
+- Use .env.local for local secrets. All runtime envs must be prefixed VITE\_.
+- Example keys: VITE*APP_TITLE, VITE_DEFAULT_LOCALE, VITE_FLAG_COUNT_BUTTON, VITE_ADD_PET_ENABLED, VITE_FIREBASE*\*.
+- Restart dev server after changes.
 
-- Run npm run lint and npm run format before commits.
-- Keep TypeScript strict and fix warnings early.
-- Prefer explicit types on store state and public function boundaries.
+---
 
-## 10. Pull Requests — Quick Checklist
+## 8) Linting, Formatting, Type Safety
 
-- [ ] Unit/component tests added/updated; coverage still reasonable
-- [ ] `npm run build` passes without errors
-- [ ] npm run lint and npm run format pass
-- [ ] Screens and strings are i18n-ready (no hardcoded user-facing text)
-- [ ] Follows feature-first structure and uses aliases
-- [ ] Feature flags added/updated when introducing gated behavior
+- Keep TypeScript strict; add explicit types to public boundaries and store state.
+- npm run lint, lint:fix, and format before commits.
+- npm run build must pass locally.
 
-## 11. Troubleshooting
+---
 
-- Alias import not resolving: ensure path matches tsconfig.app.json and restart Vite.
-- i18n key missing: verify namespace/key and locale file loaded in src/i18n.ts.
-- Tests can’t find providers: import render from '@test-utils'.
-- Test i18n warning (NO_I18NEXT_INSTANCE): render via '@test-utils' or wrap with I18nextProvider and a shared i18n
-  instance (src/testUtils/test-i18n.ts).
+## 9) PR Checklist
 
-Welcome aboard! Keep it simple, typed, and testable.
+- [ ] Tests added/updated (flags/routing covered where applicable)
+- [ ] npm run build passes
+- [ ] Lint + format pass
+- [ ] i18n ready (no hardcoded strings)
+- [ ] Feature-first structure and path aliases used
+- [ ] Flags added/updated for gated behavior
+- [ ] ADR alignment verified (005, 017, 024, 028). If deviating, propose/update an ADR.
+
+---
+
+## 10) Working With This Guide (LLM-specific)
+
+When you (LLM) make changes:
+
+- Make the minimal change that satisfies the issue; prefer editing over large rewrites.
+- Conform to ADRs and this guide. If a request conflicts, explain the conflict and propose the smallest compliant alternative.
+- Co-locate tests next to code. Use @test-utils render wrapper. Add flag and router tests per ADRs when touching those areas.
+- Keep commits/messages clear about intent and scope.
+
+When proposing new patterns:
+
+- Justify with trade-offs. If accepted, add or update an ADR under decisions/adr using the template in decisions/templates.
+
+---
+
+## 11) Troubleshooting
+
+- Aliases not resolving: check tsconfig.app.json and restart Vite.
+- Missing i18n key: verify namespace/key and that src/i18n.ts loads the namespace.
+- Tests failing due to providers: import render from '@test-utils'.
+- NO_I18NEXT_INSTANCE warning: render via @test-utils or wrap with I18nextProvider using src/testUtils/test-i18n.ts.
+
+Welcome aboard — build small, test thoroughly, respect ADRs.
