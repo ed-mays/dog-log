@@ -10,7 +10,7 @@ export type AuthState = {
   user: AppUser | null;
   initializing: boolean;
   error: unknown | null;
-  initAuthListener: () => void;
+  initAuthListener: () => Unsubscribe;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   reset: () => void;
@@ -41,6 +41,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       (user) => set({ user, initializing: false, error: null }),
       (error) => set({ error, initializing: false })
     );
+    // Return the new unsubscribe so callers (e.g., bootstrap component) can clean up on unmount
+    return unsubscribe;
   },
   signInWithGoogle: async () => {
     try {

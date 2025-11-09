@@ -52,6 +52,26 @@ describe('AuthBootstrap', () => {
     expect(subscribeSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('unsubscribes on unmount', async () => {
+    vi.unmock('@features/authentication/AuthBootstrap');
+
+    const authServiceModule = await import('@services/auth/authService');
+    const cleanup = vi.fn();
+    const subscribeSpy = vi
+      .spyOn(authServiceModule, 'subscribeToAuth')
+      .mockReturnValue(cleanup);
+
+    const { default: AuthBootstrap } = await import(
+      '@features/authentication/AuthBootstrap'
+    );
+
+    const { unmount } = render(<AuthBootstrap />);
+    expect(subscribeSpy).toHaveBeenCalledTimes(1);
+
+    unmount();
+    expect(cleanup).toHaveBeenCalledTimes(1);
+  });
+
   it('returns no UI (renders null)', async () => {
     vi.unmock('@features/authentication/AuthBootstrap');
     const { default: AuthBootstrap } = await import(
