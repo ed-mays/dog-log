@@ -3,5 +3,12 @@
   "actions": {
     "add": "Add veterinarian",
     "edit": "Edit veterinarian"
+  },
+  "validation": {
+    "name": { "required": "Name is required" },
+    "phone": { "required": "Phone is required" }
+  },
+  "error": {
+    "duplicate": "A veterinarian with this name and phone already exists"
   }
 }

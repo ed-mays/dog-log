@@ -3,5 +3,12 @@
   "actions": {
     "add": "Agregar veterinario",
     "edit": "Editar veterinario"
+  },
+  "validation": {
+    "name": { "required": "El nombre es obligatorio" },
+    "phone": { "required": "El teléfono es obligatorio" }
+  },
+  "error": {
+    "duplicate": "Ya existe un veterinario con este nombre y teléfono"
   }
 }
