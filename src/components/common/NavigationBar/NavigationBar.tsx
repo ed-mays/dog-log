@@ -11,11 +11,15 @@ import { Link as RouterLink } from 'react-router-dom';
 import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '@components/common/LanguageSelector/LanguageSelector';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 
 export function NavigationBar() {
   const { t } = useTranslation('common');
+  const { t: tVets } = useTranslation('veterinarians');
+  const enableVets = useFeatureFlag('vetsEnabled');
   const APP_TITLE = 'Dog Log';
   const PETS_LABEL = t('nav.pets', 'Pets Default');
+  const VETS_LABEL = tVets('title', 'Veterinarians');
 
   return (
     <AppBar position="fixed" component="nav" aria-label="Primary">
@@ -54,6 +58,16 @@ export function NavigationBar() {
         >
           {PETS_LABEL}
         </Button>
+        {enableVets && (
+          <Button
+            color="inherit"
+            component={RouterLink}
+            to="/vets"
+            sx={{ ml: 1 }}
+          >
+            {VETS_LABEL}
+          </Button>
+        )}
         <Box sx={{ ml: 2, mr: 1 }}>
           <LanguageSelector />
         </Box>

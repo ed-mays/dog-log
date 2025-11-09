@@ -1,0 +1,7 @@
+{
+  "title": "Veterinarians",
+  "actions": {
+    "add": "Add veterinarian",
+    "edit": "Edit veterinarian"
+  }
+}

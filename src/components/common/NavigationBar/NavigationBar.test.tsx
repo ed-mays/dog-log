@@ -3,16 +3,26 @@ import { NavigationBar } from './NavigationBar';
 import { within } from '@testing-library/react';
 import { vi, beforeEach } from 'vitest';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 
 // Standardized store mock stub for components that read from the auth store
 vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),
 }));
+// Mock feature flag hook so we can cover both branches of vetsEnabled
+vi.mock('@featureFlags/hooks/useFeatureFlag');
+
+const mockUseFeatureFlag = useFeatureFlag as unknown as vi.Mock;
 
 beforeEach(() => {
   vi.resetAllMocks();
   // Default: not initializing; no-op actions unless a test overrides
   installAuthStoreMock({ initializing: false });
+  // Default vetsEnabled to false so baseline tests reflect no Vets link
+  mockUseFeatureFlag.mockImplementation((flag: string) => {
+    if (flag === 'vetsEnabled') return false;
+    return true;
+  });
 });
 
 describe('NavigationBar', () => {
@@ -68,5 +78,24 @@ describe('NavigationBar', () => {
     const pets = screen.getByRole('link', { name: /pets/i });
     expect(brand).toBeVisible();
     expect(pets).toBeVisible();
+  });
+
+  it('does not render the Vets link when vetsEnabled=false', () => {
+    // default mock sets vetsEnabled=false
+    render(<NavigationBar />);
+    const vetsLink = screen.queryByRole('link', { name: /veterinarians/i });
+    expect(vetsLink).not.toBeInTheDocument();
+  });
+
+  it('renders the Vets link when vetsEnabled=true with correct href', async () => {
+    mockUseFeatureFlag.mockImplementation((flag: string) => {
+      if (flag === 'vetsEnabled') return true;
+      return true;
+    });
+    render(<NavigationBar />);
+    const vetsLink = await screen.findByRole('link', {
+      name: /veterinarians/i,
+    });
+    expect(vetsLink).toHaveAttribute('href', '/vets');
   });
 });
