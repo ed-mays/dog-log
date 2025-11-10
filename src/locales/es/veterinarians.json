@@ -4,6 +4,30 @@
     "add": "Agregar veterinario",
     "edit": "Editar veterinario"
   },
+  "fields": {
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "website": "Sitio web",
+    "clinicName": "Clínica",
+    "address": {
+      "line1": "Dirección línea 1",
+      "line2": "Dirección línea 2",
+      "city": "Ciudad",
+      "region": "Estado/Región",
+      "postalCode": "Código postal",
+      "country": "País"
+    },
+    "specialties": "Especialidades",
+    "notes": "Notas"
+  },
+  "placeholders": {
+    "specialties": "p. ej., cirugía, dermatología"
+  },
+  "list": {
+    "empty": "Aún no hay veterinarios",
+    "searchPlaceholder": "Buscar"
+  },
   "validation": {
     "name": { "required": "El nombre es obligatorio" },
     "phone": { "required": "El teléfono es obligatorio" }
