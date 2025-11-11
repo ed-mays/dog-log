@@ -5,6 +5,7 @@ vi.mock('@store/auth.store', () => ({
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
+vi.mock('@services/vetService');
 
 import { render, screen } from '@test-utils';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
@@ -13,6 +14,7 @@ import {
   installAuthStoreMock,
   installPetsStoreMock,
 } from '@testUtils/mocks/mockStoreInstallers';
+import { vetService } from '@services/vetService';
 
 // Basic routing tests for vets feature (Slice 0)
 describe('Vets routes (flag-gated)', () => {
@@ -22,6 +24,28 @@ describe('Vets routes (flag-gated)', () => {
     vi.resetAllMocks();
     installAuthStoreMock({ user: { uid: 'user1' }, initializing: false });
     installPetsStoreMock({ pets: [] });
+
+    const mocked = vetService as unknown as {
+      getVet: vi.Mock;
+      searchVets: vi.Mock;
+      updateVet: vi.Mock;
+      createVet: vi.Mock;
+    };
+    mocked.getVet.mockResolvedValue({
+      id: 'abc',
+      ownerUserId: 'user1',
+      name: 'Dr. Test',
+      phone: '555-1234',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      _normName: 'drtest',
+      _e164Phone: '+15551234',
+      isArchived: false,
+      createdBy: 'user1',
+    });
+    mocked.searchVets.mockResolvedValue([]);
+    mocked.updateVet.mockResolvedValue({});
+    mocked.createVet.mockResolvedValue({});
   });
 
   it('renders VetListPage at /vets when vetsEnabled=true', async () => {

@@ -28,6 +28,20 @@
     "empty": "No veterinarians yet",
     "searchPlaceholder": "Search"
   },
+  "link": {
+    "sectionTitle": "Linked veterinarians",
+    "add": "Link veterinarian",
+    "remove": "Remove",
+    "role": {
+      "primary": "Primary",
+      "specialist": "Specialist",
+      "emergency": "Emergency",
+      "other": "Other"
+    }
+  },
+  "selector": {
+    "createNew": "Create new vet…"
+  },
   "validation": {
     "name": { "required": "Name is required" },
     "phone": { "required": "Phone is required" }

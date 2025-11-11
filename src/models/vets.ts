@@ -1,6 +1,8 @@
 // src/models/vets.ts
 // Plain object types for Veterinarians feature
 
+import type { ArchivableEntity } from '@repositories/types.ts';
+
 export type VetId = string;
 export type PetVetLinkId = string;
 
@@ -13,7 +15,7 @@ export type VetAddress = {
   country?: string; // ISO code if available
 };
 
-export type Vet = {
+export type Vet = ArchivableEntity & {
   id: VetId;
   ownerUserId: string; // user scope
   name: string; // required

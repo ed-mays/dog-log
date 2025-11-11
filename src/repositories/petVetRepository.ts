@@ -13,11 +13,8 @@ import {
 import type { PetVetLink, PetVetRole } from '@models/vets';
 
 export class PetVetRepository extends BaseRepository<PetVetLink> {
-  private readonly userId: string;
-
   constructor(userId: string) {
     super(`users/${userId}/petVets`);
-    this.userId = userId;
   }
 
   async listLinksByPet(petId: string): Promise<PetVetLink[]> {

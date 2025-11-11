@@ -27,6 +27,8 @@ export default defineConfig({
         // Exclude all type-only modules
         'src/**/types.ts',
         'src/**/*.types.ts',
+        // Exclude config files
+        'src/**/config.ts',
         // Exclude all models folders
         'src/models/**',
         // Exclude test utilities
