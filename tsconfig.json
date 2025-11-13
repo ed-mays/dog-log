@@ -1,15 +1,19 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
   ],
   "compilerOptions": {
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
-      "@firebase": ["firebase.tsx"],
+      "@firebase": ["firebase.ts"],
       "@i18n": ["i18n.tsx"],
       "@store/*": ["store/*"],
       "@test-utils": ["test-utils.tsx"],

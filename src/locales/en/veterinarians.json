@@ -1,0 +1,52 @@
+{
+  "title": "Veterinarians",
+  "actions": {
+    "add": "Add veterinarian",
+    "edit": "Edit veterinarian"
+  },
+  "fields": {
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "clinicName": "Clinic",
+    "address": {
+      "line1": "Address line 1",
+      "line2": "Address line 2",
+      "city": "City",
+      "region": "State/Region",
+      "postalCode": "Postal code",
+      "country": "Country"
+    },
+    "specialties": "Specialties",
+    "notes": "Notes"
+  },
+  "placeholders": {
+    "specialties": "e.g., surgery, dermatology"
+  },
+  "list": {
+    "empty": "No veterinarians yet",
+    "searchPlaceholder": "Search"
+  },
+  "link": {
+    "sectionTitle": "Linked veterinarians",
+    "add": "Link veterinarian",
+    "remove": "Remove",
+    "role": {
+      "primary": "Primary",
+      "specialist": "Specialist",
+      "emergency": "Emergency",
+      "other": "Other"
+    }
+  },
+  "selector": {
+    "createNew": "Create new vet…"
+  },
+  "validation": {
+    "name": { "required": "Name is required" },
+    "phone": { "required": "Phone is required" }
+  },
+  "error": {
+    "duplicate": "A veterinarian with this name and phone already exists"
+  }
+}

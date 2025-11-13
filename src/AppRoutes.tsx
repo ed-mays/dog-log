@@ -17,6 +17,17 @@ const PetDetailsPage = lazy(
   () => import('@features/pets/pages/PetDetailsPage')
 );
 
+// Veterinarian feature pages (slice 0 scaffolds)
+const VetListPage = lazy(
+  () => import('@features/veterinarians/pages/VetListPage')
+);
+const AddVetPage = lazy(
+  () => import('@features/veterinarians/pages/AddVetPage')
+);
+const EditVetPage = lazy(
+  () => import('@features/veterinarians/pages/EditVetPage')
+);
+
 export function AppRoutes() {
   const enablePetList = useFeatureFlag('petListEnabled');
   const enableAddPet = useFeatureFlag('addPetEnabled');
@@ -24,6 +35,7 @@ export function AppRoutes() {
   const { t } = useTranslation('common');
   const { initializing } = useAuthStore();
   const isAuthenticated = useIsAuthenticated();
+  const enableVets = useFeatureFlag('vetsEnabled');
 
   if (initializing) {
     return <LoadingIndicator />;
@@ -45,6 +57,7 @@ export function AppRoutes() {
       <Routes>
         <Route path="/" element={<Navigate to="/pets" replace />} />
         <Route path="/welcome" element={<Navigate to="/pets" replace />} />
+        {/* Pets routes */}
         <Route
           path="/pets"
           element={
@@ -80,6 +93,37 @@ export function AppRoutes() {
           element={
             enablePetActions ? (
               <EditPetPage />
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
+          }
+        />
+        {/* Veterinarians routes (flag-gated) */}
+        <Route
+          path="/vets"
+          element={
+            enableVets ? (
+              <VetListPage />
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
+          }
+        />
+        <Route
+          path="/vets/add"
+          element={
+            enableVets ? (
+              <AddVetPage />
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
+          }
+        />
+        <Route
+          path="/vets/:id/edit"
+          element={
+            enableVets ? (
+              <EditVetPage />
             ) : (
               <Navigate to="/feature-unavailable" replace />
             )

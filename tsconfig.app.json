@@ -6,7 +6,6 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -15,7 +14,6 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "types": ["vite/client"],
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
@@ -26,7 +24,7 @@
     "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
-      "@firebase": ["firebase.tsx"],
+      "@firebase": ["firebase.ts"],
       "@i18n": ["i18n.ts"],
       "@store/*": ["store/*"],
       "@test-utils": ["test-utils.tsx"],
