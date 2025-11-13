@@ -5,7 +5,8 @@
   - Add gated routes and a nav item for Vets.
   - Scaffold empty pages: `VetListPage`, `AddVetPage`, `EditVetPage` displaying basic titles via i18n.
 - User-Facing Result
-  - When `vetsEnabled=true`, users see a “Vets” nav and can open `/vets`, `/vets/add`, and `/vets/:id/edit` (empty states).
+  - When `vetsEnabled=true`, users see a “Vets” nav and can open `/vets`, `/vets/add`, and `/vets/:id/edit` (empty
+    states).
 - Data/Logic
   - None yet (no repositories/services implemented).
 - UI
@@ -28,14 +29,16 @@
 
 - Scope
   - Define types `Vet`, `PetVetLink` with `ownerUserId`, `_normName`, `_e164Phone` (plain objects only).
-  - Implement `VetRepository` with duplicate-prevention using a uniqueness-lock doc (`vetKeys/{owner|name|phone}`) in a transaction.
+  - Implement `VetRepository` with duplicate-prevention using a uniqueness-lock doc (`vetKeys/{owner|name|phone}`) in a
+    transaction.
   - Implement `PetVetRepository` for join links.
   - Implement `VetService` (phone/name normalization, create/update/archive) and `PetVetService` with primary rules.
 - User-Facing Result
   - None yet in UI; foundation enables mocking in subsequent slices.
 - Data/Logic
   - Duplicate key: `ownerUserId + '|' + _normName + '|' + _e164Phone`.
-  - Preserve previous role on primary demotion: when setting a new primary, demote the old primary back to its prior non-primary role if it had one; otherwise set to `'other'`.
+  - Preserve previous role on primary demotion: when setting a new primary, demote the old primary back to its prior
+    non-primary role if it had one; otherwise set to `'other'`.
   - Auto-primary: first link for a pet becomes `'primary'`.
 - UI
   - None in this slice.
@@ -44,9 +47,11 @@
 - i18n
   - Add error key `error.duplicate` and validation keys for name/phone.
 - Telemetry (anonymized)
-  - Service-level no-op analytics API calls (mockable): `vet_created`, `vet_updated`, `vet_archived`, `vet_link_created`, `vet_link_deleted`, `vet_primary_set`.
+  - Service-level no-op analytics API calls (mockable): `vet_created`, `vet_updated`, `vet_archived`,
+    `vet_link_created`, `vet_link_deleted`, `vet_primary_set`.
 - Tests
-  - Unit tests for `VetService` and `PetVetService`: normalization, duplicate prevention reactions, auto-primary, and primary swap with demotion preserving previous role.
+  - Unit tests for `VetService` and `PetVetService`: normalization, duplicate prevention reactions, auto-primary, and
+    primary swap with demotion preserving previous role.
   - Repository tests (or adapter-mocked) verifying unique-lock behavior on create/update.
 
 ---
@@ -54,7 +59,8 @@
 ### Slice 2 — Vet CRUD UI (list + add/edit) with duplicate handling
 
 - Scope
-  - Build `VetForm` with MUI fields: name (required), phone (required), plus optional fields (email, website, clinic, address, specialties, notes).
+  - Build `VetForm` with MUI fields: name (required), phone (required), plus optional fields (email, website, clinic,
+    address, specialties, notes).
   - Implement `VetListPage` with basic search (client-side) and empty state.
   - Implement `AddVetPage`/`EditVetPage` wiring to `VetService`.
   - Surface duplicate error with neutral copy using `t('veterinarians:error.duplicate')`.
@@ -80,7 +86,8 @@
 ### Slice 3 — VetSelector and pet UI linking (basic add/remove)
 
 - Scope
-  - Create `VetSelector` (MUI Autocomplete): async search via `VetService.searchVets(term)`; option to “Create new vet…” opening `VetForm` in a modal.
+  - Create `VetSelector` (MUI Autocomplete): async search via `VetService.searchVets(term)`; option to “Create new vet…”
+    opening `VetForm` in a modal.
   - Integrate into `PetForm`: a “Linked veterinarians” section to add/remove links.
   - Show chips in `PetCard` and a list in Pet Detail with link to vet page.
 - User-Facing Result
@@ -110,7 +117,8 @@
 
 - Scope
   - In `PetForm`, add a role dropdown per link (`primary`, `specialist`, `emergency`, `other`).
-  - Changing a link to `primary` calls `PetVetService.setPrimaryVet` which promotes selected link, and demotes the previous primary while preserving its prior non-primary role if available, else `'other'`.
+  - Changing a link to `primary` calls `PetVetService.setPrimaryVet` which promotes selected link, and demotes the
+    previous primary while preserving its prior non-primary role if available, else `'other'`.
 - User-Facing Result
   - Users can explicitly set a primary vet. Only one primary is maintained.
 - Data/Logic
@@ -188,10 +196,12 @@
 
 ### Implementation Notes (tie-back to ADRs and conventions)
 
-- ADR-005 (services/repositories): All Firestore logic in repositories; services return plain objects. No UI directly touches repositories.
+- ADR-005 (services/repositories): All Firestore logic in repositories; services return plain objects. No UI directly
+  touches repositories.
 - ADR-017 (MUI): Use MUI for `VetForm`, `VetListPage`, chips, and Autocomplete.
 - ADR-024/028 (tests): Integration tests with `@test-utils`, MemoryRouter, feature flags on/off, and 404s.
-- Feature-first structure: `src/features/veterinarians/{pages,components,hooks}` plus `src/services/vets/*` and `src/repositories/vets/*`.
+- Feature-first structure: `src/features/veterinarians/{pages,components,hooks}` plus `src/services/vets/*` and
+  `src/repositories/vets/*`.
 - i18n: `veterinarians` namespace with neutral copy; no hardcoded text.
 - Flags: `VITE_VETS_ENABLED`, `VITE_VET_LINKING_ENABLED` mapped to `useFeatureFlag('vetsEnabled'|'vetLinkingEnabled')`.
 - Phone normalization: best-effort; store entered `phone` plus `_e164Phone`.
@@ -209,4 +219,46 @@
 6. PR6 (Slice 5): Search polish (+optional counts) + tests.
 7. PR7 (Slice 6): Telemetry assertions + docs + robustness tests.
 
-This plan delivers user-visible value in each step, keeps changes small and testable, and respects your decisions on role demotion and neutral copy on Pet list cards.
+This plan delivers user-visible value in each step, keeps changes small and testable, and respects your decisions on
+role demotion and neutral copy on Pet list cards.
+
+# APPENDIX: WIP ON SLICE 2
+
+### Slice 2 — Remaining work summary (based on plan and current state)
+
+- Telemetry on successful form submits
+  - Add explicit success events on UI submit success per plan: `vet_created` (AddVetPage) and `vet_updated` (
+    EditVetPage). The service already logs anonymized search in `searchVets`, but the slice 2 plan calls for submit
+    success events at the UI boundary. Include minimal no‑op analytics calls (consistent with existing analytics
+    pattern) and unit tests stubbing the analytics module to assert calls.
+
+- Address MUI Grid deprecation warnings (cleanup)
+  - Tests emit warnings: “MUI Grid: the `item`, `xs`, `sm` props have been removed (Grid v2 migration).” Update the
+    VetForm layout to use the current Grid v2 API (e.g., `container`/`size` props) or replace with simple `Box` layout.
+    This is quality-of-life but prevents noisy test output and aligns with ADR-017.
+
+- One integration assertion for navigation after save (optional but helpful)
+  - We already verify duplicate errors and form validation. Consider an integration-style test: successful create
+    navigates to `/vets` and the list renders (with feature flag on). You may mock `vetService.createVet` to resolve and
+    `vetService.searchVets` to return the new item, then assert the list shows it. The slice’s “List shows created vet
+    after navigation/refresh” intent is covered by this.
+
+- Consistency pass on error i18n keys
+  - Edit page currently falls back to `t('common:error.generic', 'Something went wrong')` for unknown errors. The shared
+    common key is `common.somethingWentWrong`. Update to use the canonical key to stay consistent across pages and
+    tests (Add page already uses `common:somethingWentWrong`).
+
+- Build/lint/type checks
+  - Ensure `pnpm run lint` and `pnpm run build` pass after the telemetry and Grid cleanup changes; keep TypeScript
+    strict and avoid disabling lint rules (per the guideline).
+
+What is already in place for Slice 2
+
+- VetForm with required `name`/`phone`, optional fields, i18n labels/validation, and accessibility.
+- Add/Edit pages wired to `vetService` with duplicate error surfaced via `veterinarians:error.duplicate`.
+- VetListPage with client‑side search and empty state; accessible search input.
+- Route gating with `vetsEnabled`, and routing tests in place.
+- Tests for form validation, duplicate error handling, and basic list behavior pass.
+- Friendly handling of Firestore permission errors in vets pages to avoid unhandled rejections during tests.
+
+If you’d like, I can implement the telemetry and Grid cleanup next, with focused unit tests to lock behavior.
