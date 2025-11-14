@@ -3,11 +3,11 @@ import { useUiStore } from '@store/ui.store';
 import { LoadingIndicator } from '@components/common/LoadingIndicator/LoadingIndicator';
 import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator';
 import { useTranslation } from 'react-i18next';
-import { toErrorMessage } from '@utils/errors.ts';
-import { useAuthStore } from '@store/auth.store.ts';
-import { RoutePrefetcher } from '@features/pets/RoutePrefetcher.ts';
+import { toErrorMessage } from '@utils/errors';
+import { useAuthStore } from '@store/auth.store';
+import { RoutePrefetcher } from '@features/pets/RoutePrefetcher';
 import { AppRoutes } from './AppRoutes';
-import { NavigationBar } from '@components/common/NavigationBar/NavigationBar.tsx';
+import { NavigationBar } from '@components/common/NavigationBar/NavigationBar';
 import { Toolbar } from '@mui/material';
 import { useIsAuthenticated } from '@features/authentication/hooks/useIsAuthenticated';
 

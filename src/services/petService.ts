@@ -1,10 +1,10 @@
-import { PetRepository } from '@repositories/petRepository.ts';
+import { PetRepository } from '@repositories/petRepository';
 import type {
   PetCreateInput,
   PetUpdateInput,
   PetQueryOptions,
   Pet,
-} from '@features/pets/types.ts';
+} from '@features/pets/types';
 
 export type UpdatePetInput = {
   name: string;

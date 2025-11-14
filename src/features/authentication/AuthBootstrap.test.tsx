@@ -1,46 +1,84 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@test-utils';
 
-// ADR-019 Default Pattern: Mock the auth store at module scope and drive state via variables
-let initAuthListenerMock: ReturnType<typeof vi.fn> = vi.fn();
-
-type AuthStateSlice = {
-  initAuthListener: () => void;
-};
-
-vi.mock('@store/auth.store.ts', () => ({
-  useAuthStore: vi.fn((selector?: (s: AuthStateSlice) => unknown) => {
-    const slice: AuthStateSlice = { initAuthListener: initAuthListenerMock };
-    return typeof selector === 'function' ? selector(slice) : slice;
-  }),
-}));
-
-// Import after mocks so the component receives mocked modules per ADR-019
-import AuthBootstrap from './AuthBootstrap';
+// This suite uses the "unmock escape hatch" to load the real AuthBootstrap.
+// We also spy on authService at the module boundary to verify side-effects.
 
 describe('AuthBootstrap', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    initAuthListenerMock = vi.fn();
+    vi.resetAllMocks();
+    vi.resetModules();
   });
 
-  it('calls initAuthListener once on mount', () => {
+  it('subscribes to auth once on mount', async () => {
+    // Arrange: prepare real module under test and spy on the service boundary
+    // Unmock the component because it's globally mocked in vitest.setup.ts
+    vi.unmock('@features/authentication/AuthBootstrap');
+
+    const authServiceModule = await import('@services/auth/authService');
+    // Spy on subscribeToAuth (exported function) and neutralize side-effects
+    const subscribeSpy = vi
+      .spyOn(authServiceModule, 'subscribeToAuth')
+      .mockReturnValue(() => {});
+
+    const { default: AuthBootstrap } = await import(
+      '@features/authentication/AuthBootstrap'
+    );
+
+    // Act
     render(<AuthBootstrap />);
-    expect(initAuthListenerMock).toHaveBeenCalledTimes(1);
+
+    // Assert
+    expect(subscribeSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('does not re-initialize on re-render', () => {
+  it('does not re-subscribe on re-render', async () => {
+    vi.unmock('@features/authentication/AuthBootstrap');
+
+    const authServiceModule = await import('@services/auth/authService');
+    const subscribeSpy = vi
+      .spyOn(authServiceModule, 'subscribeToAuth')
+      .mockReturnValue(() => {});
+
+    const { default: AuthBootstrap } = await import(
+      '@features/authentication/AuthBootstrap'
+    );
+
     const { rerender } = render(<AuthBootstrap />);
-    expect(initAuthListenerMock).toHaveBeenCalledTimes(1);
+    expect(subscribeSpy).toHaveBeenCalledTimes(1);
 
-    // Re-render with the same component — effect should not run again unnecessarily
+    // Re-render with the same component — effect should not run again
     rerender(<AuthBootstrap />);
-    expect(initAuthListenerMock).toHaveBeenCalledTimes(1);
+    expect(subscribeSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('returns no UI (renders null)', () => {
+  it('unsubscribes on unmount', async () => {
+    vi.unmock('@features/authentication/AuthBootstrap');
+
+    const authServiceModule = await import('@services/auth/authService');
+    const cleanup = vi.fn();
+    const subscribeSpy = vi
+      .spyOn(authServiceModule, 'subscribeToAuth')
+      .mockReturnValue(cleanup);
+
+    const { default: AuthBootstrap } = await import(
+      '@features/authentication/AuthBootstrap'
+    );
+
+    const { unmount } = render(<AuthBootstrap />);
+    expect(subscribeSpy).toHaveBeenCalledTimes(1);
+
+    unmount();
+    expect(cleanup).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns no UI (renders null)', async () => {
+    vi.unmock('@features/authentication/AuthBootstrap');
+    const { default: AuthBootstrap } = await import(
+      '@features/authentication/AuthBootstrap'
+    );
+
     const { container } = render(<AuthBootstrap />);
-    // The component returns null, so the container should be empty
     expect(container).toBeEmptyDOMElement();
   });
 });

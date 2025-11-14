@@ -1,6 +1,6 @@
 import type { i18n as I18nInstance } from 'i18next';
 import defaultI18n from '@testUtils/test-i18n';
-import { act } from 'react';
+import { act } from '@testing-library/react';
 
 /**
  * Run a test block under a specific locale, then restore the previous locale.

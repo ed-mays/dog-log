@@ -1,21 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, withLocale } from '@test-utils';
 import userEvent from '@testing-library/user-event';
+import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 
-// ADR-019 Default Pattern: Mock the auth store at module scope and drive state via variables
-let initializing = false;
-let signOutMock: ReturnType<typeof vi.fn> = vi.fn();
-
-type AuthStateMock = {
-  initializing: boolean;
-  signOut: () => Promise<void> | void;
-};
-
-vi.mock('@store/auth.store.ts', () => ({
-  useAuthStore: vi.fn((selector?: (s: AuthStateMock) => unknown) => {
-    const state: AuthStateMock = { initializing, signOut: signOutMock };
-    return typeof selector === 'function' ? selector(state) : state;
-  }),
+// Standardized pattern: expose a vi.fn() hook and install selector-compatible mocks per-test
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
 }));
 
 const resetStoresMock = vi.fn();
@@ -32,16 +22,16 @@ vi.mock('react-router-dom', async (mod) => {
   };
 });
 
-// Import after mocks so the component receives mocked modules per ADR-019
+// Import after mocks so the component receives mocked modules
 import LogoutButton from './LogoutButton';
 
 describe('LogoutButton', () => {
-  const user = userEvent.setup();
+  let signOut: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    initializing = false;
-    signOutMock = vi.fn().mockResolvedValue(undefined);
+    vi.resetAllMocks();
+    signOut = vi.fn().mockResolvedValue(undefined);
+    installAuthStoreMock({ initializing: false, signOut });
   });
 
   afterEach(() => {
@@ -54,9 +44,9 @@ describe('LogoutButton', () => {
       name: /log out/i,
     });
 
-    await user.click(logoutButton);
+    await userEvent.click(logoutButton);
 
-    expect(signOutMock).toHaveBeenCalledTimes(1);
+    expect(signOut).toHaveBeenCalledTimes(1);
     expect(resetStoresMock).toHaveBeenCalledTimes(1);
     expect(navigateMock).toHaveBeenCalledWith('/welcome', { replace: true });
   });
@@ -70,7 +60,7 @@ describe('LogoutButton', () => {
   });
 
   it('is disabled and shows busy state while auth is initializing', async () => {
-    initializing = true;
+    installAuthStoreMock({ initializing: true });
     render(<LogoutButton />);
 
     const logoutButton = await screen.findByRole('button', {

@@ -1,16 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@test-utils';
 import type { User } from 'firebase/auth';
+import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 
-// ADR-019 Default Pattern: Mock the auth store at module scope and drive state via variables
-let mockUser: User | null = null;
-let initializing = false;
-
-vi.mock('@store/auth.store.ts', () => ({
-  useAuthStore: vi.fn(() => ({
-    user: mockUser,
-    initializing,
-  })),
+// Standardized pattern: expose a vi.fn() hook and install selector-compatible mocks per-test
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn(),
 }));
 
 // Mock child components to isolate the GoogleAuth component's logic
@@ -22,18 +17,16 @@ vi.mock('./LogoutButton', () => ({
   default: () => <div data-testid="logout-button"></div>,
 }));
 
-// Import after mocks so the component receives mocked modules per ADR-019
+// Import after mocks so the component receives mocked modules
 import { GoogleAuth } from './GoogleAuth';
 
 describe('GoogleAuth', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockUser = null;
-    initializing = false;
+    vi.resetAllMocks();
+    installAuthStoreMock({ user: null, initializing: false });
   });
 
   it('renders GoogleLoginButton when user is not authenticated', () => {
-    // default: mockUser null, initializing false
     render(<GoogleAuth />);
 
     // Expect the login button to be present and the logout button to be absent
@@ -42,8 +35,10 @@ describe('GoogleAuth', () => {
   });
 
   it('renders LogoutButton when user is authenticated', () => {
-    // Provide a mocked user state via variables consumed by the mock store
-    mockUser = { uid: '123', displayName: 'Test User' } as User;
+    installAuthStoreMock({
+      user: { uid: '123', displayName: 'Test User' } as User,
+      initializing: false,
+    });
 
     render(<GoogleAuth />);
 

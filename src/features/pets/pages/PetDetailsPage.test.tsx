@@ -3,6 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '@features/pets/types';
 import { vi } from 'vitest';
+import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 
 // Mock the store module at the top level
 vi.mock('@store/pets.store', () => ({
@@ -24,37 +25,48 @@ function makePet(overrides: Partial<Pet> = {}): Pet {
 }
 
 describe('PetDetailsPage', () => {
-  let mockUsePetsStore: vi.Mock;
-
-  beforeEach(async () => {
-    vi.clearAllMocks();
+  beforeEach(() => {
+    vi.resetAllMocks();
     vi.resetModules();
-
-    const petsStoreModule = await import('@store/pets.store');
-    mockUsePetsStore = petsStoreModule.usePetsStore as vi.Mock;
   });
 
-  test('renders pet name and breed in a table', async () => {
-    const statePets = [makePet({ id: '1', name: 'Buddy', breed: 'Labrador' })];
-    const actions = {
-      deletePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: statePets, ...actions })
-    );
+  async function setup(
+    options: {
+      petId?: string;
+      pets?: Pet[];
+      storeOverrides?: Record<string, unknown>;
+      flags?: Record<string, boolean>;
+    } = {}
+  ) {
+    const {
+      petId = '1',
+      pets = [makePet({ id: '1' })],
+      storeOverrides,
+      flags,
+    } = options;
+    const petsMock = installPetsStoreMock({ pets, ...storeOverrides });
 
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
       return {
         ...mod,
-        useParams: () => ({ id: '1' }),
+        useParams: () => ({ id: petId }),
         useNavigate: () => navSpy,
       };
     });
 
     const { default: PetDetailsPage } = await import('./PetDetailsPage');
     const { render } = await import('@test-utils');
+    const user = userEvent.setup();
+    return { petsMock, navSpy, PetDetailsPage, render, user, flags };
+  }
+
+  test('renders pet name and breed in a table', async () => {
+    const { PetDetailsPage, render } = await setup({
+      pets: [makePet({ id: '1', name: 'Buddy', breed: 'Labrador' })],
+    });
+
     render(<PetDetailsPage />);
 
     // Headers and values should be visible
@@ -68,32 +80,16 @@ describe('PetDetailsPage', () => {
   });
 
   test('shows Edit/Delete when petActionsEnabled=true and navigates on Edit', async () => {
-    const pet = makePet({ id: '1' });
-    const actions = {
-      deletePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [pet], ...actions })
-    );
-
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
+    const { navSpy, PetDetailsPage, render, user } = await setup({
+      pets: [makePet({ id: '1' })],
+      flags: { petActionsEnabled: true },
     });
 
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
     const editBtn = await screen.findByRole('button', { name: /edit/i });
     const deleteBtn = screen.getByRole('button', { name: /delete/i });
 
-    const user = userEvent.setup();
     await user.click(editBtn);
 
     await waitFor(() => {
@@ -105,28 +101,16 @@ describe('PetDetailsPage', () => {
 
   test('delete flow: opens confirm modal, confirms deletion, navigates to /pets', async () => {
     const pet = makePet({ id: '1', name: 'Fido' });
-    const actions = {
+    const overrides = {
       deletePet: vi.fn(async () => {}),
     };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [pet], ...actions })
-    );
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
+    const { PetDetailsPage, render, user, navSpy } = await setup({
+      pets: [pet],
+      storeOverrides: overrides,
     });
 
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
-
-    const user = userEvent.setup();
 
     // Open confirm
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
@@ -139,32 +123,15 @@ describe('PetDetailsPage', () => {
     await user.click(yesBtn);
 
     await waitFor(() => {
-      expect(actions.deletePet).toHaveBeenCalledWith('1');
+      expect(overrides.deletePet).toHaveBeenCalledWith('1');
       expect(navSpy).toHaveBeenCalledWith('/pets');
     });
   });
 
   test('hides Edit/Delete when petActionsEnabled=false', async () => {
     const pet = makePet({ id: '1' });
-    const actions = {
-      deletePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [pet], ...actions })
-    );
+    const { PetDetailsPage, render } = await setup({ pets: [pet] });
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
-    });
-
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: false } });
 
     expect(
@@ -176,25 +143,11 @@ describe('PetDetailsPage', () => {
   });
 
   test('shows Not Found when pet id is invalid', async () => {
-    const actions = {
-      deletePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [], ...actions })
-    );
-
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: 'does-not-exist' }),
-        useNavigate: () => navSpy,
-      };
+    const { PetDetailsPage, render } = await setup({
+      pets: [],
+      petId: 'does-not-exist',
     });
 
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />);
 
     const alert = await screen.findByRole('alert');
@@ -206,33 +159,22 @@ describe('PetDetailsPage', () => {
 
   test('delete failure shows error alert, closes modal, and does not navigate', async () => {
     const pet = makePet({ id: '1', name: 'Fido' });
-    const actions = {
+    const overrides = {
       deletePet: vi.fn(async () => {
         throw new Error('delete failed');
       }),
     };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [pet], ...actions })
-    );
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
+    const { PetDetailsPage, render, user, navSpy } = await setup({
+      pets: [pet],
+      storeOverrides: overrides,
     });
 
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
-
-    const user = userEvent.setup();
 
     // Open confirm modal
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
+
     await user.click(deleteBtn);
 
     // Confirm and trigger failure
@@ -248,30 +190,12 @@ describe('PetDetailsPage', () => {
 
   test('Back link points to /pets', async () => {
     const pet = makePet({ id: '1', name: 'Buddy' });
-    const actions = {
-      deletePet: vi.fn(async () => {}),
-    };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [pet], ...actions })
-    );
+    const { PetDetailsPage, render } = await setup({ pets: [pet] });
 
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        // useNavigate provided but unused in this test
-        useNavigate: () => vi.fn(),
-      };
-    });
-
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />);
 
     const backLink = await screen.findByRole('link', { name: /back/i });
     expect(backLink).toBeInTheDocument();
-    // JSDOM resolves to absolute URL, so check endsWith
     expect(backLink).toHaveAttribute('href', '/pets');
   });
 
@@ -279,28 +203,15 @@ describe('PetDetailsPage', () => {
 
   test('declining delete closes modal and does not call delete or navigate', async () => {
     const pet = makePet({ id: '1' });
-    const actions = {
+    const overrides = {
       deletePet: vi.fn(async () => {}),
     };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [pet], ...actions })
-    );
-
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
+    const { PetDetailsPage, render, user, navSpy } = await setup({
+      pets: [pet],
+      storeOverrides: overrides,
     });
 
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
-
-    const user = userEvent.setup();
 
     // Open confirm modal then decline
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
@@ -310,14 +221,14 @@ describe('PetDetailsPage', () => {
 
     // Modal closes, no delete or navigation
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(actions.deletePet).not.toHaveBeenCalled();
+    expect(overrides.deletePet).not.toHaveBeenCalled();
     expect(navSpy).not.toHaveBeenCalled();
   });
 
   test('shows saving indicator while deleting until resolved', async () => {
     const pet = makePet({ id: '1' });
     let resolveDelete: (() => void) | null = null;
-    const actions = {
+    const overrides = {
       deletePet: vi.fn(
         () =>
           new Promise<void>((resolve) => {
@@ -325,25 +236,13 @@ describe('PetDetailsPage', () => {
           })
       ),
     };
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({ pets: [pet], ...actions })
-    );
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: '1' }),
-        useNavigate: () => navSpy,
-      };
+    const { PetDetailsPage, render, user, navSpy } = await setup({
+      pets: [pet],
+      storeOverrides: overrides,
     });
 
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
-
-    const user = userEvent.setup();
 
     // Trigger delete and keep it pending
     await user.click(await screen.findByRole('button', { name: /delete/i }));
