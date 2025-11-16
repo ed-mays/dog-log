@@ -34,6 +34,20 @@ class LoggerService {
     console.info(`[INFO] ${new Date().toISOString()}`, message, context || '');
   }
 
+  warn(message: string, context?: object) {
+    if (!this.shouldLog()) return;
+    console.warn(`[WARN] ${new Date().toISOString()}`, message, context || '');
+  }
+
+  debug(message: string, context?: object) {
+    if (!this.shouldLog()) return;
+    console.debug(
+      `[DEBUG] ${new Date().toISOString()}`,
+      message,
+      context || ''
+    );
+  }
+
   error(message: string, context?: object) {
     if (!this.shouldLog()) return;
     console.error(

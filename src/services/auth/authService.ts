@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../firebase.ts';
 import { userRepository } from '@repositories/userRepository.ts';
+import { logger } from '@services/logService';
 import type { User } from '@models/User';
 
 export type AppUser = {
@@ -43,11 +44,13 @@ export async function signInWithGoogle(): Promise<AppUser> {
     const result = await signInWithPopup(auth, provider);
     const firebaseUser = result.user;
     if (!firebaseUser) {
-      throw new Error('Firebase authentication failed: no user returned.');
+      const message = 'Firebase authentication failed: no user returned.';
+      logger.error(message);
+      throw new Error(message);
     }
-
     const existingUser = await userRepository.getById(firebaseUser.uid);
     if (!existingUser) {
+      logger.info('Creating new user in Firestore');
       const newUser: User = {
         id: firebaseUser.uid,
         displayName: firebaseUser.displayName,
@@ -61,10 +64,10 @@ export async function signInWithGoogle(): Promise<AppUser> {
     }
 
     // Minimal telemetry (no PII):
-    console.info('[auth] signInWithGoogle success');
+    logger.info('[auth] signInWithGoogle success');
     return mapUser(firebaseUser)!;
   } catch (e) {
-    console.warn('[auth] signInWithGoogle failed');
+    logger.warn('[auth] signInWithGoogle failed');
     throw e;
   }
 }
@@ -72,9 +75,9 @@ export async function signInWithGoogle(): Promise<AppUser> {
 export async function signOut(): Promise<void> {
   try {
     await fbSignOut(auth);
-    console.info('[auth] signOut success');
+    logger.info('[auth] signOut success');
   } catch (e) {
-    console.warn('[auth] signOut failed');
+    logger.warn('[auth] signOut failed');
     throw e;
   }
 }
@@ -87,11 +90,11 @@ export function subscribeToAuth(
   return onAuthStateChanged(
     auth,
     (user) => {
-      console.debug('[auth] onAuthStateChanged event');
+      logger.debug('[auth] onAuthStateChanged event');
       cb(mapUser(user));
     },
     (err) => {
-      console.warn('[auth] onAuthStateChanged error');
+      logger.warn('[auth] onAuthStateChanged error');
       onError?.(err);
     }
   );
