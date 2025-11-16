@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import formStyles from '@styles/FormStyles.module.css';
-import type { Pet } from '@features/pets/types';
-import { loadNamespace } from '@i18n';
 import {
   Button,
   TextField,
@@ -11,12 +8,18 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Close';
+
+import formStyles from '@styles/FormStyles.module.css';
+import { loadNamespace } from '@i18n';
+import { logger } from '@services/logService';
+
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { useAuthStore } from '@store/auth.store';
 import VetSelector from '@features/veterinarians/components/VetSelector';
 import { petVetService } from '@services/petVetService';
 import type { PetVetLink, Vet } from '@models/vets';
-import DeleteIcon from '@mui/icons-material/Close';
+import type { Pet } from '@features/pets/types';
 
 interface PetFormProps {
   initialValues: Pet;
@@ -36,6 +39,12 @@ export function PetForm({
   onChange,
 }: PetFormProps) {
   const [nsReady, setNsReady] = useState(false);
+  const [internalPet, setInternalPet] = useState<Pet>(initialValues);
+  const pet: Pet = value ?? internalPet;
+  const { t } = useTranslation();
+  let vetsEnabled = false;
+  let vetLinkingEnabled = false;
+
   useEffect(() => {
     let mounted = true;
     Promise.all([loadNamespace('common'), loadNamespace('petProperties')]).then(
@@ -48,23 +57,18 @@ export function PetForm({
     };
   }, []);
 
-  const [internalPet, setInternalPet] = useState<Pet>(initialValues);
-  const pet: Pet = value ?? internalPet;
-
   useEffect(() => {
     const dirty =
       pet.name !== initialValues.name || pet.breed !== initialValues.breed;
     onDirtyChange?.(dirty);
   }, [pet, initialValues, onDirtyChange]);
 
-  const { t } = useTranslation();
-  let vetsEnabled = false;
-  let vetLinkingEnabled = false;
   try {
     vetsEnabled = useFeatureFlag('vetsEnabled');
     vetLinkingEnabled = useFeatureFlag('vetLinkingEnabled');
   } catch {
     // In tests or environments without FeatureFlagsProvider, default flags to false
+    logger.info('exception loading vet feature flags, defaulting to false');
     vetsEnabled = false;
     vetLinkingEnabled = false;
   }
@@ -76,6 +80,7 @@ export function PetForm({
 
   useEffect(() => {
     let active = true;
+
     async function loadLinks() {
       if (!userId || !initialValues.id || !(vetsEnabled && vetLinkingEnabled))
         return;
@@ -87,6 +92,7 @@ export function PetForm({
         if (active) setLoadingLinks(false);
       }
     }
+
     loadLinks();
     return () => {
       active = false;
