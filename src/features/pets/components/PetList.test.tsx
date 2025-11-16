@@ -8,6 +8,7 @@ import { render } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { PetList } from './PetList';
+import { loadingIndicatorTestId } from '@testUtils/constants';
 
 // Mock the module at the top level
 vi.mock('@store/pets.store', () => ({
@@ -224,7 +225,9 @@ describe('PetList sorting and persistence', () => {
   test('shows LoadingIndicator when isFetching is true', async () => {
     installPetsStoreMock({ pets: [], isFetching: true });
     render(<PetList />);
-    expect(await screen.findByTestId('loading-indicator')).toBeInTheDocument();
+    expect(
+      await screen.findByTestId(loadingIndicatorTestId)
+    ).toBeInTheDocument();
   });
 });
 
