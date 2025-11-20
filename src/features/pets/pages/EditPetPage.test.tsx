@@ -3,27 +3,14 @@ import { render, screen, waitFor } from '@test-utils';
 import { waitForElementToBeRemoved, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '@features/pets/types';
-import { vi } from 'vitest';
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import { makePet } from '@testUtils/factories/makePet';
 
 // Mock the module at the top level
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
-
-function makePet(overrides: Partial<Pet> = {}): Pet {
-  return {
-    id: '1',
-    name: 'Fido',
-    breed: 'Mix',
-    birthDate: new Date('2020-01-01'),
-    createdAt: new Date('2020-01-01'),
-    updatedAt: new Date('2020-01-01'),
-    createdBy: 'user1',
-    isArchived: false,
-    ...overrides,
-  } as Pet;
-}
 
 describe('EditPetPage', () => {
   beforeEach(() => {
@@ -37,7 +24,11 @@ describe('EditPetPage', () => {
       storeOverrides?: Record<string, unknown>;
     } = {}
   ) {
-    const { petId = '1', pets = [makePet()], storeOverrides } = options;
+    const {
+      petId = '1',
+      pets = [makePet({ id: '1' })],
+      storeOverrides,
+    } = options;
 
     // Ensure a fresh module graph for per-test vi.doMock hooks
     vi.resetModules();
@@ -192,7 +183,7 @@ describe('EditPetPage', () => {
   });
   it('shows error message when update fails and stops saving', async () => {
     // Arrange pets store with a failing updatePet
-    const pets = [makePet()];
+    const pets = [makePet({ id: '1' })];
     const failingUpdate = vi.fn(async () => {
       throw new Error('update failed');
     });

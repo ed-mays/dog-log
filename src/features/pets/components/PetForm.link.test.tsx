@@ -1,9 +1,9 @@
 import { vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@test-utils';
-import type { Pet } from '@features/pets/types';
 import type { Vet, PetVetLink } from '@models/vets';
-import type { AuthState } from '@store/auth.store';
+import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import { makePet } from '@testUtils/factories/makePet';
 
 vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),
@@ -35,39 +35,14 @@ vi.mock('@features/veterinarians/components/VetSelector', () => ({
   ),
 }));
 
-import { useAuthStore } from '@store/auth.store';
 import { petVetService } from '@services/petVetService';
 import { PetForm } from './PetForm';
-
-function makePet(overrides: Partial<Pet> = {}): Pet {
-  return {
-    id: 'p1',
-    name: 'Fido',
-    breed: 'Mix',
-    birthDate: new Date('2020-01-01'),
-    createdAt: new Date('2020-01-01'),
-    updatedAt: new Date('2020-01-01'),
-    createdBy: 'user1',
-    isArchived: false,
-    ...overrides,
-  } as Pet;
-}
 
 describe('PetForm linking UI', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(useAuthStore).mockImplementation(
-      (sel: (s: AuthState) => unknown) =>
-        sel({
-          user: { uid: 'user1' },
-          initializing: false,
-          error: null,
-          initAuthListener: () => () => {},
-          signInWithGoogle: async () => {},
-          signOut: async () => {},
-          reset: () => {},
-        })
-    );
+    installAuthStoreMock({ user: { uid: 'user1' }, initializing: false });
+
     vi.mocked(petVetService.getPetVets).mockResolvedValue(
       [] as Array<{ link: PetVetLink; vet: Vet }>
     );
@@ -89,7 +64,7 @@ describe('PetForm linking UI', () => {
 
     render(
       <PetForm
-        initialValues={makePet()}
+        initialValues={makePet({ id: 'p1' })}
         onSubmit={onSubmit}
         onCancel={onCancel}
       />,

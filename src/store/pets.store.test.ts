@@ -3,6 +3,7 @@ import { usePetsStore } from './pets.store';
 import { useAuthStore } from './auth.store';
 import { petService } from '@services/petService';
 import type { Pet, PetCreateInput } from '@features/pets/types';
+import { makePet } from '@testUtils/factories/makePet';
 
 // Mock the petService with a factory that defines its mock functions internally
 vi.mock('@services/petService', () => ({
@@ -116,12 +117,12 @@ describe('usePetsStore', () => {
 
     it('updates an existing pet when service resolves', async () => {
       mockedAuthStore.getState.mockReturnValue({ user: mockUser });
-      const initialPet = {
+      const initialPet = makePet({
         id: 'p1',
         name: 'Old',
         breed: 'Hound',
         birthDate: new Date('2020-01-01'),
-      } as unknown as Pet;
+      });
       usePetsStore.setState({
         pets: [initialPet],
         isFetching: false,
@@ -165,8 +166,8 @@ describe('usePetsStore', () => {
 
     it('removes a pet when service resolves', async () => {
       mockedAuthStore.getState.mockReturnValue({ user: mockUser });
-      const p1 = { id: 'p1', name: 'A' } as unknown as Pet;
-      const p2 = { id: 'p2', name: 'B' } as unknown as Pet;
+      const p1 = makePet({ id: 'p1', name: 'A' });
+      const p2 = makePet({ id: 'p2', name: 'B' });
       usePetsStore.setState({
         pets: [p1, p2],
         isFetching: false,
@@ -229,7 +230,7 @@ describe('usePetsStore', () => {
     it('restores initial state (pets=[], isFetching=false, fetchError=null)', () => {
       // set non-initial state
       usePetsStore.setState({
-        pets: [{ id: 'p1', name: 'X' }] as unknown as Pet[],
+        pets: [makePet({ id: 'p1', name: 'X' })],
         isFetching: true,
         fetchError: new Error('x'),
       });

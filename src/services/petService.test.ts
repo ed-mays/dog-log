@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PetService } from './petService';
 import { PetRepository } from '@repositories/petRepository';
 import type { Pet, PetCreateInput } from '@features/pets/types';
+import { makePet } from '@testUtils/factories/makePet';
 
 // Mock the entire PetRepository module. Vitest will automatically mock the class constructor.
 vi.mock('@repositories/petRepository');
@@ -75,14 +76,14 @@ describe('PetService', () => {
       breed: 'Lab',
       birthDate: new Date(),
     };
-    const expectedPet: Pet = {
+    const expectedPet: Pet = makePet({
       id: 'pet-1',
       isArchived: false,
       createdAt: new Date(),
       updatedAt: new Date(),
       createdBy: testUserId,
       ...input,
-    };
+    });
     mockCreatePet.mockResolvedValue(expectedPet);
 
     const result = await service.addPet(testUserId, input);

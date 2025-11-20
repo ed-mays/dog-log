@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PetRepository } from './petRepository';
 import type { Pet } from '@features/pets/types';
+import { makePet } from '@testUtils/factories/makePet';
 
 describe('PetRepository', () => {
   let repo: PetRepository;
@@ -43,14 +44,14 @@ describe('PetRepository', () => {
       birthDate: new Date(),
       createdBy: 'test-user-id',
     };
-    const expectedPet: Pet = {
+    const expectedPet: Pet = makePet({
       id: 'new-id',
       ...input,
       isArchived: false,
       createdAt: new Date(),
       createdBy: 'test-user-id',
       updatedAt: new Date(),
-    };
+    });
 
     const create = vi.spyOn(repo, 'create').mockResolvedValue(expectedPet);
 

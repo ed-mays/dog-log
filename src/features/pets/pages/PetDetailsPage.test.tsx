@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '@features/pets/types';
-import { vi } from 'vitest';
+import { vi, describe, beforeEach, test, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 
 // Mock the store module at the top level
@@ -10,19 +10,7 @@ vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
 
-function makePet(overrides: Partial<Pet> = {}): Pet {
-  return {
-    id: '1',
-    name: 'Fido',
-    breed: 'Mix',
-    birthDate: new Date('2020-01-01'),
-    createdAt: new Date('2020-01-01'),
-    updatedAt: new Date('2020-01-01'),
-    createdBy: 'user1',
-    isArchived: false,
-    ...overrides,
-  } as Pet;
-}
+import { makePet } from '@testUtils/factories/makePet';
 
 describe('PetDetailsPage', () => {
   beforeEach(() => {

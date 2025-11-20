@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useAuthStore } from './auth.store';
-import type { AppUser } from '@services/auth/authService';
+import { makeUser } from '@testUtils/factories/makeUser';
 
 const signInSvcMock = vi.fn<Promise<void>, unknown[]>();
 const signOutSvcMock = vi.fn<Promise<void>, unknown[]>();
@@ -45,7 +45,7 @@ describe('auth.store', () => {
     init();
     expect(typeof lastCb).toBe('function');
     // simulate auth user
-    lastCb?.({ uid: 'u1', displayName: null, email: null, photoURL: null });
+    lastCb?.(makeUser({ uid: 'u1' }));
     const { user, initializing, error } = useAuthStore.getState();
     expect(initializing).toBe(false);
     expect(error).toBeNull();
@@ -119,7 +119,7 @@ describe('auth.store', () => {
 
   it('reset restores initial state', () => {
     useAuthStore.setState({
-      user: { uid: 'x' } as unknown as AppUser,
+      user: makeUser({ uid: 'x' }),
       initializing: true,
       error: new Error('e'),
     });
