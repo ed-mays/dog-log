@@ -151,7 +151,7 @@ describe('PetList sorting and persistence', () => {
 
   test('uses persisted desc order from localStorage and writes it back on mount', async () => {
     localStorage.setItem('doglog:petList:sortOrder', 'desc');
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+    const setItemSpy = vi.spyOn(window.localStorage, 'setItem');
 
     const pets = [
       makePet({ id: '2', name: 'Zelda' }),
@@ -175,7 +175,7 @@ describe('PetList sorting and persistence', () => {
 
   test('defaults to asc when localStorage key is missing or invalid and persists asc', async () => {
     localStorage.setItem('doglog:petList:sortOrder', 'weird');
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+    const setItemSpy = vi.spyOn(window.localStorage, 'setItem');
 
     const pets = [
       makePet({ id: '2', name: 'Zelda' }),
@@ -197,7 +197,7 @@ describe('PetList sorting and persistence', () => {
 
   test('does not crash if localStorage.setItem throws (covers catch branch)', async () => {
     const spy = vi
-      .spyOn(Storage.prototype, 'setItem')
+      .spyOn(window.localStorage, 'setItem')
       .mockImplementation(() => {
         throw new Error('boom');
       });
