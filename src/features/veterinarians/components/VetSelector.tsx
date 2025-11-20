@@ -13,6 +13,7 @@ import type { Vet } from '@models/vets';
 import VetForm, { type VetFormValues } from './VetForm';
 import { vetService } from '@services/vetService';
 import { useAuthStore } from '@store/auth.store';
+import { logger } from '@services/logService.ts';
 
 export type VetSelectorProps = {
   label?: string;
@@ -88,9 +89,10 @@ export default function VetSelector({ label, onSelect }: VetSelectorProps) {
         }
         onSelect(created);
         setOpenCreate(false);
-      } catch {
+      } catch (e) {
         // VetForm already surfaces duplicate error via its own i18n
         // leave dialog open for user to correct
+        logger.error('vet: createVet error', e);
         /* no-op */
       }
     })();
@@ -105,6 +107,7 @@ export default function VetSelector({ label, onSelect }: VetSelectorProps) {
         loading={loading}
         onInputChange={(_e, val) => setInputValue(val)}
         onChange={(_e, val) => {
+          logger.debug('VetSelector options', augmentedOptions);
           if (!val) return;
           if (isCreateOption(val)) {
             setOpenCreate(true);

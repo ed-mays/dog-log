@@ -53,21 +53,20 @@ export class VetService {
     const _normName = normalizeName(input.name);
     const _e164Phone = normalizePhone(input.phone);
     const repo = new VetRepository(userId);
-    const created = await repo.createVet({
+    return await repo.createVet({
       ownerUserId,
       name: input.name.trim(),
       phone: input.phone.trim(),
-      email: input.email,
-      website: input.website,
-      clinicName: input.clinicName,
-      address: input.address,
-      specialties: input.specialties,
-      notes: input.notes,
+      email: input.email || null,
+      website: input.website || null,
+      clinicName: input.clinicName || null,
+      address: input.address || null,
+      specialties: input.specialties || null,
+      notes: input.notes || null,
       createdBy: ownerUserId,
       _normName,
       _e164Phone,
     } as unknown as Omit<Vet, 'id' | 'createdAt' | 'updatedAt'>);
-    return created;
   }
 
   async updateVet(

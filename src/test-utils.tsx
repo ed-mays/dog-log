@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ReactElement } from 'react';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import defaultI18n from '@testUtils/test-i18n';
@@ -85,3 +86,13 @@ const customRender = (
 export * from '@testing-library/react';
 export { customRender as render };
 export { withLocale } from '@testUtils/withLocale';
+
+export const renderWithUser = (
+  ui: ReactElement,
+  options?: CustomRenderOptions
+) => {
+  return {
+    user: userEvent.setup(),
+    ...customRender(ui, options),
+  };
+};

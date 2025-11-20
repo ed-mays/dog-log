@@ -30,14 +30,14 @@ export class PetVetService {
     const isFirst = existing.length === 0;
     const effectiveRole: PetVetRole = isFirst ? 'primary' : (role ?? 'other');
     const previousNonPrimaryRole =
-      !isFirst && effectiveRole !== 'primary' ? effectiveRole : undefined;
+      !isFirst && effectiveRole !== 'primary' ? effectiveRole : null;
     return linkRepo.upsertLink({
       petId,
       vetId,
       role: effectiveRole,
-      notes,
+      notes: notes || null,
       createdBy: userId,
-      previousNonPrimaryRole,
+      previousNonPrimaryRole: previousNonPrimaryRole || null,
     });
   }
 

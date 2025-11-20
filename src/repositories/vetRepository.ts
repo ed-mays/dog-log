@@ -12,6 +12,7 @@ import type { Vet } from '@models/vets';
 
 export class DuplicateVetError extends Error {
   code = 'DUPLICATE_VET' as const;
+
   constructor(
     message = 'A veterinarian with this name and phone already exists'
   ) {
@@ -39,8 +40,8 @@ export class VetRepository extends ArchivableBaseRepository<Vet> {
     const keyRef = doc(keysCol, key);
     const vetsCol = collection(db, this.collectionName);
 
-    return runTransaction(db, async (trx) => {
-      const existing = await trx.get(keyRef);
+    return runTransaction(db, async (transaction) => {
+      const existing = await transaction.get(keyRef);
       if (existing.exists()) {
         throw new DuplicateVetError();
       }
@@ -50,15 +51,16 @@ export class VetRepository extends ArchivableBaseRepository<Vet> {
         ...input,
         createdAt: now,
         updatedAt: now,
+        isArchived: false,
       } as Omit<Vet, 'id'>;
       const vetDocRef = doc(vetsCol);
       // write vet
-      trx.set(
+      transaction.set(
         vetDocRef,
         this.entityToDocument(vetData as unknown as Record<string, unknown>)
       );
       // write key lock
-      trx.set(keyRef, {
+      transaction.set(keyRef, {
         ownerUserId: input.ownerUserId,
         vetId: vetDocRef.id,
         createdAt: now,
@@ -126,6 +128,7 @@ export class VetRepository extends ArchivableBaseRepository<Vet> {
 
   async listVets(): Promise<Vet[]> {
     // simple list; user-scoped by path
-    return this.getList();
+    console.log('Fetching vets for user', this.userId);
+    return this.getList({ filters: { ownerUserId: this.userId } });
   }
 }

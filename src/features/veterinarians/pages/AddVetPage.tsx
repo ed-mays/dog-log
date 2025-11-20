@@ -7,6 +7,7 @@ import VetForm, {
 } from '@features/veterinarians/components/VetForm';
 import { vetService } from '@services/vetService';
 import { useAuthStore } from '@store/auth.store';
+import { logger } from '@services/logService';
 
 export default function AddVetPage() {
   const { t } = useTranslation('veterinarians');
@@ -35,16 +36,17 @@ export default function AddVetPage() {
   async function handleSubmit(values: VetFormValues) {
     setError(null);
     if (!user?.uid) return; // guarded by auth at routing level
+    logger.debug('Adding new vet', values);
     try {
       await vetService.createVet(user.uid, user.uid, {
         name: values.name,
         phone: values.phone,
-        email: values.email || undefined,
-        website: values.website || undefined,
-        clinicName: values.clinicName || undefined,
-        address: values.address,
-        specialties: values.specialties,
-        notes: values.notes || undefined,
+        email: values.email || initialValues.email,
+        website: values.website || initialValues.website,
+        clinicName: values.clinicName || initialValues.clinicName,
+        address: values.address || initialValues.address,
+        specialties: values.specialties || initialValues.specialties,
+        notes: values.notes || initialValues.notes,
       });
       // UI telemetry on successful submit
       try {
@@ -60,6 +62,7 @@ export default function AddVetPage() {
       if (code === 'DUPLICATE_VET') {
         setError(t('error.duplicate'));
       } else {
+        logger.error('Failed to create vet', err);
         setError(t('common:somethingWentWrong', 'Something went wrong'));
       }
     }

@@ -1,6 +1,6 @@
-import { render, screen } from '@test-utils';
-import userEvent from '@testing-library/user-event';
+import { renderWithUser, screen } from '@test-utils';
 import VetForm, { type VetFormValues } from './VetForm';
+import { vi } from 'vitest';
 
 describe('VetForm', () => {
   const baseValues: VetFormValues = {
@@ -15,11 +15,10 @@ describe('VetForm', () => {
   };
 
   it('blocks submit and shows validation when required fields are missing', async () => {
-    const user = userEvent.setup();
     const onSubmit = vi.fn();
     const onCancel = vi.fn();
 
-    render(
+    const { user } = renderWithUser(
       <VetForm
         title="Test"
         initialValues={baseValues}
@@ -61,10 +60,9 @@ describe('VetForm', () => {
   });
 
   it('allows submit when name and phone are provided', async () => {
-    const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    render(
+    const { user } = renderWithUser(
       <VetForm
         initialValues={baseValues}
         onSubmit={onSubmit}
@@ -95,10 +93,9 @@ describe('VetForm', () => {
   });
 
   it('renders error alert when errorMessage is provided and calls onCancel when cancel is clicked', async () => {
-    const user = userEvent.setup();
     const onCancel = vi.fn();
 
-    render(
+    const { user } = renderWithUser(
       <VetForm
         initialValues={{ ...baseValues, name: 'x', phone: 'y' }}
         onSubmit={() => {}}
@@ -119,10 +116,9 @@ describe('VetForm', () => {
   });
 
   it('normalizes specialties by trimming and dropping empties before submit', async () => {
-    const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    render(
+    const { user } = renderWithUser(
       <VetForm
         initialValues={{
           ...baseValues,
@@ -145,10 +141,9 @@ describe('VetForm', () => {
   });
 
   it('updates address fields via setAddressField and includes them on submit', async () => {
-    const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    render(
+    const { user } = renderWithUser(
       <VetForm
         initialValues={{ ...baseValues, name: 'C', phone: 'D', address: {} }}
         onSubmit={onSubmit}
@@ -189,10 +184,9 @@ describe('VetForm', () => {
     );
   });
   it('handles typing in all optional fields and submits', async () => {
-    const user = userEvent.setup();
     const onSubmit = vi.fn();
 
-    render(
+    const { user } = renderWithUser(
       <VetForm
         initialValues={{
           name: 'N',
@@ -247,19 +241,30 @@ describe('VetForm', () => {
       name: (_n, el) => el.getAttribute('id') === 'vet-notes',
     }) as HTMLInputElement;
 
-    await user.type(email, 'a@b.com');
-    await user.type(website, 'https://example.com');
-    await user.type(clinic, 'Happy Pets');
+    await user.click(email);
+    await user.paste('a@b.com');
+    await user.click(website);
+    await user.paste('https://example.com');
+    await user.click(clinic);
+    await user.paste('Happy Pets');
 
-    await user.type(line1, '123 Main');
-    await user.type(line2, 'Apt 4');
-    await user.type(city, 'Springfield');
-    await user.type(region, 'IL');
-    await user.type(postal, '62704');
-    await user.type(country, 'USA');
+    await user.click(line1);
+    await user.paste('123 Main');
+    await user.click(line2);
+    await user.paste('Apt 4');
+    await user.click(city);
+    await user.paste('Springfield');
+    await user.click(region);
+    await user.paste('IL');
+    await user.click(postal);
+    await user.paste('62704');
+    await user.click(country);
+    await user.paste('USA');
 
-    await user.type(specialties, 'surgery, derm');
-    await user.type(notes, 'Notes');
+    await user.click(specialties);
+    await user.paste('surgery, derm');
+    await user.click(notes);
+    await user.paste('Notes');
 
     await user.click(screen.getByRole('button', { name: /save/i }));
 
