@@ -83,7 +83,7 @@ export default function EditVetPage() {
       if (code === 'DUPLICATE_VET') {
         setError(t('error.duplicate'));
       } else {
-        setError(t('common:error.generic', 'Something went wrong'));
+        setError(t('common:somethingWentWrong', 'Something went wrong'));
       }
     }
   }
