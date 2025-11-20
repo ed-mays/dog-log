@@ -1,139 +1,103 @@
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),
 }));
 vi.mock('@services/vetService');
 
-import { render, screen, waitFor } from '@test-utils';
+import { render, screen } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
-import { vetService } from '@services/vetService';
-import type { Vet } from '@models/vets';
-
-const mockedVetService = vetService as unknown as {
-  searchVets: ReturnType<typeof vi.fn>;
-};
-
-function makeVet(overrides: Partial<Vet>): Vet {
-  return {
-    id: 'v1',
-    ownerUserId: 'user1',
-    name: 'Dr. Placeholder',
-    phone: '555-0000',
-    createdAt: new Date(0),
-    updatedAt: new Date(0),
-    createdBy: 'user1',
-    _normName: 'dr. placeholder',
-    _e164Phone: '5550000',
-    // Optional fields default empty
-    email: undefined,
-    website: undefined,
-    clinicName: undefined,
-    address: undefined,
-    specialties: undefined,
-    notes: undefined,
-    isArchived: undefined,
-    archivedAt: undefined,
-    archivedBy: undefined,
-    ...overrides,
-  };
-}
+import { makeVet } from '@testUtils/factories/makeVet';
+import { mockRouter } from '@testUtils/mocks/mockRouter';
+import { installVetServiceMock } from '@testUtils/mocks/mockVetService';
 
 describe('VetListPage', () => {
+  const { navigate } = mockRouter();
+  const vetServiceMock = installVetServiceMock();
+
   beforeEach(() => {
     vi.resetAllMocks();
-    installAuthStoreMock({ user: { uid: 'user1' }, initializing: false });
+    installAuthStoreMock({ user: { uid: 'user1' } });
   });
 
-  it('shows empty state when there are no veterinarians', async () => {
-    (mockedVetService.searchVets as unknown as vi.Mock).mockResolvedValueOnce(
-      []
-    );
+  it('renders empty state when no vets found', async () => {
+    vetServiceMock.searchVets.mockResolvedValue([]);
 
     const { default: VetListPage } = await import('./VetListPage');
     render(<VetListPage />);
 
     expect(
-      await screen.findByText(/no veterinarians yet|aún no hay veterinarios/i)
+      await screen.findByText(/no veterinarians yet|list.empty/i)
     ).toBeInTheDocument();
   });
 
-  it('renders a list of veterinarians and filters by search', async () => {
-    (mockedVetService.searchVets as unknown as vi.Mock).mockResolvedValueOnce([
-      makeVet({
-        id: '1',
-        name: 'Dr. Alice',
-        phone: '555-1111',
-        clinicName: 'Happy Pets',
-        specialties: ['surgery'],
-      }),
-      makeVet({
-        id: '2',
-        name: 'Dr. Bob',
-        phone: '555-2222',
-        clinicName: 'Calm Critters',
-        specialties: ['dermatology'],
-      }),
-    ]);
+  it('renders list of vets', async () => {
+    const v1 = makeVet({ name: 'Dr. A', clinicName: 'Clinic A' });
+    const v2 = makeVet({ name: 'Dr. B', clinicName: 'Clinic B' });
+    vetServiceMock.searchVets.mockResolvedValue([v1, v2]);
 
     const { default: VetListPage } = await import('./VetListPage');
     render(<VetListPage />);
 
-    // Wait for items
-    expect(await screen.findByText(/dr\. alice/i)).toBeInTheDocument();
-    expect(screen.getByText(/dr\. bob/i)).toBeInTheDocument();
-
-    // Filter
-    const user = userEvent.setup();
-    const search = screen.getByRole('textbox', { name: /search|buscar/i });
-    await user.clear(search);
-    await user.type(search, 'alice');
-
-    expect(screen.getByText(/dr\. alice/i)).toBeInTheDocument();
-    expect(screen.queryByText(/dr\. bob/i)).not.toBeInTheDocument();
+    expect(await screen.findByText('Dr. A')).toBeInTheDocument();
+    expect(screen.getByText(/clinic a/i)).toBeInTheDocument();
+    expect(screen.getByText('Dr. B')).toBeInTheDocument();
   });
 
-  it('navigates when clicking Add and list item; swallows errors from service and shows empty state', async () => {
-    vi.resetModules();
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return { ...mod, useNavigate: () => navSpy };
+  it('navigates to add page', async () => {
+    vetServiceMock.searchVets.mockResolvedValue([]);
+    const { default: VetListPage } = await import('./VetListPage');
+    render(<VetListPage />);
+
+    const addBtn = await screen.findByRole('button', {
+      name: /add|actions.add/i,
     });
+    await userEvent.click(addBtn);
 
-    // First render: service throws → empty state via catch
-    (mockedVetService.searchVets as unknown as vi.Mock).mockRejectedValueOnce(
-      new Error('permission denied')
-    );
+    expect(navigate).toHaveBeenCalledWith('/vets/add');
+  });
 
-    let mod = await import('./VetListPage');
-    render(<mod.default />);
-    expect(
-      await screen.findByText(/no veterinarians yet|aún no hay veterinarios/i)
-    ).toBeInTheDocument();
+  it('navigates to edit page on item click', async () => {
+    const v1 = makeVet({ id: 'v1', name: 'Dr. A' });
+    vetServiceMock.searchVets.mockResolvedValue([v1]);
 
-    // Second render: list two vets and assert navigation
-    vi.resetModules();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod2: never = await importOriginal();
-      return { ...mod2, useNavigate: () => navSpy };
-    });
-    (mockedVetService.searchVets as unknown as vi.Mock).mockResolvedValueOnce([
-      makeVet({ id: '10', name: 'Dr. Ten' }),
-      makeVet({ id: '20', name: 'Dr. Twenty' }),
-    ]);
+    const { default: VetListPage } = await import('./VetListPage');
+    render(<VetListPage />);
 
-    mod = await import('./VetListPage');
-    render(<mod.default />);
-    expect(await screen.findByText(/dr\. ten/i)).toBeInTheDocument();
+    const item = await screen.findByText('Dr. A');
+    await userEvent.click(item);
 
+    expect(navigate).toHaveBeenCalledWith('/vets/v1/edit');
+  });
+
+  it('filters list by search term', async () => {
     const user = userEvent.setup();
-    // Click Add (there may be multiple add buttons in the DOM from wrappers; pick the first visible one)
-    const addButtons = screen.getAllByRole('button', { name: /add|agregar/i });
-    await user.click(addButtons[0]);
-    await waitFor(() => expect(navSpy).toHaveBeenCalledWith('/vets/add'));
+    const v1 = makeVet({ name: 'Dr. Alpha' });
+    const v2 = makeVet({ name: 'Dr. Beta' });
+    vetServiceMock.searchVets.mockResolvedValue([v1, v2]);
 
-    // Click item
-    await user.click(screen.getByRole('button', { name: /dr\. ten/i }));
-    await waitFor(() => expect(navSpy).toHaveBeenCalledWith('/vets/10/edit'));
+    const { default: VetListPage } = await import('./VetListPage');
+    render(<VetListPage />);
+
+    await screen.findByText('Dr. Alpha');
+
+    const searchInput = screen.getByRole('textbox', {
+      name: /search|list.searchPlaceholder/i,
+    });
+    await user.type(searchInput, 'alpha');
+
+    expect(screen.getByText('Dr. Alpha')).toBeInTheDocument();
+    expect(screen.queryByText('Dr. Beta')).not.toBeInTheDocument();
+  });
+
+  it('swallows errors from service and shows empty state', async () => {
+    vetServiceMock.searchVets.mockRejectedValue(new Error('permission denied'));
+
+    const { default: VetListPage } = await import('./VetListPage');
+    render(<VetListPage />);
+
+    expect(
+      await screen.findByText(/no veterinarians yet|list.empty/i)
+    ).toBeInTheDocument();
   });
 });

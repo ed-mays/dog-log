@@ -14,8 +14,8 @@ vi.mock('@store/useResetStores', () => ({
 }));
 
 const navigateMock = vi.fn();
-vi.mock('react-router-dom', async (mod) => {
-  const actual = await mod();
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal();
   return {
     ...actual,
     useNavigate: () => navigateMock,

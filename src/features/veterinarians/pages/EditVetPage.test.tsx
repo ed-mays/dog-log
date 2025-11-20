@@ -3,15 +3,11 @@ vi.mock('@store/auth.store', () => ({
 }));
 vi.mock('@services/vetService');
 
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { render, screen, waitFor } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
-import { vetService } from '@services/vetService';
-
-const mockedVetService = vetService as unknown as {
-  getVet: ReturnType<typeof vi.fn>;
-  updateVet: ReturnType<typeof vi.fn>;
-};
+import { installVetServiceMock } from '@testUtils/mocks/mockVetService';
 
 describe('EditVetPage', () => {
   beforeEach(() => {
@@ -23,14 +19,16 @@ describe('EditVetPage', () => {
     const user = userEvent.setup();
     vi.resetModules();
 
+    const vetServiceMock = installVetServiceMock();
+
     // Mock router params and navigation
-    const navSpy = vi.fn();
+    const navigate = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: 'v1' }),
-        useNavigate: () => navSpy,
+        useNavigate: () => navigate,
       };
     });
 
@@ -44,7 +42,7 @@ describe('EditVetPage', () => {
     );
 
     // Arrange: mock getVet to provide initial form values
-    (mockedVetService.getVet as unknown as vi.Mock).mockResolvedValueOnce({
+    (vetServiceMock.getVet as unknown as vi.Mock).mockResolvedValueOnce({
       id: 'v1',
       name: 'Dr. Jane',
       phone: '555-0000',
@@ -54,9 +52,7 @@ describe('EditVetPage', () => {
       isArchived: false,
     });
     // Arrange: mock updateVet to resolve
-    (mockedVetService.updateVet as unknown as vi.Mock).mockResolvedValueOnce(
-      {}
-    );
+    (vetServiceMock.updateVet as unknown as vi.Mock).mockResolvedValueOnce({});
 
     const { default: EditVetPage } = await import('./EditVetPage');
     render(<EditVetPage />);
@@ -82,29 +78,31 @@ describe('EditVetPage', () => {
 
     // Optional: ensure navigation occurred
     await waitFor(() => {
-      expect(navSpy).toHaveBeenCalledWith('/vets');
+      expect(navigate).toHaveBeenCalledWith('/vets');
     });
   });
 
   it('shows duplicate error when update throws DUPLICATE_VET and does not navigate', async () => {
     const user = userEvent.setup();
     vi.resetModules();
-    const navSpy = vi.fn();
+
+    const vetServiceMock = installVetServiceMock();
+    const navigate = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: 'v1' }),
-        useNavigate: () => navSpy,
+        useNavigate: () => navigate,
       };
     });
 
-    (mockedVetService.getVet as unknown as vi.Mock).mockResolvedValueOnce({
+    (vetServiceMock.getVet as unknown as vi.Mock).mockResolvedValueOnce({
       id: 'v1',
       name: 'X',
       phone: '1',
     });
-    (mockedVetService.updateVet as unknown as vi.Mock).mockRejectedValueOnce({
+    (vetServiceMock.updateVet as unknown as vi.Mock).mockRejectedValueOnce({
       code: 'DUPLICATE_VET',
     });
 
@@ -126,12 +124,14 @@ describe('EditVetPage', () => {
     expect(alert).toHaveTextContent(
       /already exists|ya existe|error\.duplicate/i
     );
-    expect(navSpy).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('shows generic error when update throws other error', async () => {
     const user = userEvent.setup();
     vi.resetModules();
+
+    const vetServiceMock = installVetServiceMock();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
       return {
@@ -141,12 +141,12 @@ describe('EditVetPage', () => {
       };
     });
 
-    (mockedVetService.getVet as unknown as vi.Mock).mockResolvedValueOnce({
+    (vetServiceMock.getVet as unknown as vi.Mock).mockResolvedValueOnce({
       id: 'v1',
       name: 'X',
       phone: '1',
     });
-    (mockedVetService.updateVet as unknown as vi.Mock).mockRejectedValueOnce({
+    (vetServiceMock.updateVet as unknown as vi.Mock).mockRejectedValueOnce({
       code: 'OTHER',
     });
 
@@ -167,17 +167,18 @@ describe('EditVetPage', () => {
   it('cancel navigates back to /vets', async () => {
     const user = userEvent.setup();
     vi.resetModules();
-    const navSpy = vi.fn();
+    const vetServiceMock = installVetServiceMock();
+    const navigate = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
       return {
         ...mod,
         useParams: () => ({ id: 'v1' }),
-        useNavigate: () => navSpy,
+        useNavigate: () => navigate,
       };
     });
 
-    (mockedVetService.getVet as unknown as vi.Mock).mockResolvedValueOnce({
+    (vetServiceMock.getVet as unknown as vi.Mock).mockResolvedValueOnce({
       id: 'v1',
       name: 'X',
       phone: '1',
@@ -190,11 +191,13 @@ describe('EditVetPage', () => {
       name: /cancel|cancelar/i,
     });
     await user.click(cancelBtn);
-    await waitFor(() => expect(navSpy).toHaveBeenCalledWith('/vets'));
+    await waitFor(() => expect(navigate).toHaveBeenCalledWith('/vets'));
   });
 
   it('shows friendly message when getVet fails and no vet is loaded', async () => {
     vi.resetModules();
+
+    const vetServiceMock = installVetServiceMock();
     vi.doMock('react-router-dom', async (importOriginal) => {
       const mod: never = await importOriginal();
       return {
@@ -204,7 +207,7 @@ describe('EditVetPage', () => {
       };
     });
 
-    (mockedVetService.getVet as unknown as vi.Mock).mockRejectedValueOnce(
+    (vetServiceMock.getVet as unknown as vi.Mock).mockRejectedValueOnce(
       new Error('boom')
     );
 

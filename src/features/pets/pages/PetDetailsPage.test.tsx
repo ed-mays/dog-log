@@ -4,13 +4,13 @@ import userEvent from '@testing-library/user-event';
 import type { Pet } from '@features/pets/types';
 import { vi, describe, beforeEach, test, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import { makePet } from '@testUtils/factories/makePet';
+import { mockRouter } from '@testUtils/mocks/mockRouter';
 
 // Mock the store module at the top level
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
-
-import { makePet } from '@testUtils/factories/makePet';
 
 describe('PetDetailsPage', () => {
   beforeEach(() => {
@@ -34,20 +34,12 @@ describe('PetDetailsPage', () => {
     } = options;
     const petsMock = installPetsStoreMock({ pets, ...storeOverrides });
 
-    const navSpy = vi.fn();
-    vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
-      return {
-        ...mod,
-        useParams: () => ({ id: petId }),
-        useNavigate: () => navSpy,
-      };
-    });
+    const { navigate } = mockRouter({ id: petId });
 
     const { default: PetDetailsPage } = await import('./PetDetailsPage');
     const { render } = await import('@test-utils');
     const user = userEvent.setup();
-    return { petsMock, navSpy, PetDetailsPage, render, user, flags };
+    return { petsMock, navigate, PetDetailsPage, render, user, flags };
   }
 
   test('renders pet name and breed in a table', async () => {
@@ -68,7 +60,7 @@ describe('PetDetailsPage', () => {
   });
 
   test('shows Edit/Delete when petActionsEnabled=true and navigates on Edit', async () => {
-    const { navSpy, PetDetailsPage, render, user } = await setup({
+    const { navigate, PetDetailsPage, render, user } = await setup({
       pets: [makePet({ id: '1' })],
       flags: { petActionsEnabled: true },
     });
@@ -81,7 +73,7 @@ describe('PetDetailsPage', () => {
     await user.click(editBtn);
 
     await waitFor(() => {
-      expect(navSpy).toHaveBeenCalledWith('/pets/1/edit');
+      expect(navigate).toHaveBeenCalledWith('/pets/1/edit');
     });
 
     expect(deleteBtn).toBeInTheDocument();
@@ -93,7 +85,7 @@ describe('PetDetailsPage', () => {
       deletePet: vi.fn(async () => {}),
     };
 
-    const { PetDetailsPage, render, user, navSpy } = await setup({
+    const { PetDetailsPage, render, user, navigate } = await setup({
       pets: [pet],
       storeOverrides: overrides,
     });
@@ -112,7 +104,7 @@ describe('PetDetailsPage', () => {
 
     await waitFor(() => {
       expect(overrides.deletePet).toHaveBeenCalledWith('1');
-      expect(navSpy).toHaveBeenCalledWith('/pets');
+      expect(navigate).toHaveBeenCalledWith('/pets');
     });
   });
 
@@ -153,7 +145,7 @@ describe('PetDetailsPage', () => {
       }),
     };
 
-    const { PetDetailsPage, render, user, navSpy } = await setup({
+    const { PetDetailsPage, render, user, navigate } = await setup({
       pets: [pet],
       storeOverrides: overrides,
     });
@@ -173,7 +165,7 @@ describe('PetDetailsPage', () => {
     const alert = await screen.findByRole('alert');
     expect(alert).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(navSpy).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   test('Back link points to /pets', async () => {
@@ -194,7 +186,7 @@ describe('PetDetailsPage', () => {
     const overrides = {
       deletePet: vi.fn(async () => {}),
     };
-    const { PetDetailsPage, render, user, navSpy } = await setup({
+    const { PetDetailsPage, render, user, navigate } = await setup({
       pets: [pet],
       storeOverrides: overrides,
     });
@@ -210,7 +202,7 @@ describe('PetDetailsPage', () => {
     // Modal closes, no delete or navigation
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(overrides.deletePet).not.toHaveBeenCalled();
-    expect(navSpy).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   test('shows saving indicator while deleting until resolved', async () => {
@@ -225,7 +217,7 @@ describe('PetDetailsPage', () => {
       ),
     };
 
-    const { PetDetailsPage, render, user, navSpy } = await setup({
+    const { PetDetailsPage, render, user, navigate } = await setup({
       pets: [pet],
       storeOverrides: overrides,
     });
@@ -244,7 +236,7 @@ describe('PetDetailsPage', () => {
     resolveDelete?.();
 
     await waitFor(() => {
-      expect(navSpy).toHaveBeenCalledWith('/pets');
+      expect(navigate).toHaveBeenCalledWith('/pets');
     });
   });
 });

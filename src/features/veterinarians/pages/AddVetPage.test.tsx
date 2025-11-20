@@ -6,22 +6,22 @@ vi.mock('@services/vetService');
 import { render, screen, waitFor } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
-import { vetService } from '@services/vetService';
-
-const mockedVetService = vetService as unknown as {
-  createVet: ReturnType<typeof vi.fn>;
-};
+import { installVetServiceMock } from '@testUtils/mocks/mockVetService';
 
 describe('AddVetPage', () => {
+  let vetServiceMock: ReturnType<typeof installVetServiceMock>;
+
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.resetModules();
     installAuthStoreMock({ user: { uid: 'user1' }, initializing: false });
+    vetServiceMock = installVetServiceMock();
   });
 
   it('shows duplicate error when service throws DUPLICATE_VET', async () => {
     const user = userEvent.setup();
     // Arrange: mock createVet to throw duplicate error
-    (mockedVetService.createVet as unknown as vi.Mock).mockRejectedValueOnce({
+    (vetServiceMock.createVet as unknown as vi.Mock).mockRejectedValueOnce({
       code: 'DUPLICATE_VET',
     });
 
@@ -68,7 +68,7 @@ describe('AddVetPage', () => {
     );
 
     // Arrange: mock createVet to resolve
-    (mockedVetService.createVet as unknown as vi.Mock).mockResolvedValueOnce({
+    (vetServiceMock.createVet as unknown as vi.Mock).mockResolvedValueOnce({
       id: 'v1',
     });
 
@@ -108,7 +108,7 @@ describe('AddVetPage', () => {
       return { ...mod, useNavigate: () => navSpy };
     });
 
-    (mockedVetService.createVet as unknown as vi.Mock).mockRejectedValueOnce({
+    (vetServiceMock.createVet as unknown as vi.Mock).mockRejectedValueOnce({
       code: 'SOMETHING',
     });
 
@@ -165,9 +165,7 @@ describe('AddVetPage', () => {
     });
 
     const user = userEvent.setup();
-    (mockedVetService.createVet as unknown as vi.Mock).mockResolvedValueOnce(
-      {}
-    );
+    (vetServiceMock.createVet as unknown as vi.Mock).mockResolvedValueOnce({});
 
     const { default: AddVetPage } = await import('./AddVetPage');
     render(<AddVetPage />);
@@ -191,7 +189,7 @@ describe('AddVetPage', () => {
     );
 
     expect(
-      mockedVetService.createVet as unknown as vi.Mock
+      vetServiceMock.createVet as unknown as vi.Mock
     ).not.toHaveBeenCalled();
   });
 });
