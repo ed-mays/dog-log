@@ -358,7 +358,7 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map((doc) => this.documentToEntity(doc));
     } catch (error) {
-      logger.error('Error fetching active list:', error);
+      logger.error('Error fetching active list:', { error });
       throw this.handleError(error, 'getActiveList');
     }
   }

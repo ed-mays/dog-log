@@ -35,9 +35,9 @@ export class PetVetService {
       petId,
       vetId,
       role: effectiveRole,
-      notes: notes || null,
+      notes: notes || undefined,
       createdBy: userId,
-      previousNonPrimaryRole: previousNonPrimaryRole || null,
+      previousNonPrimaryRole: previousNonPrimaryRole || undefined,
     });
   }
 

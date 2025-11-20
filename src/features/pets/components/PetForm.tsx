@@ -163,7 +163,7 @@ export function PetForm({
                   initialValues.id,
                   vet.id
                 );
-                logger.debug('Vet linked to pet', link, vet);
+                logger.debug('Vet linked to pet', { link, vet });
                 setLinks((prev) => [...prev, { link, vet }]);
                 // telemetry
                 try {
@@ -178,7 +178,6 @@ export function PetForm({
             />
           </Box>
           <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {logger.debug('Pet/Vet Links to display')}
             {links.map(({ link, vet }) => {
               const roleKey = `link.role.${link.role}` as const;
               const label = `${vet.name} — ${t(roleKey, { ns: 'veterinarians' })}`;

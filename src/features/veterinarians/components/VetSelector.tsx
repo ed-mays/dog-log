@@ -92,7 +92,7 @@ export default function VetSelector({ label, onSelect }: VetSelectorProps) {
       } catch (e) {
         // VetForm already surfaces duplicate error via its own i18n
         // leave dialog open for user to correct
-        logger.error('vet: createVet error', e);
+        logger.error('vet: createVet error', { error: e });
         /* no-op */
       }
     })();

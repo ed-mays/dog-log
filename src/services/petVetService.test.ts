@@ -106,7 +106,7 @@ describe('PetVetService', () => {
     expect(mockUpsertLink).toHaveBeenCalled();
     const input = mockUpsertLink.mock.calls[0][0];
     expect(input.role).toBe('primary');
-    expect(input.previousNonPrimaryRole).toBeNull();
+    expect(input.previousNonPrimaryRole).toBeUndefined();
     expect(link).toBeDefined();
   });
 

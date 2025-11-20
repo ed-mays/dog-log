@@ -62,7 +62,7 @@ export default function AddVetPage() {
       if (code === 'DUPLICATE_VET') {
         setError(t('error.duplicate'));
       } else {
-        logger.error('Failed to create vet', err);
+        logger.error('Failed to create vet', { error: err });
         setError(t('common:somethingWentWrong', 'Something went wrong'));
       }
     }
