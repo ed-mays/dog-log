@@ -112,7 +112,6 @@ export default function EditVetPage() {
       )}
       {!loading && vet && initialValues && (
         <VetForm
-          title={t('actions.edit')}
           initialValues={initialValues}
           onSubmit={handleSubmit}
           onCancel={handleCancel}

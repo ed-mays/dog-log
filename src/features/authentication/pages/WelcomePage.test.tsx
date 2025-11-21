@@ -1,6 +1,14 @@
-import { render, screen } from '@test-utils';
+import { render, screen, act } from '@test-utils';
 import { WelcomePage } from './WelcomePage';
-import { beforeAll, beforeEach, describe, it, vi, expect } from 'vitest';
+import {
+  beforeAll,
+  beforeEach,
+  afterEach,
+  describe,
+  it,
+  vi,
+  expect,
+} from 'vitest';
 import testI18n from '@testUtils/test-i18n';
 import userEvent from '@testing-library/user-event';
 
@@ -21,7 +29,9 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
-  await testI18n.changeLanguage('en');
+  await act(async () => {
+    await testI18n.changeLanguage('en');
+  });
 });
 
 describe('WelcomePage', () => {
@@ -65,7 +75,9 @@ describe('WelcomePage', () => {
 
   it('renders the expected content in Spanish (no snapshots)', async () => {
     // Switch to Spanish for the duration of this test
-    await testI18n.changeLanguage('es');
+    await act(async () => {
+      await testI18n.changeLanguage('es');
+    });
     try {
       render(<WelcomePage />);
 
@@ -79,7 +91,9 @@ describe('WelcomePage', () => {
         await screen.findByRole('button', { name: /continuar con google/i })
       ).toBeInTheDocument();
     } finally {
-      await testI18n.changeLanguage('en');
+      await act(async () => {
+        await testI18n.changeLanguage('en');
+      });
     }
   });
 });
