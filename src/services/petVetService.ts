@@ -31,14 +31,34 @@ export class PetVetService {
     const effectiveRole: PetVetRole = isFirst ? 'primary' : (role ?? 'other');
     const previousNonPrimaryRole =
       !isFirst && effectiveRole !== 'primary' ? effectiveRole : null;
-    return linkRepo.upsertLink({
+
+    // Build the link object, only including optional fields if they have values
+    // Firestore rejects undefined values, so we must omit fields rather than set to undefined
+    const linkData: {
+      petId: string;
+      vetId: VetId;
+      role: PetVetRole;
+      createdBy: string;
+      notes?: string;
+      previousNonPrimaryRole?: Exclude<PetVetRole, 'primary'>;
+    } = {
       petId,
       vetId,
       role: effectiveRole,
-      notes: notes || undefined,
       createdBy: userId,
-      previousNonPrimaryRole: previousNonPrimaryRole || undefined,
-    });
+    };
+
+    if (notes) linkData.notes = notes;
+    // TypeScript can't infer that previousNonPrimaryRole is never 'primary' due to the guard check
+    // so we cast it to the correct type
+    if (previousNonPrimaryRole) {
+      linkData.previousNonPrimaryRole = previousNonPrimaryRole as Exclude<
+        PetVetRole,
+        'primary'
+      >;
+    }
+
+    return linkRepo.upsertLink(linkData);
   }
 
   async unlinkVetFromPet(userId: string, linkId: string): Promise<void> {

@@ -3,11 +3,15 @@ import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { loadNamespace } from '@i18n';
 import { usePetsStore } from '@store/pets.store';
+import { useAuthStore } from '@store/auth.store';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import {
   Alert,
   Button,
   Link,
+  List,
+  ListItem,
+  ListItemText,
   Table,
   TableBody,
   TableCell,
@@ -18,6 +22,9 @@ import {
 import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { petVetService } from '@services/petVetService';
+import type { PetVetLink, Vet } from '@models/vets';
+import { logger } from '@services/logService';
 
 export default function PetDetailsPage() {
   const { id } = useParams();
@@ -26,6 +33,10 @@ export default function PetDetailsPage() {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [vetLinks, setVetLinks] = useState<
+    Array<{ link: PetVetLink; vet: Vet }>
+  >([]);
+  const [loadingVets, setLoadingVets] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -42,9 +53,49 @@ export default function PetDetailsPage() {
   const pets = usePetsStore((s) => s.pets);
   const deletePet = usePetsStore((s) => s.deletePet);
   const pet = useMemo(() => pets.find((p) => p.id === id), [pets, id]);
+  const user = useAuthStore((s) => s.user);
 
   const { t } = useTranslation();
   const petActionsEnabled = useFeatureFlag('petActionsEnabled');
+
+  // Feature flags for vet display
+  let vetsEnabled = false;
+  let vetLinkingEnabled = false;
+  try {
+    vetsEnabled = useFeatureFlag('vetsEnabled');
+    vetLinkingEnabled = useFeatureFlag('vetLinkingEnabled');
+  } catch {
+    // In environments without FeatureFlagsProvider, default to false
+    logger.info('Vet feature flags not available, defaulting to false');
+  }
+
+  // Load vet links when ready
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadVetLinks() {
+      if (!user?.uid || !id || !(vetsEnabled && vetLinkingEnabled) || !nsReady)
+        return;
+
+      setLoadingVets(true);
+      try {
+        const links = await petVetService.getPetVets(user.uid, id);
+        if (mounted) setVetLinks(links);
+      } catch (err) {
+        // Swallow errors silently - vet display is secondary
+        logger.debug('Failed to load vet links for PetDetailsPage', {
+          error: err,
+        });
+      } finally {
+        if (mounted) setLoadingVets(false);
+      }
+    }
+
+    loadVetLinks();
+    return () => {
+      mounted = false;
+    };
+  }, [user?.uid, id, vetsEnabled, vetLinkingEnabled, nsReady]);
 
   if (!nsReady) return null;
 
@@ -111,6 +162,54 @@ export default function PetDetailsPage() {
           </TableRow>
         </TableBody>
       </Table>
+
+      {vetsEnabled && vetLinkingEnabled && (
+        <div style={{ marginTop: '2rem' }}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            {t('linkedVeterinarians', {
+              ns: 'veterinarians',
+              defaultValue: 'Linked Veterinarians',
+            })}
+          </Typography>
+          {loadingVets && (
+            <Typography variant="body2" color="text.secondary">
+              {t('loading', { ns: 'common', defaultValue: 'Loading…' })}
+            </Typography>
+          )}
+          {!loadingVets && vetLinks.length === 0 && (
+            <Typography variant="body2" color="text.secondary">
+              {t('noLinkedVets', {
+                ns: 'veterinarians',
+                defaultValue: 'No linked veterinarians',
+              })}
+            </Typography>
+          )}
+          {!loadingVets && vetLinks.length > 0 && (
+            <List>
+              {vetLinks.map(({ link, vet }) => {
+                const roleKey = `link.role.${link.role}` as const;
+                const roleLabel = t(roleKey, { ns: 'veterinarians' });
+                return (
+                  <ListItem key={link.id} sx={{ px: 0 }}>
+                    <ListItemText
+                      primary={
+                        <Link
+                          component={RouterLink}
+                          to={`/vets/${vet.id}/edit`}
+                          underline="hover"
+                        >
+                          {vet.name}
+                        </Link>
+                      }
+                      secondary={roleLabel}
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
+          )}
+        </div>
+      )}
 
       {petActionsEnabled && (
         <div style={{ marginTop: '1rem' }}>

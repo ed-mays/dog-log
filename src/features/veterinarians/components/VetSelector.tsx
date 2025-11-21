@@ -44,14 +44,12 @@ export default function VetSelector({ label, onSelect }: VetSelectorProps) {
     if (!userId) return;
     const query = inputValue.trim();
 
-    // Avoid firing a search on mount or when the query is empty
-    if (!query) return;
-
     // Debounce to coalesce rapid keystrokes and MUI-controlled updates
     const handle = setTimeout(async () => {
       if (!active) return;
       setLoading(true);
       try {
+        // Empty query returns all vets, non-empty filters by query
         const results = await vetService.searchVets(userId, query);
         if (active) setOptions(results);
       } finally {
