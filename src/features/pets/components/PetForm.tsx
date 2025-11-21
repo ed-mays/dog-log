@@ -255,28 +255,23 @@ export function PetForm({
                               /* no-op */
                             }
                           } else {
-                            // Non-primary role change not fully supported by service yet in one call,
-                            // but UI allows it. For now we only explicitly support setPrimaryVet in service.
-                            // If we want to support other role changes, we'd need updateLink.
-                            // For this phase, let's assume we only strictly support "Make Primary" via this UI
-                            // or we need to add updateLink to service.
-                            // The plan says "On role change to 'primary': Call setPrimaryVet".
-                            // It implies other changes might not be wired up or require service update.
-                            // Let's stick to the plan: "Change role to 'primary'".
-                            // However, the dropdown shows all roles.
-                            // If user selects 'specialist', we should probably update it.
-                            // checking service... petVetService doesn't have generic updateLink exposed?
-                            // It has setPrimaryVet.
-                            // Let's check petVetService.ts content again if needed.
-                            // Assuming for now we only handle primary or we need to add updateLink.
-                            // Wait, the plan says "Implement Slice 4 Role Management".
-                            // "Goal: Allow users to manually set primary vet".
-                            // It doesn't explicitly say "change arbitrary role".
-                            // But a dropdown implies it.
-                            // Let's implement primary switch for now as that's the critical one.
-                            // If user selects non-primary, we might need to implement that service method or just revert/warn.
-                            // Actually, let's look at the service.
-                            // I'll assume for this step we implement the UI and handle primary.
+                            // Optimistic update for non-primary role change
+                            setLinks((prev) =>
+                              prev.map((l) => ({
+                                ...l,
+                                link: {
+                                  ...l.link,
+                                  role:
+                                    l.link.id === link.id
+                                      ? newRole
+                                      : l.link.role,
+                                },
+                              }))
+                            );
+
+                            await petVetService.updateLink(userId, link.id, {
+                              role: newRole,
+                            });
                           }
                         }}
                       >

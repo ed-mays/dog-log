@@ -74,6 +74,15 @@ export class PetVetService {
     const linkRepo = new PetVetRepository(userId);
     await linkRepo.setPrimaryForPet(petId, linkId);
   }
+
+  async updateLink(
+    userId: string,
+    linkId: string,
+    updates: Partial<Omit<PetVetLink, 'id' | 'createdAt' | 'updatedAt'>>
+  ): Promise<void> {
+    const linkRepo = new PetVetRepository(userId);
+    await linkRepo.update(linkId, updates);
+  }
 }
 
 export const petVetService = new PetVetService();

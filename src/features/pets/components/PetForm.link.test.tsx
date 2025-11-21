@@ -14,6 +14,7 @@ vi.mock('@services/petVetService', () => ({
     linkVetToPet: vi.fn(),
     unlinkVetFromPet: vi.fn(),
     setPrimaryVet: vi.fn(),
+    updateLink: vi.fn(),
   },
 }));
 // Replace VetSelector with a simple button that triggers onSelect
@@ -247,5 +248,58 @@ describe('PetForm linking UI', () => {
     // Dr. Specialist (second one) should now be 'primary'
     expect(updatedSelects[0]).toHaveTextContent(/other/i);
     expect(updatedSelects[1]).toHaveTextContent(/primary/i);
+  });
+
+  it('changing role to non-primary calls updateLink', async () => {
+    const user = userEvent.setup();
+
+    const initialLink = {
+      id: 'l1',
+      petId: 'p1',
+      vetId: 'v42',
+      role: 'other',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: 'user1',
+    } as PetVetLink;
+
+    vi.mocked(petVetService.getPetVets).mockResolvedValue([
+      {
+        link: initialLink,
+        vet: { id: 'v42', name: 'Dr. Link', phone: '555' } as Vet,
+      },
+    ]);
+
+    vi.mocked(petVetService.updateLink).mockResolvedValue(undefined);
+
+    render(
+      <PetForm
+        initialValues={makePet({ id: 'p1' })}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+      {
+        featureFlags: { vetsEnabled: true, vetLinkingEnabled: true },
+      }
+    );
+
+    await screen.findByText(/dr\. link/i);
+
+    const roleSelect = screen.getByRole('combobox', { name: /role/i });
+    expect(roleSelect).toHaveTextContent(/other/i);
+
+    await user.click(roleSelect);
+    const specialistOption = await screen.findByRole('option', {
+      name: /specialist/i,
+    });
+    await user.click(specialistOption);
+
+    expect(petVetService.updateLink).toHaveBeenCalledWith('user1', 'l1', {
+      role: 'specialist',
+    });
+
+    // Verify UI update
+    const updatedSelect = screen.getByRole('combobox', { name: /role/i });
+    expect(updatedSelect).toHaveTextContent(/specialist/i);
   });
 });
