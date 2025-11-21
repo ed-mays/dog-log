@@ -44,6 +44,23 @@ export default function VetListPage() {
     };
   }, [user?.uid]);
 
+  // Debounced telemetry
+  useEffect(() => {
+    const t = term.trim();
+    if (!t) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const { track } = await import('@services/analytics/analytics');
+        track('vet_search', { term_length: t.length });
+      } catch {
+        /* no-op */
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [term]);
+
   const filtered = useMemo(() => {
     const q = term.trim().toLowerCase();
     if (!q) return items;

@@ -3,13 +3,17 @@ vi.mock('@store/auth.store', () => ({
   useAuthStore: vi.fn(),
 }));
 vi.mock('@services/vetService');
+vi.mock('@services/analytics/analytics', () => ({
+  track: vi.fn(),
+}));
 
-import { render, screen } from '@test-utils';
+import { render, screen, waitFor } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { makeVet } from '@testUtils/factories/makeVet';
 import { mockRouter } from '@testUtils/mocks/mockRouter';
 import { installVetServiceMock } from '@testUtils/mocks/mockVetService';
+import { track } from '@services/analytics/analytics';
 
 describe('VetListPage', () => {
   const { navigate } = mockRouter();
@@ -99,5 +103,71 @@ describe('VetListPage', () => {
     expect(
       await screen.findByText(/no veterinarians yet|list.empty/i)
     ).toBeInTheDocument();
+  });
+
+  it('search filters by clinic name', async () => {
+    const user = userEvent.setup();
+    const v1 = makeVet({ name: 'Dr. A', clinicName: 'Happy Paws' });
+    const v2 = makeVet({ name: 'Dr. B', clinicName: 'City Vet' });
+    vetServiceMock.searchVets.mockResolvedValue([v1, v2]);
+
+    const { default: VetListPage } = await import('./VetListPage');
+    render(<VetListPage />);
+
+    await screen.findByText('Dr. A');
+
+    const searchInput = screen.getByRole('textbox', {
+      name: /search|list.searchPlaceholder/i,
+    });
+    await user.type(searchInput, 'happy');
+
+    expect(screen.getByText('Dr. A')).toBeInTheDocument();
+    expect(screen.queryByText('Dr. B')).not.toBeInTheDocument();
+  });
+
+  it('search filters by specialties', async () => {
+    const user = userEvent.setup();
+    const v1 = makeVet({ name: 'Dr. A', specialties: ['Surgery'] });
+    const v2 = makeVet({ name: 'Dr. B', specialties: ['Dentistry'] });
+    vetServiceMock.searchVets.mockResolvedValue([v1, v2]);
+
+    const { default: VetListPage } = await import('./VetListPage');
+    render(<VetListPage />);
+
+    await screen.findByText('Dr. A');
+
+    const searchInput = screen.getByRole('textbox', {
+      name: /search|list.searchPlaceholder/i,
+    });
+    await user.type(searchInput, 'surgery');
+
+    expect(screen.getByText('Dr. A')).toBeInTheDocument();
+    expect(screen.queryByText('Dr. B')).not.toBeInTheDocument();
+  });
+
+  it('fires vet_search telemetry with term length', async () => {
+    const v1 = makeVet({ name: 'Dr. A' });
+    vetServiceMock.searchVets.mockResolvedValue([v1]);
+
+    const { default: VetListPage } = await import('./VetListPage');
+    render(<VetListPage />);
+
+    await screen.findByText('Dr. A');
+
+    const searchInput = screen.getByRole('textbox', {
+      name: /search|list.searchPlaceholder/i,
+    });
+
+    const user = userEvent.setup();
+    await user.type(searchInput, 'abc');
+    expect(searchInput).toHaveValue('abc');
+
+    // Wait for debounce (1000ms) + execution
+    await waitFor(
+      () => {
+        expect(track).toHaveBeenCalledWith('vet_search', { term_length: 3 });
+      },
+      { timeout: 2000 }
+    );
   });
 });
