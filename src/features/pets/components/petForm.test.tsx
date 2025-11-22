@@ -7,9 +7,10 @@ import { PetForm } from './PetForm';
 import type { Pet } from '../types';
 
 import { render, withLocale } from '@test-utils';
+import { makePet } from '@testUtils/factories/makePet';
 
 describe('PetForm', () => {
-  const initialPet: Pet = { name: '', breed: '' };
+  const initialPet: Pet = makePet({ name: '', breed: '' });
 
   // Use vi.fn() for all mocks (Vitest)
   let onSubmit: ReturnType<typeof vi.fn>;
@@ -39,11 +40,11 @@ describe('PetForm', () => {
   ) => {
     await userEvent.type(await screen.findByLabelText(/name/i), name);
     await userEvent.type(await screen.findByLabelText(/breed/i), breed);
-    return { name: name, breed: breed };
+    return makePet({ ...initialPet, name: name, breed: breed });
   };
 
   describe('i18n and basic rendering', () => {
-    const localeCases = [
+    const localeCases: [string, { labels: RegExp[]; buttons: string[] }][] = [
       [
         'en',
         {
@@ -62,8 +63,11 @@ describe('PetForm', () => {
 
     it.each(localeCases)(
       'renders correctly in `%s` locale',
-      async (locale, { labels, buttons }) => {
-        await withLocale(locale, async () => {
+      async (
+        locale,
+        { labels, buttons }: { labels: RegExp[]; buttons: string[] }
+      ) => {
+        await withLocale(locale as string, async () => {
           renderForm(initialPet);
           for (const label of labels) {
             expect(await screen.findByLabelText(label)).toBeInTheDocument();
@@ -191,7 +195,7 @@ describe('PetForm', () => {
     });
 
     it('calls onDirtyChange(false) when reverted', async () => {
-      renderForm({ name: 'A', breed: 'B' });
+      renderForm(makePet({ name: 'A', breed: 'B' }));
       await changeNameField('Alice');
       await changeNameField('A');
       expect(onDirtyChange).toHaveBeenLastCalledWith(false);

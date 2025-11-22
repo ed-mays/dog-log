@@ -1,4 +1,3 @@
-import React from 'react';
 import { screen, waitFor, within } from '@testing-library/react';
 import { makePet } from '@testUtils/factories/makePet';
 import { vi } from 'vitest';

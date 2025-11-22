@@ -9,12 +9,14 @@ import {
 import type { FeatureFlags } from '../types';
 
 const allFalseFlags: FeatureFlags = {
-  newDashboard: false,
-  betaFeature: false,
-  test_show_count_button: false,
+  vetsEnabled: false,
+
   petListEnabled: false,
   addPetEnabled: false,
   authEnabled: false,
+  petActionsEnabled: false,
+  navbarEnabled: false,
+  vetLinkingEnabled: false,
 };
 
 describe('FeatureFlagsContext', () => {
@@ -35,7 +37,7 @@ describe('FeatureFlagsContext', () => {
   it('provides value through Provider and allows consumers to use it', async () => {
     const setFlag = vi.fn();
     const value: FeatureFlagsContextType = {
-      flags: { ...allFalseFlags, newDashboard: true },
+      flags: { ...allFalseFlags, vetsEnabled: true },
       setFlag,
     };
 
@@ -43,12 +45,10 @@ describe('FeatureFlagsContext', () => {
       const ctx = React.useContext(FeatureFlagsContext)!;
       return (
         <>
-          <span data-testid="flag">
-            {ctx.flags.newDashboard ? 'on' : 'off'}
-          </span>
+          <span data-testid="flag">{ctx.flags.vetsEnabled ? 'on' : 'off'}</span>
           <button
             data-testid="toggle"
-            onClick={() => ctx.setFlag('newDashboard', !ctx.flags.newDashboard)}
+            onClick={() => ctx.setFlag('vetsEnabled', !ctx.flags.vetsEnabled)}
           >
             toggle
           </button>
@@ -67,6 +67,6 @@ describe('FeatureFlagsContext', () => {
 
     // Interacts with provided setter
     await userEvent.click(screen.getByTestId('toggle'));
-    expect(setFlag).toHaveBeenCalledWith('newDashboard', false);
+    expect(setFlag).toHaveBeenCalledWith('vetsEnabled', false);
   });
 });

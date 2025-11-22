@@ -1,7 +1,7 @@
 import { render, screen } from '@test-utils';
 import { NavigationBar } from './NavigationBar';
 import { within } from '@testing-library/react';
-import { vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, type Mock } from 'vitest';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 
@@ -12,7 +12,7 @@ vi.mock('@store/auth.store', () => ({
 // Mock feature flag hook so we can cover both branches of vetsEnabled
 vi.mock('@featureFlags/hooks/useFeatureFlag');
 
-const mockUseFeatureFlag = useFeatureFlag as unknown as vi.Mock;
+const mockUseFeatureFlag = useFeatureFlag as unknown as Mock;
 
 beforeEach(() => {
   vi.resetAllMocks();

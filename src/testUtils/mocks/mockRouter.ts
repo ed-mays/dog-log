@@ -10,7 +10,7 @@ import { vi } from 'vitest';
  */
 export function mockRouter(params = {}, navigate = vi.fn()) {
   vi.doMock('react-router-dom', async (importOriginal) => {
-    const mod: unknown = await importOriginal();
+    const mod = await importOriginal<typeof import('react-router-dom')>();
     return {
       ...mod,
       useParams: () => params,

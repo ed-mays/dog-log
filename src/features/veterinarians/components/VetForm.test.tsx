@@ -1,6 +1,6 @@
 import { renderWithUser, screen } from '@test-utils';
 import VetForm, { type VetFormValues } from './VetForm';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 describe('VetForm', () => {
   const baseValues: VetFormValues = {
@@ -269,7 +269,7 @@ describe('VetForm', () => {
     await user.click(screen.getByRole('button', { name: /save/i }));
 
     expect(onSubmit).toHaveBeenCalled();
-    const payload = (onSubmit as unknown as vi.Mock).mock.calls[0][0];
+    const payload = (onSubmit as unknown as Mock).mock.calls[0][0];
     expect(payload.email).toBe('a@b.com');
     expect(payload.website).toBe('https://example.com');
     expect(payload.clinicName).toBe('Happy Pets');

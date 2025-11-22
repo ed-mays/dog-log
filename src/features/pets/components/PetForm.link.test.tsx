@@ -43,7 +43,15 @@ import { PetForm } from './PetForm';
 describe('PetForm linking UI', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    installAuthStoreMock({ user: { uid: 'user1' }, initializing: false });
+    installAuthStoreMock({
+      user: {
+        uid: 'user1',
+        email: 't@t.com',
+        displayName: 'T',
+        photoURL: null,
+      },
+      initializing: false,
+    });
 
     vi.mocked(petVetService.getPetVets).mockResolvedValue(
       [] as Array<{ link: PetVetLink; vet: Vet }>

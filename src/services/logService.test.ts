@@ -1,4 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from 'vitest';
 
 // We'll re-import the module after changing NODE_ENV so the singleton picks up the env
 const ORIGINAL_NODE_ENV = process.env.NODE_ENV;
@@ -10,8 +18,8 @@ function getLoggerFresh() {
 }
 
 describe('logger (logService)', () => {
-  let infoSpy: vi.SpyInstance;
-  let errorSpy: vi.SpyInstance;
+  let infoSpy: MockInstance;
+  let errorSpy: MockInstance;
 
   beforeEach(() => {
     infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});

@@ -167,13 +167,9 @@ describe('VetService', () => {
     ];
     mockListVets.mockResolvedValue(vets);
 
-    vi.doMock(
-      '@services/analytics/analytics',
-      () => ({
-        track: vi.fn(),
-      }),
-      { virtual: true }
-    );
+    vi.doMock('@services/analytics/analytics', () => ({
+      track: vi.fn(),
+    }));
 
     const result = await service.searchVets(userId, '   ');
     expect(result).toEqual(vets);
@@ -183,15 +179,11 @@ describe('VetService', () => {
     const vets: Vet[] = [];
     mockListVets.mockResolvedValue(vets);
 
-    vi.doMock(
-      '@services/analytics/analytics',
-      () => ({
-        track: () => {
-          throw new Error('boom');
-        },
-      }),
-      { virtual: true }
-    );
+    vi.doMock('@services/analytics/analytics', () => ({
+      track: () => {
+        throw new Error('boom');
+      },
+    }));
 
     const result = await service.searchVets(userId, 'x');
     expect(result).toEqual([]);

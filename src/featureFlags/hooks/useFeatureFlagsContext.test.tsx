@@ -10,10 +10,10 @@ const HookConsumer: React.FC = () => {
   return (
     <>
       <div data-testid="beta-feature">
-        {flags.betaFeature ? 'enabled' : 'disabled'}
+        {flags.vetsEnabled ? 'enabled' : 'disabled'}
       </div>
       <button
-        onClick={() => setFlag('betaFeature', !flags.betaFeature)}
+        onClick={() => setFlag('vetsEnabled', !flags.vetsEnabled)}
         data-testid="toggle-btn"
       >
         Toggle
@@ -56,10 +56,10 @@ describe('useFeatureFlagsContext', () => {
     const { flags, setFlag } = useFeatureFlagsContext();
     return (
       <>
-        <span data-testid="value">{flags.newDashboard ? 'on' : 'off'}</span>
+        <span data-testid="value">{flags.vetsEnabled ? 'on' : 'off'}</span>
         <button
           data-testid="toggle"
-          onClick={() => setFlag('newDashboard', !flags.newDashboard)}
+          onClick={() => setFlag('vetsEnabled', !flags.vetsEnabled)}
         >
           toggle
         </button>

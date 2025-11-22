@@ -4,6 +4,7 @@ vi.mock('@store/auth.store', () => ({
 vi.mock('@services/vetService');
 
 import { render, screen, waitFor } from '@test-utils';
+import { type Mock } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { installVetServiceMock } from '@testUtils/mocks/mockVetService';
@@ -14,14 +15,22 @@ describe('AddVetPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.resetModules();
-    installAuthStoreMock({ user: { uid: 'user1' }, initializing: false });
+    installAuthStoreMock({
+      user: {
+        uid: 'user1',
+        email: 't@t.com',
+        displayName: 'T',
+        photoURL: null,
+      },
+      initializing: false,
+    });
     vetServiceMock = installVetServiceMock();
   });
 
   it('shows duplicate error when service throws DUPLICATE_VET', async () => {
     const user = userEvent.setup();
     // Arrange: mock createVet to throw duplicate error
-    (vetServiceMock.createVet as unknown as vi.Mock).mockRejectedValueOnce({
+    (vetServiceMock.createVet as unknown as Mock).mockRejectedValueOnce({
       code: 'DUPLICATE_VET',
     });
 
@@ -59,11 +68,11 @@ describe('AddVetPage', () => {
     vi.resetModules();
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
+      const mod = await importOriginal<typeof import('react-router-dom')>();
       return { ...mod, useNavigate: () => navSpy };
     });
 
-    (vetServiceMock.createVet as unknown as vi.Mock).mockRejectedValueOnce({
+    (vetServiceMock.createVet as unknown as Mock).mockRejectedValueOnce({
       code: 'SOMETHING',
     });
 
@@ -100,7 +109,7 @@ describe('AddVetPage', () => {
     vi.resetModules();
     const navSpy = vi.fn();
     vi.doMock('react-router-dom', async (importOriginal) => {
-      const mod: never = await importOriginal();
+      const mod = await importOriginal<typeof import('react-router-dom')>();
       return { ...mod, useNavigate: () => navSpy };
     });
 
@@ -115,12 +124,12 @@ describe('AddVetPage', () => {
     // No user id
     vi.resetAllMocks();
     installAuthStoreMock({
-      user: null as unknown as { uid: string },
+      user: null,
       initializing: false,
     });
 
     const user = userEvent.setup();
-    (vetServiceMock.createVet as unknown as vi.Mock).mockResolvedValueOnce({});
+    (vetServiceMock.createVet as unknown as Mock).mockResolvedValueOnce({});
 
     const { default: AddVetPage } = await import('./AddVetPage');
     render(<AddVetPage />);
@@ -143,8 +152,6 @@ describe('AddVetPage', () => {
       })
     );
 
-    expect(
-      vetServiceMock.createVet as unknown as vi.Mock
-    ).not.toHaveBeenCalled();
+    expect(vetServiceMock.createVet as unknown as Mock).not.toHaveBeenCalled();
   });
 });

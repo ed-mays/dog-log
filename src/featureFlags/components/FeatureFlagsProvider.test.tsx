@@ -10,10 +10,10 @@ const TestChild: React.FC = () => {
   return (
     <>
       <div data-testid="new-dashboard">
-        {ctx.flags.newDashboard ? 'on' : 'off'}
+        {ctx.flags.vetsEnabled ? 'on' : 'off'}
       </div>
       <button
-        onClick={() => ctx.setFlag('newDashboard', !ctx.flags.newDashboard)}
+        onClick={() => ctx.setFlag('vetsEnabled', !ctx.flags.vetsEnabled)}
         data-testid="toggle-btn"
       >
         toggle

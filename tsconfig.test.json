@@ -6,11 +6,12 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": [
+    "src",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
-    "src/testUtils/**",
+    "src/testUtils/**/*",
     "src/test-utils.tsx"
   ],
   "exclude": []

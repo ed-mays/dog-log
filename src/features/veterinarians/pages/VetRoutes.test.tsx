@@ -7,6 +7,7 @@ vi.mock('@store/pets.store', () => ({
 vi.mock('@services/vetService');
 
 import { render, screen } from '@test-utils';
+import { type Mock } from 'vitest';
 import { AppRoutes } from '../../../AppRoutes';
 import {
   installAuthStoreMock,
@@ -19,14 +20,22 @@ import { makeVet } from '@testUtils/factories/makeVet';
 describe('Vets routes (flag-gated)', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    installAuthStoreMock({ user: { uid: 'user1' }, initializing: false });
+    installAuthStoreMock({
+      user: {
+        uid: 'user1',
+        email: 't@t.com',
+        displayName: 'T',
+        photoURL: null,
+      },
+      initializing: false,
+    });
     installPetsStoreMock({ pets: [] });
 
     const mocked = vetService as unknown as {
-      getVet: vi.Mock;
-      searchVets: vi.Mock;
-      updateVet: vi.Mock;
-      createVet: vi.Mock;
+      getVet: Mock;
+      searchVets: Mock;
+      updateVet: Mock;
+      createVet: Mock;
     };
     mocked.getVet.mockResolvedValue(
       makeVet({

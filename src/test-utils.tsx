@@ -6,7 +6,7 @@ import type { RenderOptions } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import defaultI18n from '@testUtils/test-i18n';
 import { FeatureFlagsProvider } from '@featureFlags/components/FeatureFlagsProvider';
-import type { FeatureFlags } from '@featureFlags/featureFlags.types';
+import type { FeatureFlags } from '@featureFlags/types';
 import type { i18n } from 'i18next';
 import { MemoryRouter } from 'react-router-dom';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -70,7 +70,7 @@ const customRender = (
     initialRoutes,
     ...options
   }: CustomRenderOptions = {}
-) =>
+): ReturnType<typeof render> =>
   render(ui, {
     wrapper: (props) => (
       <AllTheProviders
@@ -90,7 +90,9 @@ export { withLocale } from '@testUtils/withLocale';
 export const renderWithUser = (
   ui: ReactElement,
   options?: CustomRenderOptions
-) => {
+): ReturnType<typeof customRender> & {
+  user: ReturnType<typeof userEvent.setup>;
+} => {
   return {
     user: userEvent.setup(),
     ...customRender(ui, options),

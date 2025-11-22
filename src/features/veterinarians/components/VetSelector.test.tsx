@@ -47,7 +47,14 @@ describe('VetSelector', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     resetInstalledStoreMocks();
-    installAuthStoreMock({ user: { uid: 'user1' } });
+    installAuthStoreMock({
+      user: {
+        uid: 'user1',
+        email: 't@t.com',
+        displayName: 'T',
+        photoURL: null,
+      },
+    });
   });
 
   it('queries vets and calls onSelect when an existing vet is chosen', async () => {

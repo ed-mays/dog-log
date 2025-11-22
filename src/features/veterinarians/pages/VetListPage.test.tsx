@@ -21,7 +21,14 @@ describe('VetListPage', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    installAuthStoreMock({ user: { uid: 'user1' } });
+    installAuthStoreMock({
+      user: {
+        uid: 'user1',
+        email: 't@t.com',
+        displayName: 'T',
+        photoURL: null,
+      },
+    });
   });
 
   it('renders empty state when no vets found', async () => {

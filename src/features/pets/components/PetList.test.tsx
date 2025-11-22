@@ -1,4 +1,3 @@
-import React from 'react';
 import { act } from 'react';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import type { Pet } from '../types';
@@ -26,7 +25,7 @@ describe('PetList card view', () => {
   ) {
     const petsMock = installPetsStoreMock({ pets: initialPets });
 
-    const { user } = renderWithUser(<PetList />, {
+    const { user } = renderWithUser(<PetList pets={[]} />, {
       featureFlags: {
         addPetEnabled: true,
         ...flags,
@@ -135,7 +134,9 @@ describe('PetList sorting and persistence', () => {
     ];
     await (async () => {
       const petsMock = installPetsStoreMock({ pets });
-      renderWithUser(<PetList />, { featureFlags: { addPetEnabled: true } });
+      renderWithUser(<PetList pets={[]} />, {
+        featureFlags: { addPetEnabled: true },
+      });
       expect(
         await screen.findByLabelText(/pet card grid/i)
       ).toBeInTheDocument();
@@ -160,7 +161,9 @@ describe('PetList sorting and persistence', () => {
     ];
     installPetsStoreMock({ pets });
 
-    renderWithUser(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     const headings = await screen.findAllByRole('heading', { level: 3 });
     expect(headings.map((h) => h.textContent)).toEqual([
@@ -184,7 +187,9 @@ describe('PetList sorting and persistence', () => {
     ];
     installPetsStoreMock({ pets });
 
-    renderWithUser(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     const headings = await screen.findAllByRole('heading', { level: 3 });
     expect(headings.map((h) => h.textContent)).toEqual([
@@ -205,7 +210,9 @@ describe('PetList sorting and persistence', () => {
     const pets = [makePet({ id: '1', name: 'Buddy' })];
     installPetsStoreMock({ pets });
 
-    renderWithUser(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     expect(await screen.findByLabelText(/pet card grid/i)).toBeInTheDocument();
 
@@ -217,7 +224,9 @@ describe('PetList sorting and persistence', () => {
     const pets = [makePet({ id: '1', name: 'Buddy' })];
     installPetsStoreMock({ pets });
 
-    renderWithUser(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     expect(await screen.findByLabelText(/pet card grid/i)).toBeInTheDocument();
     expect(screen.queryByTestId('no-pets-indicator')).not.toBeInTheDocument();
@@ -225,7 +234,7 @@ describe('PetList sorting and persistence', () => {
 
   test('shows LoadingIndicator when isFetching is true', async () => {
     installPetsStoreMock({ pets: [], isFetching: true });
-    renderWithUser(<PetList />);
+    renderWithUser(<PetList pets={[]} />);
     expect(
       await screen.findByTestId(loadingIndicatorTestId)
     ).toBeInTheDocument();
@@ -240,7 +249,9 @@ describe('PetList namespace loading', () => {
     installPetsStoreMock({ pets });
 
     // Render with standard providers; on first paint nsReady=false returns null
-    renderWithUser(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     // Immediately after render, neither grid nor empty indicator should be present
     expect(screen.queryByLabelText(/pet card grid/i)).not.toBeInTheDocument();
@@ -271,7 +282,7 @@ describe('PetList sort selector UI', () => {
     installPetsStoreMock({ pets });
 
     // Selector should be present with accessible label
-    const { user } = renderWithUser(<PetList />, {
+    const { user } = renderWithUser(<PetList pets={[]} />, {
       featureFlags: { addPetEnabled: true },
     });
     const combo = await screen.findByRole('combobox', {
@@ -304,7 +315,9 @@ describe('PetList sort selector UI', () => {
 
   test('does not show sorting selector when list is empty', async () => {
     installPetsStoreMock({ pets: [] });
-    renderWithUser(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     // Empty indicator is shown
     expect(await screen.findByTestId('no-pets-indicator')).toBeInTheDocument();
