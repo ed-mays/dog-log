@@ -53,7 +53,10 @@ describe('VetSelector', () => {
   it('queries vets and calls onSelect when an existing vet is chosen', async () => {
     const user = userEvent.setup();
     const v1 = makeVet({ name: 'Dr. Alpha', _normName: 'alpha' });
-    vetServiceMock.searchVets.mockResolvedValue([v1]);
+    vetServiceMock.searchVets.mockImplementation(async (_uid, query) => {
+      if (query === 'alp') return [v1];
+      return [];
+    });
 
     const onSelect = vi.fn();
     render(<VetSelector onSelect={onSelect} />);
