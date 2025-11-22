@@ -131,4 +131,43 @@ describe('PetVetService', () => {
     await service.setPrimaryVet(userId, 'pet-1', 'l1');
     expect(mockSetPrimaryForPet).toHaveBeenCalledWith('pet-1', 'l1');
   });
+
+  it('linkVetToPet is idempotent (upsert)', async () => {
+    // If link already exists, upsertLink handles it (repository responsibility),
+    // but service should just pass it through.
+    mockListLinksByPet.mockResolvedValue([]);
+    mockUpsertLink.mockResolvedValue({ id: 'l1' } as unknown as PetVetLink);
+
+    await service.linkVetToPet(userId, 'pet-1', 'v1');
+    await service.linkVetToPet(userId, 'pet-1', 'v1');
+
+    expect(mockUpsertLink).toHaveBeenCalledTimes(2);
+  });
+
+  it('handles repository errors gracefully', async () => {
+    mockListLinksByPet.mockRejectedValue(new Error('Firestore error'));
+    await expect(service.getPetVets(userId, 'pet-1')).rejects.toThrow(
+      'Firestore error'
+    );
+  });
+
+  it('swallows analytics errors', async () => {
+    mockListLinksByPet.mockResolvedValue([]);
+    mockUpsertLink.mockResolvedValue({ id: 'l1' });
+
+    vi.doMock(
+      '@services/analytics/analytics',
+      () => ({
+        track: () => {
+          throw new Error('Analytics failed');
+        },
+      }),
+      { virtual: true }
+    );
+
+    // Should not throw
+    await expect(
+      service.linkVetToPet(userId, 'pet-1', 'v1')
+    ).resolves.not.toThrow();
+  });
 });

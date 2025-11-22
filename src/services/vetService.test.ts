@@ -196,4 +196,47 @@ describe('VetService', () => {
     const result = await service.searchVets(userId, 'x');
     expect(result).toEqual([]);
   });
+  it('createVet trims inputs and throws if empty', async () => {
+    await expect(
+      service.createVet(userId, ownerUserId, {
+        name: '   ',
+        phone: '123',
+      })
+    ).rejects.toThrow('Name is required');
+
+    await expect(
+      service.createVet(userId, ownerUserId, {
+        name: 'Dr. A',
+        phone: '   ',
+      })
+    ).rejects.toThrow('Phone is required');
+  });
+
+  it('updateVet trims inputs and throws if empty', async () => {
+    await expect(
+      service.updateVet(userId, 'v1', {
+        name: '   ',
+      })
+    ).rejects.toThrow('Name cannot be empty');
+
+    await expect(
+      service.updateVet(userId, 'v1', {
+        phone: '   ',
+      })
+    ).rejects.toThrow('Phone cannot be empty');
+  });
+
+  it('updateVet trims optional fields', async () => {
+    const updated = { id: 'v1' } as unknown as Vet;
+    mockUpdateVet.mockResolvedValue(updated);
+
+    await service.updateVet(userId, 'v1', {
+      email: '  test@example.com  ',
+      clinicName: '  Clinic  ',
+    });
+
+    const patch = mockUpdateVet.mock.calls[0][1];
+    expect(patch.email).toBe('test@example.com');
+    expect(patch.clinicName).toBe('Clinic');
+  });
 });

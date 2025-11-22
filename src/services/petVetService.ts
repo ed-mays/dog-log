@@ -58,12 +58,25 @@ export class PetVetService {
       >;
     }
 
-    return linkRepo.upsertLink(linkData);
+    const link = await linkRepo.upsertLink(linkData);
+    try {
+      const { track } = await import('@services/analytics/analytics');
+      track('vet_link_created', { petId, vetId, role: effectiveRole });
+    } catch {
+      // ignore
+    }
+    return link;
   }
 
   async unlinkVetFromPet(userId: string, linkId: string): Promise<void> {
     const linkRepo = new PetVetRepository(userId);
     await linkRepo.deleteLink(linkId);
+    try {
+      const { track } = await import('@services/analytics/analytics');
+      track('vet_link_deleted', { linkId });
+    } catch {
+      // ignore
+    }
   }
 
   async setPrimaryVet(
@@ -73,6 +86,12 @@ export class PetVetService {
   ): Promise<void> {
     const linkRepo = new PetVetRepository(userId);
     await linkRepo.setPrimaryForPet(petId, linkId);
+    try {
+      const { track } = await import('@services/analytics/analytics');
+      track('vet_primary_set', { petId, linkId });
+    } catch {
+      // ignore
+    }
   }
 
   async updateLink(

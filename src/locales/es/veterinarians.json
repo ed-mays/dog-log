@@ -28,9 +28,28 @@
     "empty": "Aún no hay veterinarios",
     "searchPlaceholder": "Buscar"
   },
+  "link": {
+    "sectionTitle": "Veterinarios vinculados",
+    "add": "Vincular veterinario",
+    "remove": "Eliminar",
+    "role": {
+      "label": "Rol",
+      "primary": "Primario",
+      "specialist": "Especialista",
+      "emergency": "Urgencias",
+      "other": "Otro"
+    }
+  },
+  "selector": {
+    "createNew": "Crear nuevo veterinario..."
+  },
   "validation": {
-    "name": { "required": "El nombre es obligatorio" },
-    "phone": { "required": "El teléfono es obligatorio" }
+    "name": {
+      "required": "El nombre es obligatorio"
+    },
+    "phone": {
+      "required": "El teléfono es obligatorio"
+    }
   },
   "error": {
     "duplicate": "Ya existe un veterinario con este nombre y teléfono"

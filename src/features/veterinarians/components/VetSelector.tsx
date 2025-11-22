@@ -78,13 +78,7 @@ export default function VetSelector({ label, onSelect }: VetSelectorProps) {
     (async () => {
       try {
         const created = await vetService.createVet(userId, userId, values);
-        // telemetry
-        try {
-          const { track } = await import('@services/analytics/analytics');
-          track('vet_created');
-        } catch {
-          /* no-op: analytics optional */
-        }
+
         onSelect(created);
         setOpenCreate(false);
       } catch (e) {

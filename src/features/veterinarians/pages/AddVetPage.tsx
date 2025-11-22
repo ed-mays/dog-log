@@ -48,13 +48,7 @@ export default function AddVetPage() {
         specialties: values.specialties || initialValues.specialties,
         notes: values.notes || initialValues.notes,
       });
-      // UI telemetry on successful submit
-      try {
-        const { track } = await import('@services/analytics/analytics');
-        track('vet_created');
-      } catch {
-        // Swallow analytics errors; non-critical side effect
-      }
+
       navigate('/vets');
     } catch (err) {
       // detect duplicate error by code

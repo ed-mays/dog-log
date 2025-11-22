@@ -70,13 +70,7 @@ export default function EditVetPage() {
         specialties: values.specialties,
         notes: values.notes || undefined,
       });
-      // UI telemetry on successful submit
-      try {
-        const { track } = await import('@services/analytics/analytics');
-        track('vet_updated');
-      } catch {
-        // Swallow analytics errors; non-critical side effect
-      }
+
       navigate('/vets');
     } catch (err) {
       const code = (err as { code?: string } | null)?.code;

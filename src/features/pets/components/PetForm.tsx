@@ -171,15 +171,6 @@ export function PetForm({
                 );
                 logger.debug('Vet linked to pet', { link, vet });
                 setLinks((prev) => [...prev, { link, vet }]);
-                // telemetry
-                try {
-                  const { track } = await import(
-                    '@services/analytics/analytics'
-                  );
-                  track('vet_link_created');
-                } catch {
-                  /* no-op: analytics is optional */
-                }
               }}
             />
           </Box>
@@ -244,16 +235,6 @@ export function PetForm({
                               initialValues.id,
                               link.id
                             );
-
-                            // Telemetry
-                            try {
-                              const { track } = await import(
-                                '@services/analytics/analytics'
-                              );
-                              track('vet_primary_set');
-                            } catch {
-                              /* no-op */
-                            }
                           } else {
                             // Optimistic update for non-primary role change
                             setLinks((prev) =>
@@ -298,14 +279,6 @@ export function PetForm({
                         setLinks((prev) =>
                           prev.filter((l) => l.link.id !== link.id)
                         );
-                        try {
-                          const { track } = await import(
-                            '@services/analytics/analytics'
-                          );
-                          track('vet_link_deleted');
-                        } catch {
-                          /* no-op: analytics is optional */
-                        }
                       }}
                     >
                       <DeleteIcon />

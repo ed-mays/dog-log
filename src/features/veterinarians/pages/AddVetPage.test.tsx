@@ -54,51 +54,6 @@ describe('AddVetPage', () => {
     );
   });
 
-  it('fires vet_created telemetry on successful submit', async () => {
-    const user = userEvent.setup();
-    vi.resetModules();
-
-    // Mock analytics module to capture dynamic import
-    vi.doMock(
-      '@services/analytics/analytics',
-      () => ({
-        track: vi.fn(),
-      }),
-      { virtual: true }
-    );
-
-    // Arrange: mock createVet to resolve
-    (vetServiceMock.createVet as unknown as vi.Mock).mockResolvedValueOnce({
-      id: 'v1',
-    });
-
-    const { default: AddVetPage } = await import('./AddVetPage');
-    render(<AddVetPage />);
-
-    await user.type(
-      screen.getByRole('textbox', {
-        name: (_name, el) => el.getAttribute('id') === 'vet-name',
-      }),
-      'Dr. Jane'
-    );
-    await user.type(
-      screen.getByRole('textbox', {
-        name: (_name, el) => el.getAttribute('id') === 'vet-phone',
-      }),
-      '555-0000'
-    );
-
-    const submit = screen.getByRole('button', {
-      name: (_name, el) => el.getAttribute('type') === 'submit',
-    });
-    await user.click(submit);
-
-    const analytics = await import('@services/analytics/analytics');
-    await waitFor(() => {
-      expect(analytics.track).toHaveBeenCalledWith('vet_created');
-    });
-  });
-
   it('shows generic error when service throws non-duplicate and does not navigate', async () => {
     const user = userEvent.setup();
     vi.resetModules();

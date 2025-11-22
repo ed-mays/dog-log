@@ -49,24 +49,42 @@ export class VetService {
     ownerUserId: string,
     input: CreateVetInput
   ): Promise<Vet> {
+    const trimmedName = input.name.trim();
+    const trimmedPhone = input.phone.trim();
+
+    if (!trimmedName) {
+      throw new Error('Name is required');
+    }
+    if (!trimmedPhone) {
+      throw new Error('Phone is required');
+    }
+
     // normalize fields for uniqueness/search
-    const _normName = normalizeName(input.name);
-    const _e164Phone = normalizePhone(input.phone);
+    const _normName = normalizeName(trimmedName);
+    const _e164Phone = normalizePhone(trimmedPhone);
     const repo = new VetRepository(userId);
-    return await repo.createVet({
+    const vet = await repo.createVet({
       ownerUserId,
-      name: input.name.trim(),
-      phone: input.phone.trim(),
-      email: input.email || null,
-      website: input.website || null,
-      clinicName: input.clinicName || null,
+      name: trimmedName,
+      phone: trimmedPhone,
+      email: input.email?.trim() || null,
+      website: input.website?.trim() || null,
+      clinicName: input.clinicName?.trim() || null,
       address: input.address || null,
       specialties: input.specialties || null,
-      notes: input.notes || null,
+      notes: input.notes?.trim() || null,
       createdBy: ownerUserId,
       _normName,
       _e164Phone,
     } as unknown as Omit<Vet, 'id' | 'createdAt' | 'updatedAt'>);
+
+    try {
+      const { track } = await import('@services/analytics/analytics');
+      track('vet_created', { vetId: vet.id });
+    } catch {
+      // ignore
+    }
+    return vet;
   }
 
   async updateVet(
@@ -76,10 +94,42 @@ export class VetService {
   ): Promise<Vet> {
     const repo = new VetRepository(userId);
     const updates: Partial<Vet> = { ...patch } as Partial<Vet>;
-    if (patch.name !== undefined) updates._normName = normalizeName(patch.name);
-    if (patch.phone !== undefined)
-      updates._e164Phone = normalizePhone(patch.phone);
-    return repo.updateVet(id, updates as Partial<Omit<Vet, 'id'>>);
+
+    if (patch.name !== undefined) {
+      const trimmedName = patch.name.trim();
+      if (!trimmedName) throw new Error('Name cannot be empty');
+      updates.name = trimmedName;
+      updates._normName = normalizeName(trimmedName);
+    }
+
+    if (patch.phone !== undefined) {
+      const trimmedPhone = patch.phone.trim();
+      if (!trimmedPhone) throw new Error('Phone cannot be empty');
+      updates.phone = trimmedPhone;
+      updates._e164Phone = normalizePhone(trimmedPhone);
+    }
+
+    if (patch.email !== undefined) {
+      updates.email = patch.email?.trim() || undefined;
+    }
+    if (patch.website !== undefined) {
+      updates.website = patch.website?.trim() || undefined;
+    }
+    if (patch.clinicName !== undefined) {
+      updates.clinicName = patch.clinicName?.trim() || undefined;
+    }
+    if (patch.notes !== undefined) {
+      updates.notes = patch.notes?.trim() || undefined;
+    }
+
+    const vet = await repo.updateVet(id, updates as Partial<Omit<Vet, 'id'>>);
+    try {
+      const { track } = await import('@services/analytics/analytics');
+      track('vet_updated', { vetId: id });
+    } catch {
+      // ignore
+    }
+    return vet;
   }
 
   async archiveVet(userId: string, id: VetId): Promise<Vet> {
