@@ -1,19 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  Button,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, TextField, Typography, Grid } from '@mui/material';
 import { useAuthStore } from '@store/auth.store';
 import { vetService } from '@services/vetService';
 import type { Vet } from '@models/vets';
+import { VetCard } from '../components/VetCard';
 
 export default function VetListPage() {
   const { t } = useTranslation('veterinarians');
@@ -107,20 +99,13 @@ export default function VetListPage() {
           {t('list.empty', 'No veterinarians yet')}
         </Typography>
       ) : (
-        <List>
+        <Grid container spacing={2}>
           {filtered.map((v) => (
-            <ListItem key={v.id} disablePadding>
-              <ListItemButton onClick={() => navigate(`/vets/${v.id}/edit`)}>
-                <ListItemText
-                  primary={v.name}
-                  secondary={[v.clinicName, v.phone]
-                    .filter(Boolean)
-                    .join(' • ')}
-                />
-              </ListItemButton>
-            </ListItem>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={v.id}>
+              <VetCard vet={v} onClick={() => navigate(`/vets/${v.id}/edit`)} />
+            </Grid>
           ))}
-        </List>
+        </Grid>
       )}
     </Box>
   );
