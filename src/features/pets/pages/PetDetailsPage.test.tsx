@@ -302,7 +302,9 @@ describe('PetDetailsPage', () => {
       flags: { vetsEnabled: true, vetLinkingEnabled: true },
     });
 
-    render(<PetDetailsPage />);
+    render(<PetDetailsPage />, {
+      featureFlags: { vetsEnabled: true, vetLinkingEnabled: true },
+    });
 
     // Should show LinkedVetList (mocked)
     expect(await screen.findByTestId('linked-vet-list')).toBeInTheDocument();
