@@ -5,17 +5,62 @@ import type { Pet } from '@features/pets/types';
 import { vi, describe, beforeEach, test, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { makePet } from '@testUtils/factories/makePet';
-import { mockRouter } from '@testUtils/mocks/mockRouter';
+import { petVetService } from '@services/petVetService';
+import { logger } from '@services/logService';
+
+// Mutable state for router mocks
+const routerState = {
+  params: {} as Record<string, string>,
+  navigate: vi.fn(),
+};
+
+// Mock react-router-dom at top level
+vi.mock('react-router-dom', async (importOriginal) => {
+  const mod = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...mod,
+    useParams: () => routerState.params,
+    useNavigate: () => routerState.navigate,
+  };
+});
 
 // Mock the store module at the top level
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
 
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: vi.fn((selector) => selector({ user: { uid: 'test-user' } })),
+}));
+
+vi.mock('@services/petVetService', () => ({
+  petVetService: {
+    getPetVets: vi.fn(),
+  },
+}));
+
+vi.mock('@services/logService', () => ({
+  logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+  },
+}));
+
+vi.mock('@i18n', () => ({
+  loadNamespace: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('@features/pets/components/LinkedVetList', () => ({
+  LinkedVetList: () => (
+    <div data-testid="linked-vet-list">Mocked LinkedVetList</div>
+  ),
+}));
+
 describe('PetDetailsPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.resetModules();
+    routerState.params = {};
+    routerState.navigate = vi.fn();
   });
 
   async function setup(
@@ -30,11 +75,17 @@ describe('PetDetailsPage', () => {
       petId = '1',
       pets = [makePet({ id: '1' })],
       storeOverrides,
-      flags,
+      flags = {},
     } = options;
+
+    // Update router state
+    routerState.params = { id: petId };
+    const navigate = routerState.navigate;
+
     const petsMock = installPetsStoreMock({ pets, ...storeOverrides });
 
-    const { navigate } = mockRouter({ id: petId });
+    // We don't need mockRouter anymore as we mocked it globally
+    // const { navigate } = mockRouter({ id: petId });
 
     const { default: PetDetailsPage } = await import('./PetDetailsPage');
     const { render } = await import('@test-utils');
@@ -68,7 +119,7 @@ describe('PetDetailsPage', () => {
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
     const editBtn = await screen.findByRole('button', { name: /edit/i });
-    const deleteBtn = screen.getByRole('button', { name: /delete/i });
+    const deleteBtn = await screen.findByRole('button', { name: /delete/i });
 
     await user.click(editBtn);
 
@@ -207,7 +258,7 @@ describe('PetDetailsPage', () => {
 
   test('shows saving indicator while deleting until resolved', async () => {
     const pet = makePet({ id: '1' });
-    let resolveDelete: (() => void) | null = null;
+    let resolveDelete: () => void;
     const overrides = {
       deletePet: vi.fn(
         () =>
@@ -233,10 +284,33 @@ describe('PetDetailsPage', () => {
     expect(savingText).toBeInTheDocument();
 
     // Resolve and expect navigation
-    resolveDelete?.();
+    resolveDelete!();
 
     await waitFor(() => {
       expect(navigate).toHaveBeenCalledWith('/pets');
     });
+  });
+  test('handles error when loading vets by logging debug message', async () => {
+    const pet = makePet({ id: '1' });
+    const error = new Error('Fetch failed');
+    (
+      petVetService.getPetVets as unknown as ReturnType<typeof vi.fn>
+    ).mockRejectedValue(error);
+
+    const { PetDetailsPage, render } = await setup({
+      pets: [pet],
+      flags: { vetsEnabled: true, vetLinkingEnabled: true },
+    });
+
+    render(<PetDetailsPage />);
+
+    // Should show LinkedVetList (mocked)
+    expect(await screen.findByTestId('linked-vet-list')).toBeInTheDocument();
+
+    // Should log the error
+    expect(logger.debug).toHaveBeenCalledWith(
+      'Failed to load vet links for PetDetailsPage',
+      { error }
+    );
   });
 });
