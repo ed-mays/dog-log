@@ -17,6 +17,7 @@ describe('PetVetService', () => {
   let mockUpsertLink: ReturnType<typeof vi.fn>;
   let mockDeleteLink: ReturnType<typeof vi.fn>;
   let mockSetPrimaryForPet: ReturnType<typeof vi.fn>;
+  let mockUpdate: ReturnType<typeof vi.fn>;
 
   // VetRepository mocks
   let mockGetVetById: ReturnType<typeof vi.fn>;
@@ -28,6 +29,7 @@ describe('PetVetService', () => {
     mockUpsertLink = vi.fn();
     mockDeleteLink = vi.fn();
     mockSetPrimaryForPet = vi.fn();
+    mockUpdate = vi.fn();
 
     mockGetVetById = vi.fn();
 
@@ -38,6 +40,7 @@ describe('PetVetService', () => {
       upsertLink: mockUpsertLink,
       deleteLink: mockDeleteLink,
       setPrimaryForPet: mockSetPrimaryForPet,
+      update: mockUpdate,
     }));
 
     (VetRepository as unknown as ReturnType<typeof vi.fn>).mockImplementation(
@@ -151,23 +154,49 @@ describe('PetVetService', () => {
     );
   });
 
-  it('swallows analytics errors', async () => {
+  it('swallows analytics errors in linkVetToPet', async () => {
     mockListLinksByPet.mockResolvedValue([]);
     mockUpsertLink.mockResolvedValue({ id: 'l1' });
 
-    vi.doMock(
-      '@services/analytics/analytics',
-      () => ({
-        track: () => {
-          throw new Error('Analytics failed');
-        },
-      }),
-      { virtual: true }
-    );
+    vi.doMock('@services/analytics/analytics', () => ({
+      track: () => {
+        throw new Error('Analytics failed');
+      },
+    }));
 
     // Should not throw
     await expect(
       service.linkVetToPet(userId, 'pet-1', 'v1')
     ).resolves.not.toThrow();
+  });
+
+  it('updateLink delegates to repository', async () => {
+    const updates = { role: 'specialist' as const };
+    await service.updateLink(userId, 'l1', updates);
+    expect(mockUpdate).toHaveBeenCalledWith('l1', updates);
+  });
+
+  it('swallows analytics errors in unlinkVetFromPet', async () => {
+    vi.doMock('@services/analytics/analytics', () => ({
+      track: () => {
+        throw new Error('Analytics failed');
+      },
+    }));
+
+    await expect(service.unlinkVetFromPet(userId, 'l9')).resolves.not.toThrow();
+    expect(mockDeleteLink).toHaveBeenCalledWith('l9');
+  });
+
+  it('swallows analytics errors in setPrimaryVet', async () => {
+    vi.doMock('@services/analytics/analytics', () => ({
+      track: () => {
+        throw new Error('Analytics failed');
+      },
+    }));
+
+    await expect(
+      service.setPrimaryVet(userId, 'pet-1', 'l1')
+    ).resolves.not.toThrow();
+    expect(mockSetPrimaryForPet).toHaveBeenCalledWith('pet-1', 'l1');
   });
 });
