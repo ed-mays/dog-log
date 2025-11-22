@@ -1,16 +1,24 @@
-import React, { useEffect } from 'react';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { useEffect } from 'react';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+} from 'vitest';
 import { render, cleanup, waitFor } from '@test-utils';
 
 // Declare spies globally, but don't initialize them here
 // They will be initialized in beforeEach
-let petsResetSpy: vi.Mock;
-let authResetSpy: vi.Mock;
-let uiResetSpy: vi.Mock;
+let petsResetSpy: Mock;
+let authResetSpy: Mock;
+let uiResetSpy: Mock;
 
 // Helper function to create a mock Zustand store object
 // Defined as a function to avoid hoisting issues
-function createMockZustandStore(resetSpy: vi.Mock) {
+function createMockZustandStore(resetSpy: Mock) {
   return {
     getState: () => ({ reset: resetSpy }),
     setState: vi.fn(),

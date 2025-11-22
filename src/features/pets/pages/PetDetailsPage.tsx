@@ -1,73 +1,33 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { loadNamespace } from '@i18n';
-import { usePetsStore } from '@store/pets.store';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
-import {
-  Alert,
-  Button,
-  Link,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  TableHead,
-  Typography,
-} from '@mui/material';
-import { ConfirmModal } from '@components/common/ConfirmModal/ConfirmModal';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Alert, Link, Typography } from '@mui/material';
+import { LinkedVetList } from '@features/pets/components/LinkedVetList';
+import { PetInfoTable } from '@features/pets/components/PetInfoTable';
+import { PetActions } from '@features/pets/components/PetActions';
+import { usePetDetails } from '@features/pets/hooks/usePetDetails';
 
 export default function PetDetailsPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [nsReady, setNsReady] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    Promise.all([loadNamespace('petProperties'), loadNamespace('common')]).then(
-      () => {
-        if (mounted) setNsReady(true);
-      }
-    );
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const pets = usePetsStore((s) => s.pets);
-  const deletePet = usePetsStore((s) => s.deletePet);
-  const pet = useMemo(() => pets.find((p) => p.id === id), [pets, id]);
-
-  const { t } = useTranslation();
-  const petActionsEnabled = useFeatureFlag('petActionsEnabled');
+  const { t } = useTranslation('common');
+  const {
+    pet,
+    vetLinks,
+    loadingVets,
+    saving,
+    error,
+    vetsEnabled,
+    vetLinkingEnabled,
+    petActionsEnabled,
+    handleDelete,
+    navigate,
+    nsReady,
+  } = usePetDetails();
 
   if (!nsReady) return null;
-
-  async function confirmDelete() {
-    if (!pet) return;
-    setSaving(true);
-    setError(null);
-    try {
-      await deletePet(pet.id);
-      navigate('/pets');
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      setError(t('errors.deleteFailed', { ns: 'common' }));
-    } finally {
-      setSaving(false);
-      setDeleting(false);
-    }
-  }
 
   if (!pet) {
     return (
       <Alert severity="warning" role="alert">
-        {t('notFound', { ns: 'common', defaultValue: 'Not found' })}
+        {t('notFound', { defaultValue: 'Not found' })}
       </Alert>
     );
   }
@@ -75,7 +35,7 @@ export default function PetDetailsPage() {
   return (
     <div>
       <Typography variant="h5" component="h1" gutterBottom>
-        {t('details', { ns: 'common', defaultValue: 'Details' })}
+        {t('details', { defaultValue: 'Details' })}
       </Typography>
 
       {error && (
@@ -85,72 +45,39 @@ export default function PetDetailsPage() {
       )}
       {saving && (
         <Alert severity="info" role="alert" sx={{ mb: 2 }}>
-          {t('saving', { ns: 'common', defaultValue: 'Saving...' })}
+          {t('saving', { defaultValue: 'Saving...' })}
         </Alert>
       )}
 
-      <Table sx={{ maxWidth: 600, margin: '0 auto' }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              {t('property', { ns: 'common', defaultValue: 'Property' })}
-            </TableCell>
-            <TableCell>
-              {t('value', { ns: 'common', defaultValue: 'Value' })}
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow>
-            <TableCell>{t('name', { ns: 'petProperties' })}</TableCell>
-            <TableCell>{pet.name}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{t('breed', { ns: 'petProperties' })}</TableCell>
-            <TableCell>{pet.breed}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+      <PetInfoTable pet={pet} />
+
+      {vetsEnabled && vetLinkingEnabled && (
+        <div style={{ marginTop: '2rem' }}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            {t('linkedVeterinarians', {
+              ns: 'veterinarians',
+              defaultValue: 'Linked Veterinarians',
+            })}
+          </Typography>
+          <LinkedVetList loading={loadingVets} links={vetLinks} />
+        </div>
+      )}
 
       {petActionsEnabled && (
-        <div style={{ marginTop: '1rem' }}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => navigate(`/pets/${pet.id}/edit`)}
-            startIcon={<EditIcon fontSize="small" />}
-          >
-            {t('edit', { ns: 'common' })}
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => setDeleting(true)}
-            sx={{ ml: 1 }}
-            startIcon={<DeleteIcon fontSize="small" />}
-          >
-            {t('delete', { ns: 'common' })}
-          </Button>
-        </div>
+        <PetActions
+          pet={pet}
+          onEdit={() => navigate(`/pets/${pet.id}/edit`)}
+          onDelete={handleDelete}
+          deleteError={error}
+          isDeleting={saving}
+        />
       )}
 
       <div style={{ marginTop: '1rem' }}>
         <Link component={RouterLink} to="/pets">
-          {t('back', { ns: 'common', defaultValue: 'Back' })}
+          {t('back', { defaultValue: 'Back' })}
         </Link>
       </div>
-
-      {deleting && (
-        <ConfirmModal
-          text={t('confirmDeleteMessage', {
-            ns: 'common',
-            petName: pet.name,
-          })}
-          onAccept={confirmDelete}
-          onDecline={() => setDeleting(false)}
-          error={error}
-        />
-      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import { mockRouter } from '@testUtils/mocks/mockRouter';
 
 // Mock the pets store hook at module level; installer will provide impl per-test
 vi.mock('@store/pets.store', () => ({ usePetsStore: vi.fn() }));
@@ -17,7 +18,7 @@ vi.mock('@store/pets.store', () => ({ usePetsStore: vi.fn() }));
 
 describe('AddPetPage', () => {
   let petsMock: ReturnType<typeof installPetsStoreMock>;
-  let mockNavigate: ReturnType<typeof vi.fn>;
+  let navigate: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     vi.resetAllMocks();
@@ -26,18 +27,12 @@ describe('AddPetPage', () => {
     // Ensure no lingering per-test mocks from previous tests
     vi.unmock('@features/pets/components/PetForm');
 
-    // Install selector-compatible pets store mock for this test run
+    //Install selector-compatible pets store mock for this test run
     petsMock = installPetsStoreMock();
 
-    // Mock react-router's useNavigate for this module load on a fresh graph
-    mockNavigate = vi.fn();
-    vi.doMock('react-router-dom', async () => {
-      const actual =
-        await vi.importActual<typeof import('react-router-dom')>(
-          'react-router-dom'
-        );
-      return { ...actual, useNavigate: () => mockNavigate };
-    });
+    // Mock react-router
+    const routerMock = mockRouter({});
+    navigate = routerMock.navigate;
   });
 
   async function renderWithProviders(
@@ -92,7 +87,7 @@ describe('AddPetPage', () => {
     expect(arg.birthDate).toBeInstanceOf(Date);
 
     // After submit, navigate to /pets
-    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+    expect(navigate).toHaveBeenCalledWith('/pets');
   });
 
   it('shows confirm when dirty cancel is clicked, then accepts and navigates', async () => {
@@ -138,7 +133,7 @@ describe('AddPetPage', () => {
     if (maybeDialog) {
       await waitForElementToBeRemoved(maybeDialog);
     }
-    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+    expect(navigate).toHaveBeenCalledWith('/pets');
   });
 
   it('shows confirm on dirty cancel, declines and stays on page', async () => {
@@ -179,7 +174,7 @@ describe('AddPetPage', () => {
     if (maybeDialog) {
       await waitForElementToBeRemoved(maybeDialog);
     }
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('navigates away immediately if cancel is activated (click or keyboard) and not dirty', async () => {
@@ -203,12 +198,12 @@ describe('AddPetPage', () => {
     // Activate via keyboard (Enter)
     cancel.focus();
     await user.keyboard('{Enter}');
-    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+    expect(navigate).toHaveBeenCalledWith('/pets');
 
     // Clear and also verify mouse click path
-    mockNavigate.mockClear();
+    navigate.mockClear();
     await user.click(cancel);
-    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+    expect(navigate).toHaveBeenCalledWith('/pets');
   });
 
   it('opens confirm on dirty cancel with correct a11y; focus, trap, and Escape close without navigation', async () => {
@@ -262,7 +257,7 @@ describe('AddPetPage', () => {
     if (maybeDialog) {
       await waitForElementToBeRemoved(maybeDialog);
     }
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('accepts dirty cancel via keyboard: Tab to Yes and Space to confirm; navigates to /pets', async () => {
@@ -304,6 +299,6 @@ describe('AddPetPage', () => {
     if (maybeDialog) {
       await waitForElementToBeRemoved(maybeDialog);
     }
-    expect(mockNavigate).toHaveBeenCalledWith('/pets');
+    expect(navigate).toHaveBeenCalledWith('/pets');
   });
 });

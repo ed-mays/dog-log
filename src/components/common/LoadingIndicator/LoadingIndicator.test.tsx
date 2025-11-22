@@ -1,5 +1,5 @@
-import React from 'react';
 import { render, screen } from '@test-utils';
+import { loadingIndicatorTestId } from '@testUtils/constants';
 import { LoadingIndicator } from './LoadingIndicator';
 
 // TDD: specify expected behavior of the new Material UI based LoadingIndicator
@@ -8,7 +8,7 @@ test('renders a progress spinner and a localized "Please Wait" message', () => {
   render(<LoadingIndicator />);
 
   // Root should expose polite status for screen readers
-  const root = screen.getByTestId('loading-indicator');
+  const root = screen.getByTestId(loadingIndicatorTestId);
   expect(root).toHaveAttribute('role', 'status');
   expect(root).toHaveAttribute('aria-live', 'polite');
 

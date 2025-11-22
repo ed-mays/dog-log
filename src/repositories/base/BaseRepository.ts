@@ -27,6 +27,8 @@ import type {
   FilterCriteria,
 } from '@repositories/types';
 
+import { logger } from '@services/logService';
+
 /**
  * Abstract base repository that provides common Firestore operations
  * All feature-specific repositories should extend this class
@@ -197,6 +199,7 @@ export abstract class BaseRepository<T extends BaseEntity>
    * Create a new entity
    */
   async create(entityData: Omit<T, keyof BaseEntity>): Promise<T> {
+    logger.debug(`Creating entity ${entityData}`);
     try {
       const now = new Date();
       const newEntity = {
@@ -355,6 +358,7 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map((doc) => this.documentToEntity(doc));
     } catch (error) {
+      logger.error('Error fetching active list:', { error });
       throw this.handleError(error, 'getActiveList');
     }
   }
@@ -388,6 +392,7 @@ export abstract class ArchivableBaseRepository<T extends ArchivableEntity>
    * Override getList to return only active entities by default
    */
   async getList(options: QueryOptions = {}): Promise<T[]> {
+    logger.debug('Fetching active list with options', options);
     return this.getActiveList(options);
   }
 }

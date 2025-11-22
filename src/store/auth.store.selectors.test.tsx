@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { useAuthStore, useAuthUser } from './auth.store';
 import { useAuthStatus } from './auth.store';
 import type { AppUser } from '@services/auth/authService';
+import { makeUser } from '@testUtils/factories/makeUser';
 import { render, screen } from '@test-utils';
 import { act } from '@testing-library/react';
 
@@ -33,12 +34,7 @@ describe('auth.store selector hooks', () => {
     expect(screen.getByTestId('err')).toHaveTextContent('null');
 
     // Simulate login: set user and clear initializing
-    const user: AppUser = {
-      uid: 'u1',
-      displayName: null,
-      email: null,
-      photoURL: null,
-    };
+    const user: AppUser = makeUser({ uid: 'u1' });
     await act(async () => {
       useAuthStore.setState({ user, initializing: false, error: null });
     });

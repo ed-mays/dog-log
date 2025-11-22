@@ -9,8 +9,9 @@ import {
 } from '@testUtils/mocks/mockStoreInstallers';
 import type { AppUser } from '@services/auth/authService';
 import { makePet } from '@testUtils/factories/makePet';
-import { vi } from 'vitest';
+import { describe, vi } from 'vitest';
 import { expectPetListVisible } from '@testUtils/routes';
+import { loadingIndicatorTestId } from '@testUtils/constants';
 
 // Explicitly mock stores to ensure vi.fn() instances are used
 vi.mock('@store/pets.store', () => ({
@@ -23,6 +24,15 @@ vi.mock('@store/ui.store', () => ({
   useUiStore: vi.fn(),
 }));
 
+const navBarLabel = 'user-controls';
+
+const testUser = {
+  uid: 'test',
+  displayName: null,
+  email: null,
+  photoURL: null,
+} satisfies AppUser;
+
 describe('App', () => {
   let petsMock: ReturnType<typeof installPetsStoreMock>;
 
@@ -32,104 +42,92 @@ describe('App', () => {
     // Fresh mocks each test
     petsMock = installPetsStoreMock({ pets: [] });
     installAuthStoreMock({
-      user: {
-        uid: 'test',
-        displayName: null,
-        email: null,
-        photoURL: null,
-      } satisfies AppUser,
+      user: testUser,
       initializing: false,
       error: null,
     });
     installUiStoreMock({ loading: false, error: null });
   });
 
-  function renderComponent() {
-    render(<App />, { initialRoutes: ['/pets'] });
-  }
+  describe('when loading', () => {
+    test('renders loading indicator when a user is logged in', async () => {
+      installUiStoreMock({ loading: true, error: null });
+      installAuthStoreMock({
+        initializing: true,
+        user: testUser,
+      });
 
-  test('renders loading state', async () => {
-    installUiStoreMock({ loading: true, error: null });
-    installAuthStoreMock({
-      initializing: true,
-      user: {
-        uid: 'test',
-        displayName: null,
-        email: null,
-        photoURL: null,
-      } satisfies AppUser,
+      render(<App />);
+      expect(
+        await screen.findByTestId(loadingIndicatorTestId)
+      ).toBeInTheDocument();
     });
 
-    renderComponent();
+    test('renders loading indicator when a user is not logged in', async () => {
+      installUiStoreMock({ loading: true, error: null });
+      installAuthStoreMock({
+        initializing: false,
+      });
 
-    expect(await screen.findByTestId('loading-indicator')).toBeInTheDocument();
+      render(<App />);
+
+      // With initializing=false, AppRoutes will not render its spinner.
+      // So any loading-indicator present must be rendered by App.tsx, covering that branch.
+      expect(
+        await screen.findByTestId(loadingIndicatorTestId)
+      ).toBeInTheDocument();
+    });
   });
 
-  test('renders app-level loading indicator when appLoading=true and initializing=false', async () => {
-    // App.tsx shows its own LoadingIndicator when appLoading && !initializing
-    installUiStoreMock({ loading: true, error: null });
-    installAuthStoreMock({
-      initializing: false,
-      user: {
-        uid: 'test',
-        displayName: null,
-        email: null,
-        photoURL: null,
-      } satisfies AppUser,
+  describe('when error occurs', () => {
+    test('renders error state', async () => {
+      installUiStoreMock({ error: new Error('Boom'), loading: false });
+      render(<App />);
+      const el = await screen.findByTestId('error-indicator');
+      expect(el).toBeInTheDocument();
+      expect(el).toHaveTextContent(/Error/);
+      expect(el).toHaveTextContent(/Boom/);
+    });
+  });
+
+  describe('when mounted', () => {
+    test('renders pet list', async () => {
+      installPetsStoreMock({
+        pets: [
+          makePet({ id: '1', name: 'Fido', breed: 'Labrador' }),
+          makePet({ id: '2', name: 'Bella', breed: 'Beagle' }),
+        ],
+      });
+      render(<App />);
+      await expectPetListVisible();
     });
 
-    renderComponent();
-
-    // With initializing=false, AppRoutes will not render its spinner.
-    // So any loading-indicator present must be rendered by App.tsx, covering that branch.
-    expect(await screen.findByTestId('loading-indicator')).toBeInTheDocument();
-  });
-
-  test('renders error state', async () => {
-    installUiStoreMock({ error: new Error('Boom'), loading: false });
-    renderComponent();
-    const el = await screen.findByTestId('error-indicator');
-    expect(el).toBeInTheDocument();
-    expect(el).toHaveTextContent(/Error/);
-    expect(el).toHaveTextContent(/Boom/);
-  });
-
-  test('renders pet list', async () => {
-    installPetsStoreMock({
-      pets: [
-        makePet({ id: '1', name: 'Fido', breed: 'Labrador' }),
-        makePet({ id: '2', name: 'Bella', breed: 'Beagle' }),
-      ],
+    test('fetches pets', () => {
+      render(<App />);
+      expect(petsMock.actions.fetchPets).toHaveBeenCalledTimes(1);
     });
-    renderComponent();
-    await expectPetListVisible();
-  });
-
-  test('fetches pets on mount', () => {
-    renderComponent();
-    expect(petsMock.actions.fetchPets).toHaveBeenCalledTimes(1);
   });
 });
 
-// Navigation bar visibility tests (authEnabled + user)
-test('shows NavigationBar header when user exists and authEnabled=true', async () => {
-  // defaults from beforeEach: user present; featureFlags default authEnabled=true
-  render(<App />, { initialRoutes: ['/pets'] });
-  expect(await screen.findByLabelText('user-controls')).toBeInTheDocument();
-});
-
-test('shows NavigationBar when authEnabled=false (bypass auth)', async () => {
-  render(<App />, {
-    initialRoutes: ['/pets'],
-    featureFlags: { authEnabled: false },
+describe('App header', () => {
+  test('shows NavigationBar header when user exists and authEnabled=true', async () => {
+    // defaults from beforeEach: user present; featureFlags default authEnabled=true
+    render(<App />);
+    expect(await screen.findByLabelText(navBarLabel)).toBeInTheDocument();
   });
-  expect(await screen.findByLabelText('user-controls')).toBeInTheDocument();
-});
 
-test('hides NavigationBar when user is null even if authEnabled=true', async () => {
-  // Override auth store to simulate no user
-  installAuthStoreMock({ user: null, initializing: false });
+  test('shows NavigationBar when authEnabled=false', async () => {
+    render(<App />, {
+      featureFlags: { authEnabled: false },
+    });
+    expect(await screen.findByLabelText(navBarLabel)).toBeInTheDocument();
+  });
 
-  render(<App />, { initialRoutes: ['/pets'] });
-  expect(screen.queryByLabelText('user-controls')).not.toBeInTheDocument();
+  test('hides NavigationBar when user is not logged in', async () => {
+    // Override auth store to simulate no user
+    installAuthStoreMock({ user: null, initializing: false });
+
+    render(<App />);
+    expect(screen.queryByLabelText(navBarLabel)).not.toBeInTheDocument();
+  });
 });

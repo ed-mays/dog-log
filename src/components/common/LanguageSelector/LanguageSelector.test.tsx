@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { LanguageSelector } from './LanguageSelector';
 
 // Helper component that shows a translated label to verify live updates
-import React from 'react';
+
 import { useTranslation } from 'react-i18next';
 
 // IMPORTANT: This file is excluded from test coverage for now because the component uses a MUI

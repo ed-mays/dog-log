@@ -1,8 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  type Mock,
+} from 'vitest';
 import { usePetsStore } from './pets.store';
 import { useAuthStore } from './auth.store';
 import { petService } from '@services/petService';
 import type { Pet, PetCreateInput } from '@features/pets/types';
+import { makePet } from '@testUtils/factories/makePet';
 
 // Mock the petService with a factory that defines its mock functions internally
 vi.mock('@services/petService', () => ({
@@ -45,7 +54,7 @@ describe('usePetsStore', () => {
 
   describe('fetchPets', () => {
     it('should do nothing if user is not authenticated', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: null });
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: null });
 
       await usePetsStore.getState().fetchPets();
 
@@ -54,8 +63,8 @@ describe('usePetsStore', () => {
     });
 
     it('should fetch pets if user is authenticated', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
-      const mockPets = [{ id: '1', name: 'Fido' }];
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: mockUser });
+      const mockPets = [makePet({ id: '1', name: 'Fido' })];
       mockedPetService.fetchActivePets.mockResolvedValue(mockPets);
 
       await usePetsStore.getState().fetchPets();
@@ -70,7 +79,7 @@ describe('usePetsStore', () => {
 
   describe('fetchPets (errors)', () => {
     it('sets fetchError and clears isFetching when service rejects; preserves pets', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: mockUser });
       const existing = [{ id: 'e1', name: 'Existing' }];
       usePetsStore.setState({
         pets: existing as unknown as Pet[],
@@ -88,7 +97,7 @@ describe('usePetsStore', () => {
     });
 
     it('uses fallback error when service rejects with undefined (nullish coalescing branch)', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: mockUser });
       usePetsStore.setState({ pets: [], isFetching: false, fetchError: null });
       // reject with undefined to trigger the fallback new Error('Failed to load pets.')
       mockedPetService.fetchActivePets.mockRejectedValueOnce(
@@ -107,7 +116,7 @@ describe('usePetsStore', () => {
 
   describe('updatePet', () => {
     it('throws if user not authenticated', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: null });
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: null });
       await expect(
         usePetsStore.getState().updatePet('1', { name: 'New' })
       ).rejects.toThrow('User is not authenticated.');
@@ -115,13 +124,13 @@ describe('usePetsStore', () => {
     });
 
     it('updates an existing pet when service resolves', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
-      const initialPet = {
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: mockUser });
+      const initialPet = makePet({
         id: 'p1',
         name: 'Old',
         breed: 'Hound',
         birthDate: new Date('2020-01-01'),
-      } as unknown as Pet;
+      });
       usePetsStore.setState({
         pets: [initialPet],
         isFetching: false,
@@ -132,9 +141,7 @@ describe('usePetsStore', () => {
         breed: 'Mix',
         birthDate: new Date('2021-01-01'),
       };
-      mockedPetService.editPet.mockResolvedValueOnce(
-        updated as unknown as Partial<Pet>
-      );
+      mockedPetService.editPet.mockResolvedValueOnce(updated as unknown as Pet);
 
       await usePetsStore.getState().updatePet('p1', { name: 'New' });
 
@@ -156,7 +163,7 @@ describe('usePetsStore', () => {
 
   describe('deletePet', () => {
     it('throws if user not authenticated', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: null });
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: null });
       await expect(usePetsStore.getState().deletePet('p1')).rejects.toThrow(
         'User is not authenticated.'
       );
@@ -164,15 +171,17 @@ describe('usePetsStore', () => {
     });
 
     it('removes a pet when service resolves', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
-      const p1 = { id: 'p1', name: 'A' } as unknown as Pet;
-      const p2 = { id: 'p2', name: 'B' } as unknown as Pet;
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: mockUser });
+      const p1 = makePet({ id: 'p1', name: 'A' });
+      const p2 = makePet({ id: 'p2', name: 'B' });
       usePetsStore.setState({
         pets: [p1, p2],
         isFetching: false,
         fetchError: null,
       });
-      mockedPetService.archivePet.mockResolvedValueOnce(undefined);
+      mockedPetService.archivePet.mockResolvedValueOnce(
+        undefined as unknown as Pet
+      );
 
       await usePetsStore.getState().deletePet('p1');
 
@@ -195,7 +204,7 @@ describe('usePetsStore', () => {
     };
 
     it('should throw an error if user is not authenticated', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: null });
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: null });
 
       await expect(usePetsStore.getState().addPet(newPetInput)).rejects.toThrow(
         'User is not authenticated.'
@@ -204,7 +213,7 @@ describe('usePetsStore', () => {
     });
 
     it('should add a pet if user is authenticated', async () => {
-      mockedAuthStore.getState.mockReturnValue({ user: mockUser });
+      (mockedAuthStore.getState as Mock).mockReturnValue({ user: mockUser });
       const newPet = {
         id: 'new-id',
         isArchived: false,
@@ -229,7 +238,7 @@ describe('usePetsStore', () => {
     it('restores initial state (pets=[], isFetching=false, fetchError=null)', () => {
       // set non-initial state
       usePetsStore.setState({
-        pets: [{ id: 'p1', name: 'X' }] as unknown as Pet[],
+        pets: [makePet({ id: 'p1', name: 'X' })],
         isFetching: true,
         fetchError: new Error('x'),
       });

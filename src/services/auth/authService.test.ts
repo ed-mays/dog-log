@@ -1,25 +1,26 @@
-vi.mock('@repositories/userRepository', () => {
-  const mockGetById = vi.fn();
-  const mockCreate = vi.fn();
-  return {
-    userRepository: {
-      getById: mockGetById,
-      create: mockCreate,
-    },
-    mockGetById,
-    mockCreate,
-  };
-});
+const { mockGetById, mockCreate } = vi.hoisted(() => ({
+  mockGetById: vi.fn(),
+  mockCreate: vi.fn(),
+}));
+
+vi.mock('@repositories/userRepository', () => ({
+  userRepository: {
+    getById: mockGetById,
+    create: mockCreate,
+  },
+}));
 
 vi.mock('@firebase', () => ({
   auth: {},
   db: {},
 }));
 
-const setPersistenceMock = vi.fn<Promise<void>, unknown[]>();
+const setPersistenceMock = vi.fn<(...args: unknown[]) => Promise<void>>();
 setPersistenceMock.mockResolvedValue();
-const signInWithPopupMock = vi.fn<Promise<unknown>, unknown[]>();
-const signOutMock = vi.fn<Promise<void>, unknown[]>().mockResolvedValue();
+const signInWithPopupMock = vi.fn<(...args: unknown[]) => Promise<unknown>>();
+const signOutMock = vi
+  .fn<(...args: unknown[]) => Promise<void>>()
+  .mockResolvedValue();
 const onAuthStateChangedMock = vi.fn();
 
 vi.mock('firebase/auth', async () => {
@@ -40,7 +41,6 @@ import {
   signOut,
   subscribeToAuth,
 } from './authService';
-import { mockGetById, mockCreate } from '@repositories/userRepository';
 
 beforeEach(() => {
   vi.clearAllMocks();

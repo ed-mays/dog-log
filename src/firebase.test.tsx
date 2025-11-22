@@ -42,26 +42,26 @@ afterEach(async () => {
   vi.clearAllMocks();
   vi.resetModules();
   // Ensure no env leaks between tests
-  // @ts-expect-error vitest provides `unstubAllEnvs` at runtime
+
   vi.unstubAllEnvs?.();
 });
 
 describe('firebase lazy initialization and configuration', () => {
   test('uses safe defaults when env vars are missing', async () => {
     // Ensure all firebase-related VITE_* envs are effectively unset for this test
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+    // vitest provides `stubEnv` at runtime
     vi.stubEnv('VITE_FIREBASE_API_KEY', '');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', '');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_PROJECT_ID', '');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_STORAGE_BUCKET', '');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', '');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_APP_ID', '');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_MEASUREMENT_ID', '');
 
     mockFirebaseSdk();
@@ -91,19 +91,19 @@ describe('firebase lazy initialization and configuration', () => {
 
   test('reads VITE_* env vars when provided', async () => {
     // Provide env overrides
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_API_KEY', 'apiKey123');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', 'example.firebaseapp.com');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'proj-123');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_STORAGE_BUCKET', 'proj-123.appspot.com');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_MESSAGING_SENDER_ID', '999999');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_APP_ID', '1:999:web:abc');
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_FIREBASE_MEASUREMENT_ID', 'G-ABCDEF');
 
     mockFirebaseSdk();
@@ -133,7 +133,7 @@ describe('firebase lazy initialization and configuration', () => {
 
   test('connects to emulators only when VITE_USE_EMULATORS === "true"', async () => {
     // Turn emulator flag on
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_USE_EMULATORS', 'true');
 
     mockFirebaseSdk();
@@ -155,7 +155,7 @@ describe('firebase lazy initialization and configuration', () => {
 
   test('does not connect to emulators when flag is absent or false', async () => {
     // Explicitly set false
-    // @ts-expect-error vitest provides `stubEnv` at runtime
+
     vi.stubEnv('VITE_USE_EMULATORS', 'false');
 
     mockFirebaseSdk();

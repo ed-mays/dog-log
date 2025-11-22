@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BaseRepository, ArchivableBaseRepository } from './BaseRepository';
-import {
+import type {
   BaseEntity,
   ArchivableEntity,
   AdvancedQueryOptions,
@@ -10,10 +10,13 @@ import type { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 
 vi.mock('firebase/firestore', () => {
   class MockTimestamp {
-    constructor(
-      public seconds: number,
-      public nanoseconds: number
-    ) {}
+    public seconds: number;
+    public nanoseconds: number;
+
+    constructor(seconds: number, nanoseconds: number) {
+      this.seconds = seconds;
+      this.nanoseconds = nanoseconds;
+    }
     toDate() {
       return new Date(this.seconds * 1000);
     }
@@ -43,6 +46,7 @@ interface TestEntity extends BaseEntity {
   name: string;
   description: string;
   metadata?: { lastVisit?: Date };
+  visits?: { at: { toDate: () => Date } }[];
 }
 interface TestArchivableEntity extends ArchivableEntity {
   name: string;
@@ -550,8 +554,8 @@ describe('documentToEntity array timestamp conversion', () => {
       mockDoc as unknown as QueryDocumentSnapshot<DocumentData>
     );
     expect(Array.isArray(entity.visits)).toBe(true);
-    expect(entity.visits[0].at).toEqual(new Date('2024-01-01T00:00:00Z'));
-    expect(entity.visits[1].at).toEqual(new Date('2024-02-02T00:00:00Z'));
+    expect(entity.visits![0].at).toEqual(new Date('2024-01-01T00:00:00Z'));
+    expect(entity.visits![1].at).toEqual(new Date('2024-02-02T00:00:00Z'));
   });
 });
 

@@ -1,14 +1,26 @@
-import React from 'react';
 import { screen, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { makePet } from '@testUtils/factories/makePet';
 import { vi } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import PetCard from './PetCard';
+import { renderWithUser } from '@test-utils';
 
 // Mock the pets store at the top level to control actions
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
+
+const navigateMock = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const mod =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom'
+    );
+  return {
+    ...mod,
+    useNavigate: () => navigateMock,
+  };
+});
 
 describe('PetCard', () => {
   beforeEach(() => {
@@ -19,30 +31,10 @@ describe('PetCard', () => {
     });
   });
 
-  afterEach(() => {
-    // Restore module graph to avoid cross-test contamination from vi.doMock
-    vi.resetModules();
-    vi.unmock('react-router-dom');
-  });
-
-  async function importComponent() {
-    const mod = await import('./PetCard');
-    return mod.default;
-  }
-
-  async function renderWithProviders(
-    ui: React.ReactElement,
-    options?: Record<string, unknown>
-  ) {
-    const { render } = await import('@test-utils');
-    return render(ui, options as never);
-  }
-
   test('renders provided pet name and breed within the MUI card structure and links to details page', async () => {
-    const PetCard = await importComponent();
     const pet = makePet({ id: '123', name: 'Buddy', breed: 'Labrador' });
 
-    await renderWithProviders(<PetCard pet={pet} />);
+    renderWithUser(<PetCard pet={pet} />);
 
     // Header image exists
     const img = screen.getByRole('img', { name: /pet header/i });
@@ -66,22 +58,7 @@ describe('PetCard', () => {
   test('shows Edit/Delete when petActionsEnabled=true and navigates on Edit', async () => {
     const pet = makePet({ id: '1', name: 'Fido' });
 
-    const navSpy = vi.fn();
-    // Ensure the mock applies to a fresh module graph
-    vi.resetModules();
-    vi.doMock('react-router-dom', async () => {
-      const mod =
-        await vi.importActual<typeof import('react-router-dom')>(
-          'react-router-dom'
-        );
-      return { ...mod, useNavigate: () => navSpy };
-    });
-
-    // Dynamically import both the component and the shared render AFTER mocking
-    const [{ default: PetCardWithNav }, { render: localRender }] =
-      await Promise.all([import('./PetCard'), import('@test-utils')]);
-
-    localRender(<PetCardWithNav pet={pet} />, {
+    const { user } = renderWithUser(<PetCard pet={pet} />, {
       featureFlags: { petActionsEnabled: true },
     });
 
@@ -89,11 +66,10 @@ describe('PetCard', () => {
     const deleteBtn = screen.getByRole('button', { name: /delete/i });
     expect(deleteBtn).toBeInTheDocument();
 
-    const user = userEvent.setup();
     await user.click(editBtn);
 
     await waitFor(() => {
-      expect(navSpy).toHaveBeenCalledWith('/pets/1/edit');
+      expect(navigateMock).toHaveBeenCalledWith('/pets/1/edit');
     });
   });
 
@@ -109,12 +85,9 @@ describe('PetCard', () => {
     // Override store for this test
     installPetsStoreMock({ deletePet: deletePetMock });
 
-    const PetCard = await importComponent();
-    await renderWithProviders(<PetCard pet={pet} />, {
+    const { user } = renderWithUser(<PetCard pet={pet} />, {
       featureFlags: { petActionsEnabled: true },
     });
-
-    const user = userEvent.setup();
 
     // Open modal
     const delBtn = await screen.findByRole('button', { name: /delete/i });
@@ -154,12 +127,9 @@ describe('PetCard', () => {
     // Override store for this test
     installPetsStoreMock({ deletePet: deletePetMock });
 
-    const PetCard = await importComponent();
-    await renderWithProviders(<PetCard pet={pet} />, {
+    const { user } = renderWithUser(<PetCard pet={pet} />, {
       featureFlags: { petActionsEnabled: true },
     });
-
-    const user = userEvent.setup();
 
     // Open modal and confirm
     await user.click(await screen.findByRole('button', { name: /delete/i }));
@@ -187,12 +157,9 @@ describe('PetCard', () => {
     // Override store for this test
     installPetsStoreMock({ deletePet: deletePetMock });
 
-    const PetCard = await importComponent();
-    await renderWithProviders(<PetCard pet={pet} />, {
+    const { user } = renderWithUser(<PetCard pet={pet} />, {
       featureFlags: { petActionsEnabled: true },
     });
-
-    const user = userEvent.setup();
 
     await user.click(await screen.findByRole('button', { name: /delete/i }));
     const dialog = await screen.findByRole('dialog');

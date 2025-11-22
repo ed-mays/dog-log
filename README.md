@@ -170,6 +170,22 @@ Notes:
 
 ---
 
+### Veterinarians Feature
+
+The application includes a comprehensive Veterinarians feature allowing users to:
+
+- **Manage Vets**: Create, update, and archive veterinarians.
+- **Link Vets**: Associate vets with pets (Primary, Specialist, Emergency, Other).
+- **Search**: Filter vets by name, clinic, or specialty.
+- **Uniqueness**: Prevents duplicate vets (same name + phone) using a transactional lock pattern (see `docs/adr/ADR-030-vet-uniqueness-lock.md`).
+
+Feature Flags:
+
+- `vetsEnabled`: Toggles the entire feature.
+- `vetSearchEnabled`: Toggles the search bar on the vet list.
+
+---
+
 ### Error Handling
 
 - A top-level `ErrorBoundary` (localized) wraps the app. Customize fallback via `fallbackText` prop; default text comes

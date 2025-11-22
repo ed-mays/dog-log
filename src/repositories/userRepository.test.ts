@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { userRepository } from './userRepository';
-import { User } from '../models/User';
+import type { User } from '../models/User';
 
 // Mock firestore
 vi.mock('../firebase', () => ({
@@ -13,6 +13,9 @@ const mockUser: User = {
   displayName: 'Test User',
   email: 'test@example.com',
   photoURL: 'http://example.com/photo.jpg',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  createdBy: 'system',
 };
 
 vi.mock('./base/BaseRepository', () => {
@@ -59,8 +62,11 @@ describe('UserRepository', () => {
       displayName: 'New User',
       email: 'new@example.com',
       photoURL: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: 'system',
     };
-    await userRepository.create(newUser.id, newUser);
-    expect(userRepository.create).toHaveBeenCalledWith(newUser.id, newUser);
+    await userRepository.create(newUser);
+    expect(userRepository.create).toHaveBeenCalledWith(newUser);
   });
 });

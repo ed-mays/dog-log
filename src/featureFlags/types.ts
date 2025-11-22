@@ -3,5 +3,7 @@ export type FeatureFlag =
   | 'addPetEnabled'
   | 'authEnabled'
   | 'petActionsEnabled'
-  | 'navbarEnabled';
+  | 'navbarEnabled'
+  | 'vetsEnabled'
+  | 'vetLinkingEnabled';
 export type FeatureFlags = Record<FeatureFlag, boolean>;

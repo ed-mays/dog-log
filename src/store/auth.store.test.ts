@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { useAuthStore } from './auth.store';
-import type { AppUser } from '@services/auth/authService';
+import { makeUser } from '@testUtils/factories/makeUser';
 
-const signInSvcMock = vi.fn<Promise<void>, unknown[]>();
-const signOutSvcMock = vi.fn<Promise<void>, unknown[]>();
+const signInSvcMock = vi.fn<(...args: unknown[]) => Promise<void>>();
+const signOutSvcMock = vi.fn<(...args: unknown[]) => Promise<void>>();
 let lastCb: ((u: unknown) => void) | null = null;
 let lastErrCb: ((e: unknown) => void) | null = null;
-let lastUnsubSpy: vi.Mock | null = null;
+let lastUnsubSpy: Mock | null = null;
 
 vi.mock('@services/auth/authService', () => ({
   signInWithGoogle: (...args: unknown[]) => signInSvcMock(...args),
@@ -45,7 +45,7 @@ describe('auth.store', () => {
     init();
     expect(typeof lastCb).toBe('function');
     // simulate auth user
-    lastCb?.({ uid: 'u1', displayName: null, email: null, photoURL: null });
+    lastCb?.(makeUser({ uid: 'u1' }));
     const { user, initializing, error } = useAuthStore.getState();
     expect(initializing).toBe(false);
     expect(error).toBeNull();
@@ -97,7 +97,7 @@ describe('auth.store', () => {
   });
 
   it('signInWithGoogle resolves without setting error on success', async () => {
-    signInSvcMock.mockResolvedValueOnce();
+    signInSvcMock.mockResolvedValueOnce(undefined);
     await expect(
       useAuthStore.getState().signInWithGoogle()
     ).resolves.toBeUndefined();
@@ -105,7 +105,7 @@ describe('auth.store', () => {
   });
 
   it('signOut delegates to service and keeps state until listener updates', async () => {
-    signOutSvcMock.mockResolvedValueOnce();
+    signOutSvcMock.mockResolvedValueOnce(undefined);
     await useAuthStore.getState().signOut();
     expect(signOutSvcMock).toHaveBeenCalledTimes(1);
   });
@@ -119,7 +119,7 @@ describe('auth.store', () => {
 
   it('reset restores initial state', () => {
     useAuthStore.setState({
-      user: { uid: 'x' } as unknown as AppUser,
+      user: makeUser({ uid: 'x' }),
       initializing: true,
       error: new Error('e'),
     });

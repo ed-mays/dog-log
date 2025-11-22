@@ -6,6 +6,7 @@ vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
 
+import { vi, type Mock } from 'vitest';
 import { render, screen } from '@test-utils';
 import { AppRoutes } from './AppRoutes';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
@@ -21,12 +22,15 @@ import {
 } from '@testUtils/routes';
 
 describe('AppRoutes', () => {
-  const mockUseFeatureFlag = useFeatureFlag as unknown as vi.Mock;
+  const mockUseFeatureFlag = useFeatureFlag as unknown as Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
     // Default: authenticated user, no pets required
-    installAuthStoreMock({ user: { uid: 'test' }, initializing: false });
+    installAuthStoreMock({
+      user: { uid: 'test', email: 't@t.com', displayName: 'T', photoURL: null },
+      initializing: false,
+    });
     installPetsStoreMock({ pets: [] });
     mockUseFeatureFlag.mockReturnValue(true);
   });
@@ -82,7 +86,7 @@ describe('AppRoutes', () => {
 
 it('redirects to feature-unavailable when addPetEnabled=false for /pets/new', async () => {
   // Authenticated by default from beforeEach
-  (useFeatureFlag as unknown as vi.Mock).mockImplementation((flag: string) => {
+  (useFeatureFlag as unknown as Mock).mockImplementation((flag: string) => {
     // disable addPetEnabled, enable others
     if (flag === 'addPetEnabled') return false;
     return true;
@@ -94,7 +98,7 @@ it('redirects to feature-unavailable when addPetEnabled=false for /pets/new', as
 
 it('redirects to feature-unavailable when petActionsEnabled=false for /pets/:id/edit', async () => {
   // Authenticated by default from beforeEach
-  (useFeatureFlag as unknown as vi.Mock).mockImplementation((flag: string) => {
+  (useFeatureFlag as unknown as Mock).mockImplementation((flag: string) => {
     // disable petActionsEnabled, enable others
     if (flag === 'petActionsEnabled') return false;
     return true;
@@ -107,7 +111,7 @@ it('redirects to feature-unavailable when petActionsEnabled=false for /pets/:id/
 // Direct route test for feature-unavailable (i18n-validated)
 it('renders localized Feature Unavailable text via shared test i18n', async () => {
   // Authenticated by default from beforeEach in the describe block
-  (useFeatureFlag as unknown as vi.Mock).mockReturnValue(true);
+  (useFeatureFlag as unknown as Mock).mockReturnValue(true);
 
   await i18n.changeLanguage('en');
   const expected = i18n.t('featureNotEnabled', { ns: 'common' });
@@ -120,7 +124,7 @@ it('renders localized Feature Unavailable text via shared test i18n', async () =
 // Authenticated user visiting /welcome should be redirected to /pets
 it('redirects /welcome to /pets when authenticated', async () => {
   // Authenticated by default
-  (useFeatureFlag as unknown as vi.Mock).mockReturnValue(true);
+  (useFeatureFlag as unknown as Mock).mockReturnValue(true);
 
   render(<AppRoutes />, { initialRoutes: ['/welcome'] });
 
@@ -130,7 +134,7 @@ it('redirects /welcome to /pets when authenticated', async () => {
 
 // Positive case: edit route renders when petActionsEnabled=true
 it('renders EditPetPage (or not-found alert) for /pets/:id/edit when feature enabled', async () => {
-  (useFeatureFlag as unknown as vi.Mock).mockImplementation(() => true);
+  (useFeatureFlag as unknown as Mock).mockImplementation(() => true);
 
   render(<AppRoutes />, { initialRoutes: ['/pets/123/edit'] });
 

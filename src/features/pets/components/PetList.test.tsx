@@ -1,13 +1,13 @@
-import React from 'react';
 import { act } from 'react';
 import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import type { Pet } from '../types';
 import { makePet } from '@testUtils/factories/makePet';
 import { vi } from 'vitest';
-import { render } from '@test-utils';
-import userEvent from '@testing-library/user-event';
+import { renderWithUser } from '@test-utils';
+
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { PetList } from './PetList';
+import { loadingIndicatorTestId } from '@testUtils/constants';
 
 // Mock the module at the top level
 vi.mock('@store/pets.store', () => ({
@@ -25,7 +25,7 @@ describe('PetList card view', () => {
   ) {
     const petsMock = installPetsStoreMock({ pets: initialPets });
 
-    render(<PetList />, {
+    const { user } = renderWithUser(<PetList pets={[]} />, {
       featureFlags: {
         addPetEnabled: true,
         ...flags,
@@ -33,6 +33,7 @@ describe('PetList card view', () => {
     });
 
     return {
+      user,
       storeActions: petsMock.actions,
       getPets: () => petsMock.getState().pets,
     };
@@ -133,7 +134,9 @@ describe('PetList sorting and persistence', () => {
     ];
     await (async () => {
       const petsMock = installPetsStoreMock({ pets });
-      render(<PetList />, { featureFlags: { addPetEnabled: true } });
+      renderWithUser(<PetList pets={[]} />, {
+        featureFlags: { addPetEnabled: true },
+      });
       expect(
         await screen.findByLabelText(/pet card grid/i)
       ).toBeInTheDocument();
@@ -149,7 +152,7 @@ describe('PetList sorting and persistence', () => {
 
   test('uses persisted desc order from localStorage and writes it back on mount', async () => {
     localStorage.setItem('doglog:petList:sortOrder', 'desc');
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+    const setItemSpy = vi.spyOn(window.localStorage, 'setItem');
 
     const pets = [
       makePet({ id: '2', name: 'Zelda' }),
@@ -158,7 +161,9 @@ describe('PetList sorting and persistence', () => {
     ];
     installPetsStoreMock({ pets });
 
-    render(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     const headings = await screen.findAllByRole('heading', { level: 3 });
     expect(headings.map((h) => h.textContent)).toEqual([
@@ -173,7 +178,7 @@ describe('PetList sorting and persistence', () => {
 
   test('defaults to asc when localStorage key is missing or invalid and persists asc', async () => {
     localStorage.setItem('doglog:petList:sortOrder', 'weird');
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
+    const setItemSpy = vi.spyOn(window.localStorage, 'setItem');
 
     const pets = [
       makePet({ id: '2', name: 'Zelda' }),
@@ -182,7 +187,9 @@ describe('PetList sorting and persistence', () => {
     ];
     installPetsStoreMock({ pets });
 
-    render(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     const headings = await screen.findAllByRole('heading', { level: 3 });
     expect(headings.map((h) => h.textContent)).toEqual([
@@ -195,7 +202,7 @@ describe('PetList sorting and persistence', () => {
 
   test('does not crash if localStorage.setItem throws (covers catch branch)', async () => {
     const spy = vi
-      .spyOn(Storage.prototype, 'setItem')
+      .spyOn(window.localStorage, 'setItem')
       .mockImplementation(() => {
         throw new Error('boom');
       });
@@ -203,7 +210,9 @@ describe('PetList sorting and persistence', () => {
     const pets = [makePet({ id: '1', name: 'Buddy' })];
     installPetsStoreMock({ pets });
 
-    render(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     expect(await screen.findByLabelText(/pet card grid/i)).toBeInTheDocument();
 
@@ -215,7 +224,9 @@ describe('PetList sorting and persistence', () => {
     const pets = [makePet({ id: '1', name: 'Buddy' })];
     installPetsStoreMock({ pets });
 
-    render(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     expect(await screen.findByLabelText(/pet card grid/i)).toBeInTheDocument();
     expect(screen.queryByTestId('no-pets-indicator')).not.toBeInTheDocument();
@@ -223,8 +234,10 @@ describe('PetList sorting and persistence', () => {
 
   test('shows LoadingIndicator when isFetching is true', async () => {
     installPetsStoreMock({ pets: [], isFetching: true });
-    render(<PetList />);
-    expect(await screen.findByTestId('loading-indicator')).toBeInTheDocument();
+    renderWithUser(<PetList pets={[]} />);
+    expect(
+      await screen.findByTestId(loadingIndicatorTestId)
+    ).toBeInTheDocument();
   });
 });
 
@@ -236,7 +249,9 @@ describe('PetList namespace loading', () => {
     installPetsStoreMock({ pets });
 
     // Render with standard providers; on first paint nsReady=false returns null
-    render(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     // Immediately after render, neither grid nor empty indicator should be present
     expect(screen.queryByLabelText(/pet card grid/i)).not.toBeInTheDocument();
@@ -266,10 +281,10 @@ describe('PetList sort selector UI', () => {
     ];
     installPetsStoreMock({ pets });
 
-    render(<PetList />, { featureFlags: { addPetEnabled: true } });
-
     // Selector should be present with accessible label
-    const user = userEvent.setup();
+    const { user } = renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
     const combo = await screen.findByRole('combobox', {
       name: /sort by name/i,
     });
@@ -300,7 +315,9 @@ describe('PetList sort selector UI', () => {
 
   test('does not show sorting selector when list is empty', async () => {
     installPetsStoreMock({ pets: [] });
-    render(<PetList />, { featureFlags: { addPetEnabled: true } });
+    renderWithUser(<PetList pets={[]} />, {
+      featureFlags: { addPetEnabled: true },
+    });
 
     // Empty indicator is shown
     expect(await screen.findByTestId('no-pets-indicator')).toBeInTheDocument();

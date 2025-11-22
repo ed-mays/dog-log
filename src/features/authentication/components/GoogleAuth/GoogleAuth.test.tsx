@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@test-utils';
-import type { User } from 'firebase/auth';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
+import { makeUser } from '@testUtils/factories/makeUser';
 
 // Standardized pattern: expose a vi.fn() hook and install selector-compatible mocks per-test
 vi.mock('@store/auth.store', () => ({
@@ -36,7 +36,7 @@ describe('GoogleAuth', () => {
 
   it('renders LogoutButton when user is authenticated', () => {
     installAuthStoreMock({
-      user: { uid: '123', displayName: 'Test User' } as User,
+      user: makeUser({ uid: '123', displayName: 'Test User' }),
       initializing: false,
     });
 

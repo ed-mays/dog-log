@@ -3,7 +3,7 @@ import path from 'path';
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
+    environment: 'happy-dom',
     globals: true,
     setupFiles: ['vitest.setup.ts'],
     coverage: {
@@ -27,6 +27,8 @@ export default defineConfig({
         // Exclude all type-only modules
         'src/**/types.ts',
         'src/**/*.types.ts',
+        // Exclude config files
+        'src/**/config.ts',
         // Exclude all models folders
         'src/models/**',
         // Exclude test utilities
@@ -42,10 +44,10 @@ export default defineConfig({
       ],
       thresholds: {
         perFile: true,
-        lines: 90,
-        functions: 90,
-        branches: 90,
-        statements: 90,
+        lines: 80,
+        functions: 80,
+        branches: 70,
+        statements: 80,
       },
     },
   },

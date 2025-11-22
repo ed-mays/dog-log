@@ -35,7 +35,9 @@ describe('firestoreDocumentToPlain', () => {
 describe('plainToFirestoreDocument', () => {
   it('converts JS Date to Firestore Timestamp', () => {
     const date = new Date('2021-01-01T00:00:00Z');
-    const result = plainToFirestoreDocument({ createdAt: date });
+    const result = plainToFirestoreDocument({ createdAt: date }) as {
+      createdAt: Timestamp;
+    };
     expect(result.createdAt).toBeInstanceOf(Timestamp);
     expect(result.createdAt.toDate()).toEqual(date);
   });
@@ -44,7 +46,7 @@ describe('plainToFirestoreDocument', () => {
     const date = new Date('2021-01-01T00:00:00Z');
     const result = plainToFirestoreDocument({
       pet: { health: { lastVisit: date } },
-    });
+    }) as { pet: { health: { lastVisit: Timestamp } } };
     expect(result.pet.health.lastVisit).toBeInstanceOf(Timestamp);
     expect(result.pet.health.lastVisit.toDate()).toEqual(date);
   });
