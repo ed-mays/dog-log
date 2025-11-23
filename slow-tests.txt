@@ -1,7 +1,7 @@
-1.  **1081ms** - `VetListPage > fires vet_search telemetry with term length`
-2.  **1042ms** - `AddVetPage > shows duplicate error when service throws DUPLICATE_VET`
-3.  **1010ms** - `AddPetPage > renders the PetForm`
-4.  **1006ms** - `PetDetailsPage > renders pet name and breed in a table`
+x 1.  **1081ms** - `VetListPage > fires vet_search telemetry with term length`
+x 2.  **1042ms** - `AddVetPage > shows duplicate error when service throws DUPLICATE_VET`
+x 3.  **1010ms** - `AddPetPage > renders the PetForm`
+x 4.  **1006ms** - `PetDetailsPage > renders pet name and breed in a table`
 5.  **697ms** - `VetForm > handles typing in all optional fields and submits`
 6.  **647ms** - `VetForm > allows submit when name and phone are provided`
 7.  **643ms** - `VetSelector > queries vets and calls onSelect when an existing vet is chosen`
