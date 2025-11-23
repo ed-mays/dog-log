@@ -1,6 +1,6 @@
 import { vi, describe, beforeEach, it, expect } from 'vitest';
+import { render, screen, fireEvent } from '@test-utils';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from '@test-utils';
 import {
   within,
   waitFor,
@@ -73,7 +73,8 @@ describe('VetSelector', () => {
 
     // Wait for debounce and search
     const option = await screen.findByText('Dr. Alpha');
-    await user.click(option);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(option);
 
     expect(vetServiceMock.searchVets).toHaveBeenCalledWith('user1', 'alp');
     expect(onSelect).toHaveBeenCalledWith(v1);
@@ -92,7 +93,6 @@ describe('VetSelector', () => {
   });
 
   it('shows Create dialog when "Create new vet…" is chosen and forwards submit to service then onSelect', async () => {
-    const user = userEvent.setup();
     vetServiceMock.searchVets.mockResolvedValue([]);
     const newVet = makeVet({ name: 'Dr. Beta' });
     vetServiceMock.createVet.mockResolvedValue(newVet);
@@ -101,13 +101,15 @@ describe('VetSelector', () => {
     render(<VetSelector onSelect={onSelect} />);
 
     const input = screen.getByRole('combobox');
-    await user.click(input);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.mouseDown(input);
 
     // "Create new vet…" should appear
     const createOption = await screen.findByRole('option', {
       name: /create new vet/i,
     });
-    await user.click(createOption);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(createOption);
 
     // Dialog opens with mocked VetForm
     const dialog = await screen.findByRole('dialog');
@@ -117,7 +119,8 @@ describe('VetSelector', () => {
     const submit = await within(dialog).findByRole('button', {
       name: /save|add/i,
     });
-    await user.click(submit);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(submit);
 
     await waitFor(() => expect(vetServiceMock.createVet).toHaveBeenCalled());
     await waitFor(() =>
@@ -128,7 +131,6 @@ describe('VetSelector', () => {
   });
 
   it('keeps dialog open and does not call onSelect when createVet rejects', async () => {
-    const user = userEvent.setup();
     vetServiceMock.searchVets.mockResolvedValue([]);
     vetServiceMock.createVet.mockRejectedValue(new Error('duplicate'));
 
@@ -136,17 +138,20 @@ describe('VetSelector', () => {
     render(<VetSelector onSelect={onSelect} />);
 
     const input = screen.getByRole('combobox');
-    await user.click(input);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.mouseDown(input);
     const createOption = await screen.findByRole('option', {
       name: /create new vet/i,
     });
-    await user.click(createOption);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(createOption);
 
     const dialog = await screen.findByRole('dialog');
     const submit = await within(dialog).findByRole('button', {
       name: /save|add/i,
     });
-    await user.click(submit);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(submit);
 
     await waitFor(() => expect(vetServiceMock.createVet).toHaveBeenCalled());
     expect(onSelect).not.toHaveBeenCalled();
@@ -154,36 +159,38 @@ describe('VetSelector', () => {
   });
 
   it('closes the dialog when the external Cancel button is clicked', async () => {
-    const user = userEvent.setup();
     vetServiceMock.searchVets.mockResolvedValue([]);
 
     render(<VetSelector onSelect={vi.fn()} />);
     const input = screen.getByRole('combobox');
-    await user.click(input);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.mouseDown(input);
     const createOption = await screen.findByRole('option', {
       name: /create new vet/i,
     });
-    await user.click(createOption);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(createOption);
 
     const dialog = await screen.findByRole('dialog');
     const cancelBtn = await within(dialog).findByRole('button', {
       name: /cancel/i,
     });
-    await user.click(cancelBtn);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(cancelBtn);
 
     await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
   });
 
   it('does nothing when not authenticated: no search and create submit is a no-op', async () => {
     installAuthStoreMock({ user: null }); // unauth
-    const user = userEvent.setup();
     vetServiceMock.searchVets.mockResolvedValue([]);
 
     const onSelect = vi.fn();
     render(<VetSelector onSelect={onSelect} />);
 
     const input = screen.getByRole('combobox');
-    await user.type(input, 'test');
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(input, { target: { value: 'test' } });
 
     // Should NOT search - wait a bit to ensure debounce would have fired
     await new Promise((r) => setTimeout(r, 300));

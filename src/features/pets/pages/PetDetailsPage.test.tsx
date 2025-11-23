@@ -13,6 +13,21 @@ const routerState = {
   navigate: vi.fn(),
 };
 
+// Mock usePetDetails globally with override capability
+const mockUsePetDetails = vi.fn();
+vi.mock('@features/pets/hooks/usePetDetails', async (importOriginal) => {
+  const mod =
+    await importOriginal<typeof import('@features/pets/hooks/usePetDetails')>();
+  return {
+    ...mod,
+    usePetDetails: () => {
+      const override = mockUsePetDetails();
+      if (override) return override;
+      return mod.usePetDetails();
+    },
+  };
+});
+
 // Mock react-router-dom at top level
 vi.mock('react-router-dom', async (importOriginal) => {
   const mod = await importOriginal<typeof import('react-router-dom')>();
@@ -58,6 +73,7 @@ vi.mock('@features/pets/components/LinkedVetList', () => ({
 describe('PetDetailsPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mockUsePetDetails.mockReturnValue(undefined);
     routerState.params = {};
     routerState.navigate = vi.fn();
   });
@@ -93,8 +109,17 @@ describe('PetDetailsPage', () => {
   }
 
   test('renders pet name and breed in a table', async () => {
+    const pet = makePet({ id: '1', name: 'Buddy', breed: 'Labrador' });
+    mockUsePetDetails.mockReturnValue({
+      pet,
+      nsReady: true,
+      vetsEnabled: false,
+      vetLinkingEnabled: false,
+      petActionsEnabled: false,
+    });
+
     const { PetDetailsPage, render } = await setup({
-      pets: [makePet({ id: '1', name: 'Buddy', breed: 'Labrador' })],
+      pets: [pet],
     });
 
     render(<PetDetailsPage />);

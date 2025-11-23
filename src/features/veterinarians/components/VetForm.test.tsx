@@ -1,4 +1,4 @@
-import { renderWithUser, screen } from '@test-utils';
+import { renderWithUser, screen, fireEvent } from '@test-utils';
 import VetForm, { type VetFormValues } from './VetForm';
 import { vi, type Mock } from 'vitest';
 
@@ -18,7 +18,7 @@ describe('VetForm', () => {
     const onSubmit = vi.fn();
     const onCancel = vi.fn();
 
-    const { user } = renderWithUser(
+    renderWithUser(
       <VetForm
         title="Test"
         initialValues={baseValues}
@@ -32,18 +32,18 @@ describe('VetForm', () => {
     expect(submit).toBeDisabled();
 
     // Interact to trigger touched state and helper texts
-    await user.click(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.blur(
       screen.getByRole('textbox', {
         name: (_name, el) => el.getAttribute('id') === 'vet-name',
       })
     );
-    await user.tab();
-    await user.click(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.blur(
       screen.getByRole('textbox', {
         name: (_name, el) => el.getAttribute('id') === 'vet-phone',
       })
     );
-    await user.tab();
 
     // Validation state appears (check aria-invalid on fields rather than exact text to be locale-agnostic)
     const nameInput = screen.getByRole('textbox', {
@@ -62,7 +62,7 @@ describe('VetForm', () => {
   it('allows submit when name and phone are provided', async () => {
     const onSubmit = vi.fn();
 
-    const { user } = renderWithUser(
+    renderWithUser(
       <VetForm
         initialValues={baseValues}
         onSubmit={onSubmit}
@@ -71,23 +71,26 @@ describe('VetForm', () => {
       />
     );
 
-    await user.type(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(
       screen.getByRole('textbox', {
         name: (_name, el) => el.getAttribute('id') === 'vet-name',
       }),
-      'Dr. Smith'
+      { target: { value: 'Dr. Smith' } }
     );
-    await user.type(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(
       screen.getByRole('textbox', {
         name: (_name, el) => el.getAttribute('id') === 'vet-phone',
       }),
-      '555-1234'
+      { target: { value: '555-1234' } }
     );
 
     const submit = screen.getByRole('button', { name: /save/i });
     expect(submit).toBeEnabled();
 
-    await user.click(submit);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(submit);
 
     expect(onSubmit).toHaveBeenCalled();
   });
@@ -95,7 +98,7 @@ describe('VetForm', () => {
   it('renders error alert when errorMessage is provided and calls onCancel when cancel is clicked', async () => {
     const onCancel = vi.fn();
 
-    const { user } = renderWithUser(
+    renderWithUser(
       <VetForm
         initialValues={{ ...baseValues, name: 'x', phone: 'y' }}
         onSubmit={() => {}}
@@ -111,14 +114,15 @@ describe('VetForm', () => {
 
     // Cancel
     const cancel = screen.getByRole('button', { name: /cancel|cancelar/i });
-    await user.click(cancel);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(cancel);
     expect(onCancel).toHaveBeenCalled();
   });
 
   it('normalizes specialties by trimming and dropping empties before submit', async () => {
     const onSubmit = vi.fn();
 
-    const { user } = renderWithUser(
+    renderWithUser(
       <VetForm
         initialValues={{
           ...baseValues,
@@ -133,7 +137,8 @@ describe('VetForm', () => {
     );
 
     const submit = screen.getByRole('button', { name: /save/i });
-    await user.click(submit);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(submit);
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ specialties: ['surgery', 'derm'] })
@@ -143,7 +148,7 @@ describe('VetForm', () => {
   it('updates address fields via setAddressField and includes them on submit', async () => {
     const onSubmit = vi.fn();
 
-    const { user } = renderWithUser(
+    renderWithUser(
       <VetForm
         initialValues={{ ...baseValues, name: 'C', phone: 'D', address: {} }}
         onSubmit={onSubmit}
@@ -152,26 +157,30 @@ describe('VetForm', () => {
       />
     );
 
-    await user.type(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(
       screen.getByRole('textbox', {
         name: (_n, el) => el.getAttribute('id') === 'vet-address-city',
       }),
-      'Portland'
+      { target: { value: 'Portland' } }
     );
-    await user.type(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(
       screen.getByRole('textbox', {
         name: (_n, el) => el.getAttribute('id') === 'vet-address-region',
       }),
-      'OR'
+      { target: { value: 'OR' } }
     );
-    await user.type(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(
       screen.getByRole('textbox', {
         name: (_n, el) => el.getAttribute('id') === 'vet-address-country',
       }),
-      'USA'
+      { target: { value: 'USA' } }
     );
 
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -186,7 +195,7 @@ describe('VetForm', () => {
   it('handles typing in all optional fields and submits', async () => {
     const onSubmit = vi.fn();
 
-    const { user } = renderWithUser(
+    renderWithUser(
       <VetForm
         initialValues={{
           name: 'N',
@@ -241,32 +250,33 @@ describe('VetForm', () => {
       name: (_n, el) => el.getAttribute('id') === 'vet-notes',
     }) as HTMLInputElement;
 
-    await user.click(email);
-    await user.paste('a@b.com');
-    await user.click(website);
-    await user.paste('https://example.com');
-    await user.click(clinic);
-    await user.paste('Happy Pets');
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(email, { target: { value: 'a@b.com' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(website, { target: { value: 'https://example.com' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(clinic, { target: { value: 'Happy Pets' } });
 
-    await user.click(line1);
-    await user.paste('123 Main');
-    await user.click(line2);
-    await user.paste('Apt 4');
-    await user.click(city);
-    await user.paste('Springfield');
-    await user.click(region);
-    await user.paste('IL');
-    await user.click(postal);
-    await user.paste('62704');
-    await user.click(country);
-    await user.paste('USA');
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(line1, { target: { value: '123 Main' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(line2, { target: { value: 'Apt 4' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(city, { target: { value: 'Springfield' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(region, { target: { value: 'IL' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(postal, { target: { value: '62704' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(country, { target: { value: 'USA' } });
 
-    await user.click(specialties);
-    await user.paste('surgery, derm');
-    await user.click(notes);
-    await user.paste('Notes');
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(specialties, { target: { value: 'surgery, derm' } });
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(notes, { target: { value: 'Notes' } });
 
-    await user.click(screen.getByRole('button', { name: /save/i }));
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
     expect(onSubmit).toHaveBeenCalled();
     const payload = (onSubmit as unknown as Mock).mock.calls[0][0];

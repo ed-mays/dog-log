@@ -1,0 +1,25 @@
+x 1.  **1081ms** - `VetListPage > fires vet_search telemetry with term length`
+x 2.  **1042ms** - `AddVetPage > shows duplicate error when service throws DUPLICATE_VET`
+x 3.  **1010ms** - `AddPetPage > renders the PetForm`
+x 4.  **1006ms** - `PetDetailsPage > renders pet name and breed in a table`
+x 5.  **697ms** - `VetForm > handles typing in all optional fields and submits`
+x 6.  **647ms** - `VetForm > allows submit when name and phone are provided`
+x 7.  **643ms** - `VetSelector > queries vets and calls onSelect when an existing vet is chosen`
+x 8.  **596ms** - `VetForm > blocks submit and shows validation when required fields are missing`
+9.  **502ms** - `App auth route protection > allows authenticated users to access /pets`
+10. **478ms** - `EditPetPage > renders existing pet and submits updates then navigates to /pets`
+11. **478ms** - `EditVetPage > shows duplicate error when update throws DUPLICATE_VET and does not navigate`
+x 12. **449ms** - `VetSelector > does nothing when not authenticated: no search and create submit is a no-op`
+x 13. **422ms** - `VetForm > updates address fields via setAddressField and includes them on submit`
+14. **409ms** - `Vets routes (flag-gated) > renders VetListPage at /vets when vetsEnabled=true`
+x 15. **388ms** - `VetSelector > triggers search on input (loading branch executes) and completes when resolved`
+16. **364ms** - `Vets routes (flag-gated) > renders AddVetPage at /vets/add when enabled`
+17. **355ms** - `AppRoutes > renders PetListPage for /pets when feature is enabled`
+18. **346ms** - `Vets routes (flag-gated) > renders EditVetPage at /vets/:id/edit when enabled`
+19. **344ms** - `AppRoutes > renders AddPetPage for /pets/new`
+20. **342ms** - `Routing and navigation hygiene > renders pet list at /pets when authenticated and petListEnabled=true`
+x 21. **318ms** - `VetSelector > closes the dialog when the external Cancel button is clicked`
+22. **315ms** - `EditPetPage > shows confirm modal on cancel when form is dirty; has correct a11y and decline closes without navigation`
+23. **313ms** - `AddVetPage > shows generic error when service throws non-duplicate and does not navigate`
+24. **312ms** - `AppRoutes > renders EditPetPage (or not-found alert) for /pets/:id/edit when feature enabled`
+25. **303ms** - `App > when mounted > renders pet list`
