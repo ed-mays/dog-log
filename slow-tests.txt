@@ -2,15 +2,15 @@ x 1.  **1081ms** - `VetListPage > fires vet_search telemetry with term length`
 x 2.  **1042ms** - `AddVetPage > shows duplicate error when service throws DUPLICATE_VET`
 x 3.  **1010ms** - `AddPetPage > renders the PetForm`
 x 4.  **1006ms** - `PetDetailsPage > renders pet name and breed in a table`
-5.  **697ms** - `VetForm > handles typing in all optional fields and submits`
-6.  **647ms** - `VetForm > allows submit when name and phone are provided`
+x 5.  **697ms** - `VetForm > handles typing in all optional fields and submits`
+x 6.  **647ms** - `VetForm > allows submit when name and phone are provided`
 7.  **643ms** - `VetSelector > queries vets and calls onSelect when an existing vet is chosen`
-8.  **596ms** - `VetForm > blocks submit and shows validation when required fields are missing`
+x 8.  **596ms** - `VetForm > blocks submit and shows validation when required fields are missing`
 9.  **502ms** - `App auth route protection > allows authenticated users to access /pets`
 10. **478ms** - `EditPetPage > renders existing pet and submits updates then navigates to /pets`
 11. **478ms** - `EditVetPage > shows duplicate error when update throws DUPLICATE_VET and does not navigate`
 12. **449ms** - `VetSelector > does nothing when not authenticated: no search and create submit is a no-op`
-13. **422ms** - `VetForm > updates address fields via setAddressField and includes them on submit`
+x 13. **422ms** - `VetForm > updates address fields via setAddressField and includes them on submit`
 14. **409ms** - `Vets routes (flag-gated) > renders VetListPage at /vets when vetsEnabled=true`
 15. **388ms** - `VetSelector > triggers search on input (loading branch executes) and completes when resolved`
 16. **364ms** - `Vets routes (flag-gated) > renders AddVetPage at /vets/add when enabled`
