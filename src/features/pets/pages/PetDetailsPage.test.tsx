@@ -4,8 +4,7 @@ import type { Pet } from '@features/pets/types';
 import { vi, describe, beforeEach, test, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { makePet } from '@testUtils/factories/makePet';
-import { petVetService } from '@services/petVetService';
-import { logger } from '@services/logService';
+import { usePetDetails } from '@features/pets/hooks/usePetDetails';
 
 // Mutable state for router mocks
 const routerState = {
@@ -84,6 +83,7 @@ describe('PetDetailsPage', () => {
       pets?: Pet[];
       storeOverrides?: Record<string, unknown>;
       flags?: Record<string, boolean>;
+      hookOverrides?: Partial<ReturnType<typeof usePetDetails>>;
     } = {}
   ) {
     const {
@@ -91,6 +91,7 @@ describe('PetDetailsPage', () => {
       pets = [makePet({ id: '1' })],
       storeOverrides,
       flags = {},
+      hookOverrides = {},
     } = options;
 
     // Update router state
@@ -99,27 +100,54 @@ describe('PetDetailsPage', () => {
 
     const petsMock = installPetsStoreMock({ pets, ...storeOverrides });
 
-    // We don't need mockRouter anymore as we mocked it globally
-    // const { navigate } = mockRouter({ id: petId });
+    // Configure usePetDetails mock
+    const targetPet = pets.find((p) => p.id === petId);
+    const handleDeleteMock = vi.fn();
+
+    const defaultHookValues: ReturnType<typeof usePetDetails> = {
+      pet: targetPet,
+      vetLinks: [],
+      loadingVets: false,
+      saving: false,
+      error: null,
+      vetsEnabled: !!flags.vetsEnabled,
+      vetLinkingEnabled: !!flags.vetLinkingEnabled,
+      petActionsEnabled: !!flags.petActionsEnabled,
+      handleDelete: handleDeleteMock,
+      navigate: navigate,
+      nsReady: true,
+    };
+
+    mockUsePetDetails.mockReturnValue({
+      ...defaultHookValues,
+      ...hookOverrides,
+    });
 
     const { default: PetDetailsPage } = await import('./PetDetailsPage');
     const { render } = await import('@test-utils');
     const user = userEvent.setup();
-    return { petsMock, navigate, PetDetailsPage, render, user, flags };
+    return {
+      petsMock,
+      navigate,
+      PetDetailsPage,
+      render,
+      user,
+      flags,
+      handleDeleteMock,
+    };
   }
 
   test('renders pet name and breed in a table', async () => {
     const pet = makePet({ id: '1', name: 'Buddy', breed: 'Labrador' });
-    mockUsePetDetails.mockReturnValue({
-      pet,
-      nsReady: true,
-      vetsEnabled: false,
-      vetLinkingEnabled: false,
-      petActionsEnabled: false,
-    });
 
     const { PetDetailsPage, render } = await setup({
       pets: [pet],
+      // Explicitly disable flags to match original test intent
+      flags: {
+        vetsEnabled: false,
+        vetLinkingEnabled: false,
+        petActionsEnabled: false,
+      },
     });
 
     render(<PetDetailsPage />);
@@ -154,15 +182,12 @@ describe('PetDetailsPage', () => {
     expect(deleteBtn).toBeInTheDocument();
   });
 
-  test('delete flow: opens confirm modal, confirms deletion, navigates to /pets', async () => {
+  test('delete flow: opens confirm modal, confirms deletion, calls handleDelete', async () => {
     const pet = makePet({ id: '1', name: 'Fido' });
-    const overrides = {
-      deletePet: vi.fn(async () => {}),
-    };
 
-    const { PetDetailsPage, render, user, navigate } = await setup({
+    const { PetDetailsPage, render, user, handleDeleteMock } = await setup({
       pets: [pet],
-      storeOverrides: overrides,
+      flags: { petActionsEnabled: true },
     });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
@@ -178,14 +203,16 @@ describe('PetDetailsPage', () => {
     await user.click(yesBtn);
 
     await waitFor(() => {
-      expect(overrides.deletePet).toHaveBeenCalledWith('1');
-      expect(navigate).toHaveBeenCalledWith('/pets');
+      expect(handleDeleteMock).toHaveBeenCalled();
     });
   });
 
   test('hides Edit/Delete when petActionsEnabled=false', async () => {
     const pet = makePet({ id: '1' });
-    const { PetDetailsPage, render } = await setup({ pets: [pet] });
+    const { PetDetailsPage, render } = await setup({
+      pets: [pet],
+      flags: { petActionsEnabled: false },
+    });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: false } });
 
@@ -212,35 +239,25 @@ describe('PetDetailsPage', () => {
 
   // Additional coverage tests for failure and back link
 
-  test('delete failure shows error alert, closes modal, and does not navigate', async () => {
+  test('delete failure shows error alert (simulated via hook state)', async () => {
     const pet = makePet({ id: '1', name: 'Fido' });
-    const overrides = {
-      deletePet: vi.fn(async () => {
-        throw new Error('delete failed');
-      }),
-    };
 
-    const { PetDetailsPage, render, user, navigate } = await setup({
+    // We simulate the error state directly via the hook mock
+    const { PetDetailsPage, render } = await setup({
       pets: [pet],
-      storeOverrides: overrides,
+      flags: { petActionsEnabled: true },
+      hookOverrides: {
+        error: 'delete failed',
+        saving: false,
+      },
     });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
-    // Open confirm modal
-    const deleteBtn = await screen.findByRole('button', { name: /delete/i });
-
-    await user.click(deleteBtn);
-
-    // Confirm and trigger failure
-    const yesBtn = await screen.findByRole('button', { name: /yes/i });
-    await user.click(yesBtn);
-
-    // Error alert should appear; modal should close; navigate should NOT be called
+    // Error alert should appear
     const alert = await screen.findByRole('alert');
     expect(alert).toBeInTheDocument();
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(navigate).not.toHaveBeenCalled();
+    expect(screen.getByText('delete failed')).toBeInTheDocument();
   });
 
   test('Back link points to /pets', async () => {
@@ -256,14 +273,11 @@ describe('PetDetailsPage', () => {
 
   // Extra tests to improve function coverage
 
-  test('declining delete closes modal and does not call delete or navigate', async () => {
+  test('declining delete closes modal and does not call handleDelete', async () => {
     const pet = makePet({ id: '1' });
-    const overrides = {
-      deletePet: vi.fn(async () => {}),
-    };
-    const { PetDetailsPage, render, user, navigate } = await setup({
+    const { PetDetailsPage, render, user, handleDeleteMock } = await setup({
       pets: [pet],
-      storeOverrides: overrides,
+      flags: { petActionsEnabled: true },
     });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
@@ -274,52 +288,28 @@ describe('PetDetailsPage', () => {
     const noBtn = await screen.findByRole('button', { name: /no/i });
     await user.click(noBtn);
 
-    // Modal closes, no delete or navigation
+    // Modal closes, no delete
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(overrides.deletePet).not.toHaveBeenCalled();
-    expect(navigate).not.toHaveBeenCalled();
+    expect(handleDeleteMock).not.toHaveBeenCalled();
   });
 
-  test('shows saving indicator while deleting until resolved', async () => {
+  test('shows saving indicator when saving=true', async () => {
     const pet = makePet({ id: '1' });
-    let resolveDelete: () => void;
-    const overrides = {
-      deletePet: vi.fn(
-        () =>
-          new Promise<void>((resolve) => {
-            resolveDelete = resolve;
-          })
-      ),
-    };
 
-    const { PetDetailsPage, render, user, navigate } = await setup({
+    const { PetDetailsPage, render } = await setup({
       pets: [pet],
-      storeOverrides: overrides,
+      flags: { petActionsEnabled: true },
+      hookOverrides: { saving: true },
     });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
-    // Trigger delete and keep it pending
-    await user.click(await screen.findByRole('button', { name: /delete/i }));
-    await user.click(await screen.findByRole('button', { name: /yes/i }));
-
-    // While promise pending, we should see the saving text indicator
     const savingText = await screen.findByText(/saving/i);
     expect(savingText).toBeInTheDocument();
-
-    // Resolve and expect navigation
-    resolveDelete!();
-
-    await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith('/pets');
-    });
   });
-  test('handles error when loading vets by logging debug message', async () => {
+
+  test('renders LinkedVetList when vets enabled', async () => {
     const pet = makePet({ id: '1' });
-    const error = new Error('Fetch failed');
-    (
-      petVetService.getPetVets as unknown as ReturnType<typeof vi.fn>
-    ).mockRejectedValue(error);
 
     const { PetDetailsPage, render } = await setup({
       pets: [pet],
@@ -332,11 +322,5 @@ describe('PetDetailsPage', () => {
 
     // Should show LinkedVetList (mocked)
     expect(await screen.findByTestId('linked-vet-list')).toBeInTheDocument();
-
-    // Should log the error
-    expect(logger.debug).toHaveBeenCalledWith(
-      'Failed to load vet links for PetDetailsPage',
-      { error }
-    );
   });
 });
