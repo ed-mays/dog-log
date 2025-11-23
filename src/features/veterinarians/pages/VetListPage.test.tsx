@@ -7,7 +7,7 @@ vi.mock('@services/analytics/analytics', () => ({
   track: vi.fn(),
 }));
 
-import { render, screen, waitFor } from '@test-utils';
+import { render, screen, fireEvent } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { makeVet } from '@testUtils/factories/makeVet';
@@ -161,20 +161,26 @@ describe('VetListPage', () => {
 
     await screen.findByText('Dr. A');
 
+    vi.useFakeTimers();
+
     const searchInput = screen.getByRole('textbox', {
       name: /search|list.searchPlaceholder/i,
     });
 
-    const user = userEvent.setup();
-    await user.type(searchInput, 'abc');
+    // eslint-disable-next-line no-restricted-syntax -- userEvent triggers timeouts with fake timers here
+    fireEvent.change(searchInput, { target: { value: 'abc' } });
     expect(searchInput).toHaveValue('abc');
 
-    // Wait for debounce (1000ms) + execution
-    await waitFor(
-      () => {
-        expect(track).toHaveBeenCalledWith('vet_search', { term_length: 3 });
-      },
-      { timeout: 2000 }
-    );
+    // Advance time to trigger debounce
+    vi.advanceTimersByTime(1100);
+
+    // Flush promises (dynamic import in setTimeout)
+    for (let i = 0; i < 10; i++) {
+      await Promise.resolve();
+    }
+
+    expect(track).toHaveBeenCalledWith('vet_search', { term_length: 3 });
+
+    vi.useRealTimers();
   });
 });
