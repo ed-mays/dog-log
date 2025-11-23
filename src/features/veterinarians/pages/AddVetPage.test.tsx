@@ -28,32 +28,35 @@ describe('AddVetPage', () => {
   });
 
   it('shows duplicate error when service throws DUPLICATE_VET', async () => {
-    const user = userEvent.setup();
     // Arrange: mock createVet to throw duplicate error
     (vetServiceMock.createVet as unknown as Mock).mockRejectedValueOnce({
       code: 'DUPLICATE_VET',
     });
 
     const { default: AddVetPage } = await import('./AddVetPage');
+    const { fireEvent } = await import('@test-utils');
     render(<AddVetPage />);
 
-    await user.type(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(
       screen.getByRole('textbox', {
         name: (_name, el) => el.getAttribute('id') === 'vet-name',
       }),
-      'Dr. Jane'
+      { target: { value: 'Dr. Jane' } }
     );
-    await user.type(
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.change(
       screen.getByRole('textbox', {
         name: (_name, el) => el.getAttribute('id') === 'vet-phone',
       }),
-      '555-0000'
+      { target: { value: '555-0000' } }
     );
 
     const submit = screen.getByRole('button', {
       name: (_name, el) => el.getAttribute('type') === 'submit',
     });
-    await user.click(submit);
+    // eslint-disable-next-line no-restricted-syntax -- userEvent is slow here
+    fireEvent.click(submit);
 
     // Error alert with i18n duplicate message
     const alert = await screen.findByRole('alert');

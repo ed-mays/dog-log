@@ -44,6 +44,16 @@ describe('AddPetPage', () => {
   }
 
   it('renders the PetForm', async () => {
+    // Mock PetForm to avoid loading the real component and its dependencies
+    vi.doMock('@features/pets/components/PetForm', () => ({
+      PetForm: () => (
+        <div>
+          <button>OK</button>
+          <button>Cancel</button>
+        </div>
+      ),
+    }));
+
     const module = await import('./AddPetPage');
     const AddPetPage = module.default;
 
