@@ -2,6 +2,7 @@ name: CI (PR)
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     branches: [main]
 
 permissions:
@@ -42,6 +43,8 @@ jobs:
             echo "VITE_FLAG_PET_ACTIONS_ENABLED=${{ vars.DEV_VITE_FLAG_PET_ACTIONS_ENABLED || 'true' }}";
             echo "VITE_FLAG_AUTH_ENABLED=${{ vars.DEV_VITE_FLAG_AUTH_ENABLED || 'true' }}";
             echo "VITE_FLAG_NAVBAR_ENABLED=${{ vars.DEV_VITE_FLAG_NAVBAR_ENABLED || 'true' }}";
+            echo "VITE_FLAG_VETS_ENABLED=${{ vars.DEV_VITE_FLAG_NAVBAR_ENABLED || 'true' }}";
+            echo "VITE_FLAG_VET_LINKING_ENABLED=${{ vars.DEV_VITE_FLAG_NAVBAR_ENABLED || 'true' }}";
             echo "VITE_FIREBASE_API_KEY=${{ vars.DEV_VITE_FIREBASE_API_KEY || 'test' }}";
             echo "VITE_FIREBASE_AUTH_DOMAIN=${{ vars.DEV_VITE_FIREBASE_AUTH_DOMAIN || 'test.firebaseapp.com' }}";
             echo "VITE_FIREBASE_PROJECT_ID=${{ vars.DEV_VITE_FIREBASE_PROJECT_ID || 'test-project' }}";
