@@ -2,7 +2,7 @@ name: Deploy Preview (PR)
 
 on:
   workflow_run:
-    workflows: ['CI (PR)']
+    workflows: [ci-pr.yml]
     types:
       - completed
 
