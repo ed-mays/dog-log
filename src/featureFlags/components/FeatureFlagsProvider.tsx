@@ -14,10 +14,23 @@ export const FeatureFlagsProvider: React.FC<Props> = ({
   children,
   initialFlags,
 }) => {
-  const [flags, setFlags] = useState<FeatureFlags>({
+  // Base flags from defaults + remote config
+  const [remoteFlags, setRemoteFlags] = useState<FeatureFlags>({
     ...defaultFeatureFlags,
     ...(initialFlags ?? {}),
   });
+
+  // Local overrides
+  const [overrides, setOverrides] = useState<Partial<FeatureFlags>>(() => {
+    if (initialFlags) return {}; // Don't load overrides in tests
+    try {
+      const saved = localStorage.getItem('featureFlagOverrides');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
   // If initialFlags are provided (e.g. tests), we skip loading state to render immediately.
   // Otherwise, we wait for remote config.
   const [loading, setLoading] = useState(!initialFlags);
@@ -29,7 +42,10 @@ export const FeatureFlagsProvider: React.FC<Props> = ({
       await remoteConfigService.init();
       await remoteConfigService.fetchAndActivate();
       // Update flags with values from Remote Config (merges with defaults internally in service)
-      setFlags((prev) => ({ ...prev, ...remoteConfigService.getAllFlags() }));
+      setRemoteFlags((prev) => ({
+        ...prev,
+        ...remoteConfigService.getAllFlags(),
+      }));
       setLoading(false);
     };
 
@@ -37,7 +53,7 @@ export const FeatureFlagsProvider: React.FC<Props> = ({
 
     // Subscribe to real-time updates
     const unsubscribe = remoteConfigService.subscribeToUpdates((newFlags) => {
-      setFlags((prev) => ({ ...prev, ...newFlags }));
+      setRemoteFlags((prev) => ({ ...prev, ...newFlags }));
     });
 
     return () => {
@@ -45,16 +61,46 @@ export const FeatureFlagsProvider: React.FC<Props> = ({
     };
   }, [initialFlags]);
 
+  // Persist overrides when they change
+  useEffect(() => {
+    if (!initialFlags) {
+      localStorage.setItem('featureFlagOverrides', JSON.stringify(overrides));
+    }
+  }, [overrides, initialFlags]);
+
   const setFlag = (key: keyof FeatureFlags, value: boolean) => {
-    setFlags((f) => ({ ...f, [key]: value }));
+    // For backward compatibility or direct manipulation, we update remoteFlags.
+    // However, overrides will still take precedence if set.
+    setRemoteFlags((f) => ({ ...f, [key]: value }));
   };
+
+  const setOverride = (key: keyof FeatureFlags, value: boolean | undefined) => {
+    setOverrides((prev) => {
+      const next = { ...prev };
+      if (value === undefined) {
+        delete next[key];
+      } else {
+        next[key] = value;
+      }
+      return next;
+    });
+  };
+
+  const resetOverrides = () => {
+    setOverrides({});
+  };
+
+  // Merge remote flags with overrides
+  const flags = { ...remoteFlags, ...overrides };
 
   if (loading) {
     return <LoadingIndicator />;
   }
 
   return (
-    <FeatureFlagsContext.Provider value={{ flags, setFlag }}>
+    <FeatureFlagsContext.Provider
+      value={{ flags, overrides, setFlag, setOverride, resetOverrides }}
+    >
       {children}
     </FeatureFlagsContext.Provider>
   );

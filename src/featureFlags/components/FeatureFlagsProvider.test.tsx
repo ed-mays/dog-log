@@ -93,4 +93,60 @@ describe('FeatureFlagsProvider', () => {
 
     expect(screen.getByTestId('new-dashboard')).toHaveTextContent('off');
   });
+
+  it('supports overrides and persists them', async () => {
+    (remoteConfigService.fetchAndActivate as Mock).mockResolvedValue(true);
+
+    // Clear storage before test
+    window.localStorage.clear();
+
+    const OverrideChild = () => {
+      const ctx = React.useContext(FeatureFlagsContext);
+      if (!ctx) return null;
+      return (
+        <>
+          <div data-testid="status">
+            {ctx.flags.vetsEnabled ? 'enabled' : 'disabled'}
+          </div>
+          <button
+            onClick={() => ctx.setOverride('vetsEnabled', false)}
+            data-testid="disable-btn"
+          >
+            Disable
+          </button>
+          <button onClick={() => ctx.resetOverrides()} data-testid="reset-btn">
+            Reset
+          </button>
+        </>
+      );
+    };
+
+    render(
+      <FeatureFlagsProvider>
+        <OverrideChild />
+      </FeatureFlagsProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    // Initially enabled (from mock)
+    expect(screen.getByTestId('status')).toHaveTextContent('enabled');
+
+    // Override to false
+    await userEvent.click(screen.getByTestId('disable-btn'));
+    expect(screen.getByTestId('status')).toHaveTextContent('disabled');
+
+    expect(window.localStorage.getItem('featureFlagOverrides')).toBe(
+      JSON.stringify({ vetsEnabled: false })
+    );
+
+    // Reset overrides
+    await userEvent.click(screen.getByTestId('reset-btn'));
+    expect(screen.getByTestId('status')).toHaveTextContent('enabled');
+    expect(window.localStorage.getItem('featureFlagOverrides')).toBe(
+      JSON.stringify({})
+    );
+  });
 });

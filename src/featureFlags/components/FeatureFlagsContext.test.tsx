@@ -38,7 +38,10 @@ describe('FeatureFlagsContext', () => {
     const setFlag = vi.fn();
     const value: FeatureFlagsContextType = {
       flags: { ...allFalseFlags, vetsEnabled: true },
+      overrides: {},
       setFlag,
+      setOverride: vi.fn(),
+      resetOverrides: vi.fn(),
     };
 
     const Consumer: React.FC = () => {
