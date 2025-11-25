@@ -27,6 +27,7 @@ class RemoteConfigService {
     // Configure fetch settings
     if (import.meta.env.DEV) {
       // In development, we want faster updates (or real-time)
+      console.log('[RemoteConfig] Initializing in DEV mode (fast fetch)');
       this.config.settings.minimumFetchIntervalMillis = 0;
       this.config.settings.fetchTimeoutMillis = 10000;
     } else {
@@ -41,14 +42,9 @@ class RemoteConfigService {
    */
   async fetchAndActivate(): Promise<boolean> {
     try {
+      console.log('[RemoteConfig] Fetching config...');
       const activated = await fetchAndActivate(this.config);
-      if (activated) {
-        console.debug('[RemoteConfig] Fetched and activated new config');
-      } else {
-        console.debug(
-          '[RemoteConfig] Fetched config, but nothing new to activate'
-        );
-      }
+      console.log('[RemoteConfig] Fetch result (activated):', activated);
       return activated;
     } catch (error) {
       console.error('[RemoteConfig] Failed to fetch config:', error);
@@ -66,7 +62,9 @@ class RemoteConfigService {
    */
   getFeatureFlag(key: FeatureFlag): boolean {
     // getValue returns a Value object. asBoolean() converts 'true', '1', 'on' to true.
-    return getValue(this.config, key).asBoolean();
+    const val = getValue(this.config, key);
+    // Log individual access if needed, but getAllFlags is better for overview
+    return val.asBoolean();
   }
 
   /**
@@ -79,9 +77,13 @@ class RemoteConfigService {
     const flags: Partial<Record<FeatureFlag, boolean>> = {};
     const keys = Object.keys(defaultFeatureFlags) as FeatureFlag[];
 
+    console.groupCollapsed('[RemoteConfig] All Flags');
     keys.forEach((key) => {
-      flags[key] = this.getFeatureFlag(key);
+      const val = this.getFeatureFlag(key);
+      flags[key] = val;
+      console.log(`${key}:`, val);
     });
+    console.groupEnd();
 
     return flags as Record<FeatureFlag, boolean>;
   }
