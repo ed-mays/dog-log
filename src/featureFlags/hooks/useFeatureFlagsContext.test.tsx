@@ -25,15 +25,13 @@ const HookConsumer: React.FC = () => {
 describe('useFeatureFlagsContext', () => {
   it('consumes and updates context', async () => {
     render(
-      <FeatureFlagsProvider>
+      <FeatureFlagsProvider initialFlags={{ vetsEnabled: false }}>
         <HookConsumer />
       </FeatureFlagsProvider>
     );
     const toggleBtn = screen.getByTestId('toggle-btn');
     await userEvent.click(toggleBtn); // This wraps updates in act
-    expect(screen.getByTestId('beta-feature')).toHaveTextContent(
-      /enabled|disabled/
-    );
+    expect(screen.getByTestId('beta-feature')).toHaveTextContent('enabled');
   });
 
   it('returns object with flags and setFlag', () => {
@@ -43,7 +41,7 @@ describe('useFeatureFlagsContext', () => {
       return null;
     };
     render(
-      <FeatureFlagsProvider>
+      <FeatureFlagsProvider initialFlags={{}}>
         <Inspector />
       </FeatureFlagsProvider>
     );

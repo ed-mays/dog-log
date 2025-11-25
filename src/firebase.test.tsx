@@ -30,6 +30,10 @@ function mockFirebaseSdk() {
     getFirestore: getFirestoreMock,
     connectFirestoreEmulator: connectFirestoreEmulatorMock,
   }));
+  vi.doMock('firebase/remote-config', () => ({
+    getRemoteConfig: vi.fn(() => ({})),
+    connectRemoteConfigEmulator: vi.fn(),
+  }));
 }
 
 async function importFirebaseModule() {
