@@ -1,7 +1,9 @@
 import {
   fetchAndActivate,
   getValue,
+  onConfigUpdate,
   type RemoteConfig,
+  type ConfigUpdate,
 } from 'firebase/remote-config';
 import { remoteConfig } from '../firebase';
 import { defaultFeatureFlags } from '../featureFlags/config';
@@ -19,9 +21,6 @@ class RemoteConfigService {
    */
   async init(): Promise<void> {
     // Set default values from our local config
-    // We need to convert boolean defaults to something Remote Config understands if needed,
-    // but defaultFeatureFlags is Record<string, boolean>, which works for defaults.
-    // However, setDefaults expects { [key: string]: string | number | boolean }
     this.config.defaultConfig = defaultFeatureFlags;
 
     // Configure fetch settings
@@ -59,6 +58,32 @@ class RemoteConfigService {
       // We return false here so the app can continue with defaults
       return false;
     }
+  }
+
+  /**
+   * Subscribe to real-time configuration updates.
+   * @param callback Function to be called when config is updated
+   * @returns Unsubscribe function
+   */
+  subscribeToUpdates(
+    callback: (flags: Record<FeatureFlag, boolean>) => void
+  ): () => void {
+    return onConfigUpdate(this.config, {
+      next: async (configUpdate: ConfigUpdate) => {
+        console.log(
+          '[RemoteConfig] Config updated via real-time listener',
+          (configUpdate as unknown as { updatedKeys: string[] }).updatedKeys
+        );
+        await this.fetchAndActivate();
+        callback(this.getAllFlags());
+      },
+      error: (error: Error) => {
+        console.error('[RemoteConfig] Real-time update error:', error);
+      },
+      complete: () => {
+        console.log('[RemoteConfig] Real-time listener completed');
+      },
+    });
   }
 
   /**

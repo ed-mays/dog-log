@@ -12,6 +12,7 @@ vi.mock('../../services/remoteConfig', () => ({
     init: vi.fn(),
     fetchAndActivate: vi.fn(),
     getAllFlags: vi.fn(() => ({ vetsEnabled: true })),
+    subscribeToUpdates: vi.fn(() => vi.fn()),
   },
 }));
 

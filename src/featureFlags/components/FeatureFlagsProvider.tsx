@@ -34,6 +34,15 @@ export const FeatureFlagsProvider: React.FC<Props> = ({
     };
 
     init();
+
+    // Subscribe to real-time updates
+    const unsubscribe = remoteConfigService.subscribeToUpdates((newFlags) => {
+      setFlags((prev) => ({ ...prev, ...newFlags }));
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, [initialFlags]);
 
   const setFlag = (key: keyof FeatureFlags, value: boolean) => {

@@ -4,13 +4,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.unmock('./remoteConfig');
 
 import { remoteConfigService } from './remoteConfig';
-import { fetchAndActivate, getValue, type Value } from 'firebase/remote-config';
+import {
+  fetchAndActivate,
+  getValue,
+  onConfigUpdate,
+  type Value,
+  type ConfigUpdateObserver,
+  type ConfigUpdate,
+} from 'firebase/remote-config';
 import { defaultFeatureFlags } from '../featureFlags/config';
 
 // Mock firebase/remote-config
 vi.mock('firebase/remote-config', () => ({
   fetchAndActivate: vi.fn(),
   getValue: vi.fn(),
+  onConfigUpdate: vi.fn(),
 }));
 
 // Mock the firebase instance
@@ -110,6 +118,50 @@ describe('RemoteConfigService', () => {
       keys.forEach((key) => {
         expect(flags[key as keyof typeof flags]).toBe(true);
       });
+    });
+  });
+
+  describe('subscribeToUpdates', () => {
+    it('subscribes to onConfigUpdate and calls callback on update', async () => {
+      const callback = vi.fn();
+      const unsubscribe = vi.fn();
+
+      // Mock onConfigUpdate to simulate an update immediately or return unsubscribe
+      vi.mocked(onConfigUpdate).mockImplementation(
+        (_: unknown, observer: unknown) => {
+          // Simulate an update if observer is an object with next
+          const obs = observer as ConfigUpdateObserver;
+          if (typeof obs === 'object' && obs.next) {
+            obs.next({
+              updatedKeys: ['petListEnabled'],
+            } as unknown as ConfigUpdate);
+          }
+          return unsubscribe;
+        }
+      );
+
+      // Mock fetchAndActivate to succeed
+      vi.mocked(fetchAndActivate).mockResolvedValue(true);
+
+      // Mock getValue to return a value
+      const mockValue = { asBoolean: vi.fn().mockReturnValue(true) };
+      vi.mocked(getValue).mockReturnValue(mockValue as unknown as Value);
+
+      const resultUnsubscribe =
+        remoteConfigService.subscribeToUpdates(callback);
+
+      expect(onConfigUpdate).toHaveBeenCalled();
+      expect(resultUnsubscribe).toBe(unsubscribe);
+
+      // Since the mock calls next() immediately (sync in this mock implementation, but async in reality),
+      // we might need to wait for promises if it was truly async.
+      // But here we call it synchronously in the mock.
+      // However, the 'next' function in remoteConfigService is async.
+      // So we need to wait for the async operation in 'next' to complete.
+      await new Promise(process.nextTick);
+
+      expect(fetchAndActivate).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalled();
     });
   });
 });
