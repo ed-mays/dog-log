@@ -45,6 +45,14 @@ class RemoteConfigService {
       console.log('[RemoteConfig] Fetching config...');
       const activated = await fetchAndActivate(this.config);
       console.log('[RemoteConfig] Fetch result (activated):', activated);
+      console.log(
+        '[RemoteConfig] Last fetch status:',
+        this.config.lastFetchStatus
+      );
+      console.log(
+        '[RemoteConfig] Last fetch time:',
+        new Date(this.config.fetchTimeMillis).toISOString()
+      );
       return activated;
     } catch (error) {
       console.error('[RemoteConfig] Failed to fetch config:', error);

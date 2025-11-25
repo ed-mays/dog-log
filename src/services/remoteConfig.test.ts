@@ -21,6 +21,8 @@ vi.mock('../firebase', () => ({
       minimumFetchIntervalMillis: 0,
       fetchTimeoutMillis: 0,
     },
+    lastFetchStatus: 'success',
+    fetchTimeMillis: Date.now(),
   },
 }));
 
