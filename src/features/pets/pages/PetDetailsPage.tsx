@@ -5,6 +5,8 @@ import { LinkedVetList } from '@features/pets/components/LinkedVetList';
 import { PetInfoTable } from '@features/pets/components/PetInfoTable';
 import { PetActions } from '@features/pets/components/PetActions';
 import { usePetDetails } from '@features/pets/hooks/usePetDetails';
+import { PhotoUpload } from '@components/common/PhotoUpload';
+import { PetPhotoGallery } from '@features/pets/components/PetPhotoGallery';
 
 export default function PetDetailsPage() {
   const { t } = useTranslation('common');
@@ -17,7 +19,11 @@ export default function PetDetailsPage() {
     vetsEnabled,
     vetLinkingEnabled,
     petActionsEnabled,
+    petPhotosEnabled,
     handleDelete,
+    handlePhotoUpload,
+    handleSetMainPhoto,
+    handleDeletePhoto,
     navigate,
     nsReady,
   } = usePetDetails();
@@ -50,6 +56,27 @@ export default function PetDetailsPage() {
       )}
 
       <PetInfoTable pet={pet} />
+
+      {petPhotosEnabled && (
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <Typography variant="h6" component="h2">
+              {t('photos', { defaultValue: 'Photos' })}
+            </Typography>
+            <PhotoUpload
+              storagePath={`users/${pet.createdBy}/pets/${pet.id}/photos`}
+              onUploadComplete={handlePhotoUpload}
+              onError={(err) => console.error(err)}
+            />
+          </div>
+          <PetPhotoGallery
+            photos={pet.photos || []}
+            mainPhotoUrl={pet.mainPhotoUrl}
+            onSetMainPhoto={handleSetMainPhoto}
+            onDeletePhoto={handleDeletePhoto}
+          />
+        </div>
+      )}
 
       {vetsEnabled && vetLinkingEnabled && (
         <div style={{ marginTop: '2rem' }}>

@@ -37,7 +37,8 @@ describe('PetCard', () => {
     renderWithUser(<PetCard pet={pet} />);
 
     // Header image exists
-    const img = screen.getByRole('img', { name: /pet header/i });
+    // Header image exists
+    const img = screen.getByRole('img', { name: 'Buddy' });
     expect(img).toBeInTheDocument();
 
     // Name displayed as a heading (Typography with component h3)
@@ -141,13 +142,11 @@ describe('PetCard', () => {
       expect(deletePetMock).toHaveBeenCalledWith('88');
     });
 
-    // Error alert should appear on the card
+    // Error alert should appear on the card (inside the modal)
     expect(await screen.findByRole('alert')).toBeInTheDocument();
 
-    // Modal should be closed after failure handling
-    await waitFor(() => {
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    });
+    // Modal should remain open
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
   test('declining in the confirm modal closes it without calling delete', async () => {

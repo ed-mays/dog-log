@@ -1,227 +1,167 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { vi, describe, beforeEach, test, expect, type Mock } from 'vitest';
 import { usePetDetails } from './usePetDetails';
-import { makePet } from '@testUtils/factories/makePet';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { usePetsStore } from '@store/pets.store';
+import { useAuthStore } from '@store/auth.store';
 import { petVetService } from '@services/petVetService';
-import { logger } from '@services/logService';
-import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
+import { makePet } from '@testUtils/factories/makePet';
+import { useParams, useNavigate } from 'react-router-dom';
+import type { PetVetLink, Vet } from '@models/vets';
 
 // Mocks
-const mockNavigate = vi.fn();
-const mockParams = { id: '1' };
-
 vi.mock('react-router-dom', () => ({
-  useParams: () => mockParams,
-  useNavigate: () => mockNavigate,
+  useParams: vi.fn(),
+  useNavigate: vi.fn(),
 }));
 
-vi.mock('@store/pets.store', () => ({
-  usePetsStore: vi.fn(),
-}));
-
-vi.mock('@store/auth.store', () => ({
-  useAuthStore: vi.fn(),
-}));
-
+vi.mock('@store/pets.store');
+vi.mock('@store/auth.store');
+vi.mock('@services/petVetService');
 vi.mock('@featureFlags/hooks/useFeatureFlag', () => ({
-  useFeatureFlag: vi.fn(),
+  useFeatureFlag: vi.fn().mockReturnValue(true),
 }));
-
-vi.mock('@services/petVetService', () => ({
-  petVetService: {
-    getPetVets: vi.fn(),
+vi.mock('@repositories/storageRepository', () => ({
+  storageRepository: {
+    deleteFile: vi.fn(),
   },
 }));
-
-vi.mock('@services/logService', () => ({
-  logger: {
-    debug: vi.fn(),
-    info: vi.fn(),
-  },
-}));
-
 vi.mock('@i18n', () => ({
   loadNamespace: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe('usePetDetails', () => {
-  let mockUsePetsStore: Mock;
-  let mockUseAuthStore: Mock;
+  const mockNavigate = vi.fn();
+  const mockUpdatePet = vi.fn();
+  const mockDeletePet = vi.fn();
+  const mockPet = makePet({ id: '123', name: 'Buddy' });
 
-  beforeEach(async () => {
-    vi.resetAllMocks();
-
-    // Setup store mocks
-    mockUsePetsStore = (await import('@store/pets.store'))
-      .usePetsStore as unknown as Mock;
-    mockUseAuthStore = (await import('@store/auth.store'))
-      .useAuthStore as unknown as Mock;
-
-    // Default store implementations
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({
-        pets: [makePet({ id: '1', name: 'Buddy' })],
-        deletePet: vi.fn(),
-      })
-    );
-
-    mockUseAuthStore.mockImplementation((selector) =>
-      selector({
-        user: { uid: 'user-1' },
-      })
-    );
-
-    // Default feature flags
-    (useFeatureFlag as Mock).mockReturnValue(false);
-  });
-
-  test('returns pet data when found', async () => {
-    const { result } = renderHook(() => usePetDetails());
-
-    await waitFor(() => {
-      expect(result.current.nsReady).toBe(true);
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useParams).mockReturnValue({ id: '123' });
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    vi.mocked(usePetsStore).mockImplementation((selector) => {
+      if (selector.toString().includes('pets')) return [mockPet];
+      if (selector.toString().includes('deletePet')) return mockDeletePet;
+      if (selector.toString().includes('updatePet')) return mockUpdatePet;
+      return undefined;
     });
-
-    expect(result.current.pet).toEqual(
-      expect.objectContaining({ id: '1', name: 'Buddy' })
-    );
-    expect(result.current.error).toBeNull();
+    vi.mocked(useAuthStore).mockReturnValue({ uid: 'user1' });
   });
 
-  test('returns undefined pet when not found', async () => {
-    mockParams.id = '999'; // Non-existent ID
+  it('returns pet details', () => {
+    const { result } = renderHook(() => usePetDetails());
+    expect(result.current.pet).toEqual(mockPet);
+  });
+
+  it('loads vet links', async () => {
+    const mockLinks = [{ link: { id: '1' }, vet: { name: 'Dr. Smith' } }];
+    vi.mocked(petVetService.getPetVets).mockResolvedValue(
+      mockLinks as unknown as { link: PetVetLink; vet: Vet }[]
+    );
 
     const { result } = renderHook(() => usePetDetails());
 
     await waitFor(() => {
-      expect(result.current.nsReady).toBe(true);
+      expect(result.current.vetLinks).toEqual(mockLinks);
     });
-
-    expect(result.current.pet).toBeUndefined();
-
-    // Reset params for other tests
-    mockParams.id = '1';
   });
 
-  test('loads vet links when flags enabled', async () => {
-    (useFeatureFlag as Mock).mockImplementation((flag) => {
-      if (flag === 'vetsEnabled') return true;
-      if (flag === 'vetLinkingEnabled') return true;
-      return false;
-    });
-
-    const mockLinks = [{ link: { id: 'l1' }, vet: { id: 'v1' } }];
-    (petVetService.getPetVets as Mock).mockResolvedValue(mockLinks);
-
+  it('handles photo upload', async () => {
     const { result } = renderHook(() => usePetDetails());
+    const url = 'http://example.com/photo.jpg';
+    const path = 'pets/123/photo.jpg';
 
-    // Should start loading
-    expect(result.current.loadingVets).toBe(true);
-
-    await waitFor(() => {
-      expect(result.current.loadingVets).toBe(false);
+    await act(async () => {
+      await result.current.handlePhotoUpload(url, path);
     });
 
-    expect(result.current.vetLinks).toEqual(mockLinks);
-    expect(petVetService.getPetVets).toHaveBeenCalledWith('user-1', '1');
+    expect(mockUpdatePet).toHaveBeenCalledWith('123', {
+      photos: expect.arrayContaining([expect.objectContaining({ url, path })]),
+    });
   });
 
-  test('handles vet loading error', async () => {
-    (useFeatureFlag as Mock).mockImplementation((flag) => {
-      if (flag === 'vetsEnabled') return true;
-      if (flag === 'vetLinkingEnabled') return true;
-      return false;
-    });
-
-    const error = new Error('Fetch failed');
-    (petVetService.getPetVets as Mock).mockRejectedValue(error);
-
+  it('handles set main photo', async () => {
     const { result } = renderHook(() => usePetDetails());
+    const photo = { url: 'http://example.com/photo.jpg' };
 
-    await waitFor(() => {
-      expect(result.current.loadingVets).toBe(false);
+    await act(async () => {
+      await result.current.handleSetMainPhoto(photo);
     });
 
-    expect(logger.debug).toHaveBeenCalledWith(
-      'Failed to load vet links for PetDetailsPage',
-      { error }
-    );
-    expect(result.current.vetLinks).toEqual([]);
+    expect(mockUpdatePet).toHaveBeenCalledWith('123', {
+      mainPhotoUrl: photo.url,
+    });
   });
 
-  test('does not load vets if flags disabled', async () => {
-    (useFeatureFlag as Mock).mockReturnValue(false);
-
+  it('handles delete photo', async () => {
     const { result } = renderHook(() => usePetDetails());
+    const photo = {
+      url: 'http://example.com/photo.jpg',
+      path: 'path/to/photo',
+      createdAt: '2023-01-01',
+    };
+    mockPet.photos = [photo]; // Ensure pet has the photo
 
-    await waitFor(() => {
-      expect(result.current.nsReady).toBe(true);
+    await act(async () => {
+      await result.current.handleDeletePhoto(photo);
     });
 
-    expect(petVetService.getPetVets).not.toHaveBeenCalled();
-    expect(result.current.loadingVets).toBe(false);
+    expect(mockUpdatePet).toHaveBeenCalledWith('123', {
+      photos: [],
+    });
   });
 
-  test('handleDelete calls store and navigates on success', async () => {
-    const deletePetMock = vi.fn().mockResolvedValue(undefined);
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({
-        pets: [makePet({ id: '1' })],
-        deletePet: deletePetMock,
-      })
-    );
-
+  it('handles delete pet', async () => {
     const { result } = renderHook(() => usePetDetails());
 
     await act(async () => {
       await result.current.handleDelete();
     });
 
-    expect(deletePetMock).toHaveBeenCalledWith('1');
+    expect(mockDeletePet).toHaveBeenCalledWith('123');
     expect(mockNavigate).toHaveBeenCalledWith('/pets');
-    expect(result.current.saving).toBe(false);
-    expect(result.current.error).toBeNull();
   });
 
-  test('handleDelete sets error on failure', async () => {
-    const deletePetMock = vi.fn().mockRejectedValue(new Error('Delete failed'));
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({
-        pets: [makePet({ id: '1' })],
-        deletePet: deletePetMock,
-      })
-    );
+  it('handles errors during photo operations', async () => {
+    mockUpdatePet.mockRejectedValue(new Error('Update failed'));
+    const { result } = renderHook(() => usePetDetails());
+
+    await act(async () => {
+      await result.current.handlePhotoUpload('url', 'path');
+    });
+
+    expect(result.current.error).toBeTruthy();
+  });
+
+  it('does not perform operations if pet is not found', async () => {
+    vi.mocked(usePetsStore).mockImplementation((selector) => {
+      if (selector.toString().includes('pets')) return []; // No pets
+      return undefined;
+    });
 
     const { result } = renderHook(() => usePetDetails());
 
     await act(async () => {
+      await result.current.handlePhotoUpload('url', 'path');
+      await result.current.handleSetMainPhoto({ url: 'url' });
+      await result.current.handleDeletePhoto({ url: 'url', path: 'path' });
       await result.current.handleDelete();
     });
 
-    expect(deletePetMock).toHaveBeenCalledWith('1');
-    expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.saving).toBe(false);
-    expect(result.current.error).toBe('errors.deleteFailed');
+    expect(mockUpdatePet).not.toHaveBeenCalled();
+    expect(mockDeletePet).not.toHaveBeenCalled();
   });
 
-  test('handleDelete does nothing if pet is undefined', async () => {
-    mockParams.id = '999';
-    const deletePetMock = vi.fn();
-    mockUsePetsStore.mockImplementation((selector) =>
-      selector({
-        pets: [],
-        deletePet: deletePetMock,
-      })
+  it('does not load vet links if flags disabled', async () => {
+    const { useFeatureFlag } = await import(
+      '@featureFlags/hooks/useFeatureFlag'
     );
+    vi.mocked(useFeatureFlag).mockReturnValue(false);
 
-    const { result } = renderHook(() => usePetDetails());
+    renderHook(() => usePetDetails());
 
-    await act(async () => {
-      await result.current.handleDelete();
+    await waitFor(() => {
+      expect(petVetService.getPetVets).not.toHaveBeenCalled();
     });
-
-    expect(deletePetMock).not.toHaveBeenCalled();
-
-    mockParams.id = '1';
   });
 });

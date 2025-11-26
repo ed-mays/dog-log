@@ -9,10 +9,7 @@ interface PetsState {
   fetchError: Error | null;
   fetchPets: () => Promise<void>;
   addPet: (pet: PetCreateInput) => Promise<void>;
-  updatePet: (
-    id: string,
-    updates: Partial<Pick<Pet, 'name' | 'breed' | 'birthDate'>>
-  ) => Promise<void>;
+  updatePet: (id: string, updates: PetUpdateInput) => Promise<void>;
   deletePet: (id: string) => Promise<void>;
   reset: () => void;
 }

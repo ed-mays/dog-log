@@ -6,7 +6,6 @@ import {
   CardContent,
   CardMedia,
   Typography,
-  Alert,
   Button,
   Chip,
 } from '@mui/material';
@@ -37,7 +36,7 @@ export function PetCard({ pet }: { pet: Pet }) {
   const user = useAuthStore((s) => s.user);
 
   const [deleting, setDeleting] = useState(false);
-  const [saving, setSaving] = useState(false);
+  // const [saving, setSaving] = useState(false); // Unused
   const [error, setError] = useState<string | null>(null);
   const [vetLinks, setVetLinks] = useState<
     Array<{ link: PetVetLink; vet: Vet }>
@@ -77,38 +76,33 @@ export function PetCard({ pet }: { pet: Pet }) {
   }, [user?.uid, pet.id, vetsEnabled, vetLinkingEnabled]);
 
   async function confirmDelete() {
-    setSaving(true);
-    setError(null);
     try {
       await deletePet(pet.id);
       // stay on the list; item will disappear via store update
+      setDeleting(false);
     } catch {
       setError(t('errors.deleteFailed', { ns: 'common' }));
-    } finally {
-      setSaving(false);
-      setDeleting(false);
     }
   }
+
+  const petPhotosEnabled = useFeatureFlag('petPhotosEnabled');
+
+  // ... existing code ...
 
   return (
     <Box sx={{ maxWidth: 345 }}>
       <Card>
-        {error && (
-          <Alert severity="error" role="alert" sx={{ m: 1 }}>
-            {error}
-          </Alert>
-        )}
-        {saving && (
-          <Alert severity="info" role="alert" sx={{ m: 1 }}>
-            {t('saving', { ns: 'common', defaultValue: 'Saving...' })}
-          </Alert>
-        )}
+        {/* ... */}
         <CardActionArea component={RouterLink} to={`/pets/${pet.id}`}>
           <CardMedia
             component="img"
             height="140"
-            image="https://placehold.co/345x140?text=Pet+Image"
-            alt="pet header"
+            image={
+              petPhotosEnabled && pet.mainPhotoUrl
+                ? pet.mainPhotoUrl
+                : 'https://placehold.co/345x140?text=Pet+Image'
+            }
+            alt={pet.name}
           />
           <CardContent>
             <Typography gutterBottom variant="h6" component="h3">

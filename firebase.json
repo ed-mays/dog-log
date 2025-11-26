@@ -9,6 +9,9 @@
     "singleProjectMode": true,
     "firestore": {
       "port": 8080
+    },
+    "storage": {
+      "port": 9199
     }
   },
   "hosting": [
@@ -140,5 +143,8 @@
     "location": "nam5",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }

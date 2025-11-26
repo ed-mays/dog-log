@@ -220,6 +220,7 @@ describe('usePetsStore', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: mockUser.uid,
+        photos: [],
         ...newPetInput,
       };
       mockedPetService.addPet.mockResolvedValue(newPet);

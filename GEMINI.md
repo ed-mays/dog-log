@@ -260,3 +260,9 @@ Welcome aboard! Keep it simple, typed, and testable.
 
 - `docs/requirements.md` contains a high level description of the application's features. This is an evolving document.
 - `README.md` contains additional documentation about the project structure and related details.
+
+## 13. Workflow & Commit Style [IMPORTANT]
+
+- **Atomic Changes**: Break down large features into small, self-contained units of work. Avoid "big bang" changes.
+- **Incremental Verification**: Verify each small change (e.g., a single component or hook) before proceeding to the next.
+- **Granular Tasks**: Ensure items in `task.md` are granular. Each task should ideally represent one logical commit or small PR.

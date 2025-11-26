@@ -15,6 +15,7 @@ const newPetInitialValues: Pet = {
   createdAt: new Date(),
   updatedAt: new Date(),
   createdBy: '',
+  photos: [],
   isArchived: false,
 };
 

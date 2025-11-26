@@ -69,6 +69,38 @@ vi.mock('@features/pets/components/LinkedVetList', () => ({
   ),
 }));
 
+vi.mock('@components/common/PhotoUpload', () => ({
+  PhotoUpload: ({
+    onUploadComplete,
+    onError,
+  }: {
+    onUploadComplete: (url: string, path: string) => void;
+    onError: (err: Error) => void;
+  }) => (
+    <div data-testid="photo-upload">
+      <button onClick={() => onUploadComplete('url', 'path')}>Upload</button>
+      <button onClick={() => onError(new Error('Upload failed'))}>
+        Trigger Error
+      </button>
+    </div>
+  ),
+}));
+
+vi.mock('@features/pets/components/PetPhotoGallery', () => ({
+  PetPhotoGallery: ({
+    onSetMainPhoto,
+    onDeletePhoto,
+  }: {
+    onSetMainPhoto: (photo: { url: string }) => void;
+    onDeletePhoto: (photo: { path: string }) => void;
+  }) => (
+    <div data-testid="pet-photo-gallery">
+      <button onClick={() => onSetMainPhoto({ url: 'u1' })}>Set Main</button>
+      <button onClick={() => onDeletePhoto({ path: 'p1' })}>Delete</button>
+    </div>
+  ),
+}));
+
 describe('PetDetailsPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -113,7 +145,11 @@ describe('PetDetailsPage', () => {
       vetsEnabled: !!flags.vetsEnabled,
       vetLinkingEnabled: !!flags.vetLinkingEnabled,
       petActionsEnabled: !!flags.petActionsEnabled,
+      petPhotosEnabled: !!flags.petPhotosEnabled,
       handleDelete: handleDeleteMock,
+      handlePhotoUpload: vi.fn(),
+      handleSetMainPhoto: vi.fn(),
+      handleDeletePhoto: vi.fn(),
       navigate: navigate,
       nsReady: true,
     };
@@ -322,5 +358,58 @@ describe('PetDetailsPage', () => {
 
     // Should show LinkedVetList (mocked)
     expect(await screen.findByTestId('linked-vet-list')).toBeInTheDocument();
+  });
+
+  test('renders PhotoUpload and PetPhotoGallery when petPhotosEnabled=true and handles interactions', async () => {
+    const pet = makePet({
+      id: '1',
+      photos: [{ path: 'p1', url: 'u1', createdAt: 'd1' }],
+    });
+    const handlePhotoUploadMock = vi.fn();
+    const handleSetMainPhotoMock = vi.fn();
+    const handleDeletePhotoMock = vi.fn();
+
+    const { PetDetailsPage, render, user } = await setup({
+      pets: [pet],
+      flags: { petPhotosEnabled: true },
+      hookOverrides: {
+        handlePhotoUpload: handlePhotoUploadMock,
+        handleSetMainPhoto: handleSetMainPhotoMock,
+        handleDeletePhoto: handleDeletePhotoMock,
+      },
+    });
+
+    render(<PetDetailsPage />, { featureFlags: { petPhotosEnabled: true } });
+
+    // Check for components
+    expect(screen.getByTestId('photo-upload')).toBeInTheDocument();
+    expect(screen.getByTestId('pet-photo-gallery')).toBeInTheDocument();
+
+    // Test interactions
+    await user.click(screen.getByText('Upload'));
+    expect(handlePhotoUploadMock).toHaveBeenCalledWith('url', 'path');
+
+    await user.click(screen.getByText('Set Main'));
+    expect(handleSetMainPhotoMock).toHaveBeenCalledWith({ url: 'u1' });
+
+    await user.click(screen.getByText('Delete'));
+    expect(handleDeletePhotoMock).toHaveBeenCalledWith({ path: 'p1' });
+  });
+
+  test('logs error when PhotoUpload fails', async () => {
+    const pet = makePet({ id: '1' });
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { PetDetailsPage, render, user } = await setup({
+      pets: [pet],
+      flags: { petPhotosEnabled: true },
+    });
+
+    render(<PetDetailsPage />, { featureFlags: { petPhotosEnabled: true } });
+
+    await user.click(screen.getByText('Trigger Error'));
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+    consoleSpy.mockRestore();
   });
 });
