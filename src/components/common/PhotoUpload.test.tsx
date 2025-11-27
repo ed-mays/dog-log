@@ -26,7 +26,7 @@ describe('PhotoUpload', () => {
         onUploadComplete={mockOnUploadComplete}
       />
     );
-    expect(screen.getByText('uploadPhotos')).toBeInTheDocument();
+    expect(screen.getByText('Upload Photos')).toBeInTheDocument();
   });
 
   it('handles file upload successfully', async () => {
@@ -42,7 +42,7 @@ describe('PhotoUpload', () => {
       />
     );
 
-    const input = screen.getByLabelText('uploadPhotos');
+    const input = screen.getByLabelText('Upload Photos');
     await user.upload(input, file);
 
     await waitFor(() => {
@@ -71,7 +71,7 @@ describe('PhotoUpload', () => {
       />
     );
 
-    const input = screen.getByLabelText('uploadPhotos');
+    const input = screen.getByLabelText('Upload Photos');
     // Use fireEvent to bypass accept attribute check which userEvent respects
     // eslint-disable-next-line no-restricted-syntax
     fireEvent.change(input, { target: { files: [file] } });
@@ -80,5 +80,58 @@ describe('PhotoUpload', () => {
       expect(mockOnError).toHaveBeenCalledWith(expect.any(Error));
       expect(storageRepository.uploadFile).not.toHaveBeenCalled();
     });
+  });
+
+  it('handles file drop', async () => {
+    const file = new File(['dummy content'], 'test.png', { type: 'image/png' });
+    const downloadUrl = 'https://example.com/test.png';
+    vi.mocked(storageRepository.uploadFile).mockResolvedValue(downloadUrl);
+
+    render(
+      <PhotoUpload
+        storagePath={storagePath}
+        onUploadComplete={mockOnUploadComplete}
+      />
+    );
+
+    const dropZone = screen.getByTestId('photo-upload-dropzone');
+
+    // eslint-disable-next-line no-restricted-syntax
+    fireEvent.drop(dropZone, {
+      dataTransfer: {
+        files: [file],
+      },
+    });
+
+    await waitFor(() => {
+      expect(storageRepository.uploadFile).toHaveBeenCalledWith(
+        expect.stringContaining(storagePath),
+        file,
+        expect.any(Function)
+      );
+      expect(mockOnUploadComplete).toHaveBeenCalledWith(
+        downloadUrl,
+        expect.stringContaining(storagePath)
+      );
+    });
+  });
+
+  it('shows visual feedback on drag over', () => {
+    render(
+      <PhotoUpload
+        storagePath={storagePath}
+        onUploadComplete={mockOnUploadComplete}
+      />
+    );
+
+    const dropZone = screen.getByTestId('photo-upload-dropzone');
+
+    // eslint-disable-next-line no-restricted-syntax
+    fireEvent.dragOver(dropZone);
+    expect(dropZone).toHaveClass('border-blue-500');
+
+    // eslint-disable-next-line no-restricted-syntax
+    fireEvent.dragLeave(dropZone);
+    expect(dropZone).not.toHaveClass('border-blue-500');
   });
 });

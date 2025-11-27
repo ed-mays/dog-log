@@ -35,7 +35,7 @@ describe('PetPhotoGallery', () => {
         onDeletePhoto={mockOnDeletePhoto}
       />
     );
-    expect(screen.getByText('noPhotos')).toBeInTheDocument();
+    expect(screen.getByText('No photos yet')).toBeInTheDocument();
   });
 
   it('does not render when feature flag is disabled', async () => {
@@ -70,7 +70,7 @@ describe('PetPhotoGallery', () => {
         onDeletePhoto={mockOnDeletePhoto}
       />
     );
-    const buttons = screen.getAllByText('setAsMain');
+    const buttons = screen.getAllByText('Set as Main');
     await user.click(buttons[0]);
     expect(mockOnSetMainPhoto).toHaveBeenCalledWith(mockPhotos[0]);
   });
@@ -84,7 +84,7 @@ describe('PetPhotoGallery', () => {
         onDeletePhoto={mockOnDeletePhoto}
       />
     );
-    const buttons = screen.getAllByText('delete');
+    const buttons = screen.getAllByText('Delete');
     await user.click(buttons[0]);
     expect(mockOnDeletePhoto).toHaveBeenCalledWith(mockPhotos[0]);
   });
@@ -98,7 +98,7 @@ describe('PetPhotoGallery', () => {
         onDeletePhoto={mockOnDeletePhoto}
       />
     );
-    const mainButton = screen.getByText('mainPhoto');
+    const mainButton = screen.getByText('Main Photo');
     expect(mainButton).toBeDisabled();
   });
 });

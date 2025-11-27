@@ -19,12 +19,10 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
+  const processFiles = async (files: FileList) => {
+    if (files.length === 0) return;
 
     setUploading(true);
     setProgress(0);
@@ -72,8 +70,44 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
     }
   };
 
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    if (files) {
+      await processFiles(files);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    if (files) {
+      await processFiles(files);
+    }
+  };
+
   return (
-    <div className="photo-upload">
+    <div
+      className={`photo-upload border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
+        isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+      }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      data-testid="photo-upload-dropzone"
+    >
       <input
         type="file"
         ref={fileInputRef}
@@ -84,11 +118,17 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
         id="photo-upload-input"
         disabled={uploading}
       />
-      <label htmlFor="photo-upload-input" className="btn btn-primary">
+      <label
+        htmlFor="photo-upload-input"
+        className="btn btn-primary cursor-pointer"
+      >
         {uploading
           ? t('uploading', { progress: Math.round(progress) })
           : t('uploadPhotos')}
       </label>
+      <p className="mt-2 text-sm text-gray-500">
+        {t('dragAndDropHint', { defaultValue: 'or drag and drop photos here' })}
+      </p>
     </div>
   );
 };
