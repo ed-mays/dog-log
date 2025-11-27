@@ -47,3 +47,19 @@
 .photoItem:hover .overlay {
   opacity: 1;
 }
+
+.starBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #ffffff;
+  border-radius: 50%;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #b45309;
+  /* amber-700 */
+  z-index: 10;
+}

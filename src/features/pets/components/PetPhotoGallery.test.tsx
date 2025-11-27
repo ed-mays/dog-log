@@ -101,4 +101,21 @@ describe('PetPhotoGallery', () => {
     const mainButton = screen.getByText('Main Photo');
     expect(mainButton).toBeDisabled();
   });
+
+  it('shows star icon for main photo', () => {
+    render(
+      <PetPhotoGallery
+        photos={mockPhotos}
+        mainPhotoUrl="url1"
+        onSetMainPhoto={mockOnSetMainPhoto}
+        onDeletePhoto={mockOnDeletePhoto}
+      />
+    );
+    // The star icon is inside a div with title="Main Photo" (key from t('mainPhoto'))
+    // Since we are mocking translation, we need to check what t('mainPhoto') returns.
+    // In the test setup, it likely returns 'Main Photo' or the key if not configured.
+    // However, we can also search for the icon by testid if we added one, or by title.
+    // Let's assume t('mainPhoto') returns 'Main Photo' based on previous tests.
+    expect(screen.getByTitle('Main Photo')).toBeInTheDocument();
+  });
 });

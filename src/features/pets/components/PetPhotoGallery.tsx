@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
 import styles from './PetPhotoGallery.module.css';
 import { useTranslation } from 'react-i18next';
 import type { PetPhoto } from '../types';
@@ -38,6 +39,11 @@ export const PetPhotoGallery: React.FC<PetPhotoGalleryProps> = ({
               mainPhotoUrl === photo.url ? styles.mainPhotoRing : ''
             }`}
           />
+          {mainPhotoUrl === photo.url && (
+            <div className={styles.starBadge} title={t('mainPhoto')}>
+              <StarIcon fontSize="small" />
+            </div>
+          )}
           <div className={styles.overlay}>
             <Button
               variant="contained"
