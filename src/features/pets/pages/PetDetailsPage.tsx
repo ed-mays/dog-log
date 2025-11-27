@@ -1,12 +1,42 @@
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Alert, Link, Typography } from '@mui/material';
+import { Alert, Link, Typography, Box, Tabs, Tab } from '@mui/material';
 import { LinkedVetList } from '@features/pets/components/LinkedVetList';
 import { PetInfoTable } from '@features/pets/components/PetInfoTable';
 import { PetActions } from '@features/pets/components/PetActions';
 import { usePetDetails } from '@features/pets/hooks/usePetDetails';
 import { PhotoUpload } from '@components/common/PhotoUpload';
 import { PetPhotoGallery } from '@features/pets/components/PetPhotoGallery';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`pet-tabpanel-${index}`}
+      aria-labelledby={`pet-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `pet-tab-${index}`,
+    'aria-controls': `pet-tabpanel-${index}`,
+  };
+}
 
 export default function PetDetailsPage() {
   const { t } = useTranslation('common');
@@ -27,6 +57,12 @@ export default function PetDetailsPage() {
     navigate,
     nsReady,
   } = usePetDetails();
+
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   if (!nsReady) return null;
 
@@ -55,10 +91,54 @@ export default function PetDetailsPage() {
         </Alert>
       )}
 
-      <PetInfoTable pet={pet} />
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="pet details tabs"
+        >
+          <Tab
+            label={t('details', { defaultValue: 'Details' })}
+            value={0}
+            {...a11yProps(0)}
+          />
+          {petPhotosEnabled && (
+            <Tab
+              label={t('photos', { defaultValue: 'Photos' })}
+              value={1}
+              {...a11yProps(1)}
+            />
+          )}
+          {vetsEnabled && vetLinkingEnabled && (
+            <Tab
+              label={t('linkedVeterinarians', {
+                ns: 'veterinarians',
+                defaultValue: 'Veterinarians',
+              })}
+              value={2}
+              {...a11yProps(2)}
+            />
+          )}
+        </Tabs>
+      </Box>
+
+      <TabPanel value={tabValue} index={0}>
+        <PetInfoTable pet={pet} />
+        {petActionsEnabled && (
+          <Box sx={{ mt: 4 }}>
+            <PetActions
+              pet={pet}
+              onEdit={() => navigate(`/pets/${pet.id}/edit`)}
+              onDelete={handleDelete}
+              deleteError={error}
+              isDeleting={saving}
+            />
+          </Box>
+        )}
+      </TabPanel>
 
       {petPhotosEnabled && (
-        <div className="mt-8">
+        <TabPanel value={tabValue} index={1}>
           <div className="flex justify-between items-center mb-4">
             <Typography variant="h6" component="h2">
               {t('photos', { defaultValue: 'Photos' })}
@@ -75,11 +155,11 @@ export default function PetDetailsPage() {
             onSetMainPhoto={handleSetMainPhoto}
             onDeletePhoto={handleDeletePhoto}
           />
-        </div>
+        </TabPanel>
       )}
 
       {vetsEnabled && vetLinkingEnabled && (
-        <div style={{ marginTop: '2rem' }}>
+        <TabPanel value={tabValue} index={2}>
           <Typography variant="h6" component="h2" gutterBottom>
             {t('linkedVeterinarians', {
               ns: 'veterinarians',
@@ -87,17 +167,7 @@ export default function PetDetailsPage() {
             })}
           </Typography>
           <LinkedVetList loading={loadingVets} links={vetLinks} />
-        </div>
-      )}
-
-      {petActionsEnabled && (
-        <PetActions
-          pet={pet}
-          onEdit={() => navigate(`/pets/${pet.id}/edit`)}
-          onDelete={handleDelete}
-          deleteError={error}
-          isDeleting={saving}
-        />
+        </TabPanel>
       )}
 
       <div style={{ marginTop: '1rem' }}>

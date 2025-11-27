@@ -228,7 +228,7 @@ describe('PetDetailsPage', () => {
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
-    // Open confirm
+    // Details tab is default, so buttons should be visible
     const deleteBtn = await screen.findByRole('button', { name: /delete/i });
     await user.click(deleteBtn);
 
@@ -347,7 +347,7 @@ describe('PetDetailsPage', () => {
   test('renders LinkedVetList when vets enabled', async () => {
     const pet = makePet({ id: '1' });
 
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render, user } = await setup({
       pets: [pet],
       flags: { vetsEnabled: true, vetLinkingEnabled: true },
     });
@@ -355,6 +355,10 @@ describe('PetDetailsPage', () => {
     render(<PetDetailsPage />, {
       featureFlags: { vetsEnabled: true, vetLinkingEnabled: true },
     });
+
+    // Click Veterinarians tab
+    const vetsTab = screen.getByRole('tab', { name: /veterinarians/i });
+    await user.click(vetsTab);
 
     // Should show LinkedVetList (mocked)
     expect(await screen.findByTestId('linked-vet-list')).toBeInTheDocument();
@@ -381,6 +385,10 @@ describe('PetDetailsPage', () => {
 
     render(<PetDetailsPage />, { featureFlags: { petPhotosEnabled: true } });
 
+    // Click Photos tab
+    const photosTab = screen.getByRole('tab', { name: /photos/i });
+    await user.click(photosTab);
+
     // Check for components
     expect(screen.getByTestId('photo-upload')).toBeInTheDocument();
     expect(screen.getByTestId('pet-photo-gallery')).toBeInTheDocument();
@@ -406,6 +414,10 @@ describe('PetDetailsPage', () => {
     });
 
     render(<PetDetailsPage />, { featureFlags: { petPhotosEnabled: true } });
+
+    // Click Photos tab
+    const photosTab = screen.getByRole('tab', { name: /photos/i });
+    await user.click(photosTab);
 
     await user.click(screen.getByText('Trigger Error'));
 
