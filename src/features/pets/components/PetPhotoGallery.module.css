@@ -1,0 +1,49 @@
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .galleryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.photoItem {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.photoImage {
+  width: 100%;
+  height: 12rem;
+  /* 48 * 0.25rem = 12rem */
+  object-fit: cover;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+.mainPhotoRing {
+  box-shadow: 0 0 0 4px #3b82f6;
+  /* ring-4 ring-blue-500 */
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.photoItem:hover .overlay {
+  opacity: 1;
+}

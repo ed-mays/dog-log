@@ -1,4 +1,6 @@
 import React from 'react';
+import { Button } from '@mui/material';
+import styles from './PetPhotoGallery.module.css';
 import { useTranslation } from 'react-i18next';
 import type { PetPhoto } from '../types';
 import { useFeatureFlag } from '../../../featureFlags/hooks/useFeatureFlag';
@@ -26,30 +28,34 @@ export const PetPhotoGallery: React.FC<PetPhotoGalleryProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+    <div className={styles.galleryGrid}>
       {photos.map((photo) => (
-        <div key={photo.path} className="relative group">
+        <div key={photo.path} className={styles.photoItem}>
           <img
             src={photo.url}
             alt="Pet"
-            className={`w-full h-48 object-cover rounded-lg ${
-              mainPhotoUrl === photo.url ? 'ring-4 ring-blue-500' : ''
+            className={`${styles.photoImage} ${
+              mainPhotoUrl === photo.url ? styles.mainPhotoRing : ''
             }`}
           />
-          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-lg">
-            <button
+          <div className={styles.overlay}>
+            <Button
+              variant="contained"
+              size="small"
+              color="primary"
               onClick={() => onSetMainPhoto(photo)}
-              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
               disabled={mainPhotoUrl === photo.url}
             >
               {mainPhotoUrl === photo.url ? t('mainPhoto') : t('setAsMain')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              color="error"
               onClick={() => onDeletePhoto(photo)}
-              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
             >
               {t('delete')}
-            </button>
+            </Button>
           </div>
         </div>
       ))}

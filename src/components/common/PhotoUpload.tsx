@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import styles from './PhotoUpload.module.css';
 import { useTranslation } from 'react-i18next';
 import { storageConfig } from '../../config/storage';
 import { storageRepository } from '../../repositories/storageRepository';
@@ -100,9 +101,7 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
   return (
     <div
-      className={`photo-upload border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-        isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-      }`}
+      className={`${styles.container} ${isDragging ? styles.dragging : ''}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -118,15 +117,12 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
         id="photo-upload-input"
         disabled={uploading}
       />
-      <label
-        htmlFor="photo-upload-input"
-        className="btn btn-primary cursor-pointer"
-      >
+      <label htmlFor="photo-upload-input" className={styles.uploadButton}>
         {uploading
           ? t('uploading', { progress: Math.round(progress) })
           : t('uploadPhotos')}
       </label>
-      <p className="mt-2 text-sm text-gray-500">
+      <p className={styles.hint}>
         {t('dragAndDropHint', { defaultValue: 'or drag and drop photos here' })}
       </p>
     </div>

@@ -1,4 +1,5 @@
 import { render, screen, waitFor, fireEvent } from '@test-utils';
+import styles from './PhotoUpload.module.css';
 import userEvent from '@testing-library/user-event';
 import { PhotoUpload } from './PhotoUpload';
 import { storageRepository } from '../../repositories/storageRepository';
@@ -128,10 +129,10 @@ describe('PhotoUpload', () => {
 
     // eslint-disable-next-line no-restricted-syntax
     fireEvent.dragOver(dropZone);
-    expect(dropZone).toHaveClass('border-blue-500');
+    expect(dropZone).toHaveClass(styles.dragging);
 
     // eslint-disable-next-line no-restricted-syntax
     fireEvent.dragLeave(dropZone);
-    expect(dropZone).not.toHaveClass('border-blue-500');
+    expect(dropZone).not.toHaveClass(styles.dragging);
   });
 });
