@@ -1,0 +1,13 @@
+{
+  "feedings": "Alimentación",
+  "dateTime": "Fecha y Hora",
+  "foodType": "Tipo de Comida",
+  "notes": "Notas",
+  "addFeeding": "Agregar Alimentación",
+  "saving": "Guardando...",
+  "noFeedings": "No hay alimentaciones registradas aún.",
+  "dateRequired": "La fecha es obligatoria",
+  "foodTypeRequired": "El tipo de comida es obligatorio",
+  "submitError": "Error al guardar la alimentación",
+  "deleteError": "Error al eliminar la alimentación"
+}

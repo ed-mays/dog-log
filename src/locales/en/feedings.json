@@ -1,0 +1,13 @@
+{
+  "feedings": "Feedings",
+  "dateTime": "Date & Time",
+  "foodType": "Food Type",
+  "notes": "Notes",
+  "addFeeding": "Add Feeding",
+  "saving": "Saving...",
+  "noFeedings": "No feedings recorded yet.",
+  "dateRequired": "Date is required",
+  "foodTypeRequired": "Food type is required",
+  "submitError": "Failed to save feeding",
+  "deleteError": "Failed to delete feeding"
+}

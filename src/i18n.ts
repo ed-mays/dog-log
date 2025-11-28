@@ -18,6 +18,7 @@ export const APP_NAMESPACES = [
   'auth',
   'veterinarians',
   'petDetails',
+  'feedings',
 ] as const;
 
 i18n.use(initReactI18next).init({
