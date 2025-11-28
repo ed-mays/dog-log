@@ -1,4 +1,4 @@
-import { render, screen } from '@test-utils';
+import { render, screen, waitFor } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { PetPhotoGallery } from './PetPhotoGallery';
 import { vi } from 'vitest';
@@ -117,5 +117,49 @@ describe('PetPhotoGallery', () => {
     // However, we can also search for the icon by testid if we added one, or by title.
     // Let's assume t('mainPhoto') returns 'Main Photo' based on previous tests.
     expect(screen.getByTitle('Main Photo')).toBeInTheDocument();
+  });
+
+  it('opens lightbox when photo is clicked', async () => {
+    const user = userEvent.setup();
+    render(
+      <PetPhotoGallery
+        photos={mockPhotos}
+        onSetMainPhoto={mockOnSetMainPhoto}
+        onDeletePhoto={mockOnDeletePhoto}
+      />
+    );
+
+    // Click on the first photo image
+    const images = screen.getAllByRole('img', { name: 'Pet' });
+    await user.click(images[0]);
+
+    // Dialog should be open and show the full size image
+    // We look for the image inside the dialog which has alt="Pet Full Size"
+    expect(await screen.findByAltText('Pet Full Size')).toBeInTheDocument();
+  });
+
+  it('closes lightbox when close button is clicked', async () => {
+    const user = userEvent.setup();
+    render(
+      <PetPhotoGallery
+        photos={mockPhotos}
+        onSetMainPhoto={mockOnSetMainPhoto}
+        onDeletePhoto={mockOnDeletePhoto}
+      />
+    );
+
+    // Open lightbox
+    const images = screen.getAllByRole('img', { name: 'Pet' });
+    await user.click(images[0]);
+    expect(await screen.findByAltText('Pet Full Size')).toBeInTheDocument();
+
+    // Click close button
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    await user.click(closeButton);
+
+    // Dialog should be closed (image not visible)
+    await waitFor(() => {
+      expect(screen.queryByAltText('Pet Full Size')).not.toBeInTheDocument();
+    });
   });
 });

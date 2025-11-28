@@ -1,6 +1,7 @@
-import React from 'react';
-import { Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Button, Dialog, DialogContent, IconButton } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
+import CloseIcon from '@mui/icons-material/Close';
 import styles from './PetPhotoGallery.module.css';
 import { useTranslation } from 'react-i18next';
 import type { PetPhoto } from '../types';
@@ -21,6 +22,7 @@ export const PetPhotoGallery: React.FC<PetPhotoGalleryProps> = ({
 }) => {
   const { t } = useTranslation('petDetails');
   const isEnabled = useFeatureFlag('petPhotosEnabled');
+  const [selectedPhoto, setSelectedPhoto] = useState<PetPhoto | null>(null);
 
   if (!isEnabled) return null;
 
@@ -31,7 +33,11 @@ export const PetPhotoGallery: React.FC<PetPhotoGalleryProps> = ({
   return (
     <div className={styles.galleryGrid}>
       {photos.map((photo) => (
-        <div key={photo.path} className={styles.photoItem}>
+        <div
+          key={photo.path}
+          className={styles.photoItem}
+          onClick={() => setSelectedPhoto(photo)}
+        >
           <img
             src={photo.url}
             alt="Pet"
@@ -49,7 +55,10 @@ export const PetPhotoGallery: React.FC<PetPhotoGalleryProps> = ({
               variant="contained"
               size="small"
               color="primary"
-              onClick={() => onSetMainPhoto(photo)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSetMainPhoto(photo);
+              }}
               disabled={mainPhotoUrl === photo.url}
             >
               {mainPhotoUrl === photo.url ? t('mainPhoto') : t('setAsMain')}
@@ -58,13 +67,45 @@ export const PetPhotoGallery: React.FC<PetPhotoGalleryProps> = ({
               variant="contained"
               size="small"
               color="error"
-              onClick={() => onDeletePhoto(photo)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeletePhoto(photo);
+              }}
             >
               {t('delete')}
             </Button>
           </div>
         </div>
       ))}
+
+      <Dialog
+        open={!!selectedPhoto}
+        onClose={() => setSelectedPhoto(null)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <IconButton
+          aria-label="close"
+          onClick={() => setSelectedPhoto(null)}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent>
+          {selectedPhoto && (
+            <img
+              src={selectedPhoto.url}
+              alt="Pet Full Size"
+              className={styles.lightboxImage}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

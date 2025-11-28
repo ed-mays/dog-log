@@ -15,6 +15,7 @@
   position: relative;
   border-radius: 0.5rem;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .photoImage {
@@ -62,4 +63,12 @@
   color: #b45309;
   /* amber-700 */
   z-index: 10;
+}
+
+.lightboxImage {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
