@@ -150,6 +150,11 @@ describe('PetDetailsPage', () => {
       handlePhotoUpload: vi.fn(),
       handleSetMainPhoto: vi.fn(),
       handleDeletePhoto: vi.fn(),
+      feedingsEnabled: !!flags.feedingsEnabled,
+      feedings: [],
+      isFetchingFeedings: false,
+      handleAddFeeding: vi.fn(),
+      handleDeleteFeeding: vi.fn(),
       navigate: navigate,
       nsReady: true,
     };

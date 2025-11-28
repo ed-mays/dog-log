@@ -78,6 +78,14 @@ describe.skipIf(!!process.env.CI)('Firestore Security Rules', () => {
     await assertSucceeds(
       alice.firestore().doc('users/alice/vets/vet1').set({ name: 'Dr. Smith' })
     );
+
+    // Feedings
+    await assertSucceeds(
+      alice
+        .firestore()
+        .doc('users/alice/pets/pet1/feedings/feed1')
+        .set({ type: 'food' })
+    );
   });
 
   it('should deny authenticated user from accessing others subcollections', async () => {
@@ -91,6 +99,14 @@ describe.skipIf(!!process.env.CI)('Firestore Security Rules', () => {
     // Vets
     await assertFails(
       alice.firestore().doc('users/bob/vets/vet1').set({ name: 'Dr. Smith' })
+    );
+
+    // Feedings
+    await assertFails(
+      alice
+        .firestore()
+        .doc('users/bob/pets/pet1/feedings/feed1')
+        .set({ type: 'food' })
     );
   });
 });

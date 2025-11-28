@@ -1,13 +1,15 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePetsStore } from '@store/pets.store';
 import { useAuthStore } from '@store/auth.store';
+import { useFeedingsStore } from '@store/feedings.store';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { petVetService } from '@services/petVetService';
 import { logger } from '@services/logService';
 import type { PetVetLink, Vet } from '@models/vets';
 import type { PetUpdateInput } from '../types';
+import type { FeedingCreateInput } from '@features/feedings/types';
 import { loadNamespace } from '@i18n';
 
 export function usePetDetails() {
@@ -19,6 +21,13 @@ export function usePetDetails() {
   const deletePet = usePetsStore((s) => s.deletePet);
   const updatePet = usePetsStore((s) => s.updatePet);
   const user = useAuthStore((s) => s.user);
+
+  // Feedings Store
+  const feedings = useFeedingsStore((s) => s.feedings);
+  const fetchFeedings = useFeedingsStore((s) => s.fetchFeedings);
+  const addFeeding = useFeedingsStore((s) => s.addFeeding);
+  const deleteFeeding = useFeedingsStore((s) => s.deleteFeeding);
+  const isFetchingFeedings = useFeedingsStore((s) => s.isFetching);
 
   const pet = useMemo(() => pets.find((p) => p.id === id), [pets, id]);
 
@@ -32,11 +41,13 @@ export function usePetDetails() {
 
   useEffect(() => {
     let mounted = true;
-    Promise.all([loadNamespace('petProperties'), loadNamespace('common')]).then(
-      () => {
-        if (mounted) setNsReady(true);
-      }
-    );
+    Promise.all([
+      loadNamespace('petProperties'),
+      loadNamespace('common'),
+      loadNamespace('feedings'),
+    ]).then(() => {
+      if (mounted) setNsReady(true);
+    });
     return () => {
       mounted = false;
     };
@@ -47,11 +58,13 @@ export function usePetDetails() {
   let vetLinkingEnabled = false;
   let petActionsEnabled = false;
   let petPhotosEnabled = false;
+  let feedingsEnabled = false;
   try {
     vetsEnabled = useFeatureFlag('vetsEnabled');
     vetLinkingEnabled = useFeatureFlag('vetLinkingEnabled');
     petActionsEnabled = useFeatureFlag('petActionsEnabled');
     petPhotosEnabled = useFeatureFlag('petPhotosEnabled');
+    feedingsEnabled = useFeatureFlag('feedingsEnabled');
   } catch {
     logger.info('Feature flags not available');
   }
@@ -80,6 +93,13 @@ export function usePetDetails() {
       mounted = false;
     };
   }, [user?.uid, id, vetsEnabled, vetLinkingEnabled]);
+
+  // Load feedings when tab is active or on mount if enabled
+  useEffect(() => {
+    if (feedingsEnabled && id) {
+      fetchFeedings(id);
+    }
+  }, [feedingsEnabled, id, fetchFeedings]);
 
   const handlePhotoUpload = async (url: string, path: string) => {
     if (!pet) return;
@@ -146,6 +166,32 @@ export function usePetDetails() {
     }
   };
 
+  const handleAddFeeding = useCallback(
+    async (data: FeedingCreateInput) => {
+      if (!pet) return;
+      try {
+        await addFeeding(pet.id, data);
+      } catch (err) {
+        logger.error('Failed to add feeding', { error: err });
+        throw err; // Re-throw to let form handle error state
+      }
+    },
+    [pet, addFeeding]
+  );
+
+  const handleDeleteFeeding = useCallback(
+    async (feedingId: string) => {
+      if (!pet) return;
+      try {
+        await deleteFeeding(pet.id, feedingId);
+      } catch (err) {
+        logger.error('Failed to delete feeding', { error: err });
+        setError(t('errors.deleteFailed', { defaultValue: 'Delete failed' }));
+      }
+    },
+    [pet, deleteFeeding, t]
+  );
+
   return {
     pet,
     vetLinks,
@@ -156,10 +202,15 @@ export function usePetDetails() {
     vetLinkingEnabled,
     petActionsEnabled,
     petPhotosEnabled,
+    feedingsEnabled,
+    feedings,
+    isFetchingFeedings,
     handleDelete,
     handlePhotoUpload,
     handleSetMainPhoto,
     handleDeletePhoto,
+    handleAddFeeding,
+    handleDeleteFeeding,
     navigate,
     nsReady,
   };

@@ -8,6 +8,8 @@ import { PetActions } from '@features/pets/components/PetActions';
 import { usePetDetails } from '@features/pets/hooks/usePetDetails';
 import { PhotoUpload } from '@components/common/PhotoUpload';
 import { PetPhotoGallery } from '@features/pets/components/PetPhotoGallery';
+import { FeedingList } from '@features/feedings/components/FeedingList';
+import { FeedingForm } from '@features/feedings/components/FeedingForm';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -50,10 +52,14 @@ export default function PetDetailsPage() {
     vetLinkingEnabled,
     petActionsEnabled,
     petPhotosEnabled,
+    feedingsEnabled,
+    feedings,
     handleDelete,
     handlePhotoUpload,
     handleSetMainPhoto,
     handleDeletePhoto,
+    handleAddFeeding,
+    handleDeleteFeeding,
     navigate,
     nsReady,
   } = usePetDetails();
@@ -96,6 +102,8 @@ export default function PetDetailsPage() {
           value={tabValue}
           onChange={handleTabChange}
           aria-label="pet details tabs"
+          variant="scrollable"
+          scrollButtons="auto"
         >
           <Tab
             label={t('details', { defaultValue: 'Details' })}
@@ -117,6 +125,16 @@ export default function PetDetailsPage() {
               })}
               value={2}
               {...a11yProps(2)}
+            />
+          )}
+          {feedingsEnabled && (
+            <Tab
+              label={t('feedings', {
+                ns: 'feedings',
+                defaultValue: 'Feedings',
+              })}
+              value={3}
+              {...a11yProps(3)}
             />
           )}
         </Tabs>
@@ -167,6 +185,21 @@ export default function PetDetailsPage() {
             })}
           </Typography>
           <LinkedVetList loading={loadingVets} links={vetLinks} />
+        </TabPanel>
+      )}
+
+      {feedingsEnabled && (
+        <TabPanel value={tabValue} index={3}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            {t('feedings', {
+              ns: 'feedings',
+              defaultValue: 'Feedings',
+            })}
+          </Typography>
+          <Box sx={{ mb: 4 }}>
+            <FeedingForm onSubmit={handleAddFeeding} />
+          </Box>
+          <FeedingList feedings={feedings} onDelete={handleDeleteFeeding} />
         </TabPanel>
       )}
 

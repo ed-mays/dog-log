@@ -35,6 +35,8 @@
     "@fontsource/roboto": "^5.2.8",
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
+    "@mui/x-date-pickers": "^8.19.0",
+    "date-fns": "^4.1.0",
     "firebase": "^12.3.0",
     "i18next": "^25.4.2",
     "react": "^19.1.1",

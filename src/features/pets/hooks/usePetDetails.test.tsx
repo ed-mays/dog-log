@@ -3,6 +3,7 @@ import { usePetDetails } from './usePetDetails';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { usePetsStore } from '@store/pets.store';
 import { useAuthStore } from '@store/auth.store';
+import { useFeedingsStore } from '@store/feedings.store';
 import { petVetService } from '@services/petVetService';
 import { makePet } from '@testUtils/factories/makePet';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -16,6 +17,7 @@ vi.mock('react-router-dom', () => ({
 
 vi.mock('@store/pets.store');
 vi.mock('@store/auth.store');
+vi.mock('@store/feedings.store');
 vi.mock('@services/petVetService');
 vi.mock('@featureFlags/hooks/useFeatureFlag', () => ({
   useFeatureFlag: vi.fn().mockReturnValue(true),
@@ -33,19 +35,45 @@ describe('usePetDetails', () => {
   const mockNavigate = vi.fn();
   const mockUpdatePet = vi.fn();
   const mockDeletePet = vi.fn();
+  const mockFetchFeedings = vi.fn();
+  const mockAddFeeding = vi.fn();
+  const mockDeleteFeeding = vi.fn();
   const mockPet = makePet({ id: '123', name: 'Buddy' });
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useParams).mockReturnValue({ id: '123' });
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+
     vi.mocked(usePetsStore).mockImplementation((selector) => {
-      if (selector.toString().includes('pets')) return [mockPet];
-      if (selector.toString().includes('deletePet')) return mockDeletePet;
-      if (selector.toString().includes('updatePet')) return mockUpdatePet;
-      return undefined;
+      const state = {
+        pets: [mockPet],
+        updatePet: mockUpdatePet,
+        deletePet: mockDeletePet,
+        isFetching: false,
+        fetchError: null,
+        fetchPets: vi.fn(),
+        addPet: vi.fn(),
+        reset: vi.fn(),
+      };
+      return selector(state);
     });
+
     vi.mocked(useAuthStore).mockReturnValue({ uid: 'user1' });
+
+    vi.mocked(useFeedingsStore).mockImplementation((selector) => {
+      const state = {
+        feedings: [],
+        isFetching: false,
+        fetchFeedings: mockFetchFeedings,
+        addFeeding: mockAddFeeding,
+        deleteFeeding: mockDeleteFeeding,
+        fetchError: null,
+        updateFeeding: vi.fn(),
+        reset: vi.fn(),
+      };
+      return selector(state);
+    });
   });
 
   it('returns pet details', () => {
@@ -64,6 +92,11 @@ describe('usePetDetails', () => {
     await waitFor(() => {
       expect(result.current.vetLinks).toEqual(mockLinks);
     });
+  });
+
+  it('loads feedings when enabled', async () => {
+    renderHook(() => usePetDetails());
+    expect(mockFetchFeedings).toHaveBeenCalledWith('123');
   });
 
   it('handles photo upload', async () => {
@@ -122,6 +155,27 @@ describe('usePetDetails', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/pets');
   });
 
+  it('handles add feeding', async () => {
+    const { result } = renderHook(() => usePetDetails());
+    const feedingData = { date: new Date(), foodType: 'Kibble' };
+
+    await act(async () => {
+      await result.current.handleAddFeeding(feedingData);
+    });
+
+    expect(mockAddFeeding).toHaveBeenCalledWith('123', feedingData);
+  });
+
+  it('handles delete feeding', async () => {
+    const { result } = renderHook(() => usePetDetails());
+
+    await act(async () => {
+      await result.current.handleDeleteFeeding('feed1');
+    });
+
+    expect(mockDeleteFeeding).toHaveBeenCalledWith('123', 'feed1');
+  });
+
   it('handles errors during photo operations', async () => {
     mockUpdatePet.mockRejectedValue(new Error('Update failed'));
     const { result } = renderHook(() => usePetDetails());
@@ -135,8 +189,17 @@ describe('usePetDetails', () => {
 
   it('does not perform operations if pet is not found', async () => {
     vi.mocked(usePetsStore).mockImplementation((selector) => {
-      if (selector.toString().includes('pets')) return []; // No pets
-      return undefined;
+      const state = {
+        pets: [],
+        updatePet: mockUpdatePet,
+        deletePet: mockDeletePet,
+        isFetching: false,
+        fetchError: null,
+        fetchPets: vi.fn(),
+        addPet: vi.fn(),
+        reset: vi.fn(),
+      };
+      return selector(state);
     });
 
     const { result } = renderHook(() => usePetDetails());
@@ -146,10 +209,17 @@ describe('usePetDetails', () => {
       await result.current.handleSetMainPhoto({ url: 'url' });
       await result.current.handleDeletePhoto({ url: 'url', path: 'path' });
       await result.current.handleDelete();
+      await result.current.handleAddFeeding({
+        date: new Date(),
+        foodType: 'x',
+      });
+      await result.current.handleDeleteFeeding('id');
     });
 
     expect(mockUpdatePet).not.toHaveBeenCalled();
     expect(mockDeletePet).not.toHaveBeenCalled();
+    expect(mockAddFeeding).not.toHaveBeenCalled();
+    expect(mockDeleteFeeding).not.toHaveBeenCalled();
   });
 
   it('does not load vet links if flags disabled', async () => {
