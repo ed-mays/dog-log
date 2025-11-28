@@ -1,5 +1,5 @@
 import { ArchivableBaseRepository } from './base/BaseRepository';
-import { db } from '@firebase';
+import { db } from '@app-firebase';
 import {
   collection,
   doc,

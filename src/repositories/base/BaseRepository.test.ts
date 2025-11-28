@@ -40,7 +40,7 @@ vi.mock('firebase/firestore', () => {
   };
 });
 
-vi.mock('@firebase', () => ({ db: {} }));
+vi.mock('@app-firebase', () => ({ db: {} }));
 
 interface TestEntity extends BaseEntity {
   name: string;

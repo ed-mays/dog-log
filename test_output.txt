@@ -1,0 +1,1451 @@
+
+> dog-log@0.0.0 test
+> vitest run
+
+
+ RUN  v3.2.4 /Users/edmays/src/dog-log
+
+ ❯ src/firebase.test.tsx (5 tests | 5 failed) 137ms
+   × firebase lazy initialization and configuration > uses safe defaults when env vars are missing 70ms
+     → Cannot read properties of undefined (reading 'getProvider')
+   × firebase lazy initialization and configuration > reads VITE_* env vars when provided 56ms
+     → Cannot read properties of undefined (reading 'getProvider')
+   × firebase lazy initialization and configuration > is a singleton: initializeApp called only once even if getApp is called twice 3ms
+     → Cannot read properties of undefined (reading 'getProvider')
+   × firebase lazy initialization and configuration > connects to emulators only when VITE_USE_EMULATORS === "true" 3ms
+     → Cannot read properties of undefined (reading 'getProvider')
+   × firebase lazy initialization and configuration > does not connect to emulators when flag is absent or false 3ms
+     → Cannot read properties of undefined (reading 'getProvider')
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.449Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.453Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.496Z exception loading vet feature flags, defaulting to false 
+[INFO] 2025-11-26T22:58:50.500Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.541Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.553Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.563Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.570Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.577Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.586Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.591Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.599Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.606Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.615Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.623Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.630Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.670Z exception loading vet feature flags, defaulting to false 
+[INFO] 2025-11-26T22:58:50.677Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > renders existing pet and submits updates then navigates to /pets
+[INFO] 2025-11-26T22:58:50.683Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/veterinarians/pages/AddVetPage.test.tsx > AddVetPage > shows duplicate error when service throws DUPLICATE_VET
+[DEBUG] 2025-11-26T22:58:50.677Z Adding new vet {
+  name: [32m'Dr. Jane'[39m,
+  phone: [32m'555-0000'[39m,
+  email: [32m''[39m,
+  website: [32m''[39m,
+  clinicName: [32m''[39m,
+  address: {},
+  specialties: [90mundefined[39m,
+  notes: [32m''[39m
+}
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > cancel button navigates to /pets
+[INFO] 2025-11-26T22:58:50.755Z exception loading vet feature flags, defaulting to false 
+
+stdout | src/features/pets/pages/EditPetPage.test.tsx > EditPetPage > cancel button navigates to /pets
+[INFO] 2025-11-26T22:58:50.757Z exception loading vet feature flags, defaulting to false 
+
+ ✓ src/features/pets/pages/PetDetailsPage.test.tsx (10 tests) 1269ms
+   ✓ PetDetailsPage > renders pet name and breed in a table  977ms
+stdout | src/features/veterinarians/pages/AddVetPage.test.tsx > AddVetPage > shows generic error when service throws non-duplicate and does not navigate
+[DEBUG] 2025-11-26T22:58:50.997Z Adding new vet {
+  name: [32m'A'[39m,
+  phone: [32m'1'[39m,
+  email: [32m''[39m,
+  website: [32m''[39m,
+  clinicName: [32m''[39m,
+  address: {},
+  specialties: [90mundefined[39m,
+  notes: [32m''[39m
+}
+
+stderr | src/features/veterinarians/pages/AddVetPage.test.tsx > AddVetPage > shows generic error when service throws non-duplicate and does not navigate
+[ERROR] 2025-11-26T22:58:51.014Z Failed to create vet { error: { code: [32m'SOMETHING'[39m } }
+
+stdout | src/features/veterinarians/components/VetSelector.test.tsx > VetSelector > queries vets and calls onSelect when an existing vet is chosen
+[DEBUG] 2025-11-26T22:58:51.011Z VetSelector options [
+  {
+    id: [32m'9530cdf0-e742-410f-96eb-555ce2216e25'[39m,
+    ownerUserId: [32m'fb4a02a2-9937-4437-acff-b017ae09e439'[39m,
+    name: [32m'Dr. Alpha'[39m,
+    phone: [32m'245-714-2315 x63365'[39m,
+    createdAt: [35m2025-11-26T22:58:50.487Z[39m,
+    updatedAt: [35m2025-11-26T22:58:50.487Z[39m,
+    _normName: [32m'alpha'[39m,
+    _e164Phone: [32m'596.385.5377'[39m,
+    isArchived: [33mfalse[39m,
+    createdBy: [32m'2fdc682d-762b-45b5-b6f1-db0b928d3188'[39m
+  },
+  { id: [32m'__create__'[39m, name: [32m'Create new vet…'[39m }
+]
+
+ ✓ src/features/veterinarians/components/VetForm.test.tsx (6 tests) 998ms
+   ✓ VetForm > blocks submit and shows validation when required fields are missing  366ms
+ ✓ src/features/pets/pages/AddPetPage.test.tsx (7 tests) 1067ms
+   ✓ AddPetPage > renders the PetForm  616ms
+ ✓ src/features/veterinarians/pages/AddVetPage.test.tsx (4 tests) 932ms
+   ✓ AddVetPage > shows duplicate error when service throws DUPLICATE_VET  409ms
+ ✓ src/AppRoutes.test.tsx (9 tests) 1071ms
+   ✓ AppRoutes > renders PetListPage for /pets when feature is enabled  357ms
+   ✓ AppRoutes > renders AddPetPage for /pets/new  336ms
+   ✓ renders EditPetPage (or not-found alert) for /pets/:id/edit when feature enabled  313ms
+stdout | src/features/veterinarians/components/VetSelector.test.tsx > VetSelector > shows Create dialog when "Create new vet…" is chosen and forwards submit to service then onSelect
+[DEBUG] 2025-11-26T22:58:51.442Z VetSelector options [ { id: [32m'__create__'[39m, name: [32m'Create new vet…'[39m } ]
+
+ ✓ src/features/veterinarians/pages/VetRoutes.test.tsx (4 tests) 1070ms
+   ✓ Vets routes (flag-gated) > renders VetListPage at /vets when vetsEnabled=true  365ms
+   ✓ Vets routes (flag-gated) > renders AddVetPage at /vets/add when enabled  356ms
+   ✓ Vets routes (flag-gated) > renders EditVetPage at /vets/:id/edit when enabled  339ms
+stdout | src/features/veterinarians/components/VetSelector.test.tsx > VetSelector > keeps dialog open and does not call onSelect when createVet rejects
+[DEBUG] 2025-11-26T22:58:51.546Z VetSelector options [ { id: [32m'__create__'[39m, name: [32m'Create new vet…'[39m } ]
+
+stderr | src/features/veterinarians/components/VetSelector.test.tsx > VetSelector > keeps dialog open and does not call onSelect when createVet rejects
+[ERROR] 2025-11-26T22:58:51.578Z vet: createVet error {
+  error: Error: duplicate
+      at [90m/Users/edmays/src/dog-log/[39msrc/features/veterinarians/components/VetSelector.test.tsx:135:48
+      at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+      at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+      at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+      at new Promise (<anonymous>)
+      at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+      at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+      at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+      at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+      at runFiles [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1787:3[90m)[39m
+}
+
+ ✓ src/features/pets/pages/EditPetPage.test.tsx (9 tests | 1 skipped) 1267ms
+   ✓ EditPetPage > renders existing pet and submits updates then navigates to /pets  349ms
+stdout | src/features/veterinarians/components/VetSelector.test.tsx > VetSelector > closes the dialog when the external Cancel button is clicked
+[DEBUG] 2025-11-26T22:58:51.643Z VetSelector options [ { id: [32m'__create__'[39m, name: [32m'Create new vet…'[39m } ]
+
+ ❯ src/features/pets/components/PetCard.test.tsx (5 tests | 2 failed) 1406ms
+   × PetCard > renders provided pet name and breed within the MUI card structure and links to details page 86ms
+     → Unable to find an accessible element with the role "img" and name `/pet header/i`
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Buddy Buddy Labrador":
+  [36m<a[39m
+    [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/pets/123"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "Buddy":
+  [36m<img[39m
+    [33malt[39m=[32m"Buddy"[39m
+    [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+    [33mheight[39m=[32m"140"[39m
+    [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Buddy":
+  [36m<h3[39m
+    [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Edit":
+  [36m<button[39m
+    [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Delete":
+  [36m<button[39m
+    [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-1sb71kg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-1j74uew-MuiPaper-root-MuiCard-root"[39m
+        [33mstyle[39m=[32m"--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/pets/123"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m"Buddy"[39m
+            [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+            [33mheight[39m=[32m"140"[39m
+            [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"MuiCardContent-root css-1lt5qva-MuiCardContent-root"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+            [36m>[39m
+              [0mBuddy[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+            [36m>[39m
+              [0mLabrador[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"MuiCardActionArea-focusHighlight css-1h5un5t-MuiCardActionArea-focusHighlight"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"MuiCardActions-root MuiCardActions-spacing css-1q4nm6f-MuiCardActions-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"EditIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mEdit[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"DeleteIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mDelete[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ PetCard > shows Edit/Delete when petActionsEnabled=true and navigates on Edit 50ms
+   ✓ PetCard > delete success flow: opens modal, shows saving, calls deletePet, then closes 94ms
+   × PetCard > delete failure flow: shows error alert and closes modal 1108ms
+     → Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-1sb71kg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-1j74uew-MuiPaper-root-MuiCard-root"[39m
+        [33mstyle[39m=[32m"--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/pets/88"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m"Bella"[39m
+            [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+            [33mheight[39m=[32m"140"[39m
+            [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"MuiCardContent-root css-1lt5qva-MuiCardContent-root"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+            [36m>[39m
+              [0mBella[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+            [36m>[39m
+              [0mMix[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"MuiCardActionArea-focusHighlight css-1h5un5t-MuiCardActionArea-focusHighlight"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"MuiCardActions-root MuiCardActions-spacing css-1q4nm6f-MuiCardActions-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"EditIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mEdit[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError Mui-focusVisible MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"DeleteIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mDelete[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-1sb71kg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-1j74uew-MuiPaper-root-MuiCard-root"[39m
+        [33mstyle[39m=[32m"--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/pets/88"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m"Bella"[39m
+            [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+            [33mheight[39m=[32m"140"[39m
+            [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"MuiCardContent-root css-1lt5qva-MuiCardContent-root"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+            [36m>[39m
+              [0mBella[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+            [36m>[39m
+              [0mMix[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"MuiCardActionArea-focusHighlight css-1h5un5t-MuiCardActionArea-focusHighlight"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"MuiCardActions-root MuiCardActions-spacing css-1q4nm6f-MuiCardActions-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"EditIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mEdit[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError Mui-focusVisible MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"DeleteIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mDelete[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+   ✓ PetCard > declining in the confirm modal closes it without calling delete 68ms
+ ✓ src/features/pets/components/petForm.test.tsx (14 tests) 1450ms
+stdout | src/App.authGuard.test.tsx > App auth route protection > redirects unauthenticated users to /welcome for /pets
+[INFO] 2025-11-26T22:58:51.973Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+ ✓ src/features/veterinarians/components/VetSelector.test.tsx (6 tests) 1766ms
+   ✓ VetSelector > queries vets and calls onSelect when an existing vet is chosen  538ms
+   ✓ VetSelector > triggers search on input (loading branch executes) and completes when resolved  380ms
+   ✓ VetSelector > closes the dialog when the external Cancel button is clicked  321ms
+   ✓ VetSelector > does nothing when not authenticated: no search and create submit is a no-op  342ms
+stderr | src/features/pets/hooks/usePetDetails.test.tsx > usePetDetails > returns pet data when found
+react-i18next:: useTranslation: You will need to pass in an i18next instance by using initReactI18next { code: [32m'NO_I18NEXT_INSTANCE'[39m }
+
+stdout | src/App.authGuard.test.tsx > App auth route protection > redirects unauthenticated users to /welcome for /pets/new
+[INFO] 2025-11-26T22:58:52.524Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/App.authGuard.test.tsx > App auth route protection > redirects unauthenticated users to /welcome for /pets/:id/edit
+[INFO] 2025-11-26T22:58:52.545Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/App.authGuard.test.tsx > renders Welcome page for /welcome when unauthenticated
+[INFO] 2025-11-26T22:58:52.581Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+ ✓ src/App.authGuard.test.tsx (6 tests) 666ms
+   ✓ App auth route protection > allows authenticated users to access /pets  515ms
+stdout | src/features/pets/components/PetForm.link.test.tsx > PetForm linking UI > renders linking section when flags enabled and allows add/remove vet link
+[DEBUG] 2025-11-26T22:58:52.650Z Loading Pet/Vet Links []
+
+ ✓ src/features/pets/hooks/usePetDetails.test.tsx (8 tests) 307ms
+stdout | src/features/pets/components/PetForm.link.test.tsx > PetForm linking UI > renders linking section when flags enabled and allows add/remove vet link
+[DEBUG] 2025-11-26T22:58:52.729Z Vet linked to pet {
+  link: {
+    id: [32m'l1'[39m,
+    petId: [32m'p1'[39m,
+    vetId: [32m'v42'[39m,
+    role: [32m'primary'[39m,
+    createdAt: [35m2024-01-01T00:00:00.000Z[39m,
+    updatedAt: [35m2024-01-01T00:00:00.000Z[39m,
+    createdBy: [32m'user1'[39m
+  },
+  vet: { id: [32m'v42'[39m, name: [32m'Dr. Link'[39m, phone: [32m'555-4242'[39m }
+}
+
+stdout | src/features/pets/components/PetForm.link.test.tsx > PetForm linking UI > changing role to primary calls setPrimaryVet and fires telemetry
+[DEBUG] 2025-11-26T22:58:52.848Z Loading Pet/Vet Links [
+  {
+    link: {
+      id: [32m'l1'[39m,
+      petId: [32m'p1'[39m,
+      vetId: [32m'v42'[39m,
+      role: [32m'specialist'[39m,
+      createdAt: [35m2025-11-26T22:58:52.846Z[39m,
+      updatedAt: [35m2025-11-26T22:58:52.846Z[39m,
+      createdBy: [32m'user1'[39m
+    },
+    vet: { id: [32m'v42'[39m, name: [32m'Dr. Link'[39m, phone: [32m'555'[39m }
+  }
+]
+
+stdout | src/features/pets/components/PetForm.link.test.tsx > PetForm linking UI > switching primary from one vet to another updates both roles in UI
+[DEBUG] 2025-11-26T22:58:52.985Z Loading Pet/Vet Links [
+  {
+    link: {
+      id: [32m'l1'[39m,
+      petId: [32m'p1'[39m,
+      vetId: [32m'v1'[39m,
+      role: [32m'primary'[39m,
+      createdAt: [35m2025-11-26T22:58:52.983Z[39m,
+      updatedAt: [35m2025-11-26T22:58:52.983Z[39m,
+      createdBy: [32m'user1'[39m
+    },
+    vet: { id: [32m'v1'[39m, name: [32m'Dr. Primary'[39m, phone: [32m'111'[39m }
+  },
+  {
+    link: {
+      id: [32m'l2'[39m,
+      petId: [32m'p1'[39m,
+      vetId: [32m'v2'[39m,
+      role: [32m'specialist'[39m,
+      createdAt: [35m2025-11-26T22:58:52.983Z[39m,
+      updatedAt: [35m2025-11-26T22:58:52.983Z[39m,
+      createdBy: [32m'user1'[39m
+    },
+    vet: { id: [32m'v2'[39m, name: [32m'Dr. Specialist'[39m, phone: [32m'222'[39m }
+  }
+]
+
+stdout | src/features/pets/components/PetForm.link.test.tsx > PetForm linking UI > changing role to non-primary calls updateLink
+[DEBUG] 2025-11-26T22:58:53.134Z Loading Pet/Vet Links [
+  {
+    link: {
+      id: [32m'l1'[39m,
+      petId: [32m'p1'[39m,
+      vetId: [32m'v42'[39m,
+      role: [32m'other'[39m,
+      createdAt: [35m2025-11-26T22:58:53.132Z[39m,
+      updatedAt: [35m2025-11-26T22:58:53.132Z[39m,
+      createdBy: [32m'user1'[39m
+    },
+    vet: { id: [32m'v42'[39m, name: [32m'Dr. Link'[39m, phone: [32m'555'[39m }
+  }
+]
+
+stdout | src/App.test.tsx > App > when loading
+[INFO] 2025-11-26T22:58:53.151Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+ ✓ src/features/pets/components/PetForm.link.test.tsx (4 tests) 618ms
+ ✓ src/components/common/ConfirmModal/ConfirmModal.test.tsx (14 tests) 483ms
+ ✓ src/features/pets/components/PetList.test.tsx (15 tests) 708ms
+ ✓ src/features/veterinarians/pages/VetListPage.test.tsx (9 tests) 611ms
+ ✓ src/App.routing.test.tsx (4 tests) 504ms
+   ✓ Routing and navigation hygiene > renders pet list at /pets when authenticated and petListEnabled=true  353ms
+ ✓ src/features/veterinarians/pages/EditVetPage.test.tsx (4 tests) 765ms
+   ✓ EditVetPage > shows duplicate error when update throws DUPLICATE_VET and does not navigate  463ms
+ ✓ src/featureFlags/components/FeatureFlagsDevTool.test.tsx (6 tests) 282ms
+ ✓ src/App.test.tsx (8 tests) 671ms
+   ✓ App > when mounted > renders pet list  416ms
+ ✓ src/components/common/NavigationBar/NavigationBar.test.tsx (9 tests) 402ms
+stderr | src/featureFlags/components/FeatureFlagsProvider.test.tsx > FeatureFlagsProvider > shows loading indicator initially and then renders children
+react-i18next:: useTranslation: You will need to pass in an i18next instance by using initReactI18next { code: [32m'NO_I18NEXT_INSTANCE'[39m }
+
+ ✓ src/featureFlags/components/FeatureFlagsProvider.test.tsx (4 tests) 117ms
+ ✓ src/components/common/LanguageSelector/LanguageSelector.test.tsx (3 tests) 275ms
+stdout | src/features/authentication/pages/WelcomePage.test.tsx > WelcomePage > renders the welcome message and login button
+[INFO] 2025-11-26T22:58:54.954Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx > GoogleLoginButton > calls signInWithGoogle on click
+[INFO] 2025-11-26T22:58:54.957Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+ ✓ src/features/authentication/components/GoogleAuth/LogoutButton.test.tsx (6 tests) 129ms
+stdout | src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx > GoogleLoginButton > calls signInWithGoogle on click
+[INFO] 2025-11-26T22:58:54.994Z Signed in with Google { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/features/authentication/pages/WelcomePage.test.tsx > WelcomePage > renders the expected content in English and enables the button
+[INFO] 2025-11-26T22:58:55.005Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx > GoogleLoginButton > Initialization behavior > is disabled while initializing
+[INFO] 2025-11-26T22:58:55.005Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx > GoogleLoginButton > is enabled when not initializing
+[INFO] 2025-11-26T22:58:55.021Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx > GoogleLoginButton > i18N behavior > translates the button text in English
+[INFO] 2025-11-26T22:58:55.030Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stdout | src/features/authentication/pages/WelcomePage.test.tsx > WelcomePage > clicking the login button triggers sign-in via the auth store
+[INFO] 2025-11-26T22:58:55.031Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+stderr | src/components/common/PhotoUpload.test.tsx > PhotoUpload > validates file type
+[ERROR] 2025-11-26T22:58:55.034Z Upload failed {
+  error: Error: validation.invalidFileType
+      at handleFileChange [90m(/Users/edmays/src/dog-log/[39msrc/components/common/PhotoUpload.tsx:47:27[90m)[39m
+      at executeDispatch [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19116:9[90m)[39m
+      at runWithFiberInDEV [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:874:13[90m)[39m
+      at processDispatchQueue [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19166:19[90m)[39m
+      at [90m/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19767:9
+      at batchedUpdates$1 [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:3255:40[90m)[39m
+      at dispatchEventForPluginEventSystem [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:19320:7[90m)[39m
+      at dispatchEvent [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23585:11[90m)[39m
+      at dispatchDiscreteEvent [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:23553:11[90m)[39m
+      at HTMLDivElement.#callDispatchEventListeners [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/happy-dom@20.0.10/node_modules/[4mhappy-dom[24m/src/event/EventTarget.ts:299:42[90m)[39m
+}
+
+stdout | src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx > GoogleLoginButton > i18N behavior > translates the button text in Spanish
+[INFO] 2025-11-26T22:58:55.042Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+ ✓ src/components/common/PhotoUpload.test.tsx (3 tests) 91ms
+stdout | src/features/authentication/pages/WelcomePage.test.tsx > WelcomePage > clicking the login button triggers sign-in via the auth store
+[INFO] 2025-11-26T22:58:55.048Z Signed in with Google { source: [32m'GoogleLoginButton'[39m }
+
+ ✓ src/features/authentication/components/GoogleAuth/GoogleLoginButton.test.tsx (5 tests) 116ms
+ ✓ src/features/pets/components/PetSortSelector.test.tsx (2 tests) 241ms
+stdout | src/features/authentication/AuthBootstrap.test.tsx > AuthBootstrap > returns no UI (renders null)
+[DEBUG] 2025-11-26T22:58:55.057Z [auth] onAuthStateChanged event 
+
+ ✓ src/features/authentication/AuthBootstrap.test.tsx (4 tests) 255ms
+stdout | src/features/authentication/pages/WelcomePage.test.tsx > WelcomePage > renders the expected content in Spanish (no snapshots)
+[INFO] 2025-11-26T22:58:55.061Z Loaded i18n { source: [32m'GoogleLoginButton'[39m }
+
+ ✓ src/features/authentication/pages/WelcomePage.test.tsx (4 tests) 161ms
+ ✓ src/features/veterinarians/components/VetCard.test.tsx (5 tests) 146ms
+ ✓ src/features/pets/components/PetPhotoGallery.test.tsx (3 tests) 108ms
+ ✓ src/featureFlags/components/FeatureFlagsContext.test.tsx (2 tests) 60ms
+ ✓ src/components/common/ErrorIndicator/ErrorIndicator.test.tsx (4 tests) 100ms
+stderr | src/components/common/ErrorBoundary/ErrorBoundary.test.tsx > ErrorBoundary > renders a localized fallback when a child throws
+Error: Boom
+    at Thrower [90m(/Users/edmays/src/dog-log/[39msrc/components/common/ErrorBoundary/ErrorBoundary.test.tsx:6:9[90m)[39m
+    at Object.react_stack_bottom_frame [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:25904:20[90m)[39m
+    at renderWithHooks [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:7662:22[90m)[39m
+    at updateFunctionComponent [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:10166:19[90m)[39m
+    at beginWork [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:11778:18[90m)[39m
+    at runWithFiberInDEV [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:874:13[90m)[39m
+    at performUnitOfWork [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:17641:22[90m)[39m
+    at workLoopSync [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:17469:41[90m)[39m
+    at renderRootSync [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:17450:11[90m)[39m
+    at performWorkOnRoot [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:16583:35[90m)[39m {
+  [stack]: [36m[Getter/Setter][39m,
+  [message]: [32m'Boom'[39m
+}
+
+The above error occurred in the <Thrower> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+
+
+stderr | src/components/common/ErrorBoundary/ErrorBoundary.test.tsx > ErrorBoundary > renders Spanish fallback when locale is es
+Error: Boom
+    at Thrower [90m(/Users/edmays/src/dog-log/[39msrc/components/common/ErrorBoundary/ErrorBoundary.test.tsx:6:9[90m)[39m
+    at Object.react_stack_bottom_frame [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:25904:20[90m)[39m
+    at renderWithHooks [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:7662:22[90m)[39m
+    at updateFunctionComponent [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:10166:19[90m)[39m
+    at beginWork [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:11778:18[90m)[39m
+    at runWithFiberInDEV [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:874:13[90m)[39m
+    at performUnitOfWork [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:17641:22[90m)[39m
+    at workLoopSync [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:17469:41[90m)[39m
+    at renderRootSync [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:17450:11[90m)[39m
+    at performWorkOnRoot [90m(/Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/react-dom@19.2.0_react@19.2.0/node_modules/[4mreact-dom[24m/cjs/react-dom-client.development.js:16583:35[90m)[39m {
+  [stack]: [36m[Getter/Setter][39m,
+  [message]: [32m'Boom'[39m
+}
+
+The above error occurred in the <Thrower> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+
+
+ ✓ src/components/common/ErrorBoundary/ErrorBoundary.test.tsx (2 tests) 69ms
+ ✓ src/featureFlags/hooks/useFeatureFlagsContext.test.tsx (3 tests) 41ms
+ ✓ src/features/pets/components/LinkedVetList.test.tsx (3 tests) 72ms
+stderr | src/repositories/base/BaseRepository.test.ts > BaseRepository > handleError > should map permission-denied errors correctly
+Error in test context: Error: permission-denied: Access denied
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:152:21
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > BaseRepository > handleError > should map not-found errors correctly
+Error in test context: Error: not-found: Document not found
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:159:21
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > BaseRepository > handleError > should handle unknown errors
+Error in test context: Unknown error
+
+stdout | src/repositories/base/BaseRepository.test.ts > BaseRepository CRUD and queries > create writes to collection and returns entity with id and dates
+[DEBUG] 2025-11-26T22:58:56.417Z Creating entity [object Object] 
+
+stderr | src/repositories/base/BaseRepository.test.ts > BaseRepository additional branches > update maps missing document to FIRESTORE_ERROR
+Error in update(missing): Error: Document not found
+    at TestRepository.update [90m(/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.ts:237:15[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > BaseRepository additional branches > getList error path maps to FIRESTORE_ERROR
+Error in getList: Error: random failure
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:386:46
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > error mapping for getById/create/delete > getById rejection maps to FIRESTORE_ERROR with context
+Error in getById(z): Error: kaboom
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:494:45
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stdout | src/repositories/base/BaseRepository.test.ts > error mapping for getById/create/delete > create rejection maps to FIRESTORE_ERROR with context
+[DEBUG] 2025-11-26T22:58:56.420Z Creating entity [object Object] 
+
+stderr | src/repositories/base/BaseRepository.test.ts > error mapping for getById/create/delete > create rejection maps to FIRESTORE_ERROR with context
+Error in create: Error: nope
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:506:45
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > error mapping for getById/create/delete > delete rejection maps to FIRESTORE_ERROR with context
+Error in delete(bad): Error: denied
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:521:48
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > handleError additional mapping > maps generic Error to FIRESTORE_ERROR with original message
+Error in ctx: Error: boom
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:565:17
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > ArchivableBaseRepository lists > getActiveList error path maps to FIRESTORE_ERROR
+[ERROR] 2025-11-26T22:58:56.422Z Error fetching active list: {
+  error: Error: active-fail
+      at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:608:46
+      at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+      at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+      at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+      at new Promise (<anonymous>)
+      at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+      at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+  [90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+      at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+      at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+}
+Error in getActiveList: Error: active-fail
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:608:46
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stderr | src/repositories/base/BaseRepository.test.ts > ArchivableBaseRepository lists > getArchivedList error path maps to FIRESTORE_ERROR
+Error in getArchivedList: Error: archived-fail
+    at [90m/Users/edmays/src/dog-log/[39msrc/repositories/base/BaseRepository.test.ts:640:46
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1574:12[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/edmays/src/dog-log/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1729:8[90m)[39m
+
+stdout | src/repositories/base/BaseRepository.test.ts > ArchivableBaseRepository lists > getList delegates to getActiveList
+[DEBUG] 2025-11-26T22:58:56.423Z Fetching active list with options { orderBy: [32m'createdAt'[39m }
+
+ ✓ src/components/common/LoadingIndicator/LoadingIndicator.test.tsx (2 tests) 66ms
+ ✓ src/repositories/base/BaseRepository.test.ts (30 tests) 21ms
+ ✓ src/store/useResetStores.test.tsx (2 tests) 41ms
+ ✓ src/features/pets/RoutePrefetcher.test.tsx (5 tests) 55ms
+ ✓ src/services/petVetService.test.ts (11 tests) 19ms
+ ✓ src/test-utils.test.tsx (1 test) 43ms
+ ✓ src/featureFlags/hooks/useFeatureFlag.test.tsx (1 test) 17ms
+ ✓ src/store/pets.store.test.ts (11 tests) 10ms
+ ✓ src/features/authentication/components/GoogleAuth/GoogleAuth.test.tsx (2 tests) 31ms
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > init > sets default config and fetch settings
+[RemoteConfig] Initializing in DEV mode (fast fetch)
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > fetchAndActivate > returns true when fetch succeeds
+[RemoteConfig] Fetching config...
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > fetchAndActivate > returns true when fetch succeeds
+[RemoteConfig] Fetch result (activated): [33mtrue[39m
+[RemoteConfig] Last fetch status: success
+[RemoteConfig] Last fetch time: 2025-11-26T22:58:57.037Z
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > fetchAndActivate > returns false when fetch returns false
+[RemoteConfig] Fetching config...
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > fetchAndActivate > returns false when fetch returns false
+[RemoteConfig] Fetch result (activated): [33mfalse[39m
+[RemoteConfig] Last fetch status: success
+[RemoteConfig] Last fetch time: 2025-11-26T22:58:57.037Z
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > fetchAndActivate > returns false and logs error when fetch throws
+[RemoteConfig] Fetching config...
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > getAllFlags > returns all flags defined in defaultFeatureFlags
+[RemoteConfig] All Flags
+  petListEnabled: [33mtrue[39m
+  addPetEnabled: [33mtrue[39m
+  authEnabled: [33mtrue[39m
+  petActionsEnabled: [33mtrue[39m
+  navbarEnabled: [33mtrue[39m
+  vetsEnabled: [33mtrue[39m
+  vetLinkingEnabled: [33mtrue[39m
+  petPhotosEnabled: [33mtrue[39m
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > subscribeToUpdates > subscribes to onConfigUpdate and calls callback on update
+[RemoteConfig] Config updated via real-time listener [ [32m'petListEnabled'[39m ]
+[RemoteConfig] Fetching config...
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > subscribeToUpdates > subscribes to onConfigUpdate and calls callback on update
+[RemoteConfig] Fetch result (activated): [33mtrue[39m
+[RemoteConfig] Last fetch status: success
+[RemoteConfig] Last fetch time: 2025-11-26T22:58:57.037Z
+
+stdout | src/services/remoteConfig.test.ts > RemoteConfigService > subscribeToUpdates > subscribes to onConfigUpdate and calls callback on update
+[RemoteConfig] All Flags
+  petListEnabled: [33mtrue[39m
+  addPetEnabled: [33mtrue[39m
+  authEnabled: [33mtrue[39m
+  petActionsEnabled: [33mtrue[39m
+  navbarEnabled: [33mtrue[39m
+  vetsEnabled: [33mtrue[39m
+  vetLinkingEnabled: [33mtrue[39m
+  petPhotosEnabled: [33mtrue[39m
+
+ ✓ src/services/remoteConfig.test.ts (7 tests) 13ms
+stdout | src/services/auth/authService.test.ts > authService > signInWithGoogle > creates a new user if one does not exist
+[INFO] 2025-11-26T22:58:57.067Z Creating new user in Firestore 
+
+stdout | src/services/auth/authService.test.ts > authService > signInWithGoogle > creates a new user if one does not exist
+[INFO] 2025-11-26T22:58:57.067Z [auth] signInWithGoogle success 
+
+stdout | src/services/auth/authService.test.ts > authService > signInWithGoogle > does not create a user if one already exists
+[INFO] 2025-11-26T22:58:57.068Z [auth] signInWithGoogle success 
+
+stderr | src/services/auth/authService.test.ts > authService > signInWithGoogle > throws when Firebase returns no user in the popup result
+[ERROR] 2025-11-26T22:58:57.069Z Firebase authentication failed: no user returned. 
+[WARN] 2025-11-26T22:58:57.069Z [auth] signInWithGoogle failed 
+
+stderr | src/services/auth/authService.test.ts > authService > signInWithGoogle rethrows errors
+[WARN] 2025-11-26T22:58:57.070Z [auth] signInWithGoogle failed 
+
+stdout | src/services/auth/authService.test.ts > authService > signOut calls Firebase signOut
+[INFO] 2025-11-26T22:58:57.071Z [auth] signOut success 
+
+stderr | src/services/auth/authService.test.ts > authService > signOut rethrows when Firebase signOut fails
+[WARN] 2025-11-26T22:58:57.071Z [auth] signOut failed 
+
+stdout | src/services/auth/authService.test.ts > authService > subscribeToAuth forwards mapped user and returns unsubscribe
+[DEBUG] 2025-11-26T22:58:57.072Z [auth] onAuthStateChanged event 
+
+stderr | src/services/auth/authService.test.ts > authService > subscribeToAuth forwards errors
+[WARN] 2025-11-26T22:58:57.073Z [auth] onAuthStateChanged error 
+
+ ✓ src/services/auth/authService.test.ts (9 tests) 8ms
+ ✓ src/hooks/useAppStatus.test.ts (2 tests) 14ms
+ ✓ src/services/vetService.test.ts (11 tests) 18ms
+ ✓ src/store/auth.store.test.ts (10 tests) 9ms
+ ✓ src/utils/id.test.ts (4 tests) 8ms
+ ✓ src/repositories/petVetRepository.test.ts (10 tests) 7ms
+ ✓ src/store/auth.store.selectors.test.tsx (1 test) 35ms
+ ✓ src/services/analytics/analytics.test.ts (3 tests) 7ms
+ ✓ src/services/logService.test.ts (3 tests) 10ms
+ ✓ src/services/petService.test.ts (7 tests) 8ms
+stdout | src/repositories/vetRepository.test.ts > listVets delegates to getList
+Fetching vets for user user-1
+
+ ✓ src/repositories/vetRepository.test.ts (8 tests) 8ms
+ ✓ src/services/analytics/analytics.integration.test.ts (6 tests) 8ms
+ ✓ src/repositories/userRepository.test.ts (4 tests) 5ms
+ ✓ src/repositories/petRepository.test.ts (5 tests) 8ms
+ ✓ src/repositories/config.test.ts (7 tests) 4ms
+ ✓ src/repositories/utils/dataTransformers.test.ts (8 tests) 5ms
+ ✓ src/utils/errors.test.ts (6 tests) 2ms
+ ✓ src/store/ui.store.test.tsx (4 tests) 2ms
+ ✓ src/utils/phone.test.ts (6 tests) 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/firebase.test.tsx > firebase lazy initialization and configuration > uses safe defaults when env vars are missing
+TypeError: Cannot read properties of undefined (reading 'getProvider')
+ ❯ _getProvider node_modules/.pnpm/@firebase+app@0.14.5/node_modules/@firebase/app/src/internal.ts:126:6
+ ❯ getStorage node_modules/.pnpm/@firebase+storage@0.14.0_@firebase+app@0.14.5/node_modules/@firebase/storage/src/api.ts:335:48
+ ❯ src/firebase.ts:31:24
+     29| export const db = getFirestore(getApp());
+     30| export const remoteConfig = getRemoteConfig(getApp());
+     31| export const storage = getStorage(getApp());
+       |                        ^
+     32| 
+     33| // Connect to emulators during local development (localhost) or when e…
+ ❯ importFirebaseModule src/firebase.test.tsx:41:15
+ ❯ src/firebase.test.tsx:72:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/firebase.test.tsx > firebase lazy initialization and configuration > reads VITE_* env vars when provided
+TypeError: Cannot read properties of undefined (reading 'getProvider')
+ ❯ _getProvider node_modules/.pnpm/@firebase+app@0.14.5/node_modules/@firebase/app/src/internal.ts:126:6
+ ❯ getStorage node_modules/.pnpm/@firebase+storage@0.14.0_@firebase+app@0.14.5/node_modules/@firebase/storage/src/api.ts:335:48
+ ❯ src/firebase.ts:31:24
+     29| export const db = getFirestore(getApp());
+     30| export const remoteConfig = getRemoteConfig(getApp());
+     31| export const storage = getStorage(getApp());
+       |                        ^
+     32| 
+     33| // Connect to emulators during local development (localhost) or when e…
+ ❯ importFirebaseModule src/firebase.test.tsx:41:15
+ ❯ src/firebase.test.tsx:114:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/firebase.test.tsx > firebase lazy initialization and configuration > is a singleton: initializeApp called only once even if getApp is called twice
+TypeError: Cannot read properties of undefined (reading 'getProvider')
+ ❯ _getProvider node_modules/.pnpm/@firebase+app@0.14.5/node_modules/@firebase/app/src/internal.ts:126:6
+ ❯ getStorage node_modules/.pnpm/@firebase+storage@0.14.0_@firebase+app@0.14.5/node_modules/@firebase/storage/src/api.ts:335:48
+ ❯ src/firebase.ts:31:24
+     29| export const db = getFirestore(getApp());
+     30| export const remoteConfig = getRemoteConfig(getApp());
+     31| export const storage = getStorage(getApp());
+       |                        ^
+     32| 
+     33| // Connect to emulators during local development (localhost) or when e…
+ ❯ importFirebaseModule src/firebase.test.tsx:41:15
+ ❯ src/firebase.test.tsx:130:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/firebase.test.tsx > firebase lazy initialization and configuration > connects to emulators only when VITE_USE_EMULATORS === "true"
+TypeError: Cannot read properties of undefined (reading 'getProvider')
+ ❯ _getProvider node_modules/.pnpm/@firebase+app@0.14.5/node_modules/@firebase/app/src/internal.ts:126:6
+ ❯ getStorage node_modules/.pnpm/@firebase+storage@0.14.0_@firebase+app@0.14.5/node_modules/@firebase/storage/src/api.ts:335:48
+ ❯ src/firebase.ts:31:24
+     29| export const db = getFirestore(getApp());
+     30| export const remoteConfig = getRemoteConfig(getApp());
+     31| export const storage = getStorage(getApp());
+       |                        ^
+     32| 
+     33| // Connect to emulators during local development (localhost) or when e…
+ ❯ importFirebaseModule src/firebase.test.tsx:41:15
+ ❯ src/firebase.test.tsx:144:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/firebase.test.tsx > firebase lazy initialization and configuration > does not connect to emulators when flag is absent or false
+TypeError: Cannot read properties of undefined (reading 'getProvider')
+ ❯ _getProvider node_modules/.pnpm/@firebase+app@0.14.5/node_modules/@firebase/app/src/internal.ts:126:6
+ ❯ getStorage node_modules/.pnpm/@firebase+storage@0.14.0_@firebase+app@0.14.5/node_modules/@firebase/storage/src/api.ts:335:48
+ ❯ src/firebase.ts:31:24
+     29| export const db = getFirestore(getApp());
+     30| export const remoteConfig = getRemoteConfig(getApp());
+     31| export const storage = getStorage(getApp());
+       |                        ^
+     32| 
+     33| // Connect to emulators during local development (localhost) or when e…
+ ❯ importFirebaseModule src/firebase.test.tsx:41:15
+ ❯ src/firebase.test.tsx:166:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/features/pets/components/PetCard.test.tsx > PetCard > renders provided pet name and breed within the MUI card structure and links to details page
+TestingLibraryElementError: Unable to find an accessible element with the role "img" and name `/pet header/i`
+
+Here are the accessible roles:
+
+  link:
+
+  Name "Buddy Buddy Labrador":
+  [36m<a[39m
+    [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+    [33mdata-discover[39m=[32m"true"[39m
+    [33mhref[39m=[32m"/pets/123"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "Buddy":
+  [36m<img[39m
+    [33malt[39m=[32m"Buddy"[39m
+    [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+    [33mheight[39m=[32m"140"[39m
+    [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Buddy":
+  [36m<h3[39m
+    [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Edit":
+  [36m<button[39m
+    [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Delete":
+  [36m<button[39m
+    [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+    [33mtabindex[39m=[32m"0"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-1sb71kg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-1j74uew-MuiPaper-root-MuiCard-root"[39m
+        [33mstyle[39m=[32m"--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/pets/123"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m"Buddy"[39m
+            [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+            [33mheight[39m=[32m"140"[39m
+            [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"MuiCardContent-root css-1lt5qva-MuiCardContent-root"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+            [36m>[39m
+              [0mBuddy[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+            [36m>[39m
+              [0mLabrador[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"MuiCardActionArea-focusHighlight css-1h5un5t-MuiCardActionArea-focusHighlight"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"MuiCardActions-root MuiCardActions-spacing css-1q4nm6f-MuiCardActions-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"EditIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mEdit[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"DeleteIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mDelete[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/pets/components/PetCard.test.tsx:40:24
+     38| 
+     39|     // Header image exists
+     40|     const img = screen.getByRole('img', { name: /pet header/i });
+       |                        ^
+     41|     expect(img).toBeInTheDocument();
+     42| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/features/pets/components/PetCard.test.tsx > PetCard > delete failure flow: shows error alert and closes modal
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-1sb71kg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-1j74uew-MuiPaper-root-MuiCard-root"[39m
+        [33mstyle[39m=[32m"--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/pets/88"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m"Bella"[39m
+            [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+            [33mheight[39m=[32m"140"[39m
+            [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"MuiCardContent-root css-1lt5qva-MuiCardContent-root"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+            [36m>[39m
+              [0mBella[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+            [36m>[39m
+              [0mMix[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"MuiCardActionArea-focusHighlight css-1h5un5t-MuiCardActionArea-focusHighlight"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"MuiCardActions-root MuiCardActions-spacing css-1q4nm6f-MuiCardActions-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"EditIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mEdit[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError Mui-focusVisible MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"DeleteIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mDelete[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"MuiBox-root css-1sb71kg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root css-1j74uew-MuiPaper-root-MuiCard-root"[39m
+        [33mstyle[39m=[32m"--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"MuiButtonBase-root MuiCardActionArea-root css-coyn9m-MuiButtonBase-root-MuiCardActionArea-root"[39m
+          [33mdata-discover[39m=[32m"true"[39m
+          [33mhref[39m=[32m"/pets/88"[39m
+          [33mtabindex[39m=[32m"0"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m"Bella"[39m
+            [33mclass[39m=[32m"MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1kuwa16-MuiCardMedia-root"[39m
+            [33mheight[39m=[32m"140"[39m
+            [33msrc[39m=[32m"https://placehold.co/345x140?text=Pet+Image"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"MuiCardContent-root css-1lt5qva-MuiCardContent-root"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-149mqdv-MuiTypography-root"[39m
+            [36m>[39m
+              [0mBella[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"MuiTypography-root MuiTypography-body2 css-awl5gn-MuiTypography-root"[39m
+            [36m>[39m
+              [0mMix[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"MuiCardActionArea-focusHighlight css-1h5un5t-MuiCardActionArea-focusHighlight"[39m
+          [36m/>[39m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"MuiCardActions-root MuiCardActions-spacing css-1q4nm6f-MuiCardActions-root"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-18a6nba-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"EditIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mEdit[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError Mui-focusVisible MuiButton-root MuiButton-outlined MuiButton-outlinedError MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorError css-13ksh7d-MuiButtonBase-root-MuiButton-root"[39m
+            [33mtabindex[39m=[32m"0"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"[39m
+                [33mdata-testid[39m=[32m"DeleteIcon"[39m
+                [33mfocusable[39m=[32m"false"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</span>[39m
+            [0mDelete[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/features/pets/components/PetCard.test.tsx:145:25
+    143| 
+    144|     // Error alert should appear on the card
+    145|     expect(await screen.findByRole('alert')).toBeInTheDocument();
+       |                         ^
+    146| 
+    147|     // Modal should be closed after failure handling
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  2 failed | 64 passed (66)
+      Tests  7 failed | 397 passed | 1 skipped (405)
+   Start at  17:58:48
+   Duration  9.67s (transform 1.66s, setup 4.62s, collect 38.16s, tests 20.91s, environment 14.70s, prepare 4.21s)
+

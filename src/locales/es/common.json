@@ -27,5 +27,12 @@
   "nav": {
     "pets": "Mascotas",
     "language": "Idioma"
+  },
+  "uploadPhotos": "Subir Fotos",
+  "uploading": "Subiendo... {{progress}}%",
+  "dragAndDropHint": "o arrastra y suelta fotos aquí",
+  "validation": {
+    "fileSizeTooLarge": "El archivo es demasiado grande (máx {{maxSize}}MB)",
+    "invalidFileType": "Tipo de archivo inválido. Por favor sube una imagen."
   }
 }

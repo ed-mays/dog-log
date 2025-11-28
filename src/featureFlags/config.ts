@@ -13,4 +13,7 @@ export const defaultFeatureFlags: FeatureFlags = {
   vetLinkingEnabled:
     import.meta.env.VITE_FLAG_VET_LINKING_ENABLED === 'true' ||
     import.meta.env.VITE_VET_LINKING_ENABLED === 'true',
+  petPhotosEnabled:
+    import.meta.env.VITE_FLAG_PET_PHOTOS_ENABLED === 'true' ||
+    import.meta.env.VITE_PET_PHOTOS_ENABLED === 'true',
 };

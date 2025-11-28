@@ -1,3 +1,9 @@
+export interface PetPhoto {
+  path: string;
+  url: string;
+  createdAt: string; // ISO string
+}
+
 export interface Pet {
   id: string;
   name: string;
@@ -9,6 +15,8 @@ export interface Pet {
   isArchived: boolean;
   archivedAt?: Date;
   archivedBy?: string;
+  photos: PetPhoto[];
+  mainPhotoUrl?: string;
 }
 
 export interface PetCreateInput {
@@ -22,6 +30,8 @@ export interface PetUpdateInput {
   breed?: string;
   birthDate?: Date;
   isArchived?: boolean;
+  photos?: PetPhoto[];
+  mainPhotoUrl?: string;
 }
 
 export interface PetQueryOptions {

@@ -17,6 +17,7 @@ const allFalseFlags: FeatureFlags = {
   petActionsEnabled: false,
   navbarEnabled: false,
   vetLinkingEnabled: false,
+  petPhotosEnabled: false,
 };
 
 describe('FeatureFlagsContext', () => {

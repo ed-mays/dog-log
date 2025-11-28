@@ -23,7 +23,7 @@ vi.mock('firebase/firestore', () => {
   };
 });
 
-vi.mock('@firebase', () => ({ db: {} }));
+vi.mock('@app-firebase', () => ({ db: {} }));
 
 describe('VetRepository', () => {
   const userId = 'user-1';

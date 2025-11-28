@@ -1,0 +1,74 @@
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .galleryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.photoItem {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.photoImage {
+  width: 100%;
+  height: 12rem;
+  /* 48 * 0.25rem = 12rem */
+  object-fit: cover;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+.mainPhotoRing {
+  box-shadow: 0 0 0 4px #3b82f6;
+  /* ring-4 ring-blue-500 */
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.photoItem:hover .overlay {
+  opacity: 1;
+}
+
+.starBadge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #ffffff;
+  border-radius: 50%;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #b45309;
+  /* amber-700 */
+  z-index: 10;
+}
+
+.lightboxImage {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}

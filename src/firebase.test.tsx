@@ -9,15 +9,19 @@ type DbStub = { __db: true };
 let initializeAppMock: ReturnType<typeof vi.fn>;
 let getAuthMock: ReturnType<typeof vi.fn>;
 let getFirestoreMock: ReturnType<typeof vi.fn>;
+let getStorageMock: ReturnType<typeof vi.fn>;
 let connectAuthEmulatorMock: ReturnType<typeof vi.fn>;
 let connectFirestoreEmulatorMock: ReturnType<typeof vi.fn>;
+let connectStorageEmulatorMock: ReturnType<typeof vi.fn>;
 
 function mockFirebaseSdk() {
   initializeAppMock = vi.fn((): AppStub => ({ __app: true }));
   getAuthMock = vi.fn((): AuthStub => ({ __auth: true }));
   getFirestoreMock = vi.fn((): DbStub => ({ __db: true }));
+  getStorageMock = vi.fn(() => ({}));
   connectAuthEmulatorMock = vi.fn();
   connectFirestoreEmulatorMock = vi.fn();
+  connectStorageEmulatorMock = vi.fn();
 
   vi.doMock('firebase/app', () => ({
     initializeApp: initializeAppMock,
@@ -29,6 +33,10 @@ function mockFirebaseSdk() {
   vi.doMock('firebase/firestore', () => ({
     getFirestore: getFirestoreMock,
     connectFirestoreEmulator: connectFirestoreEmulatorMock,
+  }));
+  vi.doMock('firebase/storage', () => ({
+    getStorage: getStorageMock,
+    connectStorageEmulator: connectStorageEmulatorMock,
   }));
   vi.doMock('firebase/remote-config', () => ({
     getRemoteConfig: vi.fn(() => ({})),
@@ -149,11 +157,17 @@ describe('firebase lazy initialization and configuration', () => {
       'http://localhost:9099'
     );
 
-    expect(connectFirestoreEmulatorMock).toHaveBeenCalledTimes(1);
     expect(connectFirestoreEmulatorMock).toHaveBeenCalledWith(
       expect.anything(),
       'localhost',
       8080
+    );
+
+    expect(connectStorageEmulatorMock).toHaveBeenCalledTimes(1);
+    expect(connectStorageEmulatorMock).toHaveBeenCalledWith(
+      expect.anything(),
+      'localhost',
+      9199
     );
   });
 

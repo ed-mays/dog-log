@@ -66,7 +66,7 @@ export default defineConfig({
       '@services': path.resolve(__dirname, './src/services'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@models': path.resolve(__dirname, './src/models'),
-      '@firebase': path.resolve(__dirname, './src/firebase.ts'),
+      '@app-firebase': path.resolve(__dirname, './src/firebase.ts'),
       '@i18n': path.resolve(__dirname, './src/i18n.ts'),
 
       // Convenience alias used in tests pointing to the render wrapper file

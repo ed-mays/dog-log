@@ -2,6 +2,7 @@ import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getRemoteConfig } from 'firebase/remote-config';
+import { getStorage, connectStorageEmulator } from 'firebase/storage';
 
 let _app: FirebaseApp | null = null;
 
@@ -27,6 +28,7 @@ export function getApp(): FirebaseApp {
 export const auth = getAuth(getApp());
 export const db = getFirestore(getApp());
 export const remoteConfig = getRemoteConfig(getApp());
+export const storage = getStorage(getApp());
 
 // Connect to emulators during local development (localhost) or when explicitly requested via env flag
 const isBrowser = typeof window !== 'undefined';
@@ -51,6 +53,7 @@ if (useEmulators) {
 
     connectAuthEmulator(auth, authHost);
     connectFirestoreEmulator(db, firestoreHost, firestorePort);
+    connectStorageEmulator(storage, firestoreHost, 9199);
     // Remote Config emulator typically runs on port 9000 or similar, but often isn't explicitly connected
     // unless you are running a specific emulator suite.
     // However, for completeness, we can try to connect if we have a host/port.
