@@ -27,10 +27,16 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
     setUploading(true);
     setProgress(0);
-
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+
+        console.log('[PhotoUpload] Uploading file:', {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          storagePath,
+        });
 
         // Validate size
         if (file.size > storageConfig.MAX_PHOTO_SIZE_MB * 1024 * 1024) {
