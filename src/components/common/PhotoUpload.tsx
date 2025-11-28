@@ -3,7 +3,6 @@ import styles from './PhotoUpload.module.css';
 import { useTranslation } from 'react-i18next';
 import { storageConfig } from '../../config/storage';
 import { storageRepository } from '../../repositories/storageRepository';
-import { auth, storage } from '../../firebase';
 import { logger } from '../../services/logService';
 
 interface PhotoUploadProps {
@@ -31,15 +30,6 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-
-        console.log('[PhotoUpload] Uploading file:', {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          storagePath,
-          uid: auth.currentUser?.uid,
-          bucket: storage.app.options.storageBucket,
-        });
 
         // Validate size
         if (file.size > storageConfig.MAX_PHOTO_SIZE_MB * 1024 * 1024) {

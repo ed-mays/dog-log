@@ -58,15 +58,6 @@ export default function PetDetailsPage() {
     nsReady,
   } = usePetDetails();
 
-  // Debug logging
-  if (pet) {
-    console.log('[PetDetailsPage] Debug Info:', {
-      petCreatedBy: pet.createdBy,
-      petId: pet.id,
-      storagePath: `users/${pet.createdBy}/pets/${pet.id}/photos`,
-    });
-  }
-
   const [tabValue, setTabValue] = useState(0);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
