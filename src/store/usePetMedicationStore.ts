@@ -8,7 +8,7 @@ import type {
 } from '@features/medications/types';
 import { useAuthStore } from '@store/auth.store';
 
-interface PetMedicationState {
+export interface PetMedicationState {
   petMedications: Record<string, PetMedication[]>; // Keyed by petId
   isLoading: boolean;
   error: string | null;

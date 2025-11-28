@@ -7,7 +7,7 @@ import type {
   MedicationDefinitionUpdateInput,
 } from '@features/medications/types';
 
-interface MedicationState {
+export interface MedicationState {
   medications: MedicationDefinition[];
   isLoading: boolean;
   error: string | null;
