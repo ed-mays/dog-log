@@ -10,7 +10,7 @@ vi.mock('@repositories/userRepository', () => ({
   },
 }));
 
-vi.mock('@firebase', () => ({
+vi.mock('@app-firebase', () => ({
   auth: {},
   db: {},
 }));
