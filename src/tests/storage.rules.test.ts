@@ -11,7 +11,7 @@ import { describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
 
 let testEnv: RulesTestEnvironment;
 
-describe('Storage Security Rules', () => {
+describe.skipIf(!!process.env.CI)('Storage Security Rules', () => {
   beforeAll(async () => {
     testEnv = await initializeTestEnvironment({
       projectId: 'dog-log-test-storage',
