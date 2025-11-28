@@ -27,7 +27,6 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
     setUploading(true);
     setProgress(0);
-
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
