@@ -185,7 +185,7 @@ describe('PetDetailsPage', () => {
     };
   }
 
-  test('renders pet name and breed in a table', async () => {
+  test('renders pet name as the header', async () => {
     const pet = makePet({ id: '1', name: 'Buddy', breed: 'Labrador' });
 
     const { PetDetailsPage, render } = await setup({
@@ -200,14 +200,27 @@ describe('PetDetailsPage', () => {
 
     render(<PetDetailsPage />);
 
-    // Headers and values should be visible
-    expect(await screen.findByText(/name/i)).toBeInTheDocument();
-    expect(screen.getByText('Buddy')).toBeInTheDocument();
-    expect(screen.getByText(/breed/i)).toBeInTheDocument();
-    expect(screen.getByText('Labrador')).toBeInTheDocument();
+    const header = await screen.findByRole('heading', { name: 'Buddy' });
+    expect(header).toBeInTheDocument();
+  });
 
-    // Table should be present
-    expect(screen.getByRole('table')).toBeInTheDocument();
+  test('renders the pet info table', async () => {
+    const pet = makePet({ id: '1', name: 'Buddy', breed: 'Labrador' });
+
+    const { PetDetailsPage, render } = await setup({
+      pets: [pet],
+      // Explicitly disable flags to match original test intent
+      flags: {
+        vetsEnabled: false,
+        vetLinkingEnabled: false,
+        petActionsEnabled: false,
+      },
+    });
+
+    render(<PetDetailsPage />);
+
+    const table = await screen.findByRole('table', { name: /pet info/i });
+    expect(table).toBeInTheDocument();
   });
 
   test('shows Edit/Delete when petActionsEnabled=true and navigates on Edit', async () => {

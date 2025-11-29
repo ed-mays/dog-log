@@ -16,7 +16,7 @@ export function PetInfoTable({ pet }: PetInfoTableProps) {
   const { t } = useTranslation(['common', 'petProperties']);
 
   return (
-    <Table sx={{ maxWidth: 600, margin: '0 auto' }}>
+    <Table sx={{ maxWidth: 600, margin: '0 auto' }} aria-label="Pet info">
       <TableHead>
         <TableRow>
           <TableCell>
