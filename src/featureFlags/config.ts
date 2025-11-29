@@ -19,4 +19,7 @@ export const defaultFeatureFlags: FeatureFlags = {
   feedingsEnabled:
     import.meta.env.VITE_FLAG_FEEDINGS_ENABLED === 'true' ||
     import.meta.env.VITE_FEEDINGS_ENABLED === 'true',
+  medicationsEnabled:
+    import.meta.env.VITE_FLAG_MEDICATIONS_ENABLED === 'true' ||
+    import.meta.env.VITE_MEDICATIONS_ENABLED === 'true',
 };

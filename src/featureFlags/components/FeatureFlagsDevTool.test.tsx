@@ -16,6 +16,7 @@ const mockFlags: FeatureFlags = {
   vetLinkingEnabled: false,
   petPhotosEnabled: true,
   feedingsEnabled: true,
+  medicationsEnabled: true,
 };
 
 const mockOverrides: Partial<FeatureFlags> = {};

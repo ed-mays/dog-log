@@ -101,6 +101,12 @@ vi.mock('@features/pets/components/PetPhotoGallery', () => ({
   ),
 }));
 
+vi.mock('@features/medications/pages/PetMedicationsPage', () => ({
+  PetMedicationsPage: () => (
+    <div data-testid="pet-medications-page">Mocked PetMedicationsPage</div>
+  ),
+}));
+
 describe('PetDetailsPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -151,6 +157,7 @@ describe('PetDetailsPage', () => {
       handleSetMainPhoto: vi.fn(),
       handleDeletePhoto: vi.fn(),
       feedingsEnabled: !!flags.feedingsEnabled,
+      medicationsEnabled: !!flags.medicationsEnabled,
       feedings: [],
       isFetchingFeedings: false,
       handleAddFeeding: vi.fn(),
@@ -428,5 +435,40 @@ describe('PetDetailsPage', () => {
 
     expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
     consoleSpy.mockRestore();
+  });
+
+  test('renders PetMedicationsPage when medicationsEnabled=true', async () => {
+    const pet = makePet({ id: '1' });
+
+    const { PetDetailsPage, render, user } = await setup({
+      pets: [pet],
+      flags: { medicationsEnabled: true },
+    });
+
+    render(<PetDetailsPage />, { featureFlags: { medicationsEnabled: true } });
+
+    // Click Medications tab
+    const medicationsTab = screen.getByRole('tab', { name: /medications/i });
+    await user.click(medicationsTab);
+
+    // Should show PetMedicationsPage (mocked)
+    expect(
+      await screen.findByTestId('pet-medications-page')
+    ).toBeInTheDocument();
+  });
+
+  test('hides Medications tab when medicationsEnabled=false', async () => {
+    const pet = makePet({ id: '1' });
+
+    const { PetDetailsPage, render } = await setup({
+      pets: [pet],
+      flags: { medicationsEnabled: false },
+    });
+
+    render(<PetDetailsPage />, { featureFlags: { medicationsEnabled: false } });
+
+    expect(
+      screen.queryByRole('tab', { name: /medications/i })
+    ).not.toBeInTheDocument();
   });
 });
