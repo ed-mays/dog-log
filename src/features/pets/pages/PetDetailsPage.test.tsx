@@ -223,6 +223,31 @@ describe('PetDetailsPage', () => {
     expect(table).toBeInTheDocument();
   });
 
+  test.each([
+    { petActionsEnabled: true, action: 'shows', shouldShow: true },
+    { petActionsEnabled: false, action: 'hides', shouldShow: false },
+  ])(
+    '$action PetActions when petActionsEnabled is $petActionsEnabled',
+    async ({ petActionsEnabled, shouldShow }) => {
+      const { PetDetailsPage, render } = await setup({
+        pets: [makePet({ id: '1' })],
+        flags: { petActionsEnabled: petActionsEnabled },
+      });
+
+      render(<PetDetailsPage />, {
+        featureFlags: { petActionsEnabled: petActionsEnabled },
+      });
+
+      const petActionsComponent = screen.queryByTestId('pet-actions');
+
+      if (shouldShow) {
+        expect(petActionsComponent).toBeInTheDocument();
+      } else {
+        expect(petActionsComponent).not.toBeInTheDocument();
+      }
+    }
+  );
+
   test('shows Edit/Delete when petActionsEnabled=true and navigates on Edit', async () => {
     const { navigate, PetDetailsPage, render, user } = await setup({
       pets: [makePet({ id: '1' })],

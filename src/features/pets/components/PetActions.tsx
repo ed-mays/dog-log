@@ -30,7 +30,11 @@ export function PetActions({
   };
 
   return (
-    <div style={{ marginTop: '1rem' }}>
+    <div
+      style={{ marginTop: '1rem' }}
+      aria-label="pet actions"
+      data-testid="pet-actions"
+    >
       <Button
         variant="outlined"
         color="primary"
