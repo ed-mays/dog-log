@@ -84,8 +84,14 @@ export default function PetDetailsPage() {
 
   return (
     <div>
-      <Typography variant="h5" component="h1" gutterBottom>
-        {t('details', { defaultValue: 'Details' })}
+      <Typography
+        variant="h5"
+        component="h1"
+        gutterBottom
+        align="left"
+        textTransform="uppercase"
+      >
+        {pet.name}
       </Typography>
 
       {error && (
