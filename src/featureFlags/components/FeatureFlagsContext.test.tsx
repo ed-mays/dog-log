@@ -19,6 +19,7 @@ const allFalseFlags: FeatureFlags = {
   vetLinkingEnabled: false,
   petPhotosEnabled: false,
   feedingsEnabled: false,
+  medicationsEnabled: false,
 };
 
 describe('FeatureFlagsContext', () => {

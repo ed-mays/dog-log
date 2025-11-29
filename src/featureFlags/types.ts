@@ -7,5 +7,6 @@ export type FeatureFlag =
   | 'vetsEnabled'
   | 'vetLinkingEnabled'
   | 'petPhotosEnabled'
-  | 'feedingsEnabled';
+  | 'feedingsEnabled'
+  | 'medicationsEnabled';
 export type FeatureFlags = Record<FeatureFlag, boolean>;
