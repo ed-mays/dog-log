@@ -5,16 +5,21 @@ import type { Pet } from '@features/pets/types';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { makePet } from '@testUtils/factories/makePet';
-import { mockRouter } from '@testUtils/mocks/mockRouter';
+import { routerState, setupRouterMock } from '@testUtils/mocks/mockRouter';
 
 // Mock the module at the top level
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
 
+// Setup router mock
+setupRouterMock();
+
 describe('EditPetPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    routerState.params = {};
+    routerState.navigate = vi.fn();
   });
 
   async function setup(
@@ -35,7 +40,8 @@ describe('EditPetPage', () => {
 
     const petsMock = installPetsStoreMock({ pets, ...storeOverrides });
 
-    const { navigate } = mockRouter({ id: petId });
+    routerState.params = { id: petId };
+    const navigate = routerState.navigate;
 
     const { default: EditPetPage } = await import('./EditPetPage');
     const { render } = await import('@test-utils');

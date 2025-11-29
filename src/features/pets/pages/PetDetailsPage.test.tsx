@@ -1,33 +1,13 @@
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import type { Pet } from '@features/pets/types';
 import { vi, describe, beforeEach, test, expect } from 'vitest';
-import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { makePet } from '@testUtils/factories/makePet';
-import { usePetDetails } from '@features/pets/hooks/usePetDetails';
+import {
+  setupPetDetailsPageTest,
+  mockUsePetDetails,
+} from './petDetailsPageTestFactory';
+import { routerState, resetRouterMock } from '@testUtils/mocks/mockRouter';
 
-// Mutable state for router mocks
-const routerState = {
-  params: {} as Record<string, string>,
-  navigate: vi.fn(),
-};
-
-// Mock usePetDetails globally with override capability
-const mockUsePetDetails = vi.fn();
-vi.mock('@features/pets/hooks/usePetDetails', async (importOriginal) => {
-  const mod =
-    await importOriginal<typeof import('@features/pets/hooks/usePetDetails')>();
-  return {
-    ...mod,
-    usePetDetails: () => {
-      const override = mockUsePetDetails();
-      if (override) return override;
-      return mod.usePetDetails();
-    },
-  };
-});
-
-// Mock react-router-dom at top level
+// Setup mocks - these must be top-level for hoisting
 vi.mock('react-router-dom', async (importOriginal) => {
   const mod = await importOriginal<typeof import('react-router-dom')>();
   return {
@@ -37,7 +17,6 @@ vi.mock('react-router-dom', async (importOriginal) => {
   };
 });
 
-// Mock the store module at the top level
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
@@ -63,6 +42,7 @@ vi.mock('@i18n', () => ({
   loadNamespace: vi.fn().mockResolvedValue(undefined),
 }));
 
+// Mock child components
 vi.mock('@features/pets/components/LinkedVetList', () => ({
   LinkedVetList: () => (
     <div data-testid="linked-vet-list">Mocked LinkedVetList</div>
@@ -138,84 +118,13 @@ describe('PetDetailsPage', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockUsePetDetails.mockReturnValue(undefined);
-    routerState.params = {};
-    routerState.navigate = vi.fn();
+    resetRouterMock();
   });
-
-  async function setup(
-    options: {
-      petId?: string;
-      pets?: Pet[];
-      storeOverrides?: Record<string, unknown>;
-      flags?: Record<string, boolean>;
-      hookOverrides?: Partial<ReturnType<typeof usePetDetails>>;
-    } = {}
-  ) {
-    const {
-      petId = '1',
-      pets = [makePet({ id: '1' })],
-      storeOverrides,
-      flags = {},
-      hookOverrides = {},
-    } = options;
-
-    // Update router state
-    routerState.params = { id: petId };
-    const navigate = routerState.navigate;
-
-    const petsMock = installPetsStoreMock({ pets, ...storeOverrides });
-
-    // Configure usePetDetails mock
-    const targetPet = pets.find((p) => p.id === petId);
-    const handleDeleteMock = vi.fn();
-
-    const defaultHookValues: ReturnType<typeof usePetDetails> = {
-      pet: targetPet,
-      vetLinks: [],
-      loadingVets: false,
-      saving: false,
-      error: null,
-      vetsEnabled: !!flags.vetsEnabled,
-      vetLinkingEnabled: !!flags.vetLinkingEnabled,
-      petActionsEnabled: !!flags.petActionsEnabled,
-      petPhotosEnabled: !!flags.petPhotosEnabled,
-      handleDelete: handleDeleteMock,
-      handlePhotoUpload: vi.fn(),
-      handleSetMainPhoto: vi.fn(),
-      handleDeletePhoto: vi.fn(),
-      feedingsEnabled: !!flags.feedingsEnabled,
-      medicationsEnabled: !!flags.medicationsEnabled,
-      feedings: [],
-      isFetchingFeedings: false,
-      handleAddFeeding: vi.fn(),
-      handleDeleteFeeding: vi.fn(),
-      navigate: navigate,
-      nsReady: true,
-    };
-
-    mockUsePetDetails.mockReturnValue({
-      ...defaultHookValues,
-      ...hookOverrides,
-    });
-
-    const { default: PetDetailsPage } = await import('./PetDetailsPage');
-    const { render } = await import('@test-utils');
-    const user = userEvent.setup();
-    return {
-      petsMock,
-      navigate,
-      PetDetailsPage,
-      render,
-      user,
-      flags,
-      handleDeleteMock,
-    };
-  }
 
   test('renders pet name as the header', async () => {
     const pet = makePet({ id: '1', name: 'Buddy', breed: 'Labrador' });
 
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: {
         vetsEnabled: false,
@@ -233,7 +142,7 @@ describe('PetDetailsPage', () => {
   test('renders the pet info table', async () => {
     const pet = makePet({ id: '1', name: 'Buddy', breed: 'Labrador' });
 
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: {
         vetsEnabled: false,
@@ -253,7 +162,7 @@ describe('PetDetailsPage', () => {
   ])(
     '$action PetActions when petActionsEnabled is $petActionsEnabled',
     async ({ petActionsEnabled, shouldShow }) => {
-      const { PetDetailsPage, render } = await setup({
+      const { PetDetailsPage, render } = await setupPetDetailsPageTest({
         pets: [makePet({ id: '1' })],
         flags: { petActionsEnabled: petActionsEnabled },
       });
@@ -273,10 +182,11 @@ describe('PetDetailsPage', () => {
   );
 
   test('navigates to edit page when Edit is clicked', async () => {
-    const { navigate, PetDetailsPage, render, user } = await setup({
-      pets: [makePet({ id: '1' })],
-      flags: { petActionsEnabled: true },
-    });
+    const { navigate, PetDetailsPage, render, user } =
+      await setupPetDetailsPageTest({
+        pets: [makePet({ id: '1' })],
+        flags: { petActionsEnabled: true },
+      });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
@@ -286,10 +196,11 @@ describe('PetDetailsPage', () => {
   });
 
   test('calls handleDelete when Delete is clicked', async () => {
-    const { PetDetailsPage, render, user, handleDeleteMock } = await setup({
-      pets: [makePet({ id: '1' })],
-      flags: { petActionsEnabled: true },
-    });
+    const { PetDetailsPage, render, user, handleDeleteMock } =
+      await setupPetDetailsPageTest({
+        pets: [makePet({ id: '1' })],
+        flags: { petActionsEnabled: true },
+      });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
@@ -299,7 +210,7 @@ describe('PetDetailsPage', () => {
   });
 
   test('passes delete error to PetActions', async () => {
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
       pets: [makePet({ id: '1' })],
       flags: { petActionsEnabled: true },
       hookOverrides: { error: 'Delete failed' },
@@ -313,7 +224,7 @@ describe('PetDetailsPage', () => {
   });
 
   test('passes isDeleting to PetActions', async () => {
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
       pets: [makePet({ id: '1' })],
       flags: { petActionsEnabled: true },
       hookOverrides: { saving: true },
@@ -325,7 +236,7 @@ describe('PetDetailsPage', () => {
   });
 
   test('shows Not Found when pet id is invalid', async () => {
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
       pets: [],
       petId: 'does-not-exist',
     });
@@ -339,7 +250,9 @@ describe('PetDetailsPage', () => {
 
   test('Back link points to /pets', async () => {
     const pet = makePet({ id: '1', name: 'Buddy' });
-    const { PetDetailsPage, render } = await setup({ pets: [pet] });
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
+      pets: [pet],
+    });
 
     render(<PetDetailsPage />);
 
@@ -351,7 +264,7 @@ describe('PetDetailsPage', () => {
   test('shows saving indicator when saving=true', async () => {
     const pet = makePet({ id: '1' });
 
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: { petActionsEnabled: true },
       hookOverrides: { saving: true },
@@ -366,7 +279,7 @@ describe('PetDetailsPage', () => {
   test('renders LinkedVetList when vets enabled', async () => {
     const pet = makePet({ id: '1' });
 
-    const { PetDetailsPage, render, user } = await setup({
+    const { PetDetailsPage, render, user } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: { vetsEnabled: true, vetLinkingEnabled: true },
     });
@@ -392,7 +305,7 @@ describe('PetDetailsPage', () => {
     const handleSetMainPhotoMock = vi.fn();
     const handleDeletePhotoMock = vi.fn();
 
-    const { PetDetailsPage, render, user } = await setup({
+    const { PetDetailsPage, render, user } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: { petPhotosEnabled: true },
       hookOverrides: {
@@ -427,7 +340,7 @@ describe('PetDetailsPage', () => {
     const pet = makePet({ id: '1' });
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { PetDetailsPage, render, user } = await setup({
+    const { PetDetailsPage, render, user } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: { petPhotosEnabled: true },
     });
@@ -447,7 +360,7 @@ describe('PetDetailsPage', () => {
   test('renders PetMedicationsPage when medicationsEnabled=true', async () => {
     const pet = makePet({ id: '1' });
 
-    const { PetDetailsPage, render, user } = await setup({
+    const { PetDetailsPage, render, user } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: { medicationsEnabled: true },
     });
@@ -467,7 +380,7 @@ describe('PetDetailsPage', () => {
   test('hides Medications tab when medicationsEnabled=false', async () => {
     const pet = makePet({ id: '1' });
 
-    const { PetDetailsPage, render } = await setup({
+    const { PetDetailsPage, render } = await setupPetDetailsPageTest({
       pets: [pet],
       flags: { medicationsEnabled: false },
     });

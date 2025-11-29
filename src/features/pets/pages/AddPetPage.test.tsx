@@ -6,10 +6,13 @@ import {
 import userEvent from '@testing-library/user-event';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
 import { installPetsStoreMock } from '@testUtils/mocks/mockStoreInstallers';
-import { mockRouter } from '@testUtils/mocks/mockRouter';
+import { routerState, setupRouterMock } from '@testUtils/mocks/mockRouter';
 
 // Mock the pets store hook at module level; installer will provide impl per-test
 vi.mock('@store/pets.store', () => ({ usePetsStore: vi.fn() }));
+
+// Setup router mock
+setupRouterMock();
 
 // ADR-019 Per-Test Variation Pattern
 // - We use vi.resetModules() in beforeEach and set up vi.doMock(...) for
@@ -30,9 +33,10 @@ describe('AddPetPage', () => {
     //Install selector-compatible pets store mock for this test run
     petsMock = installPetsStoreMock();
 
-    // Mock react-router
-    const routerMock = mockRouter({});
-    navigate = routerMock.navigate;
+    // Reset router state
+    routerState.params = {};
+    routerState.navigate = vi.fn();
+    navigate = routerState.navigate;
   });
 
   async function renderWithProviders(

@@ -11,16 +11,20 @@ import { render, screen, fireEvent } from '@test-utils';
 import userEvent from '@testing-library/user-event';
 import { installAuthStoreMock } from '@testUtils/mocks/mockStoreInstallers';
 import { makeVet } from '@testUtils/factories/makeVet';
-import { mockRouter } from '@testUtils/mocks/mockRouter';
+import { routerState, setupRouterMock } from '@testUtils/mocks/mockRouter';
 import { installVetServiceMock } from '@testUtils/mocks/mockVetService';
 import { track } from '@services/analytics/analytics';
 
+// Setup router mock
+setupRouterMock();
+
 describe('VetListPage', () => {
-  const { navigate } = mockRouter();
   const vetServiceMock = installVetServiceMock();
 
   beforeEach(() => {
     vi.resetAllMocks();
+    routerState.params = {};
+    routerState.navigate = vi.fn();
     installAuthStoreMock({
       user: {
         uid: 'user1',
@@ -65,7 +69,7 @@ describe('VetListPage', () => {
     });
     await userEvent.click(addBtn);
 
-    expect(navigate).toHaveBeenCalledWith('/vets/add');
+    expect(routerState.navigate).toHaveBeenCalledWith('/vets/add');
   });
 
   it('navigates to edit page on item click', async () => {
@@ -78,7 +82,7 @@ describe('VetListPage', () => {
     const item = await screen.findByText('Dr. A');
     await userEvent.click(item);
 
-    expect(navigate).toHaveBeenCalledWith('/vets/v1/edit');
+    expect(routerState.navigate).toHaveBeenCalledWith('/vets/v1/edit');
   });
 
   it('filters list by search term', async () => {
