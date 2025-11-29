@@ -11,24 +11,17 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-
-const theme = createTheme({
-  typography: {
-    fontFamily: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'].join(','),
-  },
-});
+import { AppThemeProvider } from '@features/theme/components/AppThemeProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <FeatureFlagsProvider>
         <ErrorBoundary>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
+          <AppThemeProvider>
             <AuthBootstrap />
             <App />
-          </ThemeProvider>
+          </AppThemeProvider>
         </ErrorBoundary>
       </FeatureFlagsProvider>
     </BrowserRouter>

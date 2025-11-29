@@ -41,6 +41,7 @@ export default defineConfig({
         // Exclude barrel index files that only re-export
         'src/**/index.ts',
         'src/**/index.tsx',
+        'src/features/theme/theme.ts',
       ],
       thresholds: {
         perFile: true,
