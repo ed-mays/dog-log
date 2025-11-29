@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Pet } from '@features/pets/types';
 import { vi, describe, beforeEach, test, expect } from 'vitest';
@@ -66,6 +66,33 @@ vi.mock('@i18n', () => ({
 vi.mock('@features/pets/components/LinkedVetList', () => ({
   LinkedVetList: () => (
     <div data-testid="linked-vet-list">Mocked LinkedVetList</div>
+  ),
+}));
+
+vi.mock('@features/pets/components/PetInfoTable', () => ({
+  PetInfoTable: () => (
+    <div data-testid="pet-info-table">Mocked PetInfoTable</div>
+  ),
+}));
+
+vi.mock('@features/pets/components/PetActions', () => ({
+  PetActions: ({
+    onEdit,
+    onDelete,
+    deleteError,
+    isDeleting,
+  }: {
+    onEdit: () => void;
+    onDelete: () => void;
+    deleteError?: string;
+    isDeleting?: boolean;
+  }) => (
+    <div data-testid="pet-actions">
+      <button onClick={onEdit}>Mock Edit</button>
+      <button onClick={onDelete}>Mock Delete</button>
+      {deleteError && <span data-testid="delete-error">{deleteError}</span>}
+      {isDeleting && <span data-testid="is-deleting">Deleting...</span>}
+    </div>
   ),
 }));
 
@@ -190,7 +217,6 @@ describe('PetDetailsPage', () => {
 
     const { PetDetailsPage, render } = await setup({
       pets: [pet],
-      // Explicitly disable flags to match original test intent
       flags: {
         vetsEnabled: false,
         vetLinkingEnabled: false,
@@ -209,7 +235,6 @@ describe('PetDetailsPage', () => {
 
     const { PetDetailsPage, render } = await setup({
       pets: [pet],
-      // Explicitly disable flags to match original test intent
       flags: {
         vetsEnabled: false,
         vetLinkingEnabled: false,
@@ -219,8 +244,7 @@ describe('PetDetailsPage', () => {
 
     render(<PetDetailsPage />);
 
-    const table = await screen.findByRole('table', { name: /pet info/i });
-    expect(table).toBeInTheDocument();
+    expect(await screen.findByTestId('pet-info-table')).toBeInTheDocument();
   });
 
   test.each([
@@ -248,7 +272,7 @@ describe('PetDetailsPage', () => {
     }
   );
 
-  test('shows Edit/Delete when petActionsEnabled=true and navigates on Edit', async () => {
+  test('navigates to edit page when Edit is clicked', async () => {
     const { navigate, PetDetailsPage, render, user } = await setup({
       pets: [makePet({ id: '1' })],
       flags: { petActionsEnabled: true },
@@ -256,58 +280,48 @@ describe('PetDetailsPage', () => {
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
-    const editBtn = await screen.findByRole('button', { name: /edit/i });
-    const deleteBtn = await screen.findByRole('button', { name: /delete/i });
+    await user.click(await screen.findByText('Mock Edit'));
 
-    await user.click(editBtn);
-
-    await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith('/pets/1/edit');
-    });
-
-    expect(deleteBtn).toBeInTheDocument();
+    expect(navigate).toHaveBeenCalledWith('/pets/1/edit');
   });
 
-  test('delete flow: opens confirm modal, confirms deletion, calls handleDelete', async () => {
-    const pet = makePet({ id: '1', name: 'Fido' });
-
+  test('calls handleDelete when Delete is clicked', async () => {
     const { PetDetailsPage, render, user, handleDeleteMock } = await setup({
-      pets: [pet],
+      pets: [makePet({ id: '1' })],
       flags: { petActionsEnabled: true },
     });
 
     render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
-    // Details tab is default, so buttons should be visible
-    const deleteBtn = await screen.findByRole('button', { name: /delete/i });
-    await user.click(deleteBtn);
+    await user.click(await screen.findByText('Mock Delete'));
 
-    // Confirm modal should appear with Yes/No buttons
-    const yesBtn = await screen.findByRole('button', { name: /yes/i });
-    expect(screen.getByRole('button', { name: /no/i })).toBeInTheDocument();
-
-    await user.click(yesBtn);
-
-    await waitFor(() => {
-      expect(handleDeleteMock).toHaveBeenCalled();
-    });
+    expect(handleDeleteMock).toHaveBeenCalled();
   });
 
-  test('hides Edit/Delete when petActionsEnabled=false', async () => {
-    const pet = makePet({ id: '1' });
+  test('passes delete error to PetActions', async () => {
     const { PetDetailsPage, render } = await setup({
-      pets: [pet],
-      flags: { petActionsEnabled: false },
+      pets: [makePet({ id: '1' })],
+      flags: { petActionsEnabled: true },
+      hookOverrides: { error: 'Delete failed' },
     });
 
-    render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: false } });
+    render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
 
-    expect(
-      screen.queryByRole('button', { name: /edit/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: /delete/i })
-    ).not.toBeInTheDocument();
+    expect(await screen.findByTestId('delete-error')).toHaveTextContent(
+      'Delete failed'
+    );
+  });
+
+  test('passes isDeleting to PetActions', async () => {
+    const { PetDetailsPage, render } = await setup({
+      pets: [makePet({ id: '1' })],
+      flags: { petActionsEnabled: true },
+      hookOverrides: { saving: true },
+    });
+
+    render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
+
+    expect(await screen.findByTestId('is-deleting')).toBeInTheDocument();
   });
 
   test('shows Not Found when pet id is invalid', async () => {
@@ -323,29 +337,6 @@ describe('PetDetailsPage', () => {
     expect(screen.getByText(/not found/i)).toBeInTheDocument();
   });
 
-  // Additional coverage tests for failure and back link
-
-  test('delete failure shows error alert (simulated via hook state)', async () => {
-    const pet = makePet({ id: '1', name: 'Fido' });
-
-    // We simulate the error state directly via the hook mock
-    const { PetDetailsPage, render } = await setup({
-      pets: [pet],
-      flags: { petActionsEnabled: true },
-      hookOverrides: {
-        error: 'delete failed',
-        saving: false,
-      },
-    });
-
-    render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
-
-    // Error alert should appear
-    const alert = await screen.findByRole('alert');
-    expect(alert).toBeInTheDocument();
-    expect(screen.getByText('delete failed')).toBeInTheDocument();
-  });
-
   test('Back link points to /pets', async () => {
     const pet = makePet({ id: '1', name: 'Buddy' });
     const { PetDetailsPage, render } = await setup({ pets: [pet] });
@@ -355,28 +346,6 @@ describe('PetDetailsPage', () => {
     const backLink = await screen.findByRole('link', { name: /back/i });
     expect(backLink).toBeInTheDocument();
     expect(backLink).toHaveAttribute('href', '/pets');
-  });
-
-  // Extra tests to improve function coverage
-
-  test('declining delete closes modal and does not call handleDelete', async () => {
-    const pet = makePet({ id: '1' });
-    const { PetDetailsPage, render, user, handleDeleteMock } = await setup({
-      pets: [pet],
-      flags: { petActionsEnabled: true },
-    });
-
-    render(<PetDetailsPage />, { featureFlags: { petActionsEnabled: true } });
-
-    // Open confirm modal then decline
-    const deleteBtn = await screen.findByRole('button', { name: /delete/i });
-    await user.click(deleteBtn);
-    const noBtn = await screen.findByRole('button', { name: /no/i });
-    await user.click(noBtn);
-
-    // Modal closes, no delete
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(handleDeleteMock).not.toHaveBeenCalled();
   });
 
   test('shows saving indicator when saving=true', async () => {
