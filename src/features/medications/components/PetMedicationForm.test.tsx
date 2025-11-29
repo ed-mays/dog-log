@@ -21,6 +21,14 @@ vi.mock('react-router-dom', () => ({
 
 vi.mock('@store/usePetMedicationStore');
 
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: {
+    getState: () => ({
+      user: { uid: 'user-123' },
+    }),
+  },
+}));
+
 // Mock MedicationCatalogDialog to simplify testing
 vi.mock('./MedicationCatalogDialog', () => ({
   MedicationCatalogDialog: ({
@@ -173,6 +181,7 @@ describe('PetMedicationForm', () => {
         expect.objectContaining({
           customLabel: 'My Meds',
           doseUnit: 'mL',
+          createdBy: 'user-123',
         })
       );
     });

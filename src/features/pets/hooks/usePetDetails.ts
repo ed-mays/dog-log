@@ -59,12 +59,15 @@ export function usePetDetails() {
   let petActionsEnabled = false;
   let petPhotosEnabled = false;
   let feedingsEnabled = false;
+  let medicationsEnabled = false;
   try {
     vetsEnabled = useFeatureFlag('vetsEnabled');
     vetLinkingEnabled = useFeatureFlag('vetLinkingEnabled');
     petActionsEnabled = useFeatureFlag('petActionsEnabled');
     petPhotosEnabled = useFeatureFlag('petPhotosEnabled');
+    petPhotosEnabled = useFeatureFlag('petPhotosEnabled');
     feedingsEnabled = useFeatureFlag('feedingsEnabled');
+    medicationsEnabled = useFeatureFlag('medicationsEnabled');
   } catch {
     logger.info('Feature flags not available');
   }
@@ -203,6 +206,7 @@ export function usePetDetails() {
     petActionsEnabled,
     petPhotosEnabled,
     feedingsEnabled,
+    medicationsEnabled,
     feedings,
     isFetchingFeedings,
     handleDelete,

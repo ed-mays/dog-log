@@ -11,16 +11,30 @@ import {
   Paper,
   CircularProgress,
   Alert,
+  Dialog,
+  DialogContent,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import MedicationLiquidIcon from '@mui/icons-material/MedicationLiquid';
 import { useTranslation } from 'react-i18next';
 import { usePetMedicationStore } from '@store/usePetMedicationStore';
 import { useMedicationStore } from '@store/useMedicationStore';
+import { useDoseLogStore } from '@store/useDoseLogStore';
 import { PetMedicationForm } from '../components/PetMedicationForm';
+import { DoseLogForm } from '../components/DoseLogForm';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
+import type { PetMedication, DoseLogCreateInput } from '../types';
 
-export const PetMedicationsPage = () => {
-  const { petId } = useParams<{ petId: string }>();
+interface PetMedicationsPageProps {
+  petId?: string;
+}
+
+export const PetMedicationsPage = ({
+  petId: propPetId,
+}: PetMedicationsPageProps = {}) => {
+  const params = useParams<{ petId: string }>();
+  const petId = propPetId || params.petId;
   const { t } = useTranslation();
   const {
     petMedications,
@@ -31,8 +45,12 @@ export const PetMedicationsPage = () => {
   } = usePetMedicationStore();
   const { medications, fetchMedications: fetchDefinitions } =
     useMedicationStore();
+  const { addDoseLog } = useDoseLogStore();
+  const medicationsEnabled = useFeatureFlag('medicationsEnabled');
 
   const [isAdding, setIsAdding] = useState(false);
+  const [selectedMedication, setSelectedMedication] =
+    useState<PetMedication | null>(null);
 
   useEffect(() => {
     if (petId) {
@@ -54,6 +72,17 @@ export const PetMedicationsPage = () => {
       window.confirm(t('medications.confirmDeactivate', 'Are you sure?'))
     ) {
       await deactivatePetMedication(petId, medId);
+    }
+  };
+
+  const handleLogDose = (med: PetMedication) => {
+    setSelectedMedication(med);
+  };
+
+  const handleDoseSubmit = async (input: DoseLogCreateInput) => {
+    if (petId) {
+      await addDoseLog(petId, input);
+      setSelectedMedication(null);
     }
   };
 
@@ -107,13 +136,25 @@ export const PetMedicationsPage = () => {
           <Paper key={med.id} sx={{ mb: 2 }}>
             <ListItem
               secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => handleDeactivate(med.id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                <Box>
+                  {medicationsEnabled && (
+                    <IconButton
+                      edge="end"
+                      aria-label="log dose"
+                      onClick={() => handleLogDose(med)}
+                      sx={{ mr: 1 }}
+                    >
+                      <MedicationLiquidIcon />
+                    </IconButton>
+                  )}
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => handleDeactivate(med.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               }
             >
               <ListItemText
@@ -127,6 +168,23 @@ export const PetMedicationsPage = () => {
           </Paper>
         ))}
       </List>
+
+      {selectedMedication && (
+        <Dialog
+          open={!!selectedMedication}
+          onClose={() => setSelectedMedication(null)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogContent>
+            <DoseLogForm
+              petMedication={selectedMedication}
+              onSubmit={handleDoseSubmit}
+              onCancel={() => setSelectedMedication(null)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </Box>
   );
 };

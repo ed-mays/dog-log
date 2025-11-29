@@ -13,6 +13,14 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('@store/useMedicationStore');
 
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: {
+    getState: () => ({
+      user: { uid: 'user-123' },
+    }),
+  },
+}));
+
 describe('MedicationCatalogDialog', () => {
   const mockOnClose = vi.fn();
   const mockOnSelect = vi.fn();
@@ -144,6 +152,7 @@ describe('MedicationCatalogDialog', () => {
           name: 'New Med',
           defaultForm: 'pill',
           defaultRoute: 'oral',
+          createdBy: 'user-123',
         })
       );
     });
@@ -253,6 +262,7 @@ describe('MedicationCatalogDialog', () => {
         expect.objectContaining({
           defaultForm: 'liquid',
           defaultRoute: 'topical',
+          createdBy: 'user-123',
         })
       );
     });

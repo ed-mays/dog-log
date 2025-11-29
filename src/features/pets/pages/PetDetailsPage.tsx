@@ -10,6 +10,7 @@ import { PhotoUpload } from '@components/common/PhotoUpload';
 import { PetPhotoGallery } from '@features/pets/components/PetPhotoGallery';
 import { FeedingList } from '@features/feedings/components/FeedingList';
 import { FeedingForm } from '@features/feedings/components/FeedingForm';
+import { PetMedicationsPage } from '@features/medications/pages/PetMedicationsPage';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -53,6 +54,7 @@ export default function PetDetailsPage() {
     petActionsEnabled,
     petPhotosEnabled,
     feedingsEnabled,
+    medicationsEnabled,
     feedings,
     handleDelete,
     handlePhotoUpload,
@@ -137,6 +139,16 @@ export default function PetDetailsPage() {
               {...a11yProps(3)}
             />
           )}
+          {medicationsEnabled && (
+            <Tab
+              label={t('medications', {
+                ns: 'medications',
+                defaultValue: 'Medications',
+              })}
+              value={4}
+              {...a11yProps(4)}
+            />
+          )}
         </Tabs>
       </Box>
 
@@ -200,6 +212,12 @@ export default function PetDetailsPage() {
             <FeedingForm onSubmit={handleAddFeeding} />
           </Box>
           <FeedingList feedings={feedings} onDelete={handleDeleteFeeding} />
+        </TabPanel>
+      )}
+
+      {medicationsEnabled && (
+        <TabPanel value={tabValue} index={4}>
+          <PetMedicationsPage petId={pet.id} />
         </TabPanel>
       )}
 

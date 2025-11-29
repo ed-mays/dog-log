@@ -46,28 +46,28 @@ export interface MedicationDefinition extends BaseEntity {
   name: string;
   defaultForm: MedicationForm;
   defaultRoute: MedicationRoute;
-  defaultStrengthDescription?: string;
-  notes?: string;
+  defaultStrengthDescription?: string | null;
+  notes?: string | null;
   isArchived: boolean;
 }
 
 export interface ScheduleConfig {
-  timesOfDay?: string[]; // HH:mm in local time
-  intervalHours?: number;
-  intervalDays?: number;
-  weekdays?: number[]; // 0–6, for weekly
+  timesOfDay?: string[] | null; // HH:mm in local time
+  intervalHours?: number | null;
+  intervalDays?: number | null;
+  weekdays?: number[] | null; // 0–6, for weekly
   startDate: string; // ISO date (local)
-  endDate?: string; // ISO date (for temporary meds)
-  notes?: string;
+  endDate?: string | null; // ISO date (for temporary meds)
+  notes?: string | null;
 }
 
 export interface PetMedication extends BaseEntity {
   petId: string;
   medicationDefinitionId: string;
-  customLabel?: string;
+  customLabel?: string | null;
   form: MedicationForm;
   route: MedicationRoute;
-  strengthDescription?: string;
+  strengthDescription?: string | null;
   doseAmount: number;
   doseUnit: DoseUnit;
   scheduleType: ScheduleType;
@@ -79,12 +79,12 @@ export interface DoseLog extends BaseEntity {
   petId: string;
   petMedicationId: string;
   timestampGiven: string; // ISO datetime (local)
-  timestampScheduled?: string; // ISO datetime
+  timestampScheduled?: string | null; // ISO datetime
   amountGiven: number;
   doseUnit: DoseUnit;
   status: DoseStatus;
-  givenBy?: string;
-  notes?: string;
+  givenBy?: string | null;
+  notes?: string | null;
 }
 
 // Input Types for Repositories

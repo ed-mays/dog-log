@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { usePetMedicationStore } from '@store/usePetMedicationStore';
+import { useAuthStore } from '@store/auth.store';
 import { MedicationCatalogDialog } from './MedicationCatalogDialog';
 import type {
   MedicationDefinition,
@@ -57,7 +58,7 @@ export const PetMedicationForm = ({
       const input: PetMedicationCreateInput = {
         petId,
         medicationDefinitionId: selectedMedication.id,
-        customLabel: customLabel || undefined,
+        customLabel: customLabel || null,
         form: selectedMedication.defaultForm as MedicationForm,
         route: selectedMedication.defaultRoute as MedicationRoute,
         doseAmount,
@@ -67,7 +68,7 @@ export const PetMedicationForm = ({
           startDate,
         },
         active: true,
-        createdBy: 'user', // Should come from auth context
+        createdBy: useAuthStore.getState().user?.uid || '',
       };
 
       await addPetMedication(petId, input);

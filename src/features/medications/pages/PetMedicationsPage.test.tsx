@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PetMedicationsPage } from './PetMedicationsPage';
+import type { DoseLogCreateInput } from '../types';
 import {
   usePetMedicationStore,
   type PetMedicationState,
@@ -10,6 +11,8 @@ import {
   useMedicationStore,
   type MedicationState,
 } from '@store/useMedicationStore';
+import { useDoseLogStore, type DoseLogState } from '@store/useDoseLogStore';
+import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { useParams } from 'react-router-dom';
 
 // Mock dependencies
@@ -25,6 +28,8 @@ vi.mock('react-router-dom', () => ({
 
 vi.mock('@store/usePetMedicationStore');
 vi.mock('@store/useMedicationStore');
+vi.mock('@store/useDoseLogStore');
+vi.mock('@featureFlags/hooks/useFeatureFlag');
 
 // Mock PetMedicationForm
 vi.mock('../components/PetMedicationForm', () => ({
@@ -43,16 +48,50 @@ vi.mock('../components/PetMedicationForm', () => ({
   ),
 }));
 
+// Mock DoseLogForm
+vi.mock('../components/DoseLogForm', () => ({
+  DoseLogForm: ({
+    onSubmit,
+    onCancel,
+  }: {
+    onSubmit: (data: DoseLogCreateInput) => void;
+    onCancel: () => void;
+  }) => (
+    <div>
+      <p>Dose Log Form</p>
+      <button onClick={onCancel}>Cancel Dose</button>
+      <button
+        onClick={() =>
+          onSubmit({
+            petId: 'pet-1',
+            petMedicationId: 'med-1',
+            timestampGiven: new Date().toISOString(),
+            amountGiven: 1,
+            doseUnit: 'tablet',
+            status: 'given',
+            createdBy: 'user',
+          })
+        }
+      >
+        Submit Dose
+      </button>
+    </div>
+  ),
+}));
+
 describe('PetMedicationsPage', () => {
   const mockFetchPetMedications = vi.fn();
   const mockDeactivatePetMedication = vi.fn();
   const mockFetchDefinitions = vi.fn();
+  const mockAddDoseLog = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
     (useParams as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       petId: 'pet-1',
     });
+
+    vi.mocked(useFeatureFlag).mockReturnValue(true); // Enable medications by default
 
     vi.mocked(usePetMedicationStore).mockReturnValue({
       petMedications: {
@@ -77,6 +116,10 @@ describe('PetMedicationsPage', () => {
       medications: [{ id: 'med-1', name: 'Aspirin' }],
       fetchMedications: mockFetchDefinitions,
     } as unknown as MedicationState);
+
+    vi.mocked(useDoseLogStore).mockReturnValue({
+      addDoseLog: mockAddDoseLog,
+    } as unknown as DoseLogState);
   });
 
   it('should render medications list', () => {
@@ -207,5 +250,55 @@ describe('PetMedicationsPage', () => {
     (useParams as unknown as ReturnType<typeof vi.fn>).mockReturnValue({});
     const { container } = render(<PetMedicationsPage />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('should show log dose button when feature enabled', () => {
+    render(<PetMedicationsPage />);
+    expect(screen.getByLabelText('log dose')).toBeInTheDocument();
+  });
+
+  it('should hide log dose button when feature disabled', () => {
+    vi.mocked(useFeatureFlag).mockReturnValue(false);
+    render(<PetMedicationsPage />);
+    expect(screen.queryByLabelText('log dose')).not.toBeInTheDocument();
+  });
+
+  it('should handle logging a dose', async () => {
+    const user = userEvent.setup();
+    render(<PetMedicationsPage />);
+
+    // Open dialog
+    await user.click(screen.getByLabelText('log dose'));
+    expect(screen.getByText('Dose Log Form')).toBeInTheDocument();
+
+    // Submit form
+    await user.click(screen.getByText('Submit Dose'));
+    expect(mockAddDoseLog).toHaveBeenCalledWith(
+      'pet-1',
+      expect.objectContaining({ amountGiven: 1 })
+    );
+    expect(screen.queryByText('Dose Log Form')).not.toBeInTheDocument();
+  });
+
+  it('should handle cancelling dose log', async () => {
+    const user = userEvent.setup();
+    render(<PetMedicationsPage />);
+
+    // Open dialog
+    await user.click(screen.getByLabelText('log dose'));
+    expect(screen.getByText('Dose Log Form')).toBeInTheDocument();
+
+    // Cancel form
+    await user.click(screen.getByText('Cancel Dose'));
+    expect(screen.queryByText('Dose Log Form')).not.toBeInTheDocument();
+    expect(mockAddDoseLog).not.toHaveBeenCalled();
+  });
+
+  it('should use petId from props if provided', () => {
+    (useParams as unknown as ReturnType<typeof vi.fn>).mockReturnValue({});
+    render(<PetMedicationsPage petId="pet-1" />);
+
+    expect(screen.getByText('Medications')).toBeInTheDocument();
+    expect(mockFetchPetMedications).toHaveBeenCalledWith('pet-1');
   });
 });

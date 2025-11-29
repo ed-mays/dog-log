@@ -20,6 +20,7 @@ import type {
   DoseLog,
 } from '@features/medications/types';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
+import { useAuthStore } from '@store/auth.store';
 
 interface DoseLogFormProps {
   petMedication: PetMedication;
@@ -75,8 +76,8 @@ export const DoseLogForm = ({
         amountGiven,
         doseUnit,
         status,
-        notes: notes || undefined,
-        createdBy: 'user', // TODO: Get from auth context
+        notes: notes || null,
+        createdBy: useAuthStore.getState().user?.uid || '',
       };
 
       await onSubmit(input);

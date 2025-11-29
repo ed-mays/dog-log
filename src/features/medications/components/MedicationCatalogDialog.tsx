@@ -18,6 +18,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useMedicationStore } from '@store/useMedicationStore';
+import { useAuthStore } from '@store/auth.store';
 import type {
   MedicationDefinition,
   MedicationForm,
@@ -64,7 +65,7 @@ export const MedicationCatalogDialog = ({
         defaultForm: newMedForm as MedicationForm,
         defaultRoute: newMedRoute as MedicationRoute,
         isArchived: false,
-        createdBy: 'user', // In a real app, get from auth context
+        createdBy: useAuthStore.getState().user?.uid || '',
       });
       setIsCreating(false);
       setNewMedName('');

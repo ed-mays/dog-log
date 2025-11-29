@@ -18,6 +18,14 @@ vi.mock('@featureFlags/hooks/useFeatureFlag', () => ({
   useFeatureFlag: vi.fn(),
 }));
 
+vi.mock('@store/auth.store', () => ({
+  useAuthStore: {
+    getState: () => ({
+      user: { uid: 'user-123' },
+    }),
+  },
+}));
+
 describe('DoseLogForm', () => {
   const mockPetMedication: PetMedication = {
     id: 'med-1',
@@ -137,6 +145,7 @@ describe('DoseLogForm', () => {
           amountGiven: 1, // Default
           doseUnit: 'tablet', // Default
           status: 'given', // Default
+          createdBy: 'user-123',
         })
       );
     });
@@ -194,6 +203,7 @@ describe('DoseLogForm', () => {
           doseUnit: 'mL',
           status: 'skipped',
           notes: 'Given with food',
+          createdBy: 'user-123',
         })
       );
     });
