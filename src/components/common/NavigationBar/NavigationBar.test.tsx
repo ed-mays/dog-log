@@ -12,6 +12,11 @@ vi.mock('@store/auth.store', () => ({
 // Mock feature flag hook so we can cover both branches of vetsEnabled
 vi.mock('@featureFlags/hooks/useFeatureFlag');
 
+// Mock ThemeSelector to avoid testing its internal logic here
+vi.mock('@features/theme/components/ThemeSelector', () => ({
+  ThemeSelector: () => <div data-testid="theme-selector">ThemeSelector</div>,
+}));
+
 const mockUseFeatureFlag = useFeatureFlag as unknown as Mock;
 
 beforeEach(() => {
@@ -58,6 +63,11 @@ describe('NavigationBar', () => {
     // MUI Select is exposed as combobox
     const selector = await screen.findByRole('combobox', { name: /language/i });
     expect(selector).toBeInTheDocument();
+  });
+
+  it('renders the ThemeSelector in the navigation bar', () => {
+    render(<NavigationBar />);
+    expect(screen.getByTestId('theme-selector')).toBeInTheDocument();
   });
 
   it('renders the LogoutButton in the navigation bar', async () => {

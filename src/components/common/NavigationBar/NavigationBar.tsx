@@ -11,6 +11,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import LogoutButton from '@features/authentication/components/GoogleAuth/LogoutButton';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '@components/common/LanguageSelector/LanguageSelector';
+import { ThemeSelector } from '@features/theme/components/ThemeSelector';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 
 export function NavigationBar() {
@@ -69,6 +70,7 @@ export function NavigationBar() {
           </Button>
         )}
         <Box sx={{ ml: 2, mr: 1 }}>
+          <ThemeSelector />
           <LanguageSelector />
         </Box>
         <LogoutButton />

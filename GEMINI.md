@@ -14,6 +14,8 @@ Short, practical guidance to get productive quickly.
 - **Incremental Verification**: Verify each small change (e.g., a single component or hook) before proceeding to the next.
 - **Granular Tasks**: Ensure items in `task.md` are granular. Each task should ideally represent one logical commit or small PR.
 - **Test-Driven Development**: Wherever possible, follow standard Test-Driven Development practices.
+- **Review Cycles**: Stop and request user review after each small, discrete unit of work. Do not proceed without approval.
+- **Quality Gates**: Ensure every step has passing tests, green lint, and a successful build before requesting review.
 
 ## 2. Tech Stack
 
