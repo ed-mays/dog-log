@@ -16,8 +16,8 @@
     "baseUrl": "./src",
     "paths": {
       "@components/*": ["components/*"],
-      "@firebase": ["firebase.ts"],
-      "@i18n": ["i18n.tsx"],
+      "@app-firebase": ["firebase.ts"],
+      "@i18n": ["i18n.ts"],
       "@store/*": ["store/*"],
       "@test-utils": ["test-utils.tsx"],
       "@testUtils/*": ["testUtils/*"],

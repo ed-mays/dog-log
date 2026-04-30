@@ -12,7 +12,7 @@ translation libraries.
 - **Vite** for fast development & optimized builds
 - Support for **path aliases**:
   - `@components/* → src/components/*`
-  - `@firebase → src/firebase.ts`
+  - `@app-firebase → src/firebase.ts`
   - `@i18n → src/i18n.ts`
   - `@store/* → src/store/*`
   - `@test-utils → src/test-utils.tsx`
@@ -155,7 +155,7 @@ Notes:
 - Configured in `tsconfig.app.json` (moduleResolution: "bundler").
 - Aliases:
   - `@components/*` → `src/components/*`
-  - `@firebase` → `src/firebase.ts`
+  - `@app-firebase` → `src/firebase.ts`
   - `@i18n` → `src/i18n.ts`
   - `@store/*` → `src/store/*`
   - `@test-utils` → `src/test-utils.tsx`

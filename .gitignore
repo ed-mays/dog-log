@@ -27,3 +27,9 @@ dist-ssr
 guide.md
 coverage/
 .vite
+
+# Stray artifacts
+package-lock.json
+test_output.txt
+test-output.json
+DELETE-ME.txt

@@ -75,3 +75,33 @@ jobs:
         with:
           name: coverage-html
           path: coverage
+
+  rules-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Setup Java (required by Firebase emulators)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Firestore + Storage rules tests under emulator
+        run: pnpm run test:rules
