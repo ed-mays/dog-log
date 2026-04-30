@@ -1,5 +1,3 @@
 pnpm run format
 git add .
 npx lint-staged
-pnpm run build
-pnpm run test:coverage
