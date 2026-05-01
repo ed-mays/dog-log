@@ -29,7 +29,11 @@
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
-      "pnpm run lint"
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "**/*.{json,md,css,html,yml,yaml}": [
+      "prettier --write"
     ]
   },
   "dependencies": {
