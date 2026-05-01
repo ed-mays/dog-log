@@ -25,8 +25,15 @@ import {
   type StatusSummary,
 } from './lib/controller.ts';
 import { lintCommitMessage } from './lib/citation-linter.ts';
+import {
+  buildBuilderInput,
+  formatBuilderInputMarkdown,
+} from './lib/builder-input.ts';
+import { parseTaskList } from './lib/task-parser.ts';
+import { dirname, join } from 'node:path';
 
 const DEFAULT_TASK_FILE = 'docs/specs/incident-capture/03-tasks.md';
+const BUILDER_PROMPT_PATH = 'scripts/harness/lib/prompts/builder.md';
 
 function usage(): string {
   return [
@@ -37,10 +44,14 @@ function usage(): string {
     '  status                     Print progress per slice plus open DQs.',
     '  lint-commit <file>         Validate a commit-message file against the',
     '                             citation rule. Exits non-zero if invalid.',
+    '  prepare <task-id>          Render the system prompt + per-task input for',
+    '                             the builder agent. Use this to hand-drive a',
+    '                             single task in a fresh Claude Code session.',
     '',
     'Options:',
     `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
     '  --json                     Emit JSON instead of human-readable text.',
+    '  --no-system-prompt         Render only the per-task input (omit builder.md).',
     '  -h, --help                 Show this help.',
   ].join('\n');
 }
@@ -170,6 +181,7 @@ function main(): void {
       file: { type: 'string' },
       json: { type: 'boolean', default: false },
       help: { type: 'boolean', short: 'h', default: false },
+      'no-system-prompt': { type: 'boolean', default: false },
     },
     allowPositionals: true,
   });
@@ -238,6 +250,71 @@ function main(): void {
         process.stderr.write(`harness: ${result.failureReason}\n`);
       }
       process.exit(result.valid ? 0 : 1);
+      break;
+    }
+    case 'prepare': {
+      const taskId = positionals[1];
+      if (!taskId) {
+        fail('prepare requires a task id (e.g. T-01)\n\n' + usage());
+      }
+      const tasksMd = readTaskFile(filePath);
+      const parsed = parseTaskList(tasksMd);
+      const task = parsed.tasks.find((t) => t.id === taskId);
+      if (!task) {
+        fail(`task ${taskId} not found in ${fileArg}`);
+      }
+
+      // Discover spec/design files as siblings of the task file. The methodology
+      // convention is `<feature>/00-brief.md`, `01-spec.md`, `02-design.md`,
+      // `03-tasks.md`. If the convention isn't followed, the user can override
+      // by piping their own input — but for now we assume convention.
+      const featureDir = dirname(filePath);
+      const specPath = join(featureDir, '01-spec.md');
+      const designPath = join(featureDir, '02-design.md');
+      let specMd: string;
+      let designMd: string;
+      try {
+        specMd = readFileSync(specPath, 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read spec file '${specPath}': ${reason}`);
+      }
+      try {
+        designMd = readFileSync(designPath, 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read design file '${designPath}': ${reason}`);
+      }
+
+      const input = buildBuilderInput({
+        task,
+        specMarkdown: specMd,
+        designMarkdown: designMd,
+      });
+
+      if (values.json) {
+        process.stdout.write(`${JSON.stringify(input, null, 2)}\n`);
+        process.exit(input.missing_citations.length === 0 ? 0 : 2);
+      }
+
+      // Default human form: builder system prompt + per-task input markdown,
+      // ready to paste into a fresh Claude Code session.
+      if (!values['no-system-prompt']) {
+        const promptPath = resolve(process.cwd(), BUILDER_PROMPT_PATH);
+        try {
+          const systemPrompt = readFileSync(promptPath, 'utf8');
+          process.stdout.write(systemPrompt);
+          process.stdout.write('\n---\n\n');
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : String(err);
+          fail(
+            `could not read builder prompt '${BUILDER_PROMPT_PATH}': ${reason}`
+          );
+        }
+      }
+      process.stdout.write(formatBuilderInputMarkdown(input));
+      process.stdout.write('\n');
+      process.exit(input.missing_citations.length === 0 ? 0 : 2);
       break;
     }
     default:
