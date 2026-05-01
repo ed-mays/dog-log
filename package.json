@@ -39,7 +39,7 @@
     "@mui/x-date-pickers": "^8.19.0",
     "date-fns": "^4.1.0",
     "firebase": "^12.3.0",
-    "i18next": "^25.4.2",
+    "i18next": "^26.0.8",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-i18next": "^15.7.3",
