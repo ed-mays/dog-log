@@ -1,0 +1,17 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/**/*.test.{ts,tsx}",
+    "src/**/*.integration.test.{ts,tsx}",
+    "src/tests/**/*.rules.test.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignoreDependencies": [
+    "eslint-config-prettier",
+    "eslint-plugin-prettier",
+    "eslint-plugin-jsx-a11y",
+    "eslint-plugin-react-hooks",
+    "eslint-plugin-react-refresh"
+  ],
+  "ignoreBinaries": ["firebase"]
+}
