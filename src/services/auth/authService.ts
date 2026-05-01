@@ -28,7 +28,7 @@ export async function ensurePersistence(): Promise<void> {
   await setPersistence(auth, browserLocalPersistence);
 }
 
-export function mapUser(user: FirebaseUser | null): AppUser | null {
+function mapUser(user: FirebaseUser | null): AppUser | null {
   if (!user) return null;
   return {
     uid: user.uid,

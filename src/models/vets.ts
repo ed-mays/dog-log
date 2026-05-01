@@ -4,7 +4,7 @@
 import type { ArchivableEntity } from '@repositories/types.ts';
 
 export type VetId = string;
-export type PetVetLinkId = string;
+type PetVetLinkId = string;
 
 export type VetAddress = {
   line1?: string;

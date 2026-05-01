@@ -11,7 +11,7 @@ const saved =
 const initialLng = (saved || envDefault || 'en').split('-')[0];
 
 // Keep an authoritative list of app namespaces in one place
-export const APP_NAMESPACES = [
+const APP_NAMESPACES = [
   'common',
   'petList',
   'petProperties',
@@ -68,5 +68,3 @@ i18n.on('languageChanged', (lng) => {
   // Ensure all namespaces are present for the new language
   void preloadLanguage(lng);
 });
-
-export default i18n;

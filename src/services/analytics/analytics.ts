@@ -13,7 +13,7 @@ type AnalyticsEvent =
 
 type AnalyticsProps = Record<string, unknown>;
 
-export function isTestMode(): boolean {
+function isTestMode(): boolean {
   return import.meta.env.MODE === 'test';
 }
 

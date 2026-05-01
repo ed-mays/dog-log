@@ -27,7 +27,7 @@ import { logger } from '@services/logService';
 // - Header image
 // - Displays provided pet name and breed
 // - Clicking the card navigates to the PetDetailsPage for the pet
-export function PetCard({ pet }: { pet: Pet }) {
+function PetCard({ pet }: { pet: Pet }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const petActionsEnabled = useFeatureFlag('petActionsEnabled');
