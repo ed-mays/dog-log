@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 import VetForm, {
   type VetFormValues,
 } from '@features/veterinarians/components/VetForm';
-import { vetService } from '@services/vetService';
+import { useCreateVet } from '../hooks/useCreateVet';
 import { useAuthStore } from '@store/auth.store';
 import { logger } from '@services/logService';
 
@@ -13,6 +13,7 @@ export default function AddVetPage() {
   const { t } = useTranslation('veterinarians');
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
+  const { createVet } = useCreateVet(user?.uid, user?.uid);
   const [error, setError] = useState<string | null>(null);
 
   const initialValues: VetFormValues = useMemo(
@@ -38,7 +39,7 @@ export default function AddVetPage() {
     if (!user?.uid) return; // guarded by auth at routing level
     logger.debug('Adding new vet', values);
     try {
-      await vetService.createVet(user.uid, user.uid, {
+      await createVet({
         name: values.name,
         phone: values.phone,
         email: values.email || initialValues.email,

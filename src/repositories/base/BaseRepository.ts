@@ -33,9 +33,9 @@ import { logger } from '@services/logService';
  * Abstract base repository that provides common Firestore operations
  * All feature-specific repositories should extend this class
  */
-export abstract class BaseRepository<T extends BaseEntity>
-  implements Repository<T>
-{
+export abstract class BaseRepository<
+  T extends BaseEntity,
+> implements Repository<T> {
   protected collectionName: string;
 
   constructor(collectionName: string) {

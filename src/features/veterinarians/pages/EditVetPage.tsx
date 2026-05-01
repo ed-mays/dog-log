@@ -5,9 +5,8 @@ import { Box, CircularProgress, Typography } from '@mui/material';
 import VetForm, {
   type VetFormValues,
 } from '@features/veterinarians/components/VetForm';
-import { vetService } from '@services/vetService';
+import { useEditVet } from '../hooks/useEditVet';
 import { useAuthStore } from '@store/auth.store';
-import type { Vet } from '@models/vets';
 
 export default function EditVetPage() {
   const { t } = useTranslation('veterinarians');
@@ -16,31 +15,13 @@ export default function EditVetPage() {
   const params = useParams<{ id: string }>();
   const id = params.id!;
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [vet, setVet] = useState<Vet | null>(null);
+  const { vet, loading, loadError, updateVet } = useEditVet(user?.uid, id);
 
   useEffect(() => {
-    let mounted = true;
-    async function load() {
-      if (!user?.uid) return;
-      try {
-        const v = await vetService.getVet(user.uid, id);
-        if (mounted) setVet(v);
-      } catch {
-        // Swallow Firestore permission errors (or any fetch error) and surface friendly message
-        if (mounted) {
-          setVet(null);
-          setError(t('common:somethingWentWrong', 'Something went wrong'));
-        }
-      } finally {
-        if (mounted) setLoading(false);
-      }
+    if (loadError) {
+      setError(t('common:somethingWentWrong', 'Something went wrong'));
     }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [user?.uid, id, t]);
+  }, [loadError, t]);
 
   const initialValues: VetFormValues | null = useMemo(() => {
     if (!vet) return null;
@@ -60,7 +41,7 @@ export default function EditVetPage() {
     setError(null);
     if (!user?.uid) return;
     try {
-      await vetService.updateVet(user.uid, id, {
+      await updateVet({
         name: values.name,
         phone: values.phone,
         email: values.email || undefined,

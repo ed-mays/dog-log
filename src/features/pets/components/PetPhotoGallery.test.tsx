@@ -40,9 +40,8 @@ describe('PetPhotoGallery', () => {
 
   it('does not render when feature flag is disabled', async () => {
     // Mock feature flag to return false
-    const { useFeatureFlag } = await import(
-      '../../../featureFlags/hooks/useFeatureFlag'
-    );
+    const { useFeatureFlag } =
+      await import('../../../featureFlags/hooks/useFeatureFlag');
     vi.mocked(useFeatureFlag).mockReturnValue(false);
 
     const { container } = render(
@@ -57,9 +56,8 @@ describe('PetPhotoGallery', () => {
 
   it('calls onSetMainPhoto when button clicked', async () => {
     // Reset flag to true
-    const { useFeatureFlag } = await import(
-      '../../../featureFlags/hooks/useFeatureFlag'
-    );
+    const { useFeatureFlag } =
+      await import('../../../featureFlags/hooks/useFeatureFlag');
     vi.mocked(useFeatureFlag).mockReturnValue(true);
 
     const user = userEvent.setup();

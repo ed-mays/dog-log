@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, TextField, Typography, Grid } from '@mui/material';
 import { useAuthStore } from '@store/auth.store';
-import { vetService } from '@services/vetService';
-import type { Vet } from '@models/vets';
+import { useVetSearch } from '../hooks/useVetSearch';
 import { VetCard } from '../components/VetCard';
 
 export default function VetListPage() {
@@ -12,29 +11,7 @@ export default function VetListPage() {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const [term, setTerm] = useState('');
-  const [items, setItems] = useState<Vet[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      if (!user?.uid) return;
-      setLoading(true);
-      try {
-        const list = await vetService.searchVets(user.uid, '');
-        if (mounted) setItems(list);
-      } catch {
-        // Swallow Firestore permission errors and show empty state
-        if (mounted) setItems([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [user?.uid]);
+  const { vets: items, loading } = useVetSearch(user?.uid, '');
 
   // Debounced telemetry
   useEffect(() => {

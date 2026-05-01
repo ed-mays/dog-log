@@ -23,8 +23,9 @@ export interface Repository<T extends BaseEntity> {
 }
 
 // Enhanced repository interface for entities that support archiving
-export interface ArchivableRepository<T extends ArchivableEntity>
-  extends Repository<T> {
+export interface ArchivableRepository<
+  T extends ArchivableEntity,
+> extends Repository<T> {
   archive(id: string): Promise<T>;
   getActiveList(options?: QueryOptions): Promise<T[]>;
   getArchivedList(options?: QueryOptions): Promise<T[]>;

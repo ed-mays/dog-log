@@ -30,6 +30,64 @@ export default [
     },
   },
 
+  // Layer-boundary enforcement: stores never reach into repositories.
+  // Type-only imports from `@repositories/types` are allowed (e.g. BaseEntity).
+  // Excludes test files so mocks can target repository modules.
+  {
+    files: ['src/store/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@repositories/*', '!@repositories/types'],
+              message:
+                'Stores must call services, not repositories directly. Add or use a service in src/services/. Type-only imports from @repositories/types are allowed.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // Layer-boundary enforcement: components and pages call hooks, not services.
+  // Allowlist: cross-cutting utilities (`@services/logService`,
+  // `@services/analytics/*`) are not business logic and may be imported anywhere.
+  {
+    files: [
+      'src/features/**/pages/**/*.{ts,tsx}',
+      'src/features/**/components/**/*.{ts,tsx}',
+      'src/components/**/*.{ts,tsx}',
+    ],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '@services/*',
+                '!@services/logService',
+                '!@services/analytics',
+                '!@services/analytics/*',
+              ],
+              message:
+                'Components and pages must go through hooks. Move the call into a hook in src/features/<domain>/hooks/. (Logger and analytics are exceptions.)',
+            },
+            {
+              group: ['@repositories/*', '!@repositories/types'],
+              message:
+                'Components and pages must not import repositories. Use a hook that goes through a service.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // Testing Library and Jest-DOM configuration for test files
   {
     files: ['**/*.test.tsx', '**/*.test.ts'],

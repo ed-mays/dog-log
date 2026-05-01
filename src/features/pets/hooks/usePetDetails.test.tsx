@@ -223,9 +223,8 @@ describe('usePetDetails', () => {
   });
 
   it('does not load vet links if flags disabled', async () => {
-    const { useFeatureFlag } = await import(
-      '@featureFlags/hooks/useFeatureFlag'
-    );
+    const { useFeatureFlag } =
+      await import('@featureFlags/hooks/useFeatureFlag');
     vi.mocked(useFeatureFlag).mockReturnValue(false);
 
     renderHook(() => usePetDetails());

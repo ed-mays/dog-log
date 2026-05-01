@@ -98,9 +98,8 @@ Short, practical rules for writing tests in this repo. See `docs/test-architectu
     vi.unmock('@features/authentication/AuthBootstrap');
     const authSvc = await import('@services/auth/authService');
     vi.spyOn(authSvc, 'subscribeToAuth').mockReturnValue(() => {});
-    const { default: AuthBootstrap } = await import(
-      '@features/authentication/AuthBootstrap'
-    );
+    const { default: AuthBootstrap } =
+      await import('@features/authentication/AuthBootstrap');
     ```
 
 - Interaction and async query rules:

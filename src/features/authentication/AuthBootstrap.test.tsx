@@ -21,9 +21,8 @@ describe('AuthBootstrap', () => {
       .spyOn(authServiceModule, 'subscribeToAuth')
       .mockReturnValue(() => {});
 
-    const { default: AuthBootstrap } = await import(
-      '@features/authentication/AuthBootstrap'
-    );
+    const { default: AuthBootstrap } =
+      await import('@features/authentication/AuthBootstrap');
 
     // Act
     render(<AuthBootstrap />);
@@ -40,9 +39,8 @@ describe('AuthBootstrap', () => {
       .spyOn(authServiceModule, 'subscribeToAuth')
       .mockReturnValue(() => {});
 
-    const { default: AuthBootstrap } = await import(
-      '@features/authentication/AuthBootstrap'
-    );
+    const { default: AuthBootstrap } =
+      await import('@features/authentication/AuthBootstrap');
 
     const { rerender } = render(<AuthBootstrap />);
     expect(subscribeSpy).toHaveBeenCalledTimes(1);
@@ -61,9 +59,8 @@ describe('AuthBootstrap', () => {
       .spyOn(authServiceModule, 'subscribeToAuth')
       .mockReturnValue(cleanup);
 
-    const { default: AuthBootstrap } = await import(
-      '@features/authentication/AuthBootstrap'
-    );
+    const { default: AuthBootstrap } =
+      await import('@features/authentication/AuthBootstrap');
 
     const { unmount } = render(<AuthBootstrap />);
     expect(subscribeSpy).toHaveBeenCalledTimes(1);
@@ -74,9 +71,8 @@ describe('AuthBootstrap', () => {
 
   it('returns no UI (renders null)', async () => {
     vi.unmock('@features/authentication/AuthBootstrap');
-    const { default: AuthBootstrap } = await import(
-      '@features/authentication/AuthBootstrap'
-    );
+    const { default: AuthBootstrap } =
+      await import('@features/authentication/AuthBootstrap');
 
     const { container } = render(<AuthBootstrap />);
     expect(container).toBeEmptyDOMElement();

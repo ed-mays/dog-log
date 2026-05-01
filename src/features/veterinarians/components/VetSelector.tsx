@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Autocomplete,
@@ -11,9 +11,10 @@ import {
 } from '@mui/material';
 import type { Vet } from '@models/vets';
 import VetForm, { type VetFormValues } from './VetForm';
-import { vetService } from '@services/vetService';
+import { useVetSearch } from '../hooks/useVetSearch';
+import { useCreateVet } from '../hooks/useCreateVet';
 import { useAuthStore } from '@store/auth.store';
-import { logger } from '@services/logService.ts';
+import { logger } from '@services/logService';
 
 export type VetSelectorProps = {
   label?: string;
@@ -31,37 +32,15 @@ function isCreateOption(opt: Option): opt is CreateOption {
 export default function VetSelector({ label, onSelect }: VetSelectorProps) {
   const { t } = useTranslation('veterinarians');
   const user = useAuthStore((s) => s.user);
-  const userId = user?.uid ?? '';
+  const userId = user?.uid;
 
   const [openCreate, setOpenCreate] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState<Vet[]>([]);
   const [inputValue, setInputValue] = useState('');
 
-  useEffect(() => {
-    let active = true;
-
-    if (!userId) return;
-    const query = inputValue.trim();
-
-    // Debounce to coalesce rapid keystrokes and MUI-controlled updates
-    const handle = setTimeout(async () => {
-      if (!active) return;
-      setLoading(true);
-      try {
-        // Empty query returns all vets, non-empty filters by query
-        const results = await vetService.searchVets(userId, query);
-        if (active) setOptions(results);
-      } finally {
-        if (active) setLoading(false);
-      }
-    }, 250);
-
-    return () => {
-      active = false;
-      clearTimeout(handle);
-    };
-  }, [inputValue, userId]);
+  const { vets: options, loading } = useVetSearch(userId, inputValue.trim(), {
+    debounceMs: 250,
+  });
+  const { createVet } = useCreateVet(userId, userId);
 
   const createNewLabel = useMemo(
     () => t('selector.createNew', { defaultValue: 'Create new vet…' }),
@@ -77,7 +56,7 @@ export default function VetSelector({ label, onSelect }: VetSelectorProps) {
     if (!userId) return;
     (async () => {
       try {
-        const created = await vetService.createVet(userId, userId, values);
+        const created = await createVet(values);
 
         onSelect(created);
         setOpenCreate(false);
