@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Close';
 
-import formStyles from '@styles/FormStyles.module.css';
 import { loadNamespace } from '@i18n';
 import { logger } from '@services/logService';
 
@@ -106,35 +105,46 @@ export function PetForm({
   }
 
   return (
-    <form className={formStyles.formRoot} onSubmit={handleSubmit}>
-      <div className={formStyles.formGroup}>
-        <TextField
-          id="pet-name"
-          name="name"
-          label={t('name', { ns: 'petProperties' })}
-          value={pet.name}
-          onChange={handleChange}
-          required
-          fullWidth
-          size="small"
-        />
-      </div>
-      <div className={formStyles.formGroup}>
-        <TextField
-          id="pet-breed"
-          name="breed"
-          label={t('breed', { ns: 'petProperties' })}
-          value={pet.breed}
-          onChange={handleChange}
-          required
-          fullWidth
-          size="small"
-        />
-      </div>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2.5,
+        maxWidth: 360,
+        mx: 'auto',
+        my: 5,
+        p: { xs: 2, sm: 4 },
+        bgcolor: 'background.paper',
+        borderRadius: 2,
+        boxShadow: (theme) => theme.shadows[3],
+      }}
+    >
+      <TextField
+        id="pet-name"
+        name="name"
+        label={t('name', { ns: 'petProperties' })}
+        value={pet.name}
+        onChange={handleChange}
+        required
+        fullWidth
+        size="small"
+      />
+      <TextField
+        id="pet-breed"
+        name="breed"
+        label={t('breed', { ns: 'petProperties' })}
+        value={pet.breed}
+        onChange={handleChange}
+        required
+        fullWidth
+        size="small"
+      />
       {vetsEnabled && vetLinkingEnabled && initialValues.id ? (
         <Box
-          className={formStyles.formGroup}
           aria-label={t('link.sectionTitle', { ns: 'veterinarians' })}
+          sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
         >
           <Typography variant="subtitle1" component="h2" gutterBottom>
             {t('link.sectionTitle', { ns: 'veterinarians' })}
@@ -226,16 +236,11 @@ export function PetForm({
         </Box>
       ) : null}
 
-      <div className={formStyles.formActions}>
-        <Button
-          className={formStyles.formButton}
-          type="button"
-          onClick={onCancel}
-        >
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <Button type="button" onClick={onCancel}>
           {t('responses.cancel', { ns: 'common' })}
         </Button>
         <Button
-          className={`${formStyles.formButton} ${formStyles.formButtonPrimary}`}
           type="submit"
           variant="contained"
           color="primary"
@@ -243,7 +248,7 @@ export function PetForm({
         >
           {t('responses.ok', { ns: 'common' })}
         </Button>
-      </div>
-    </form>
+      </Box>
+    </Box>
   );
 }
