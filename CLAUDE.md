@@ -72,6 +72,17 @@ Translations in `src/locales/<lang>/<namespace>.json`. Components use the `useTr
 - Mock Zustand stores with `vi.mock`; for component-specific overrides use `vi.doMock` + `resetModules`.
 - Shared test helpers: `src/test-utils.tsx` (`@test-utils`) and `src/testUtils/*` (`@testUtils/*`).
 
+## Health Stack
+
+Tools used by `/health` to score code quality:
+
+- typecheck: `pnpm exec tsc -b`
+- lint: `pnpm run lint`
+- test: `pnpm run test:unit`
+- deadcode: `pnpm knip`
+
+`pnpm knip` reports unused files, exports, types, and dependencies. Run before refactor PRs. Currently surfaces a backlog (~47 findings) — expected to drop as the layer-boundary cleanup completes. Use `pnpm knip:fix` cautiously (passes `--allow-remove-files`).
+
 ## Workflow conventions (from GEMINI.md)
 
 - Atomic, incremental changes — break features into small commits/PRs; verify (tests + lint + build green) before requesting review.
