@@ -85,7 +85,7 @@ The Incident Capture surface lets a caregiver record a pet medical event in real
 
 ### Activation surface (added 2026-05-01, OQ-1)
 
-- **BR-27** — Emergency Activation MUST be reachable via a global control on every post-auth surface, present without scrolling or opening a menu.
+- **BR-27** — Emergency Activation MUST be reachable via a global control on every post-auth surface, present without scrolling or opening a menu. _Exception:_ for users who have not yet created a pet, the activation control MAY be hidden, since BR-28 requires a `petId` and none exists yet. (Added as a carve-out in round 5 because BR-28's pet-required rule made BR-27's universal-presence rule literally unsatisfiable for zero-pet users.)
 
 ### Pet assignment (revised 2026-05-01 round 2 — OQ-2 reverted)
 
@@ -232,4 +232,5 @@ Each AC corresponds to one or more user stories and behavioral requirements. The
   - **OQs:** OQ-2 marked reverted; OQ-3 noted that initial chip catalog lives in design §D5; OQ-6 added then closed (obsolete post-revert); OQ-7 added (vet selection when multiple linked — cold-read S4-sub1).
 - **2026-05-01 round 3** — Resolved OQ-7. Investigation of `src/models/vets.ts` and `src/services/petVetService.ts` revealed the existing data model already defines `PetVetRole = 'primary' | …'`, auto-promotes the first link, and exposes `setPrimaryVet()` — option (a) is zero-cost. Added "Primary Vet" glossary entry; simplified BR-10 (cite Primary Vet, drop the "selection rule deferred" tail) and BR-11 (hide when no linked vets). No new BRs / ACs / NFRs needed; existing AC-5 already references "primary vet" and now has a glossary anchor.
 - **2026-05-01 round 4** — Cold-read of design doc surfaced one spec-touching finding: BR-33 was vague about active-state deletion ("interaction with active incidents is unusual"). Amended BR-33 to be explicit: soft-delete from active is allowed and releases the BR-26 singleton. The other 14 cold-read findings are design-doc-only and live in `02-design.md` §D11.
+- **2026-05-01 round 5** — Second cold-read of design doc surfaced one spec-touching finding (D18): BR-27 ("every post-auth surface") was unsatisfiable for zero-pet users because BR-28 requires a `petId`. Amended BR-27 with an explicit zero-pet exception. The other 8 cold-read findings are design-doc-only and live in `02-design.md` §D11; the most consequential is D16 — flipped the storage layout from per-pet subcollection back to top-level under user, because BR-29's pet-reassignment requirement made cross-path moves expensive under the subcollection layout.
   - **Brief amendments (separate file):** trimmed editorial close (B1); softened "four to six" to "several" (B2); replaced implementation vocabulary "one tap" with behavior language (B3); split brief vs spec non-goals (B5, B6); first-person success signal (B7); added failure signal (B8); "allergies" → "anaphylaxis-prone" (B9). B4 left as-is per user.
