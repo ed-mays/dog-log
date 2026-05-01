@@ -42,7 +42,7 @@
     "i18next": "^26.0.8",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-i18next": "^15.7.3",
+    "react-i18next": "^17.0.6",
     "react-router-dom": "^7.14.2",
     "zustand": "^5.0.8"
   },
