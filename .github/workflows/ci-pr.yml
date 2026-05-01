@@ -63,6 +63,9 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
+      - name: Dead code (knip)
+        run: pnpm knip --no-progress
+
       - name: Test (coverage gate)
         run: pnpm run test:coverage
 
