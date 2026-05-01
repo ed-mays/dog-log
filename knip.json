@@ -11,7 +11,9 @@
     "eslint-plugin-prettier",
     "eslint-plugin-jsx-a11y",
     "eslint-plugin-react-hooks",
-    "eslint-plugin-react-refresh"
+    "eslint-plugin-react-refresh",
+    "@typescript-eslint/eslint-plugin",
+    "@typescript-eslint/parser"
   ],
   "ignoreBinaries": ["firebase"]
 }
