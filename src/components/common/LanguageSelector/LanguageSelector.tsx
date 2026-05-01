@@ -93,5 +93,3 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
     </FormControl>
   );
 };
-
-export default LanguageSelector;

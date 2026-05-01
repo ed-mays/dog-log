@@ -8,7 +8,7 @@ import {
 import { storage } from '../firebase';
 import { logger } from '@services/logService';
 
-export interface StorageRepository {
+interface StorageRepository {
   uploadFile(
     path: string,
     file: File,

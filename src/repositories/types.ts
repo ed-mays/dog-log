@@ -48,7 +48,7 @@ export interface FilterCriteria {
 }
 
 // Sort criteria for ordered results
-export interface SortCriteria {
+interface SortCriteria {
   field: string;
   direction: 'asc' | 'desc';
 }
@@ -59,13 +59,6 @@ export interface AdvancedQueryOptions extends Omit<QueryOptions, 'filters'> {
   filters?: FilterCriteria[];
   sort?: SortCriteria[];
   searchTerm?: string;
-}
-
-// Response wrapper for operations that may fail
-export interface ServiceResult<T> {
-  success: boolean;
-  data?: T;
-  error?: ServiceError;
 }
 
 // Standardized error structure
@@ -84,11 +77,3 @@ export const ErrorCodes = {
   FIRESTORE_ERROR: 'FIRESTORE_ERROR',
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
 } as const;
-
-// Pagination support for list operations
-export interface PaginatedResult<T> {
-  items: T[];
-  total: number;
-  hasNext: boolean;
-  nextCursor?: string;
-}
