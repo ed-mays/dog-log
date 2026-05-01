@@ -34,5 +34,15 @@
   "validation": {
     "fileSizeTooLarge": "File size too large (max {{maxSize}}MB)",
     "invalidFileType": "Invalid file type. Please upload an image."
+  },
+  "theme": {
+    "label": "Theme",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode",
+    "modes": {
+      "light": "Light",
+      "dark": "Dark",
+      "caregiver": "Caregiver"
+    }
   }
 }

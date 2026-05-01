@@ -34,5 +34,15 @@
   "validation": {
     "fileSizeTooLarge": "El archivo es demasiado grande (máx {{maxSize}}MB)",
     "invalidFileType": "Tipo de archivo inválido. Por favor sube una imagen."
+  },
+  "theme": {
+    "label": "Tema",
+    "switchToDark": "Cambiar a modo oscuro",
+    "switchToLight": "Cambiar a modo claro",
+    "modes": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "caregiver": "Cuidador"
+    }
   }
 }
