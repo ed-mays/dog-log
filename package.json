@@ -24,8 +24,8 @@
     "knip:fix": "knip --fix --allow-remove-files",
     "start:firebase": "firebase emulators:start --only auth,firestore,storage",
     "prepare": "husky",
-    "deploy:dev": "firebase use dev && firebase deploy --only hosting,firestore.rules,storage",
-    "deploy:staging": "firebase use staging && firebase deploy --only hosting,firestore.rules,storage"
+    "deploy:dev": "firebase use dev && firebase deploy --only hosting,firestore:rules,storage",
+    "deploy:staging": "firebase use staging && firebase deploy --only hosting,firestore:rules,storage"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [

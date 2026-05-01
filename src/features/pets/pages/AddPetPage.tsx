@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Alert } from '@mui/material';
 import { PetForm } from '@features/pets/components/PetForm';
 import type { Pet } from '@features/pets/types';
 import { usePetsStore } from '@store/pets.store';
@@ -26,6 +27,7 @@ export default function AddPetPage() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formDirty, setFormDirty] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   // petProperties
   useEffect(() => {
     let mounted = true;
@@ -41,12 +43,23 @@ export default function AddPetPage() {
   if (!nsReady) return null;
 
   async function handleSubmit(pet: Pet) {
-    await addPet({
-      name: pet.name,
-      breed: pet.breed,
-      birthDate: pet.birthDate,
-    });
-    navigate('/pets');
+    setSubmitError(null);
+    try {
+      await addPet({
+        name: pet.name,
+        breed: pet.breed,
+        birthDate: pet.birthDate,
+      });
+      navigate('/pets');
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : t('errors.savePetFailed', {
+              defaultValue: 'Failed to save pet. Please try again.',
+            });
+      setSubmitError(message);
+    }
   }
 
   function handleCancel() {
@@ -69,6 +82,11 @@ export default function AddPetPage() {
 
   return (
     <>
+      {submitError && (
+        <Alert severity="error" role="alert" sx={{ mb: 2 }}>
+          {submitError}
+        </Alert>
+      )}
       <PetForm
         initialValues={newPetInitialValues}
         onSubmit={handleSubmit}
