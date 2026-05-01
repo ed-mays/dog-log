@@ -274,6 +274,41 @@ describe('AddPetPage', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
+  it('shows an error alert and stays on page when addPet rejects', async () => {
+    petsMock.actions.addPet.mockRejectedValueOnce(
+      new Error('Missing or insufficient permissions.')
+    );
+
+    vi.doMock('@features/pets/components/PetForm', () => ({
+      PetForm: (props: {
+        onSubmit: (pet: unknown) => void | Promise<void>;
+      }) => {
+        const testPet = {
+          name: 'Rover',
+          breed: 'Hound',
+          birthDate: new Date('2020-01-02T00:00:00.000Z'),
+        };
+        return (
+          <div>
+            <button onClick={() => props.onSubmit(testPet)}>OK</button>
+          </div>
+        );
+      },
+    }));
+
+    const module = await import('./AddPetPage');
+    const AddPetPage = module.default;
+
+    const user = userEvent.setup();
+    await renderWithProviders(<AddPetPage />);
+
+    await user.click(await screen.findByRole('button', { name: /ok/i }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(/missing or insufficient permissions/i);
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   it('accepts dirty cancel via keyboard: Tab to Yes and Space to confirm; navigates to /pets', async () => {
     // Provide a minimal PetForm that can toggle dirty state and trigger cancel
     vi.doMock('@features/pets/components/PetForm', () => ({

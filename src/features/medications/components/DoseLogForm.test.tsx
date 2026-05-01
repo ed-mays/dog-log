@@ -151,6 +151,8 @@ describe('DoseLogForm', () => {
     });
   });
 
+  // Heavy interaction test (clears + types into multiple inputs, multiple combobox selects).
+  // Default 5s timeout is tight on slower environments (husky pre-push under load).
   it('submits form with modified data', async () => {
     const user = userEvent.setup();
     render(
@@ -207,7 +209,7 @@ describe('DoseLogForm', () => {
         })
       );
     });
-  });
+  }, 10000);
 
   it('validates required fields', async () => {
     const { container } = render(
