@@ -55,13 +55,13 @@ The Incident Capture surface lets a caregiver record a pet medical event in real
 ### STOP & post-event
 
 - **BR-12** — A STOP action MUST be available throughout the active incident.
-- **BR-13** — On STOP, the timer MUST freeze at the current elapsed time and the incident MUST persist with `endedAt = now`.
+- **BR-13** — On STOP, the timer MUST freeze at the current elapsed time and the incident MUST persist with `endedAt = now`. If the incident has no `petId` set at STOP, the system MUST prompt for pet selection inline; STOP does not complete until a pet is selected. Cancelling the prompt MUST leave the incident active (timer resumes).
 - **BR-14** — On STOP, the surface MUST remain open with all fields editable; the user MUST NOT be navigated away.
 - **BR-15** — Persistence on STOP MUST tolerate offline conditions: the entry MUST be locally durable and sync when connectivity returns. (See §6 NFR-1.)
 
 ### Indefinite editability
 
-- **BR-16** — A saved incident MUST remain editable for severity, type, observation chips, journal, start time, and end time, with no time limit.
+- **BR-16** — A saved incident MUST remain editable for severity, type, observation chips, pet, start time, and end time, with no time limit. "Editable for journal" means _appendable_ per BR-29; existing journal entries are immutable.
 - **BR-17** — Editing a saved incident MUST NOT require a separate "edit mode"; any field is directly tappable on the same surface.
 - **BR-18** — The system MUST record `updatedAt` on every persisted change but MUST NOT surface "edited" indicators to the caregiver.
 
@@ -80,7 +80,24 @@ The Incident Capture surface lets a caregiver record a pet medical event in real
 
 ### Concurrency
 
-- **BR-26** — At most one Active Incident MAY exist per user across all their pets at any time. Attempting Emergency Activation while one is already active MUST resume the existing active incident rather than create a second.
+- **BR-26** — At most one Active Incident MAY exist per user across all their pets at any time. Attempting Emergency Activation while one is already active MUST resume the existing active incident, including its current pet-set/unset state.
+
+### Activation surface (added 2026-05-01, OQ-1)
+
+- **BR-27** — Emergency Activation MUST be reachable via a global control on every post-auth surface (e.g. a persistent floating action button). The control MUST NOT be hidden behind navigation or scrolling.
+
+### Pet assignment (added 2026-05-01, OQ-2)
+
+- **BR-28** — `petId` is OPTIONAL during an active incident: the timer, severity, observation chips, and journal MUST function with no pet set. `petId` MUST be set before STOP completes (see BR-13). When Emergency Activation occurs from a pet-scoped surface (e.g. a pet's detail page), `petId` MUST be pre-filled to that pet; otherwise it starts unset.
+- **BR-29** — The pet field MUST be settable, changeable, and clearable on the Capture Surface like other editable fields, both during the active incident and on saved incidents (subject to BR-13's constraint that a stopped incident always has a pet).
+
+### Journal immutability (added 2026-05-01, OQ-4)
+
+- **BR-30** — Journal entries are append-only. Once written, an entry's `text`, `elapsedSeconds`, and `addedAt` MUST NOT be edited or deleted in v1. New entries MAY be appended to a stopped incident at any time; their `elapsedSeconds` is computed against the incident's `startedAt` at the moment of append.
+
+### Time-edit semantics (added 2026-05-01, OQ-5)
+
+- **BR-31** — `elapsedSeconds` on each journal entry is stored at write time and MUST NOT be recomputed. If a caregiver later edits `startedAt` on a saved incident, existing journal entries retain their original `elapsedSeconds` values; they are historical observations, not derivatives of `startedAt`.
 
 ## §5 Data Model
 
@@ -89,7 +106,7 @@ Logical shape only — Firestore layout, indexes, and TypeScript types are defer
 **Incident**
 
 - `id` — string, system-assigned
-- `petId` — string, required
+- `petId` — string, OPTIONAL while incident is active; REQUIRED when `endedAt` is non-null (per BR-13, BR-28).
 - `userId` — string, required (owning caregiver, for security rules)
 - `startedAt` — instant, required
 - `endedAt` — instant, optional (null while active)
@@ -116,7 +133,7 @@ Logical shape only — Firestore layout, indexes, and TypeScript types are defer
 
 ## §6 Non-Functional Requirements
 
-- **NFR-1 (Offline durability)** — Emergency Activation, timer ticks, all chip and severity taps, journal appends, and STOP MUST function with zero network connectivity. Sync to Firestore MUST occur opportunistically when connectivity returns and MUST NOT block the UI.
+- **NFR-1 (Connectivity resilience)** — Brief network interruptions (seconds-to-minutes) MUST NOT lose in-flight data: in particular, taps on severity/chips, journal appends, and STOP MUST be queued locally and synced when connectivity returns, and the UI MUST NOT block on network round-trips. Full airplane-mode-from-cold-start is OUT of scope for v1; it is recorded as a v2 candidate (see §7). The Firestore SDK's built-in offline persistence is sufficient to meet the v1 bar — no separate service worker / PWA shell required.
 - **NFR-2 (Latency)** — From the user's tap to timer first frame visibly running, the median delay MUST be ≤200ms on a mid-range mobile device.
 - **NFR-3 (One-thumb operation)** — All controls on the Capture Surface MUST be reachable and tappable with a single thumb on a 6.1" portrait phone screen. Minimum tap target 44×44 CSS px.
 - **NFR-4 (Dark mode primary)** — The Capture Surface MUST render correctly in the existing dark theme; light and caregiver themes MUST also work but dark is the design target (per memory file).
@@ -138,14 +155,15 @@ Logical shape only — Firestore layout, indexes, and TypeScript types are defer
 - Multi-user collaborative editing of the same active incident (e.g. two caregivers in the same household).
 - Photo or video attachments inside an incident.
 - Capture-grid home surface and status strip — _separate feature, separate spec._ Incident Capture covers the Capture Surface itself and the per-pet history list; the grid that launches it is downstream.
+- Full-offline / airplane-mode operation from cold start (PWA shell, service worker). Recorded as a v2 candidate; v1 ships with Firestore SDK's built-in connectivity resilience only (see NFR-1).
 
 ## §8 Open Questions
 
-- **OQ-1** — Where does Emergency Activation live in the app shell? Options: (a) global floating action button always visible post-auth, (b) tile on the (future) capture grid, (c) both. The brief implies "any post-auth surface" (BR-1) which suggests (a) or (c). **Resolution needed before design phase.**
-- **OQ-2** — When a caregiver has multiple pets and triggers Emergency Activation from a non-pet-scoped surface, how is the pet selected? Options: (a) require pet selection as a second tap (violates BR-1's "≤1 tap"), (b) default to most-recently-active pet with explicit reassignment available post-STOP, (c) only allow Emergency Activation from a pet-scoped surface in v1. **Resolution needed before design phase.**
-- **OQ-3** — What is the v1 chip catalog per Incident Type? Memory file gives examples for seizure ("blindness", "thirst after"); the rest need to be enumerated. _This is content work, not architecture — can resolve during design phase._
-- **OQ-4** — Are journal entries individually editable/deletable after STOP, or is the journal append-only? BR-16 says "journal" is editable but doesn't specify per-line. **Resolution needed before tasks phase.**
-- **OQ-5** — On a re-opened saved incident, does editing `startedAt` recompute all journal entries' `elapsedSeconds`? Likely yes for consistency, but flag for explicit decision. **Resolution needed before tasks phase.**
+- **OQ-1** — ✅ **Resolved 2026-05-01** (PR #152): option (a) — global FAB always visible post-auth. Codified as BR-27.
+- **OQ-2** — ✅ **Resolved 2026-05-01** (PR #152): pet is itself an editable field, optional during the active incident, required at STOP. Codified as BR-28, BR-29 and BR-13 amendment. The "select pet from non-pet-scoped surface" friction is sidestepped because the caregiver doesn't have to pick at activation — they pick when convenient, and STOP enforces it.
+- **OQ-3** — Open. What is the v1 chip catalog per Incident Type? Memory file gives examples for seizure ("blindness", "thirst after"); the rest need to be enumerated. _Content work, not architecture — resolves during design phase._
+- **OQ-4** — ✅ **Resolved 2026-05-01** (PR #152): journal is append-only after STOP. Existing entries never edited or deleted in v1; new entries can be appended at any time. Codified as BR-30.
+- **OQ-5** — ✅ **Resolved 2026-05-01** (PR #152): `elapsedSeconds` is stored at write time and never recomputed, even if `startedAt` is later edited. Codified as BR-31.
 
 ## §9 Acceptance Criteria
 
@@ -162,9 +180,19 @@ Each AC corresponds to one or more user stories and behavioral requirements. The
 - **AC-9 (US-9, BR-23, BR-24, BR-25)** — _Given_ a pet with three saved incidents, _when_ the caregiver opens the pet's incident history, _then_ they see all three most-recent-first with start time, duration, type, severity, and journal excerpt; tapping one opens the Capture Surface for that incident.
 - **AC-10 (US-10, BR-19, BR-20)** — _Given_ an active incident with type "seizure" and chips A, B (where B is seizure-specific), _when_ the caregiver changes Type to "injury", _then_ the chip catalog shows injury chips and chips A, B remain attached to the incident.
 - **AC-11 (BR-26)** — _Given_ an active incident already exists, _when_ the caregiver performs Emergency Activation, _then_ the existing active incident is resumed rather than a second one created.
-- **AC-12 (NFR-1, BR-15)** — _Given_ a device in airplane mode, _when_ the full Emergency Activation → tap chips → append journal → STOP flow is performed, _then_ every action succeeds in-app and all data syncs to Firestore once connectivity returns.
+- **AC-12 (NFR-1, BR-15)** — _Given_ an active incident on a device that loses connectivity for 60 seconds mid-event, _when_ the caregiver taps chips, appends a journal line, and taps STOP during the outage, _then_ the UI responds without blocking and all queued changes sync to Firestore once connectivity returns. (Cold-start airplane mode is out of scope per §7.)
 - **AC-13 (NFR-8)** — _Given_ caregiver A signed in, _when_ caregiver A attempts to read or write an incident owned by caregiver B, _then_ Firestore rules reject the operation.
+- **AC-14 (BR-13, BR-28)** — _Given_ an active incident with no `petId` set, _when_ the caregiver taps STOP, _then_ a pet picker appears inline; selecting a pet completes STOP with that `petId`; cancelling the picker leaves the incident active and the timer running.
+- **AC-15 (BR-29, BR-16)** — _Given_ a saved incident with `petId = X`, _when_ the caregiver changes the pet to Y, _then_ the incident is now associated with Y; severity, type, chips, and journal are unchanged; the incident no longer appears in pet X's history list.
+- **AC-16 (BR-30)** — _Given_ a stopped incident with three journal entries, _when_ the caregiver appends a fourth entry, _then_ the new entry is added with `elapsedSeconds` computed against `startedAt`; the original three entries are unchanged. Attempting to edit or delete an existing entry has no effect (no UI affordance exposed).
+- **AC-17 (BR-31)** — _Given_ a saved incident with `startedAt = T0` and a journal entry with `elapsedSeconds = 90`, _when_ the caregiver edits `startedAt` to `T0 + 30s`, _then_ the journal entry's `elapsedSeconds` remains 90.
+- **AC-18 (BR-27)** — _Given_ the caregiver is on any post-auth surface (pet detail, settings, history list, etc.), _when_ they look for the activation control, _then_ a global activation control is present and reachable without scrolling or opening a menu.
 
 ## §10 Spec Changelog
 
-- 2026-05-01 — Initial draft.
+- **2026-05-01** — Initial draft.
+- **2026-05-01** — PR #152 review round 1. Resolved OQ-1, OQ-2, OQ-4, OQ-5.
+  - Added BR-27 (global activation control), BR-28 (pet optional during active, required at STOP), BR-29 (pet field editable on Capture Surface), BR-30 (journal append-only), BR-31 (elapsedSeconds stored at write).
+  - Amended BR-13 (STOP triggers pet picker if pet unset), BR-16 (clarified journal-as-appendable), BR-26 (resumed incident retains pet state), NFR-1 (softened from "full offline" to "connectivity resilience"; full PWA-shell offline moved to §7 v2 candidate).
+  - §5 data model: `petId` is now nullable while active, required when `endedAt` is set.
+  - Added AC-14 through AC-18 for the new BRs; rewrote AC-12 to match softened NFR-1.
