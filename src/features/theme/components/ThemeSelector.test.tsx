@@ -1,11 +1,10 @@
-import { render, screen } from '../../../test-utils';
+import { render, screen, within } from '../../../test-utils';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ThemeSelector } from './ThemeSelector';
 import { useThemeStore } from '@store/theme.store';
 import * as featureFlagsHooks from '@featureFlags/hooks/useFeatureFlag';
 
-// Mock useFeatureFlag
 const useFeatureFlagSpy = vi.spyOn(featureFlagsHooks, 'useFeatureFlag');
 
 describe('ThemeSelector', () => {
@@ -20,29 +19,58 @@ describe('ThemeSelector', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
-  it('renders toggle button when feature flag is enabled', () => {
+  it('renders an anchor button when feature flag is enabled', () => {
     useFeatureFlagSpy.mockReturnValue(true);
     render(<ThemeSelector />);
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /theme/i })).toBeInTheDocument();
   });
 
-  it('toggles theme when clicked', async () => {
+  it('opens a menu with three options when clicked', async () => {
     useFeatureFlagSpy.mockReturnValue(true);
     const user = userEvent.setup();
     render(<ThemeSelector />);
 
-    const button = screen.getByRole('button');
+    await user.click(screen.getByRole('button', { name: /theme/i }));
 
-    // Initial state (light) -> shows moon icon (Brightness4)
-    // We can check aria-label or icon presence.
-    // The implementation sets aria-label based on next state.
-    expect(button).toHaveAttribute('aria-label', 'Switch to dark mode');
+    const menu = await screen.findByRole('menu', { name: /theme/i });
+    const items = within(menu).getAllByRole('menuitemradio');
+    expect(items).toHaveLength(3);
+    expect(within(menu).getByText('Light')).toBeInTheDocument();
+    expect(within(menu).getByText('Dark')).toBeInTheDocument();
+    expect(within(menu).getByText('Caregiver')).toBeInTheDocument();
+  });
 
-    await user.click(button);
+  it('marks the current mode with aria-checked=true', async () => {
+    useFeatureFlagSpy.mockReturnValue(true);
+    useThemeStore.setState({ mode: 'caregiver' });
+    const user = userEvent.setup();
+    render(<ThemeSelector />);
 
-    expect(useThemeStore.getState().mode).toBe('dark');
+    await user.click(screen.getByRole('button', { name: /theme/i }));
 
-    // After toggle (dark) -> shows sun icon (Brightness7)
-    expect(button).toHaveAttribute('aria-label', 'Switch to light mode');
+    const menu = await screen.findByRole('menu', { name: /theme/i });
+    const caregiverItem = within(menu).getByRole('menuitemradio', {
+      name: /caregiver/i,
+    });
+    expect(caregiverItem).toBeChecked();
+    const lightItem = within(menu).getByRole('menuitemradio', {
+      name: /light/i,
+    });
+    expect(lightItem).not.toBeChecked();
+  });
+
+  it('sets the chosen mode and closes the menu when an item is picked', async () => {
+    useFeatureFlagSpy.mockReturnValue(true);
+    const user = userEvent.setup();
+    render(<ThemeSelector />);
+
+    await user.click(screen.getByRole('button', { name: /theme/i }));
+    const caregiverItem = await screen.findByRole('menuitemradio', {
+      name: /caregiver/i,
+    });
+    await user.click(caregiverItem);
+
+    expect(useThemeStore.getState().mode).toBe('caregiver');
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 });

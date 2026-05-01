@@ -11,21 +11,28 @@ describe('useThemeStore', () => {
     expect(useThemeStore.getState().mode).toBe('light');
   });
 
-  it('should set mode', () => {
+  it('should set mode to dark', () => {
     useThemeStore.getState().setMode('dark');
     expect(useThemeStore.getState().mode).toBe('dark');
   });
 
-  it('should toggle mode', () => {
-    useThemeStore.getState().toggleMode();
+  it('should set mode to caregiver', () => {
+    useThemeStore.getState().setMode('caregiver');
+    expect(useThemeStore.getState().mode).toBe('caregiver');
+  });
+
+  it('should cycle modes light -> dark -> caregiver -> light', () => {
+    useThemeStore.getState().cycleMode();
     expect(useThemeStore.getState().mode).toBe('dark');
-    useThemeStore.getState().toggleMode();
+    useThemeStore.getState().cycleMode();
+    expect(useThemeStore.getState().mode).toBe('caregiver');
+    useThemeStore.getState().cycleMode();
     expect(useThemeStore.getState().mode).toBe('light');
   });
 
   it('should persist mode to localStorage', () => {
-    useThemeStore.getState().setMode('dark');
+    useThemeStore.getState().setMode('caregiver');
     const storage = JSON.parse(localStorage.getItem('theme-storage') || '{}');
-    expect(storage.state.mode).toBe('dark');
+    expect(storage.state.mode).toBe('caregiver');
   });
 });
