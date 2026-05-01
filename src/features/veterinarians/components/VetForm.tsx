@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Box, Button, TextField, Typography } from '@mui/material';
-import formStyles from '@styles/FormStyles.module.css';
 import type { Vet, VetAddress } from '@models/vets';
 
 export type VetFormValues = {
@@ -77,7 +76,23 @@ export default function VetForm({
   }
 
   return (
-    <form className={formStyles.formRoot} onSubmit={handleSubmit} noValidate>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      noValidate
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2.5,
+        maxWidth: 720,
+        mx: 'auto',
+        my: 5,
+        p: { xs: 2, sm: 4 },
+        bgcolor: 'background.paper',
+        borderRadius: 2,
+        boxShadow: (theme) => theme.shadows[3],
+      }}
+    >
       {title && (
         <Typography variant="h5" sx={{ mb: 2 }}>
           {title}
@@ -276,16 +291,11 @@ export default function VetForm({
         </Box>
       </Box>
 
-      <Box className={formStyles.formActions} sx={{ mt: 2 }}>
-        <Button
-          className={formStyles.formButton}
-          type="button"
-          onClick={onCancel}
-        >
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+        <Button type="button" onClick={onCancel}>
           {t('responses.cancel', { ns: 'common' })}
         </Button>
         <Button
-          className={`${formStyles.formButton} ${formStyles.formButtonPrimary}`}
           type="submit"
           variant="contained"
           color="primary"
@@ -295,7 +305,7 @@ export default function VetForm({
             t('responses.save', { ns: 'common', defaultValue: 'Save' })}
         </Button>
       </Box>
-    </form>
+    </Box>
   );
 }
 
