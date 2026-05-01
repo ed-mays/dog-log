@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { MedicationRepository } from '@repositories/MedicationRepository';
+import { medicationService } from '@services/medicationService';
 import type {
   MedicationDefinition,
   MedicationDefinitionCreateInput,
@@ -20,8 +20,6 @@ export interface MedicationState {
   archiveMedication: (id: string) => Promise<void>;
 }
 
-const repository = new MedicationRepository();
-
 export const useMedicationStore = create(
   devtools<MedicationState>((set) => ({
     medications: [],
@@ -31,7 +29,7 @@ export const useMedicationStore = create(
     fetchMedications: async () => {
       set({ isLoading: true, error: null });
       try {
-        const medications = await repository.getActiveList({
+        const medications = await medicationService.getMedications({
           orderBy: 'name',
         });
         set({ medications, isLoading: false });
@@ -49,7 +47,7 @@ export const useMedicationStore = create(
     addMedication: async (input) => {
       set({ isLoading: true, error: null });
       try {
-        const newMedication = await repository.createMedication(input);
+        const newMedication = await medicationService.addMedication(input);
         set((state) => ({
           medications: [...state.medications, newMedication].sort((a, b) =>
             a.name.localeCompare(b.name)
@@ -69,7 +67,7 @@ export const useMedicationStore = create(
     updateMedication: async (id, updates) => {
       set({ isLoading: true, error: null });
       try {
-        const updatedMedication = await repository.updateMedication(
+        const updatedMedication = await medicationService.updateMedication(
           id,
           updates
         );
@@ -94,7 +92,7 @@ export const useMedicationStore = create(
     archiveMedication: async (id) => {
       set({ isLoading: true, error: null });
       try {
-        await repository.archive(id);
+        await medicationService.archiveMedication(id);
         set((state) => ({
           medications: state.medications.filter((med) => med.id !== id),
           isLoading: false,
