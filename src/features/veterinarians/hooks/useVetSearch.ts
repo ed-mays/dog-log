@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { vetService } from '@services/vetService';
 import type { Vet } from '@models/vets';
 
-export interface UseVetSearchOptions {
+interface UseVetSearchOptions {
   /** Debounce window in ms before refetching when `term` changes. 0 disables debounce. */
   debounceMs?: number;
 }
 
-export interface UseVetSearchResult {
+interface UseVetSearchResult {
   vets: Vet[];
   loading: boolean;
 }

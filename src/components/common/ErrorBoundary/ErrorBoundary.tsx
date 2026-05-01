@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type ErrorBoundaryProps = {
+type ErrorBoundaryProps = {
   children: React.ReactNode;
   fallbackText?: string;
   'data-testid'?: string;

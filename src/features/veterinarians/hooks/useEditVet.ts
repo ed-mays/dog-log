@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { vetService, type UpdateVetInput } from '@services/vetService';
 import type { Vet, VetId } from '@models/vets';
 
-export interface UseEditVetResult {
+interface UseEditVetResult {
   vet: Vet | null;
   loading: boolean;
   loadError: unknown;

@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 
-export type LoadingIndicatorProps = {
+type LoadingIndicatorProps = {
   text?: string; // optional override of localized default
   role?: React.AriaRole; // a11y role
   ariaLive?: 'polite' | 'assertive' | 'off';

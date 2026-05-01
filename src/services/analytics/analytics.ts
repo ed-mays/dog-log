@@ -2,7 +2,7 @@
 // Minimal, no-op analytics tracker for anonymized events.
 // In production, wire to a real analytics provider.
 
-export type AnalyticsEvent =
+type AnalyticsEvent =
   | 'vet_created'
   | 'vet_updated'
   | 'vet_archived'
@@ -11,7 +11,7 @@ export type AnalyticsEvent =
   | 'vet_primary_set'
   | 'vet_search';
 
-export type AnalyticsProps = Record<string, unknown>;
+type AnalyticsProps = Record<string, unknown>;
 
 export function isTestMode(): boolean {
   return import.meta.env.MODE === 'test';

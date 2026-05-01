@@ -51,7 +51,7 @@ export interface MedicationDefinition extends BaseEntity {
   isArchived: boolean;
 }
 
-export interface ScheduleConfig {
+interface ScheduleConfig {
   timesOfDay?: string[] | null; // HH:mm in local time
   intervalHours?: number | null;
   intervalDays?: number | null;

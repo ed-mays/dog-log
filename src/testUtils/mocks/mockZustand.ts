@@ -8,7 +8,7 @@
 //     action: vi.fn(...)
 //   })))
 
-export type StateOrFactory<TState> = TState | (() => TState);
+type StateOrFactory<TState> = TState | (() => TState);
 
 export function makeZustandSelectorMock<TState>(
   stateOrFactory: StateOrFactory<TState>

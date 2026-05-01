@@ -5,7 +5,7 @@ import { makeZustandSelectorMock } from '@testUtils/mocks/mockZustand';
 import { useSyncExternalStore } from 'react';
 
 // Note: PetsState is not exported from the store by default; we provide a minimal compatible shape for tests.
-export type TestPetsState = {
+type TestPetsState = {
   pets: Pet[];
   isFetching?: boolean;
   fetchError?: Error | null;
@@ -200,10 +200,7 @@ export function createPetsStoreMock(initial: Partial<TestPetsState> = {}) {
   };
 }
 
-export type TestAuthState = Pick<
-  AuthState,
-  'user' | 'initializing' | 'error'
-> & {
+type TestAuthState = Pick<AuthState, 'user' | 'initializing' | 'error'> & {
   initAuthListener?: () => void;
   signInWithGoogle?: () => Promise<void>;
   signOut?: () => Promise<void>;

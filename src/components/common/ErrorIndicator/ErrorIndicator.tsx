@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Alert } from '@mui/material';
 
-export type ErrorIndicatorProps = {
+type ErrorIndicatorProps = {
   text?: string; // optional override of localized default
   role?: React.AriaRole; // a11y role
   ariaLive?: 'polite' | 'assertive' | 'off';

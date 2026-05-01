@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { usePetVetsStore } from '@store/petVets.store';
 import type { PetVetLink, Vet, VetId, PetVetRole } from '@models/vets';
 
-export interface UsePetVetsResult {
+interface UsePetVetsResult {
   links: Array<{ link: PetVetLink; vet: Vet }>;
   loading: boolean;
   error: string | null;
