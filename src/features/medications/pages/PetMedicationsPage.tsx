@@ -45,7 +45,7 @@ export const PetMedicationsPage = ({
   } = usePetMedicationStore();
   const { medications, fetchMedications: fetchDefinitions } =
     useMedicationStore();
-  const { addDoseLog } = useDoseLogStore();
+  const { addDoseLog, error: doseLogError } = useDoseLogStore();
   const medicationsEnabled = useFeatureFlag('medicationsEnabled');
 
   const [isAdding, setIsAdding] = useState(false);
@@ -71,7 +71,11 @@ export const PetMedicationsPage = ({
       petId &&
       window.confirm(t('medications.confirmDeactivate', 'Are you sure?'))
     ) {
-      await deactivatePetMedication(petId, medId);
+      try {
+        await deactivatePetMedication(petId, medId);
+      } catch {
+        // Error state is already set on the store and rendered above.
+      }
     }
   };
 
@@ -80,9 +84,13 @@ export const PetMedicationsPage = ({
   };
 
   const handleDoseSubmit = async (input: DoseLogCreateInput) => {
-    if (petId) {
+    if (!petId) return;
+    try {
       await addDoseLog(petId, input);
       setSelectedMedication(null);
+    } catch {
+      // Error state is set on useDoseLogStore and rendered below.
+      // Keep the dialog open so the user can retry without re-entering data.
     }
   };
 
@@ -121,7 +129,16 @@ export const PetMedicationsPage = ({
       </Box>
 
       {isLoading && <CircularProgress />}
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && (
+        <Alert severity="error" role="alert" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      {doseLogError && (
+        <Alert severity="error" role="alert" sx={{ mb: 2 }}>
+          {doseLogError}
+        </Alert>
+      )}
 
       {!isLoading && medicationsList.length === 0 && (
         <Paper sx={{ p: 3, textAlign: 'center' }}>

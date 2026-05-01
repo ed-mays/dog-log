@@ -301,4 +301,42 @@ describe('PetMedicationsPage', () => {
     expect(screen.getByText('Medications')).toBeInTheDocument();
     expect(mockFetchPetMedications).toHaveBeenCalledWith('pet-1');
   });
+
+  it('should keep dose log dialog open and surface error when addDoseLog rejects', async () => {
+    mockAddDoseLog.mockRejectedValueOnce(
+      new Error('Missing or insufficient permissions.')
+    );
+    vi.mocked(useDoseLogStore).mockReturnValue({
+      addDoseLog: mockAddDoseLog,
+      error: 'Missing or insufficient permissions.',
+    } as unknown as DoseLogState);
+
+    const user = userEvent.setup();
+    render(<PetMedicationsPage />);
+
+    await user.click(screen.getByLabelText('log dose'));
+    await user.click(screen.getByText('Submit Dose'));
+
+    expect(mockAddDoseLog).toHaveBeenCalledTimes(1);
+    // Dialog stays open so the user can retry without re-entering data.
+    expect(screen.getByText('Dose Log Form')).toBeInTheDocument();
+    // Error is rendered.
+    expect(
+      screen.getByText('Missing or insufficient permissions.')
+    ).toBeInTheDocument();
+  });
+
+  it('should not throw an unhandled rejection when deactivatePetMedication fails', async () => {
+    mockDeactivatePetMedication.mockRejectedValueOnce(new Error('boom'));
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+
+    const user = userEvent.setup();
+    render(<PetMedicationsPage />);
+
+    const deleteButtons = screen.getAllByLabelText('delete');
+    // Should not throw; the click handler swallows the rejection so the
+    // store-driven error Alert can render the message instead.
+    await expect(user.click(deleteButtons[0])).resolves.toBeUndefined();
+    expect(mockDeactivatePetMedication).toHaveBeenCalledWith('pet-1', 'pm-1');
+  });
 });
