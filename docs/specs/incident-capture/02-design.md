@@ -74,8 +74,8 @@ src/features/incidents/
     IncidentJournal.test.tsx
     VetCallCard.tsx                     # tel: link (BR-10, BR-11)
     VetCallCard.test.tsx
-    PetPicker.tsx                       # inline pet picker for STOP (BR-13, BR-28)
-    PetPicker.test.tsx
+    ActivationPetPicker.tsx             # picker shown when global FAB is tapped on a non-pet-scoped surface for multi-pet users (BR-28 third rule)
+    ActivationPetPicker.test.tsx
     StopButton.tsx                      # (BR-12, BR-13)
     IncidentHistoryList.tsx             # per-pet list (BR-23, BR-24, BR-25)
     IncidentHistoryList.test.tsx
@@ -115,8 +115,17 @@ Both gated behind a new `incidentsEnabled` feature flag, matching the existing p
 - user is unauthenticated
 - the active route is `/incidents/active` (would be a no-op)
 - `incidentsEnabled` flag is off
+- the user has zero pets (no valid `petId` to activate against)
 
 Built with MUI `<Fab>`, positioned bottom-right with `position: fixed`. Tap target ≥56×56 (BR-27, NFR-3).
+
+**Tap behavior** (per BR-28's three rules):
+
+| Surface                       | Pet count | Behavior                                                                                                 |
+| ----------------------------- | --------- | -------------------------------------------------------------------------------------------------------- |
+| Pet-scoped (e.g. `/pets/:id`) | any       | Activate immediately with that pet (1 tap, AC-20).                                                       |
+| Non-pet-scoped                | exactly 1 | Activate immediately with the only pet (1 tap, AC-20).                                                   |
+| Non-pet-scoped                | 2+        | Open `ActivationPetPicker` as an MUI Dialog/Drawer; the pet tap IS the activation (2 taps total, AC-19). |
 
 ---
 
@@ -151,7 +160,7 @@ export interface JournalEntry {
 export interface Incident {
   id: string;
   userId: string; // owner — drives security rules (NFR-8)
-  petId: string | null; // BR-28 — null while active is allowed; required when endedAt is set (BR-13)
+  petId: string; // BR-28 — required at all times (revert of round-1 reframe)
   startedAt: string; // ISO 8601 instant — set at activation (BR-2)
   endedAt: string | null; // ISO 8601 instant — set at STOP (BR-13)
   type: IncidentTypeId | null; // BR-4, BR-19
@@ -160,24 +169,23 @@ export interface Incident {
   journal: JournalEntry[]; // BR-30 — append-only after STOP
   createdAt: string; // server-assigned (Firestore serverTimestamp)
   updatedAt: string; // server-maintained on every write (BR-18)
+  deletedAt: string | null; // BR-33 — soft-delete timestamp; null when not deleted
 }
 
-export type IncidentCreateInput = Pick<Incident, 'startedAt'> &
-  Partial<Pick<Incident, 'petId'>>;
+export type IncidentCreateInput = Pick<Incident, 'petId' | 'startedAt'>;
 export type IncidentUpdateInput = Partial<
-  Omit<Incident, 'id' | 'userId' | 'createdAt'>
->;
+  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'petId'>
+> & { petId?: string }; // pet may be reassigned but never cleared (BR-29)
 ```
 
 Decision: `chips` is `ChipId[]`, not `Set<ChipId>`. Firestore stores arrays; the deduplication happens at the service layer (cite BR-20: "stored as opaque tag strings").
 
 ### Firestore layout
 
-**Pending decision (DQ-1, see §D5):** incidents live in a top-level-per-user collection, NOT a per-pet subcollection. _Recommended, not yet confirmed by user._
+Incidents live in a per-pet subcollection, matching the existing project convention used by feedings, medications, and doseLogs (see `firestore.rules`).
 
 ```
-users/{userId}/incidents/{incidentId}
-  petId: string | null
+users/{userId}/pets/{petId}/incidents/{incidentId}
   startedAt: timestamp
   endedAt: timestamp | null
   type: string | null
@@ -186,19 +194,22 @@ users/{userId}/incidents/{incidentId}
   journal: array<{ elapsedSeconds: number, text: string, addedAt: timestamp }>
   createdAt: timestamp (serverTimestamp)
   updatedAt: timestamp (serverTimestamp)
+  deletedAt: timestamp | null   # BR-33 soft-delete
 ```
 
-**Why top-level:** BR-28 makes `petId` optional during the active phase. A subcollection path like `users/{userId}/pets/{petId}/incidents/...` cannot represent a petless incident. A top-level-per-user collection with a nullable `petId` field handles both states without a migration on STOP.
+`petId` is implicit in the path; the in-memory `Incident` type still carries it for convenience but it is not stored as a field.
+
+**Active-incident lookup across pets** (needed by BR-26 and DQ-2 hydration). Because incidents are now subcollections under each pet, a single query has to span all of a user's pets. See **DQ-6** below for the open choice between (i) a Firestore collection-group query and (ii) a pointer doc at the user level.
 
 **Indexes needed:**
 
-| Index                                       | Query it serves                                                             | Spec citation |
-| ------------------------------------------- | --------------------------------------------------------------------------- | ------------- |
-| `(petId asc, startedAt desc)` (composite)   | Per-pet history list, most recent first                                     | BR-23, BR-24  |
-| `(endedAt asc, startedAt desc)` (composite) | "Find the active incident for this user" — `endedAt == null`, return latest | BR-26         |
-| Single-field `petId asc`                    | List by pet without ordering, fallback                                      | —             |
+| Index                                                                                 | Query it serves                                                    | Spec citation |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------- |
+| Single-field `startedAt desc` (auto-created)                                          | Per-pet history list, most recent first                            | BR-23, BR-24  |
+| Collection-group index on `incidents.endedAt` + `startedAt desc`                      | Active-incident lookup across all of a user's pets (DQ-6 option i) | BR-26         |
+| Single-field `deletedAt asc` (for `where('deletedAt', '==', null)` filter on history) | Hide soft-deleted incidents from history                           | BR-23, BR-33  |
 
-The userId scope is already implicit in the collection path (`users/{userId}/incidents`), so no userId field needed in the index keys.
+userId scope is implicit in the path; no userId field is needed in the index keys or stored on the document.
 
 ---
 
@@ -208,15 +219,14 @@ The userId scope is already implicit in the collection path (`users/{userId}/inc
             ┌────────────┐
             │   (none)   │  no active incident exists
             └─────┬──────┘
-                  │  Emergency Activation (BR-1, BR-2)
+                  │  Emergency Activation (BR-1, BR-2, BR-28)
                   │  → write Incident with startedAt=now, endedAt=null,
-                  │    petId=(scoped pet | null)
+                  │    petId=(scoped pet | only pet | picker selection)
                   ▼
             ┌────────────┐
             │   active   │  timer ticks, fields editable, BR-26 enforces singleton
             └─────┬──────┘
-                  │  STOP (BR-12) — if petId == null, prompt picker (BR-13)
-                  │  → set endedAt = now
+                  │  STOP (BR-12, BR-13) → freeze timer, set endedAt = now
                   ▼
             ┌────────────┐
             │  stopped   │  same surface; BR-14, BR-16 still apply forever
@@ -231,12 +241,8 @@ There is no terminal "archived" state in v1. Stopped incidents remain mutable fo
 
 These are _design_ OQs, distinct from spec OQs. They must resolve before Phase 4 (tasks).
 
-- **DQ-1** — **Tension between spec and project convention.** Spec BR-28 makes `petId` optional during the active phase. Project convention (firestore.rules `users/{userId}/pets/{petId}/...` and PetMedicationRepository) is per-pet subcollections, which can't represent a petless incident. Three resolution paths:
-  - (a) **Top-level under user**, nullable `petId`. Cleanest fit for BR-28; one collection, one query for active-incident lookup; rules are simple. Departs from the per-pet-subcollection convention.
-  - (b) **Subcollection** `users/{userId}/pets/{petId}/incidents/...` for assigned + a sibling `users/{userId}/unassignedIncidents/...` for petless, with a write-time migration on STOP. Preserves convention for the assigned case but adds a moving-document migration path with non-trivial failure modes.
-  - (c) **Spec amendment**: walk back BR-28 to require `petId` at activation (e.g. force a one-tap pet picker as the activation gesture for users with >1 pet, pre-fill for single-pet users). Preserves convention completely; gives up the "pick pet when convenient" insight from PR #152 round 1.
-  - _Recommendation: (a). Worth user input before locking._
-- **DQ-2** — Active-incident hydration on app load. If a caregiver starts an incident, backgrounds the tab, and re-opens later, the active state must resume. Proposal: on auth-success boot, `useIncidentStore` runs a one-shot query `incidents where endedAt == null` and, if a result exists, sets it as the active incident and the app navigates to `/incidents/active`. **Needs confirm.**
+- **DQ-1** — ✅ **Resolved 2026-05-01 round 3** by spec OQ-2 revert (option c above). Spec BR-28 now requires `petId` at activation, eliminating the petless-incident case. Incidents live in the per-pet subcollection per project convention (`users/{userId}/pets/{petId}/incidents/...`). See §D3.
+- **DQ-2** — Active-incident hydration on app load. If a caregiver starts an incident, backgrounds the tab, and re-opens later, the active state must resume. Proposal: on auth-success boot, `useIncidentStore` runs a one-shot lookup (mechanism per DQ-6) for any incident with `endedAt == null && deletedAt == null` for the current user; if found, set as active and navigate to `/incidents/active`. **Needs confirm.**
 - **DQ-3** — FAB visibility on `/incidents/active`. Proposal: hide (no-op). Alternative: repurpose as a "STOP" alias. **Needs confirm.**
 - **DQ-4** — Journal commit cadence. Per BR-9 the elapsed-time prefix implies line-break is the commit boundary. Proposal: a journal entry is appended on Enter; in-progress text in the textarea is held in component state (lost on tab close — explicit tradeoff). Alternative: also commit on 5s idle. **Needs confirm.**
 - **DQ-5** — Initial chip catalog content (resolves spec OQ-3). Proposed v1 sets in `chipCatalog.ts`:
@@ -253,6 +259,12 @@ other:             (no curated chips; chips can still be entered as free-text in
 ```
 
 `other` has no chip catalog in v1 — the journal is the only structured data for that type. **Needs confirm or revision** (this is content, not architecture — easy to iterate).
+
+- **DQ-6** — _New, added round 3._ **Active-incident lookup mechanism.** Now that incidents live in per-pet subcollections (per resolved DQ-1), finding "the active incident for this user" must span all of the user's pets. Two viable mechanisms:
+  - **(i) Collection-group query.** `db.collectionGroup('incidents').where('endedAt', '==', null).where('deletedAt', '==', null).limit(1)` scoped by Firestore rules to the current user. Pros: no extra writes, no chance of pointer/data drift, single source of truth. Cons: requires a collection-group index (one-time Firestore console step), slightly heavier than a single-doc read, and the rules need a check that the matched docs belong to the current user.
+  - **(ii) Pointer doc.** A document at `users/{userId}/state/activeIncident` storing `{ petId, incidentId }` updated on activation and STOP. Pros: O(1) read, no collection-group index. Cons: two writes per activation/STOP must stay in sync; if the pointer falls out of sync (offline edge case), the lookup lies; introduces a new state surface to maintain.
+  - _Recommendation: (i)_ — collection-group queries are well-supported, the index is a known one-time cost, and there's no synchronization risk. **Needs confirm before tasks phase.**
+- **DQ-7** — _New, added round 3._ **ActivationPetPicker presentation.** When the global FAB on a non-pet-scoped surface is tapped by a multi-pet user (BR-28 third rule), what UI affordance handles the second tap? Options: MUI `<Dialog>` modal, MUI `<Drawer>` (bottom sheet), or a transient inline pop-over near the FAB. Wireframes don't address this. _Recommendation: bottom `<Drawer>`_ — thumb-reachable on mobile (NFR-3) and matches the urgency tone better than a centered modal. **Needs confirm before tasks phase.**
 
 ---
 
@@ -314,31 +326,19 @@ NFR-7 reminder: tone stays neutral. No "Great job logging!" or success microcopy
 
 ## §D7 Firestore Rules Diff
 
-Add inside the `match /users/{userId}` block in `firestore.rules` (after existing `match /pets/{petId}` block, before `match /vets/{vetId}`):
+Add inside the existing `match /users/{userId}/pets/{petId}` block in `firestore.rules`, alongside the `feedings`, `medications`, and `doseLogs` subcollections:
 
 ```rules
 match /incidents/{incidentId} {
-  allow read: if isOwner(userId);
-
-  // Create: must be the owner; userId field must equal the path's userId.
-  allow create: if isOwner(userId)
-    && request.resource.data.userId == userId
-    && request.resource.data.startedAt is timestamp
-    && (request.resource.data.petId == null
-        || request.resource.data.petId is string);
-
-  // Update: must be the owner; userId is immutable; if endedAt is being set,
-  // petId must be a non-null string (enforces BR-13 server-side, not just client).
-  allow update: if isOwner(userId)
-    && request.resource.data.userId == resource.data.userId
-    && (request.resource.data.endedAt == null
-        || request.resource.data.petId is string);
-
-  allow delete: if isOwner(userId);
+  allow read, write: if isOwner(userId);
 }
 ```
 
-Rules-test additions live in `firestore.rules.test.ts` (or wherever the existing rules tests live — confirm during Phase 4 task breakdown). Test cases derived from AC-13 (cross-user reject) plus the BR-13 server-side enforcement above.
+This matches the project convention (existing subcollections use `allow read, write: if isOwner(userId)` with no per-field validation — see `firestore.rules:18–28`). Document-level invariants (BR-13's `endedAt` constraint, BR-16's `startedAt ≤ endedAt`, BR-28's required `petId`) are enforced client-side, consistent with how feedings/medications/doseLogs are handled today.
+
+The collection-group lookup for active incidents (DQ-6 option i) requires that the rule above is sufficient — and it is, because Firestore evaluates collection-group queries against each matched document's path-bound rule. Cross-user matches are blocked because the path's `{userId}` doesn't match the requester.
+
+Rules-test additions live in the existing rules-test setup (location to confirm during Phase 4 task breakdown). Test cases derived from AC-13 (cross-user reject) and BR-26 client-side enforcement check.
 
 ---
 
@@ -379,4 +379,13 @@ Coverage target: 80% lines for `src/features/incidents/**` and 100% of `Incident
 
 ## §D11 Design Changelog
 
-- **2026-05-01** — Initial draft. Resolved DQ-1 (top-level storage). Open: DQ-2, DQ-3, DQ-4, DQ-5.
+- **2026-05-01** — Initial draft. Open: DQ-1, DQ-2, DQ-3, DQ-4, DQ-5.
+- **2026-05-01 round 3** — Re-sync after spec OQ-2 revert and OQ-7 closure.
+  - **DQ-1 closed:** incidents move to per-pet subcollection (`users/{userId}/pets/{petId}/incidents/...`) matching project convention; the top-level recommendation in §D3 was rewritten.
+  - **§D2:** `PetPicker.tsx` renamed to `ActivationPetPicker.tsx` (purpose changed from STOP-time pet picker to multi-pet activation picker); FAB tap-behavior table added.
+  - **§D3:** TypeScript `petId` no longer nullable; added `deletedAt` field; Firestore layout rewritten for subcollection; indexes simplified (single-field `startedAt desc` is automatic per-pet; cross-pet active lookup needs collection-group index per DQ-6).
+  - **§D4:** state machine simplified (no pet-null branch; STOP just freezes).
+  - **§D7 rules diff:** simplified to one-line `allow read, write: if isOwner(userId)` matching project convention; client enforces invariants, consistent with feedings/medications/doseLogs.
+  - **DQ-6 added:** active-incident lookup mechanism (collection-group query vs pointer doc). Recommendation: collection-group.
+  - **DQ-7 added:** ActivationPetPicker presentation (Dialog vs Drawer vs popover). Recommendation: Drawer.
+  - **OQ-7 closure (spec):** "Primary Vet" reuses existing `PetVetRole === 'primary'`; no design changes needed because the existing `petVetService.setPrimaryVet()` plus `petVetRepository.setPrimaryForPet()` already do the work. Incident's vet-call card reads `petVets.where(role == 'primary').first()` for the active incident's pet.
