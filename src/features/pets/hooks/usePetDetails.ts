@@ -5,9 +5,8 @@ import { usePetsStore } from '@store/pets.store';
 import { useAuthStore } from '@store/auth.store';
 import { useFeedingsStore } from '@store/feedings.store';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
-import { petVetService } from '@services/petVetService';
+import { usePetVets } from '@features/pets/hooks/usePetVets';
 import { logger } from '@services/logService';
-import type { PetVetLink, Vet } from '@models/vets';
 import type { PetUpdateInput } from '../types';
 import type { FeedingCreateInput } from '@features/feedings/types';
 import { loadNamespace } from '@i18n';
@@ -32,10 +31,6 @@ export function usePetDetails() {
   const pet = useMemo(() => pets.find((p) => p.id === id), [pets, id]);
 
   const [nsReady, setNsReady] = useState(false);
-  const [loadingVets, setLoadingVets] = useState(false);
-  const [vetLinks, setVetLinks] = useState<
-    Array<{ link: PetVetLink; vet: Vet }>
-  >([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,30 +67,10 @@ export function usePetDetails() {
     logger.info('Feature flags not available');
   }
 
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadVetLinks() {
-      if (!user?.uid || !id || !(vetsEnabled && vetLinkingEnabled)) return;
-
-      setLoadingVets(true);
-      try {
-        const links = await petVetService.getPetVets(user.uid, id);
-        if (mounted) setVetLinks(links);
-      } catch (err) {
-        logger.debug('Failed to load vet links for PetDetailsPage', {
-          error: err,
-        });
-      } finally {
-        if (mounted) setLoadingVets(false);
-      }
-    }
-
-    loadVetLinks();
-    return () => {
-      mounted = false;
-    };
-  }, [user?.uid, id, vetsEnabled, vetLinkingEnabled]);
+  // Pet-vet links via shared keyed cache (deduplicates with PetCard).
+  const { links: vetLinks, loading: loadingVets } = usePetVets(user?.uid, id, {
+    enabled: vetsEnabled && vetLinkingEnabled,
+  });
 
   // Load feedings when tab is active or on mount if enabled
   useEffect(() => {
@@ -134,9 +109,8 @@ export function usePetDetails() {
     if (!pet) return;
     try {
       // 1. Delete from storage
-      const { storageRepository } = await import(
-        '@repositories/storageRepository'
-      );
+      const { storageRepository } =
+        await import('@repositories/storageRepository');
       await storageRepository.deleteFile(photo.path);
 
       // 2. Update pet record

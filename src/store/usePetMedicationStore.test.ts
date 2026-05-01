@@ -1,17 +1,22 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { usePetMedicationStore } from './usePetMedicationStore';
-import { PetMedicationRepository } from '@repositories/PetMedicationRepository';
+import { petMedicationService } from '@services/petMedicationService';
 import { useAuthStore } from '@store/auth.store';
 import type {
   PetMedication,
   PetMedicationCreateInput,
 } from '@features/medications/types';
 
-// Mock Repository
-vi.mock('@repositories/PetMedicationRepository');
+vi.mock('@services/petMedicationService', () => ({
+  petMedicationService: {
+    getActivePetMedications: vi.fn(),
+    addPetMedication: vi.fn(),
+    updatePetMedication: vi.fn(),
+    deactivatePetMedication: vi.fn(),
+  },
+}));
 
-// Mock Auth Store
 vi.mock('@store/auth.store', () => ({
   useAuthStore: {
     getState: vi.fn(() => ({ user: { uid: 'user-1' } })),
@@ -35,9 +40,9 @@ describe('usePetMedicationStore', () => {
     const mockMeds = [
       { id: '1', petId: 'pet-1', active: true },
     ] as PetMedication[];
-    (
-      PetMedicationRepository.prototype.getActivePetMedications as Mock
-    ).mockResolvedValue(mockMeds);
+    vi.mocked(petMedicationService.getActivePetMedications).mockResolvedValue(
+      mockMeds
+    );
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -45,6 +50,10 @@ describe('usePetMedicationStore', () => {
       await result.current.fetchPetMedications('pet-1');
     });
 
+    expect(petMedicationService.getActivePetMedications).toHaveBeenCalledWith(
+      'user-1',
+      'pet-1'
+    );
     expect(result.current.petMedications['pet-1']).toEqual(mockMeds);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
@@ -52,9 +61,7 @@ describe('usePetMedicationStore', () => {
 
   it('should add a pet medication', async () => {
     const newMed = { id: '2', petId: 'pet-1', active: true } as PetMedication;
-    (
-      PetMedicationRepository.prototype.createPetMedication as Mock
-    ).mockResolvedValue(newMed);
+    vi.mocked(petMedicationService.addPetMedication).mockResolvedValue(newMed);
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -73,6 +80,7 @@ describe('usePetMedicationStore', () => {
       });
     });
 
+    expect(petMedicationService.addPetMedication).toHaveBeenCalled();
     expect(result.current.petMedications['pet-1']).toContainEqual(newMed);
   });
 
@@ -84,10 +92,15 @@ describe('usePetMedicationStore', () => {
       petMedications: { 'pet-1': initialMeds },
     });
 
-    const updatedMed = { id: '1', petId: 'pet-1', active: true, doseAmount: 2 };
-    (
-      PetMedicationRepository.prototype.updatePetMedication as Mock
-    ).mockResolvedValue(updatedMed);
+    const updatedMed = {
+      id: '1',
+      petId: 'pet-1',
+      active: true,
+      doseAmount: 2,
+    } as PetMedication;
+    vi.mocked(petMedicationService.updatePetMedication).mockResolvedValue(
+      updatedMed
+    );
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -95,6 +108,12 @@ describe('usePetMedicationStore', () => {
       await result.current.updatePetMedication('pet-1', '1', { doseAmount: 2 });
     });
 
+    expect(petMedicationService.updatePetMedication).toHaveBeenCalledWith(
+      'user-1',
+      'pet-1',
+      '1',
+      { doseAmount: 2 }
+    );
     expect(result.current.petMedications['pet-1']).toEqual([updatedMed]);
   });
 
@@ -106,9 +125,10 @@ describe('usePetMedicationStore', () => {
       petMedications: { 'pet-1': initialMeds },
     });
 
-    (
-      PetMedicationRepository.prototype.updatePetMedication as Mock
-    ).mockResolvedValue({ id: '1', active: false });
+    vi.mocked(petMedicationService.deactivatePetMedication).mockResolvedValue({
+      id: '1',
+      active: false,
+    } as PetMedication);
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -116,13 +136,18 @@ describe('usePetMedicationStore', () => {
       await result.current.deactivatePetMedication('pet-1', '1');
     });
 
+    expect(petMedicationService.deactivatePetMedication).toHaveBeenCalledWith(
+      'user-1',
+      'pet-1',
+      '1'
+    );
     expect(result.current.petMedications['pet-1']).toEqual([]);
   });
 
   it('should handle errors', async () => {
-    (
-      PetMedicationRepository.prototype.getActivePetMedications as Mock
-    ).mockRejectedValue(new Error('Fetch failed'));
+    vi.mocked(petMedicationService.getActivePetMedications).mockRejectedValue(
+      new Error('Fetch failed')
+    );
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -135,9 +160,9 @@ describe('usePetMedicationStore', () => {
   });
 
   it('should handle add error', async () => {
-    (
-      PetMedicationRepository.prototype.createPetMedication as Mock
-    ).mockRejectedValue(new Error('Add failed'));
+    vi.mocked(petMedicationService.addPetMedication).mockRejectedValue(
+      new Error('Add failed')
+    );
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -172,9 +197,9 @@ describe('usePetMedicationStore', () => {
       petMedications: { 'pet-1': initialMeds },
     });
 
-    (
-      PetMedicationRepository.prototype.updatePetMedication as Mock
-    ).mockRejectedValue(new Error('Update failed'));
+    vi.mocked(petMedicationService.updatePetMedication).mockRejectedValue(
+      new Error('Update failed')
+    );
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -200,9 +225,9 @@ describe('usePetMedicationStore', () => {
       petMedications: { 'pet-1': initialMeds },
     });
 
-    (
-      PetMedicationRepository.prototype.updatePetMedication as Mock
-    ).mockRejectedValue(new Error('Deactivate failed'));
+    vi.mocked(petMedicationService.deactivatePetMedication).mockRejectedValue(
+      new Error('Deactivate failed')
+    );
 
     const { result } = renderHook(() => usePetMedicationStore());
 
@@ -219,8 +244,6 @@ describe('usePetMedicationStore', () => {
   });
 
   it('should not perform actions if user is not logged in', async () => {
-    // Mock no user
-    const { useAuthStore } = await import('@store/auth.store');
     (useAuthStore.getState as Mock).mockReturnValue({ user: null });
 
     const { result } = renderHook(() => usePetMedicationStore());
@@ -228,9 +251,7 @@ describe('usePetMedicationStore', () => {
     await act(async () => {
       await result.current.fetchPetMedications('pet-1');
     });
-    expect(
-      PetMedicationRepository.prototype.getActivePetMedications
-    ).not.toHaveBeenCalled();
+    expect(petMedicationService.getActivePetMedications).not.toHaveBeenCalled();
 
     await act(async () => {
       await result.current.addPetMedication(
@@ -238,8 +259,6 @@ describe('usePetMedicationStore', () => {
         {} as unknown as PetMedicationCreateInput
       );
     });
-    expect(
-      PetMedicationRepository.prototype.createPetMedication
-    ).not.toHaveBeenCalled();
+    expect(petMedicationService.addPetMedication).not.toHaveBeenCalled();
   });
 });

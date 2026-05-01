@@ -23,8 +23,8 @@ import { logger } from '@services/logService';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
 import { useAuthStore } from '@store/auth.store';
 import VetSelector from '@features/veterinarians/components/VetSelector';
-import { petVetService } from '@services/petVetService';
-import type { PetVetLink, Vet, PetVetRole } from '@models/vets';
+import { usePetVets } from '@features/pets/hooks/usePetVets';
+import type { Vet, PetVetRole } from '@models/vets';
 import type { Pet } from '@features/pets/types';
 
 interface PetFormProps {
@@ -81,30 +81,10 @@ export function PetForm({
   const user = useAuthStore((s) => s.user);
   const userId = user?.uid ?? '';
 
-  const [links, setLinks] = useState<Array<{ link: PetVetLink; vet: Vet }>>([]);
-  const [, setLoadingLinks] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadLinks() {
-      if (!userId || !initialValues.id || !(vetsEnabled && vetLinkingEnabled))
-        return;
-      setLoadingLinks(true);
-      try {
-        const data = await petVetService.getPetVets(userId, initialValues.id);
-        logger.debug('Loading Pet/Vet Links', data);
-        if (active) setLinks(data);
-      } finally {
-        if (active) setLoadingLinks(false);
-      }
-    }
-
-    loadLinks();
-    return () => {
-      active = false;
-    };
-  }, [userId, initialValues.id, vetsEnabled, vetLinkingEnabled]);
+  const { links, linkVet, unlinkVet, setPrimaryVet, updateLinkRole } =
+    usePetVets(userId || undefined, initialValues.id, {
+      enabled: vetsEnabled && vetLinkingEnabled && !!initialValues.id,
+    });
 
   if (!nsReady) return null;
 
@@ -164,13 +144,8 @@ export function PetForm({
               label={t('link.add', { ns: 'veterinarians' })}
               onSelect={async (vet: Vet) => {
                 if (!userId || !initialValues.id) return;
-                const link = await petVetService.linkVetToPet(
-                  userId,
-                  initialValues.id,
-                  vet.id
-                );
-                logger.debug('Vet linked to pet', { link, vet });
-                setLinks((prev) => [...prev, { link, vet }]);
+                await linkVet(vet.id, vet);
+                logger.debug('Vet linked to pet', { vet });
               }}
             />
           </Box>
@@ -211,48 +186,11 @@ export function PetForm({
                           )
                             return;
 
-                          // Optimistic update
-                          // If setting to primary, demote others
+                          // Store handles optimistic update + rollback on error.
                           if (newRole === 'primary') {
-                            setLinks((prev) =>
-                              prev.map((l) => ({
-                                ...l,
-                                link: {
-                                  ...l.link,
-                                  role:
-                                    l.link.id === link.id
-                                      ? 'primary'
-                                      : l.link.role === 'primary'
-                                        ? (l.link.previousNonPrimaryRole ??
-                                          'other')
-                                        : l.link.role,
-                                },
-                              }))
-                            );
-
-                            await petVetService.setPrimaryVet(
-                              userId,
-                              initialValues.id,
-                              link.id
-                            );
+                            await setPrimaryVet(link.id);
                           } else {
-                            // Optimistic update for non-primary role change
-                            setLinks((prev) =>
-                              prev.map((l) => ({
-                                ...l,
-                                link: {
-                                  ...l.link,
-                                  role:
-                                    l.link.id === link.id
-                                      ? newRole
-                                      : l.link.role,
-                                },
-                              }))
-                            );
-
-                            await petVetService.updateLink(userId, link.id, {
-                              role: newRole,
-                            });
+                            await updateLinkRole(link.id, newRole);
                           }
                         }}
                       >
@@ -275,10 +213,7 @@ export function PetForm({
                       aria-label={t('link.remove', { ns: 'veterinarians' })}
                       onClick={async () => {
                         if (!userId) return;
-                        await petVetService.unlinkVetFromPet(userId, link.id);
-                        setLinks((prev) =>
-                          prev.filter((l) => l.link.id !== link.id)
-                        );
+                        await unlinkVet(link.id);
                       }}
                     >
                       <DeleteIcon />

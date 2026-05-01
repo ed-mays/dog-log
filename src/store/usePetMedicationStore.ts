@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { PetMedicationRepository } from '@repositories/PetMedicationRepository';
+import { petMedicationService } from '@services/petMedicationService';
 import type {
   PetMedication,
   PetMedicationCreateInput,
@@ -40,8 +40,10 @@ export const usePetMedicationStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new PetMedicationRepository(userId, petId);
-        const medications = await repository.getActivePetMedications();
+        const medications = await petMedicationService.getActivePetMedications(
+          userId,
+          petId
+        );
         set((state) => ({
           petMedications: {
             ...state.petMedications,
@@ -66,8 +68,11 @@ export const usePetMedicationStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new PetMedicationRepository(userId, petId);
-        const newMedication = await repository.createPetMedication(input);
+        const newMedication = await petMedicationService.addPetMedication(
+          userId,
+          petId,
+          input
+        );
         set((state) => ({
           petMedications: {
             ...state.petMedications,
@@ -93,11 +98,13 @@ export const usePetMedicationStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new PetMedicationRepository(userId, petId);
-        const updatedMedication = await repository.updatePetMedication(
-          medicationId,
-          updates
-        );
+        const updatedMedication =
+          await petMedicationService.updatePetMedication(
+            userId,
+            petId,
+            medicationId,
+            updates
+          );
         set((state) => ({
           petMedications: {
             ...state.petMedications,
@@ -125,8 +132,11 @@ export const usePetMedicationStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new PetMedicationRepository(userId, petId);
-        await repository.updatePetMedication(medicationId, { active: false });
+        await petMedicationService.deactivatePetMedication(
+          userId,
+          petId,
+          medicationId
+        );
         set((state) => ({
           petMedications: {
             ...state.petMedications,

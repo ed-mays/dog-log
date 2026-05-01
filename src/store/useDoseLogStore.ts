@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { DoseLogRepository } from '@repositories/DoseLogRepository';
+import { doseLogService } from '@services/doseLogService';
 import type {
   DoseLog,
   DoseLogCreateInput,
@@ -34,8 +34,7 @@ export const useDoseLogStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new DoseLogRepository(userId, petId);
-        const logs = await repository.getAllDoseLogs();
+        const logs = await doseLogService.getAllDoseLogs(userId, petId);
         set((state) => ({
           doseLogs: {
             ...state.doseLogs,
@@ -60,12 +59,11 @@ export const useDoseLogStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new DoseLogRepository(userId, petId);
-        const newLog = await repository.createDoseLog(input);
+        const newLog = await doseLogService.addDoseLog(userId, petId, input);
         set((state) => ({
           doseLogs: {
             ...state.doseLogs,
-            [petId]: [newLog, ...(state.doseLogs[petId] || [])], // Prepend new log
+            [petId]: [newLog, ...(state.doseLogs[petId] || [])],
           },
           isLoading: false,
         }));
@@ -85,8 +83,12 @@ export const useDoseLogStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new DoseLogRepository(userId, petId);
-        const updatedLog = await repository.updateDoseLog(doseLogId, updates);
+        const updatedLog = await doseLogService.updateDoseLog(
+          userId,
+          petId,
+          doseLogId,
+          updates
+        );
         set((state) => ({
           doseLogs: {
             ...state.doseLogs,
@@ -114,8 +116,7 @@ export const useDoseLogStore = create(
 
       set({ isLoading: true, error: null });
       try {
-        const repository = new DoseLogRepository(userId, petId);
-        await repository.delete(doseLogId);
+        await doseLogService.deleteDoseLog(userId, petId, doseLogId);
         set((state) => ({
           doseLogs: {
             ...state.doseLogs,

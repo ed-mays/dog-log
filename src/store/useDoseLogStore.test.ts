@@ -1,12 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useDoseLogStore } from './useDoseLogStore';
-import { DoseLogRepository } from '@repositories/DoseLogRepository';
+import { doseLogService } from '@services/doseLogService';
 import type { DoseLog, DoseLogCreateInput } from '@features/medications/types';
 import { useAuthStore } from '@store/auth.store';
 import type { AuthState } from '@store/auth.store';
 
-// Mock dependencies
-vi.mock('@repositories/DoseLogRepository');
+vi.mock('@services/doseLogService', () => ({
+  doseLogService: {
+    getAllDoseLogs: vi.fn(),
+    getDoseLogsByMedicationId: vi.fn(),
+    addDoseLog: vi.fn(),
+    updateDoseLog: vi.fn(),
+    deleteDoseLog: vi.fn(),
+  },
+}));
 vi.mock('@store/auth.store', () => ({
   useAuthStore: {
     getState: vi.fn(() => ({
@@ -35,17 +42,21 @@ describe('useDoseLogStore', () => {
       user: null,
     } as unknown as AuthState);
     await useDoseLogStore.getState().fetchDoseLogs(petId);
-    expect(DoseLogRepository).not.toHaveBeenCalled();
+    expect(doseLogService.getAllDoseLogs).not.toHaveBeenCalled();
   });
 
   it('should fetch dose logs successfully', async () => {
     const mockLogs = [{ id: 'log-1', amountGiven: 1 }];
-    vi.mocked(DoseLogRepository.prototype.getAllDoseLogs).mockResolvedValue(
+    vi.mocked(doseLogService.getAllDoseLogs).mockResolvedValue(
       mockLogs as unknown as DoseLog[]
     );
 
     await useDoseLogStore.getState().fetchDoseLogs(petId);
 
+    expect(doseLogService.getAllDoseLogs).toHaveBeenCalledWith(
+      'test-user',
+      petId
+    );
     const state = useDoseLogStore.getState();
     expect(state.doseLogs[petId]).toEqual(mockLogs);
     expect(state.isLoading).toBe(false);
@@ -54,7 +65,7 @@ describe('useDoseLogStore', () => {
 
   it('should handle fetch error', async () => {
     const errorMsg = 'Fetch failed';
-    vi.mocked(DoseLogRepository.prototype.getAllDoseLogs).mockRejectedValue(
+    vi.mocked(doseLogService.getAllDoseLogs).mockRejectedValue(
       new Error(errorMsg)
     );
 
@@ -67,7 +78,7 @@ describe('useDoseLogStore', () => {
 
   it('should add dose log successfully', async () => {
     const newLog = { id: 'new-log', amountGiven: 2 };
-    vi.mocked(DoseLogRepository.prototype.createDoseLog).mockResolvedValue(
+    vi.mocked(doseLogService.addDoseLog).mockResolvedValue(
       newLog as unknown as DoseLog
     );
 
@@ -75,6 +86,7 @@ describe('useDoseLogStore', () => {
       amountGiven: 2,
     } as unknown as DoseLogCreateInput);
 
+    expect(doseLogService.addDoseLog).toHaveBeenCalled();
     const state = useDoseLogStore.getState();
     expect(state.doseLogs[petId]).toContainEqual(newLog);
     expect(state.isLoading).toBe(false);
@@ -82,9 +94,7 @@ describe('useDoseLogStore', () => {
 
   it('should handle add dose log error', async () => {
     const errorMsg = 'Add failed';
-    vi.mocked(DoseLogRepository.prototype.createDoseLog).mockRejectedValue(
-      new Error(errorMsg)
-    );
+    vi.mocked(doseLogService.addDoseLog).mockRejectedValue(new Error(errorMsg));
 
     await expect(
       useDoseLogStore
@@ -102,7 +112,7 @@ describe('useDoseLogStore', () => {
       user: null,
     } as unknown as AuthState);
     await useDoseLogStore.getState().updateDoseLog(petId, 'log-1', {});
-    expect(DoseLogRepository).not.toHaveBeenCalled();
+    expect(doseLogService.updateDoseLog).not.toHaveBeenCalled();
   });
 
   it('should update dose log successfully', async () => {
@@ -110,17 +120,22 @@ describe('useDoseLogStore', () => {
     const updates = { amountGiven: 3 };
     const updatedLog = { id: doseLogId, amountGiven: 3 };
 
-    // Setup initial state with a log to update
     useDoseLogStore.setState({
       doseLogs: { [petId]: [{ id: doseLogId, amountGiven: 1 } as DoseLog] },
     });
 
-    vi.mocked(DoseLogRepository.prototype.updateDoseLog).mockResolvedValue(
+    vi.mocked(doseLogService.updateDoseLog).mockResolvedValue(
       updatedLog as unknown as DoseLog
     );
 
     await useDoseLogStore.getState().updateDoseLog(petId, doseLogId, updates);
 
+    expect(doseLogService.updateDoseLog).toHaveBeenCalledWith(
+      'test-user',
+      petId,
+      doseLogId,
+      updates
+    );
     const state = useDoseLogStore.getState();
     expect(state.doseLogs[petId]).toContainEqual(updatedLog);
     expect(state.isLoading).toBe(false);
@@ -129,7 +144,7 @@ describe('useDoseLogStore', () => {
   it('should handle update dose log error', async () => {
     const doseLogId = 'log-1';
     const errorMsg = 'Update failed';
-    vi.mocked(DoseLogRepository.prototype.updateDoseLog).mockRejectedValue(
+    vi.mocked(doseLogService.updateDoseLog).mockRejectedValue(
       new Error(errorMsg)
     );
 
@@ -147,21 +162,25 @@ describe('useDoseLogStore', () => {
       user: null,
     } as unknown as AuthState);
     await useDoseLogStore.getState().deleteDoseLog(petId, 'log-1');
-    expect(DoseLogRepository).not.toHaveBeenCalled();
+    expect(doseLogService.deleteDoseLog).not.toHaveBeenCalled();
   });
 
   it('should delete dose log successfully', async () => {
     const doseLogId = 'log-1';
 
-    // Setup initial state with a log to delete
     useDoseLogStore.setState({
       doseLogs: { [petId]: [{ id: doseLogId, amountGiven: 1 } as DoseLog] },
     });
 
-    vi.mocked(DoseLogRepository.prototype.delete).mockResolvedValue(undefined);
+    vi.mocked(doseLogService.deleteDoseLog).mockResolvedValue(undefined);
 
     await useDoseLogStore.getState().deleteDoseLog(petId, doseLogId);
 
+    expect(doseLogService.deleteDoseLog).toHaveBeenCalledWith(
+      'test-user',
+      petId,
+      doseLogId
+    );
     const state = useDoseLogStore.getState();
     expect(state.doseLogs[petId]).toHaveLength(0);
     expect(state.isLoading).toBe(false);
@@ -170,12 +189,11 @@ describe('useDoseLogStore', () => {
   it('should handle delete when no logs exist for pet', async () => {
     const doseLogId = 'log-1';
 
-    // Setup state with no logs for this pet
     useDoseLogStore.setState({
       doseLogs: {},
     });
 
-    vi.mocked(DoseLogRepository.prototype.delete).mockResolvedValue(undefined);
+    vi.mocked(doseLogService.deleteDoseLog).mockResolvedValue(undefined);
 
     await useDoseLogStore.getState().deleteDoseLog(petId, doseLogId);
 
@@ -187,7 +205,7 @@ describe('useDoseLogStore', () => {
   it('should handle delete dose log error', async () => {
     const doseLogId = 'log-1';
     const errorMsg = 'Delete failed';
-    vi.mocked(DoseLogRepository.prototype.delete).mockRejectedValue(
+    vi.mocked(doseLogService.deleteDoseLog).mockRejectedValue(
       new Error(errorMsg)
     );
 
