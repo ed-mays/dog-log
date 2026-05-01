@@ -16,7 +16,7 @@ import { useCreateVet } from '../hooks/useCreateVet';
 import { useAuthStore } from '@store/auth.store';
 import { logger } from '@services/logService';
 
-export type VetSelectorProps = {
+type VetSelectorProps = {
   label?: string;
   onSelect: (vet: Vet) => void;
 };

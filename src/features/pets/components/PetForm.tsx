@@ -247,5 +247,3 @@ export function PetForm({
     </form>
   );
 }
-
-export type { Pet } from '@features/pets/types';

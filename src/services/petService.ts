@@ -6,7 +6,7 @@ import type {
   Pet,
 } from '@features/pets/types';
 
-export type UpdatePetInput = {
+type UpdatePetInput = {
   name: string;
   breed: string;
 };

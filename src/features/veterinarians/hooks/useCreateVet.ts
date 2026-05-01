@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { vetService, type CreateVetInput } from '@services/vetService';
 import type { Vet } from '@models/vets';
 
-export interface UseCreateVetResult {
+interface UseCreateVetResult {
   createVet: (input: CreateVetInput) => Promise<Vet>;
   loading: boolean;
   error: unknown;

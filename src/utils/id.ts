@@ -2,7 +2,7 @@
 // Runtime default: crypto.randomUUID when available; otherwise a random fallback
 // Tests can inject a deterministic generator via setIdGenerator
 
-export type IdGenerator = () => string;
+type IdGenerator = () => string;
 
 function defaultIdGenerator(): string {
   const rnd = (len = 8) =>

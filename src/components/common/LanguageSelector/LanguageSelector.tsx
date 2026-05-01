@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { preloadLanguage } from '@i18n';
 
-export type LanguageSelectorProps = {
+type LanguageSelectorProps = {
   supportedLocales?: string[];
   labelId?: string;
 };

@@ -5,7 +5,7 @@ import { loadNamespace } from '@i18n';
 import { logger } from '@services/logService';
 import { Button } from '@mui/material';
 
-export type LoginButtonProps = {
+type LoginButtonProps = {
   className?: string;
   disabled?: boolean;
 };

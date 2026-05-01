@@ -3,13 +3,13 @@ import { devtools } from 'zustand/middleware';
 import { petVetService } from '@services/petVetService';
 import type { PetVetLink, Vet, VetId, PetVetRole } from '@models/vets';
 
-export interface PetVetsEntry {
+interface PetVetsEntry {
   links: Array<{ link: PetVetLink; vet: Vet }>;
   loading: boolean;
   error: string | null;
 }
 
-export interface PetVetsState {
+interface PetVetsState {
   /** Keyed by petId so multiple PetCards / pages share the cache. */
   byPetId: Record<string, PetVetsEntry>;
   /**
