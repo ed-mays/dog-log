@@ -24,6 +24,7 @@ import {
   type SliceProgress,
   type StatusSummary,
 } from './lib/controller.ts';
+import { lintCommitMessage } from './lib/citation-linter.ts';
 
 const DEFAULT_TASK_FILE = 'docs/specs/incident-capture/03-tasks.md';
 
@@ -32,13 +33,15 @@ function usage(): string {
     'Usage: harness <command> [options]',
     '',
     'Commands:',
-    '  next              Print the next actionable task and slice context.',
-    '  status            Print progress per slice plus open DQs.',
+    '  next                       Print the next actionable task and slice context.',
+    '  status                     Print progress per slice plus open DQs.',
+    '  lint-commit <file>         Validate a commit-message file against the',
+    '                             citation rule. Exits non-zero if invalid.',
     '',
     'Options:',
-    `  --file <path>     Task list to read (default: ${DEFAULT_TASK_FILE}).`,
-    '  --json            Emit JSON instead of human-readable text.',
-    '  -h, --help        Show this help.',
+    `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
+    '  --json                     Emit JSON instead of human-readable text.',
+    '  -h, --help                 Show this help.',
   ].join('\n');
 }
 
@@ -208,6 +211,33 @@ function main(): void {
         printNextHuman(fileArg, next);
       }
       process.exit(next.warnings.length === 0 ? 0 : 2);
+      break;
+    }
+    case 'lint-commit': {
+      const msgFile = positionals[1];
+      if (!msgFile) {
+        fail('lint-commit requires a commit-message file path\n\n' + usage());
+      }
+      const msgPath = resolve(process.cwd(), msgFile);
+      let raw: string;
+      try {
+        raw = readFileSync(msgPath, 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read commit-message file '${msgFile}': ${reason}`);
+      }
+      const result = lintCommitMessage(raw);
+      if (values.json) {
+        process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+      } else if (result.valid) {
+        const note = result.exemptReason
+          ? `exempt (${result.exemptReason})`
+          : `cites: ${result.citations.join(', ')}`;
+        process.stdout.write(`harness: commit OK — ${note}\n`);
+      } else {
+        process.stderr.write(`harness: ${result.failureReason}\n`);
+      }
+      process.exit(result.valid ? 0 : 1);
       break;
     }
     default:
