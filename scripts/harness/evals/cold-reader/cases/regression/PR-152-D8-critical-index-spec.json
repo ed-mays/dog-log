@@ -1,0 +1,24 @@
+{
+  "case_id": "regression-PR-152-D8",
+  "artifact_kind": "prose",
+  "task_id": "design-doc-cold-read",
+  "source": "PR #152 round-2 cold read — finding D8",
+  "input": {
+    "artifact_path": "docs/specs/incident-capture/02-design.md",
+    "context_refs": ["§D3"],
+    "context_note": "The design doc's Indexes table claimed single-field indexes were sufficient for the history query (where('deletedAt','==',null).orderBy('startedAt','desc')). This is wrong — Firestore requires a composite index for filter+orderBy on different fields."
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "scope_check": 4,
+        "cited_section": "§D3",
+        "evidence_pattern": "(?i)single-field|composite|index",
+        "description_pattern": "(?i)composite index|failed-precondition|deletedAt"
+      }
+    ]
+  },
+  "notes": "Highest-value catch from the round-1 design cold-read. Would have been deployment-blocking on first query execution. The cold-reader's job here is to notice that the index spec doesn't match Firestore's actual index requirements — a structural conformance check between the design's claim and what the cited tech actually requires."
+}

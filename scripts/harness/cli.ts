@@ -29,11 +29,18 @@ import {
   buildBuilderInput,
   formatBuilderInputMarkdown,
 } from './lib/builder-input.ts';
+import {
+  buildColdReaderInput,
+  formatColdReaderInputMarkdown,
+} from './lib/cold-reader-input.ts';
 import { parseTaskList } from './lib/task-parser.ts';
 import { dirname, join } from 'node:path';
+import { execSync } from 'node:child_process';
 
 const DEFAULT_TASK_FILE = 'docs/specs/incident-capture/03-tasks.md';
 const BUILDER_PROMPT_PATH = 'scripts/harness/lib/prompts/builder.md';
+const COLD_READER_PROMPT_PATH =
+  'scripts/harness/lib/prompts/cold-reader-code.md';
 
 function usage(): string {
   return [
@@ -44,14 +51,19 @@ function usage(): string {
     '  status                     Print progress per slice plus open DQs.',
     '  lint-commit <file>         Validate a commit-message file against the',
     '                             citation rule. Exits non-zero if invalid.',
-    '  prepare <task-id>          Render the system prompt + per-task input for',
-    '                             the builder agent. Use this to hand-drive a',
-    '                             single task in a fresh Claude Code session.',
+    '  prepare <task-id>          Render the builder system prompt + per-task',
+    '                             input for hand-driving a single task.',
+    '  cold-read <task-id>        Render the cold-reader system prompt + per-task',
+    '                             input (cited sections + diff). Use --diff to',
+    '                             pull the diff from a git ref-range.',
     '',
     'Options:',
     `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
     '  --json                     Emit JSON instead of human-readable text.',
-    '  --no-system-prompt         Render only the per-task input (omit builder.md).',
+    '  --no-system-prompt         Render only the per-task input (omit prompt).',
+    '  --diff <ref-range>         For cold-read: git ref-range to diff (e.g.',
+    '                             `main..HEAD` or `<sha>~1..<sha>`). Defaults to',
+    '                             the current uncommitted diff (`git diff HEAD`).',
     '  -h, --help                 Show this help.',
   ].join('\n');
 }
@@ -182,6 +194,7 @@ function main(): void {
       json: { type: 'boolean', default: false },
       help: { type: 'boolean', short: 'h', default: false },
       'no-system-prompt': { type: 'boolean', default: false },
+      diff: { type: 'string' },
     },
     allowPositionals: true,
   });
@@ -313,6 +326,81 @@ function main(): void {
         }
       }
       process.stdout.write(formatBuilderInputMarkdown(input));
+      process.stdout.write('\n');
+      process.exit(input.missing_citations.length === 0 ? 0 : 2);
+      break;
+    }
+    case 'cold-read': {
+      const taskId = positionals[1];
+      if (!taskId) {
+        fail('cold-read requires a task id (e.g. T-01)\n\n' + usage());
+      }
+      const tasksMd = readTaskFile(filePath);
+      const parsed = parseTaskList(tasksMd);
+      const task = parsed.tasks.find((t) => t.id === taskId);
+      if (!task) {
+        fail(`task ${taskId} not found in ${fileArg}`);
+      }
+
+      const featureDir = dirname(filePath);
+      let specMd: string;
+      let designMd: string;
+      try {
+        specMd = readFileSync(join(featureDir, '01-spec.md'), 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read spec file: ${reason}`);
+      }
+      try {
+        designMd = readFileSync(join(featureDir, '02-design.md'), 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read design file: ${reason}`);
+      }
+
+      // Diff source: --diff <ref-range> runs `git diff <ref-range>`. Default
+      // is `git diff HEAD` (uncommitted changes). Empty diff is allowed and
+      // surfaces clearly in the output (the cold-reader will mark this case
+      // as "nothing to review").
+      const diffRange = values.diff;
+      let diff: string;
+      try {
+        const args = diffRange ? ['diff', diffRange] : ['diff', 'HEAD'];
+        diff = execSync(`git ${args.join(' ')}`, {
+          encoding: 'utf8',
+          maxBuffer: 16 * 1024 * 1024, // 16 MiB cap on diff size
+        });
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`git diff failed: ${reason}`);
+      }
+
+      const input = buildColdReaderInput({
+        task,
+        specMarkdown: specMd,
+        designMarkdown: designMd,
+        diff,
+      });
+
+      if (values.json) {
+        process.stdout.write(`${JSON.stringify(input, null, 2)}\n`);
+        process.exit(input.missing_citations.length === 0 ? 0 : 2);
+      }
+
+      if (!values['no-system-prompt']) {
+        const promptPath = resolve(process.cwd(), COLD_READER_PROMPT_PATH);
+        try {
+          const systemPrompt = readFileSync(promptPath, 'utf8');
+          process.stdout.write(systemPrompt);
+          process.stdout.write('\n---\n\n');
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : String(err);
+          fail(
+            `could not read cold-reader prompt '${COLD_READER_PROMPT_PATH}': ${reason}`
+          );
+        }
+      }
+      process.stdout.write(formatColdReaderInputMarkdown(input));
       process.stdout.write('\n');
       process.exit(input.missing_citations.length === 0 ? 0 : 2);
       break;

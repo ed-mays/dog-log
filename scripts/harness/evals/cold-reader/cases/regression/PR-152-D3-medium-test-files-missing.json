@@ -1,0 +1,24 @@
+{
+  "case_id": "regression-PR-152-D3",
+  "artifact_kind": "prose",
+  "task_id": "design-doc-cold-read",
+  "source": "PR #152 round-1 design cold read — finding D3",
+  "input": {
+    "artifact_path": "docs/specs/incident-capture/02-design.md",
+    "context_refs": ["§D2"],
+    "context_note": "Design §D2 file map listed paired .test.tsx files for every component, but `hooks/useActiveIncident.ts`, `hooks/useIncidentTimer.ts`, and `StopButton.tsx` had no listed test files. The CLAUDE.md testing convention says 80% coverage; the file map should be self-consistent."
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "scope_check": 4,
+        "cited_section": "§D2",
+        "evidence_pattern": "(?i)test|hook|StopButton",
+        "description_pattern": "(?i)test file|coverage|file map|inconsistent"
+      }
+    ]
+  },
+  "notes": "Inconsistency within the cited design section itself. The pattern (every component has a paired test file) holds for most entries but is silently violated for three. Cold-reader job: notice that the file map's own pattern isn't applied uniformly. MEDIUM because it doesn't break a BR, but tasks phase will read the map literally and miss the tests."
+}
