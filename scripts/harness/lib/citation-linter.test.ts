@@ -75,12 +75,23 @@ describe('lintCommitMessage — exemptions', () => {
     expect(r.exemptReason).toBe("exempt commit scope 'harness'");
   });
 
-  it('exempts via [skip-cite] token in body', () => {
+  it('exempts via [skip-cite] marker at the start of a line', () => {
     const r = lintCommitMessage(
-      'feat(incidents): one-off prototype\n\n[skip-cite] reason: spike to test something'
+      'feat(incidents): one-off prototype\n\n[skip-cite] spike to test something'
     );
     expect(r.valid).toBe(true);
-    expect(r.exemptReason).toBe("contains '[skip-cite]' token");
+    expect(r.exemptReason).toContain('[skip-cite]');
+  });
+
+  it('does NOT exempt via [skip-cite] when it appears mid-line (regression)', () => {
+    // A commit message that *documents* the [skip-cite] token shouldn't
+    // accidentally exempt itself. This was a real bug found in dogfooding
+    // round 12 — the linter's own help text mentioned the token, and that
+    // text in a commit-message body matched the exemption.
+    const r = lintCommitMessage(
+      'feat(incidents): add new feature\n\nDocs note: see [skip-cite] in the help.'
+    );
+    expect(r.valid).toBe(false);
   });
 
   it('does NOT exempt fix(incidents) — needs a citation', () => {

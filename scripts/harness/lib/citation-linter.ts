@@ -48,7 +48,12 @@ export interface LintResult {
 
 const MERGE_RE = /^Merge\s/;
 const REVERT_RE = /^Revert\s/;
-const SKIP_TOKEN = '[skip-cite]';
+/**
+ * Anchored to the start of a line so it cannot match inside documentation
+ * or quoted help text. Optional `:reason` suffix is recorded only as a
+ * convention; not required for the match.
+ */
+const SKIP_TOKEN_RE = /^\[skip-cite(?::[^\]]*)?]/m;
 
 /** Conventional-commit prefix: `type(scope)?(!)?: subject`. Captures type, scope. */
 const CC_PREFIX = /^(?<type>[a-zA-Z]+)(?:\((?<scope>[^)]+)\))?!?:\s/;
@@ -76,17 +81,6 @@ export function lintCommitMessage(
       .split('\n')
       .map((line) => line.trim())
       .find((line) => line.length > 0) ?? null;
-
-  // Skip token short-circuit — power-user escape hatch.
-  if (cleaned.includes(SKIP_TOKEN)) {
-    return {
-      valid: true,
-      citations: extractCitations(cleaned),
-      subject,
-      exemptReason: `contains '${SKIP_TOKEN}' token`,
-      failureReason: null,
-    };
-  }
 
   if (subject === null) {
     return {
@@ -142,6 +136,19 @@ export function lintCommitMessage(
     };
   }
 
+  // Power-user escape hatch — checked AFTER scope/type so that legitimate
+  // exempt commits get the right reason, AND anchored to the start of a line
+  // so it cannot match inside documentation or quoted help text.
+  if (SKIP_TOKEN_RE.test(cleaned)) {
+    return {
+      valid: true,
+      citations: extractCitations(cleaned),
+      subject,
+      exemptReason: "contains '[skip-cite]' marker (start of line)",
+      failureReason: null,
+    };
+  }
+
   const citations = extractCitations(cleaned);
   if (citations.length === 0) {
     return {
@@ -186,6 +193,6 @@ function buildFailureReason(
     `If this commit doesn't trace to a spec section, you can:`,
     `  - Use an exempt type:      ${typesList}`,
     `  - Use an exempt scope:     ${scopesList}`,
-    `  - Add a [skip-cite] token anywhere in the message`,
+    `  - Start a line with the [skip-cite] marker`,
   ].join('\n');
 }
