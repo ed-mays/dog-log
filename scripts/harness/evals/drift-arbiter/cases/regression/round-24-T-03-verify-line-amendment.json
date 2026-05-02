@@ -1,0 +1,32 @@
+{
+  "case_id": "regression-round-24-T-03-verify-line-amendment",
+  "task_id": "T-03",
+  "source": "Round-24 drift-arbiter pre-emptive run on T-03 verify-line spec_gap. THIRD `amend_task` for verify-line clarification (T-01 round 19, T-04 round 24, T-03 round 24). Methodology threshold met: arbiter explicitly recommends builder-prompt amendment ('verify never includes infra-deploy commands') rather than continuing per-task.",
+  "input": {
+    "spec_gap": {
+      "task_id": "T-03",
+      "cited_section": "T-03 verify line in 03-tasks.md",
+      "gap_description": "T-03's verify line says '`firebase deploy --only firestore:indexes` succeeds against the dev project; indexes show as building/built in Firestore console.' This explicitly invokes deploy against shared infrastructure (the dev Firebase project), which violates the round-24 harness convention that infra-deploy is a post-merge human step (not subagent-invoked). Indexes are also forward-only, count against quota, and take minutes to build — a wrong index is a real cost. The gap: the verify line as written would force the subagent to deploy, with no emulator-equivalent named.",
+      "suggested_amendment": "Amend T-03's verify line to be emulator-only, mirroring the T-04 pattern.",
+      "files_inspected": []
+    }
+  },
+  "expected": {
+    "verdict": "amend_task",
+    "amendment": {
+      "file": "03-tasks.md",
+      "anchor_pattern": "(?i)(T-03|Verify line)",
+      "before_pattern": "(?i)(firebase deploy.*firestore:indexes|building/built|firestore console)",
+      "after_pattern": "(?i)(emulators:start|schema-valid|emulator.*accept|deploy.*human|post-merge)",
+      "changelog_entry_pattern": "(?i)(T-03|verify line|emulator|deploy.*human|round 24|mirror.*T-04)"
+    }
+  },
+  "actual_baseline": {
+    "verdict": "amend_task",
+    "wall_clock_seconds": 25,
+    "tokens_consumed": 47395,
+    "tool_uses": 1,
+    "notes": "Arbiter's notes flagged the methodology threshold: 'Third instance of the same pattern (T-01 TDD-vs-structural-verify, T-04 deploy-vs-emulator, now T-03 deploy-vs-emulator). T-03 and T-04 are the same gap class — verify lines authored before the round-24 no-deploy convention was codified. Worth a one-time sweep of remaining foundation/slice tasks (T-05 already hit, but anything else mentioning deploy, firebase use, or shared-project verification) to head off further single-task arbitrations. Methodology candidate: tasks should never name deploy in a verify gate; deploy is always a post-merge human step. Consider adding this rule to the task-authoring template rather than continuing to amend per-task.' This is the EXACT pattern the round-24 T-04 arbiter predicted ('if a third lands') — captured here as PR-B trigger."
+  },
+  "notes": "Methodology threshold case. Two prior instances of the same gap class: T-01 (TDD vs structural verify, round 19) and T-04 (deploy vs emulator, round 24). T-03 closes the threshold. PR-B should: (a) add a rule to builder.md prompt forbidding `firebase deploy` / `pnpm run deploy:*` invocation in verify; (b) optionally sweep remaining tasks (T-06..T-47) for other deploy mentions; (c) update the task-authoring template (when one exists) to encode 'verify never names a deploy command'."
+}

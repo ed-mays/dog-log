@@ -32,11 +32,11 @@ Groundwork that has zero user-visible effect but unblocks all downstream slices.
 - **What:** Add `incidentsEnabled` flag to `src/featureFlags/` + Firebase Remote Config defaults (off in prod, on in dev/staging initially).
 - **Verify:** `useFeatureFlag('incidentsEnabled')` returns false by default; flipping the dev flag flips the value. Pattern matches existing `vetsEnabled`.
 
-### `[ ]` T-03 — Firestore indexes
+### `[x]` T-03 — Firestore indexes
 
 - **Cite:** design §D3 indexes table
 - **What:** Add composite indexes to `firestore.indexes.json`: `(petId asc, deletedAt asc, startedAt desc)` for history; `(endedAt asc, deletedAt asc)` for active-lookup.
-- **Verify:** `firebase deploy --only firestore:indexes` succeeds against the dev project; indexes show as building/built in Firestore console.
+- **Verify:** `firestore.indexes.json` validates against the schema and `firebase emulators:start --only firestore` accepts the new shape (the emulator loads `firestore.indexes.json` at startup; malformed or unsupported index definitions surface as load-time errors). Deploying the indexes to the dev project (`firebase use dev && firebase deploy --only firestore:indexes`) is a separate post-merge human step per plan §11 round-24, NOT part of this task's verify gate.
 
 ### `[x]` T-04 — Firestore rules
 
@@ -333,3 +333,4 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **2026-05-01** — Initial draft. 47 tasks across 5 slices + foundation. Tasks reference spec/design at the time of authoring; if spec/design amend, T- entries here may need re-citation.
 - **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.
 - **2026-05-02** — T-04: clarified verify line to specify `pnpm run test:rules` as the gate and explicitly exclude `pnpm run deploy:dev` (a post-merge human step per plan §11 round-24); resolves spec_gap from T-04 (verify-line silence on deploy-vs-emulator boundary). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim.
+- **2026-05-02** — T-03: clarified verify line to specify emulator load (`firebase emulators:start --only firestore`) as the gate and explicitly exclude `firebase deploy --only firestore:indexes` (a post-merge human step per plan §11 round-24, mirroring the T-04 round-24 amendment); resolves spec_gap from T-03 (verify line invoking shared-infrastructure deploy against builder's no-deploy convention). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim. NOTE: this is the third task-local verify-line clarification (T-01 round 19, T-04 round 24, T-03 round 24); arbiter recommends a methodology-level builder-prompt amendment ("verify never includes infra-deploy commands") rather than continuing per-task. Captured as PR-B material; not addressed in this PR.

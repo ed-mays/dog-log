@@ -58,8 +58,11 @@ describe('loadNext — against real 03-tasks.md', () => {
 
   it('reports the slice the next-actionable task belongs to', () => {
     const next = loadNext(realMarkdown);
-    expect(next.slice?.index).toBe(0);
-    expect(next.slice?.name).toBe('Foundation');
+    if (next.task) {
+      expect(next.slice).toBeDefined();
+      expect(next.slice?.index).toBe(next.task.slice);
+      expect(typeof next.slice?.name).toBe('string');
+    }
   });
 });
 

@@ -1,0 +1,19 @@
+{
+  "case_id": "regression-T-03-V2-clean-diff",
+  "artifact_kind": "code",
+  "task_id": "T-03",
+  "source": "Round-24 cold-reader hand-test on T-03 Firestore indexes diff (commit 23a9b3f). Final foundation-slice cold-reader run; first index-config diff in the corpus.",
+  "input": {
+    "task_description": "T-03 — Firestore composite indexes per §D3 indexes table",
+    "verify_line": "firestore.indexes.json schema-valid; emulator accepts new shape; deploy is post-merge human step.",
+    "cited_spec_refs": [],
+    "cited_design_refs": ["§D3 indexes table"],
+    "diff_summary": "Adds two composite indexes to firestore.indexes.json: (petId asc, deletedAt asc, startedAt desc) for history; (endedAt asc, deletedAt asc) for active-lookup. Both with COLLECTION queryScope.",
+    "diff_path": "git show 23a9b3f"
+  },
+  "expected": {
+    "verdict": "approve",
+    "findings": []
+  },
+  "notes": "Cold-reader correctly traced both indexes back to §D3's table verbatim, confirmed COLLECTION (not COLLECTION_GROUP) scope is right since incidents are user-scoped (top-level under user, path-implicit), and noted the BR-21 MRU query reuses the per-pet history index — meaning the §D3 table's third row needs no separate index. This is the cold-reader's first encounter with a Firestore index config; pattern-matching against §D3 worked cleanly without drifting into 'I'd index by X instead' style commentary."
+}
