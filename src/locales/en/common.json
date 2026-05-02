@@ -44,5 +44,45 @@
       "dark": "Dark",
       "caregiver": "Caregiver"
     }
+  },
+  "incidents": {
+    "activate": "Start incident",
+    "activeBadge": "incident in progress",
+    "timer": {
+      "running": "{{elapsed}} elapsed",
+      "duration": "{{duration}} duration"
+    },
+    "severity": {
+      "mild": "mild",
+      "moderate": "moderate",
+      "severe": "severe"
+    },
+    "callVet": "Call vet",
+    "stop": "STOP",
+    "stopSubcaption": "end timer · keep journaling",
+    "petPickerTitle": "Which pet?",
+    "petPickerHelp": "Tap to assign this incident to a pet.",
+    "petPickerCancel": "Not yet",
+    "journal": {
+      "label": "What you're seeing",
+      "auto": "timestamps every line",
+      "placeholder": "Start typing — each line auto-stamps with elapsed time."
+    },
+    "history": {
+      "title": "Past incidents",
+      "empty": "No incidents recorded for this pet.",
+      "untyped": "untyped",
+      "noJournal": ""
+    },
+    "types": {
+      "seizure": "Seizure",
+      "injury": "Injury",
+      "vomiting": "Vomiting",
+      "choking": "Choking",
+      "allergic_reaction": "Allergic reaction",
+      "collapse": "Collapse",
+      "ingestion": "Ingestion",
+      "other": "Other"
+    }
   }
 }

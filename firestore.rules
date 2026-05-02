@@ -39,6 +39,10 @@ service cloud.firestore {
       match /petVets/{linkId} {
         allow read, write: if isOwner(userId);
       }
+
+      match /incidents/{incidentId} {
+        allow read, write: if isOwner(userId);
+      }
     }
     match /medicationDefinitions/{definitionId} {
       allow read: if request.auth != null;

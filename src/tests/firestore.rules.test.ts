@@ -109,4 +109,33 @@ describe('Firestore Security Rules', () => {
         .set({ type: 'food' })
     );
   });
+
+  // Incidents (NFR-8, §D7): owner-scoped reads/writes; cross-user access denied.
+  it('should allow owner to read/write their own incident document', async () => {
+    const alice = testEnv.authenticatedContext('alice');
+
+    await assertSucceeds(
+      alice
+        .firestore()
+        .doc('users/alice/incidents/incident1')
+        .set({ petId: 'pet1', startedAt: Date.now() })
+    );
+    await assertSucceeds(
+      alice.firestore().doc('users/alice/incidents/incident1').get()
+    );
+  });
+
+  it('should deny another user from reading/writing someone else incident', async () => {
+    const alice = testEnv.authenticatedContext('alice');
+
+    await assertFails(
+      alice
+        .firestore()
+        .doc('users/bob/incidents/incident1')
+        .set({ petId: 'pet1', startedAt: Date.now() })
+    );
+    await assertFails(
+      alice.firestore().doc('users/bob/incidents/incident1').get()
+    );
+  });
 });

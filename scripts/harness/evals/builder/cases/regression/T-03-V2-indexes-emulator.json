@@ -1,0 +1,23 @@
+{
+  "case_id": "regression-T-03-V2-indexes-emulator",
+  "task_id": "T-03",
+  "source": "Round-24 V2 builder hand-test on T-03 (Firestore indexes) with the round-24-amended verify line (emulator-load only; deploy is post-merge human step). Mirrors T-04's emulator-only pattern. Final task in the foundation slice.",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/regression/T-03-V2-indexes-emulator.input.md"
+  },
+  "expected": {
+    "status": "success",
+    "files_touched_pattern": "firestore\\.indexes\\.json",
+    "notes_pattern": "(?i)(§D3|emulator|deploy.*not|post-merge|composite|petId|endedAt)"
+  },
+  "actual_baseline": {
+    "status": "success",
+    "commit_sha": "23a9b3fe40ba7590479f3c33251e5db0831dc21e",
+    "files_touched": ["firestore.indexes.json"],
+    "wall_clock_seconds": 91,
+    "tokens_consumed": 51538,
+    "tool_uses": 11,
+    "notes": "Subagent added both composite indexes per §D3 verbatim ((petId asc, deletedAt asc, startedAt desc) for history; (endedAt asc, deletedAt asc) for active-lookup). Emulator loaded clean — no failed-precondition or malformed-index errors in firestore-debug.log. Did NOT attempt firebase deploy. Side note: dropped JSON5 comments in the prior placeholder file in favor of strict JSON to satisfy the schema-valid clause; this is a defensible scope edit (the verify line requires schema validity)."
+  },
+  "notes": "Companion to T-04-V2-rules-emulator: both validate the round-24 plan §11 mitigation pattern (forbid `firebase deploy`; verify is emulator-only) on infra tasks. Together they form the empirical proof that the discipline holds across both rules and indexes — the two infra surfaces with the highest blast radius in the foundation slice. Notable: the methodology observation from the T-04 arbiter run ('a third such amendment would justify a builder-prompt no-deploy rule') was hit by THIS round's T-03 amendment, completing the threshold for PR-B promotion."
+}

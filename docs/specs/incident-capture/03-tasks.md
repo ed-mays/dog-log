@@ -19,32 +19,32 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` blo
 
 Groundwork that has zero user-visible effect but unblocks all downstream slices.
 
-### `[ ]` T-01 — TypeScript types
+### `[x]` T-01 — TypeScript types
 
 - **Cite:** spec §5 (data model); design §D3 (TypeScript types)
 - **What:** Create `src/features/incidents/types.ts` with `Incident`, `IncidentTypeId`, `Severity`, `ChipId`, `JournalEntry`, `IncidentCreateInput`, `IncidentUpdateInput`. Include the BR-29 runtime-invariant comment from design §D3.
 - **Verify:** `pnpm exec tsc -b` passes with the new file imported nowhere.
 - **Notes:** TDD-first is waived for this task. §D3 specifies type declarations, not behavior, and the verify gate is intentionally structural (file imported nowhere) to keep slice 0 dependency-free. These types will be exercised by the first consumer's tests in a downstream task; do not write a self-contained test that imports this file.
 
-### `[ ]` T-02 — Feature flag
+### `[x]` T-02 — Feature flag
 
 - **Cite:** spec §6 NFR-5 (flag-gated rollout follows project pattern); design §D2 (`incidentsEnabled` flag)
 - **What:** Add `incidentsEnabled` flag to `src/featureFlags/` + Firebase Remote Config defaults (off in prod, on in dev/staging initially).
 - **Verify:** `useFeatureFlag('incidentsEnabled')` returns false by default; flipping the dev flag flips the value. Pattern matches existing `vetsEnabled`.
 
-### `[ ]` T-03 — Firestore indexes
+### `[x]` T-03 — Firestore indexes
 
 - **Cite:** design §D3 indexes table
 - **What:** Add composite indexes to `firestore.indexes.json`: `(petId asc, deletedAt asc, startedAt desc)` for history; `(endedAt asc, deletedAt asc)` for active-lookup.
-- **Verify:** `firebase deploy --only firestore:indexes` succeeds against the dev project; indexes show as building/built in Firestore console.
+- **Verify:** `firestore.indexes.json` validates against the schema and `firebase emulators:start --only firestore` accepts the new shape (the emulator loads `firestore.indexes.json` at startup; malformed or unsupported index definitions surface as load-time errors). Deploying the indexes to the dev project (`firebase use dev && firebase deploy --only firestore:indexes`) is a separate post-merge human step per plan §11 round-24, NOT part of this task's verify gate.
 
-### `[ ]` T-04 — Firestore rules
+### `[x]` T-04 — Firestore rules
 
 - **Cite:** spec NFR-8; design §D7
 - **What:** Add `match /incidents/{incidentId} { allow read, write: if isOwner(userId); }` inside the `match /users/{userId}` block in `firestore.rules`. Match the project convention (one-line ownership rule).
-- **Verify:** Rules-tests cover (a) owner can read/write own incident, (b) other user cannot read/write someone else's. Existing rules-test setup is the pattern.
+- **Verify:** `pnpm run test:rules` passes new assertions covering (a) owner can read/write own incident, (b) other user cannot read/write someone else's. Existing rules-test setup is the pattern. Deploying the rules to the dev project is a separate post-merge human step (`pnpm run deploy:dev`), not part of this task's verify gate.
 
-### `[ ]` T-05 — i18n key scaffolding
+### `[x]` T-05 — i18n key scaffolding
 
 - **Cite:** spec NFR-5; design §D6
 - **What:** Add `incidents` namespace shell to `src/locales/en/common.json` and `src/locales/es/common.json` with all keys from design §D6 except chip-specific ones. Spanish translations can be one-line LATER stubs marked `// TODO i18n-es` per project pattern.
@@ -332,3 +332,5 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 
 - **2026-05-01** — Initial draft. 47 tasks across 5 slices + foundation. Tasks reference spec/design at the time of authoring; if spec/design amend, T- entries here may need re-citation.
 - **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.
+- **2026-05-02** — T-04: clarified verify line to specify `pnpm run test:rules` as the gate and explicitly exclude `pnpm run deploy:dev` (a post-merge human step per plan §11 round-24); resolves spec_gap from T-04 (verify-line silence on deploy-vs-emulator boundary). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim.
+- **2026-05-02** — T-03: clarified verify line to specify emulator load (`firebase emulators:start --only firestore`) as the gate and explicitly exclude `firebase deploy --only firestore:indexes` (a post-merge human step per plan §11 round-24, mirroring the T-04 round-24 amendment); resolves spec_gap from T-03 (verify line invoking shared-infrastructure deploy against builder's no-deploy convention). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim. NOTE: this is the third task-local verify-line clarification (T-01 round 19, T-04 round 24, T-03 round 24); arbiter recommends a methodology-level builder-prompt amendment ("verify never includes infra-deploy commands") rather than continuing per-task. Captured as PR-B material; not addressed in this PR.

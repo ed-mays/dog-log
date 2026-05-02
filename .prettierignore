@@ -1,0 +1,10 @@
+# Snapshot fixtures are byte-for-byte captures of tool output.
+# Prettier MUST NOT reformat them — doing so silently mangles the
+# eval contract. See round-24 finding in generate-spec-anchored-artifacts-log.md.
+scripts/harness/evals/cli-snapshots/snapshots/
+scripts/harness/evals/parsers/snapshots/
+
+# Pinned builder/cold-reader/arbiter inputs — same rationale: they are
+# verbatim renders of the prompt + per-task input, used as eval fixtures.
+scripts/harness/evals/builder/cases/_shared/
+scripts/harness/evals/builder/cases/**/*.input.md

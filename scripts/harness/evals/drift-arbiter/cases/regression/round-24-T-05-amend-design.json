@@ -1,0 +1,37 @@
+{
+  "case_id": "regression-round-24-T-05-amend-design",
+  "task_id": "T-05",
+  "source": "Round-24 drift-arbiter run on T-05 i18n spec_gap. First ever `amend_design` verdict in the wild — prior arbiter cases were all `amend_task`. Triggered by cold-reader veto (HIGH/scope_4 + HIGH/scope_3) on the silent-resolution pattern: T-05's task body authorized two deferrals (chips deferred to T-20, Spanish-as-English stubs) but the cited §D6 didn't authorize either, so cold-reader correctly flagged both as silent producer resolutions.",
+  "input": {
+    "spec_gap": {
+      "task_id": "T-05",
+      "cited_section": "§D6 (i18n key catalog)",
+      "gap_description": "T-05's task body authorizes two deferrals: (a) chip-specific keys (`incidents.chips.*`) deferred to T-20, blocked on DQ-5; (b) Spanish translations as English-value stubs since strict JSON disallows the design's `// TODO i18n-es` marker. Both deferrals are in the task body but NOT in the cited design §D6. Cold-reader correctly flagged both as silent producer resolutions (HIGH/scope_4 for chip omission vs §D6's enumerated subtree; HIGH/scope_3 for silent ambiguity-resolution on Spanish stubs vs NFR-5). Root cause: task-body caveats are invisible to the cold-reader by design (cold-reader only sees cited spec/design + diff). The harness needs the cited design to authorize what the task body assumes — otherwise every task with a 'do X except Y' caveat will get cold-reader vetoed.",
+      "suggested_amendment": "Amend §D6 (in `02-design.md`) to (1) add a 'Deferrals' subsection explicitly deferring `incidents.chips.*` to T-20 (gated on DQ-5 resolution); (2) add a §D6.1 'Spanish-stub convention' subsection acknowledging that JSON file format precludes inline TODO comments and authorizing English-value stubs in `es/common.json` for v1, with the stub→translation work happening in a dedicated post-foundation task. Both amendments preserve every other §D6 claim. Add corresponding §D11 changelog entry citing the round-24 spec_gap from T-05.",
+      "files_inspected": [
+        "/Users/edmays/src/dog-log/docs/specs/incident-capture/02-design.md",
+        "/Users/edmays/src/dog-log/docs/specs/incident-capture/03-tasks.md",
+        "/Users/edmays/src/dog-log/src/locales/en/common.json",
+        "/Users/edmays/src/dog-log/src/locales/es/common.json"
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "amend_design",
+    "amendment": {
+      "file": "02-design.md",
+      "anchor_pattern": "(?i)§D6|D6 i18n|Deferrals",
+      "before_pattern": "(?i)NFR-7 reminder|tone stays neutral|microcopy",
+      "after_pattern": "(?i)(Deferrals.*v1|incidents\\.chips.*T-20|English.*stub|JSONC|strict JSON)",
+      "changelog_entry_pattern": "(?i)(§D6|D6 i18n|round 24|amend_design|chips.*T-20|stub)"
+    }
+  },
+  "actual_baseline": {
+    "verdict": "amend_design",
+    "wall_clock_seconds": 41,
+    "tokens_consumed": 48887,
+    "tool_uses": 1,
+    "notes": "Arbiter chose a single contiguous insertion (one Deferrals note covering both deferrals) over the suggested two-subsection amendment, citing minimal-blast-radius. Recognized 'two changes in one amendment' is permitted because both are within §D6 (not across artifacts). Also surfaced a methodology-level observation (out of scope for this arbitration): task-body caveats are invisible to cold-reader; either builders need to require cited-artifact authorization for deferrals OR the cold-reader input needs visibility into task notes. Surfaces the same gap pattern as round-19's T-01 case but on a different axis."
+  },
+  "notes": "Critical milestone: first `amend_design` case in any eval suite. Prior arbiter cases all hit `amend_task` because foundation tasks (especially T-01) needed verify-line tweaks. Validates that the arbiter's verdict-selection logic actually picks the right artifact when the gap lives in design rather than task. Also captures a real instance of the methodology gap the arbiter named in `actual_baseline.notes` — task-body caveats vs cold-reader scope. That gap is now logged as PR-B/methodology material; not fixed in this PR. Re-cold-reading T-05 against amended §D6 produced clean approve, confirming the loop closes."
+}

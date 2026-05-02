@@ -180,7 +180,7 @@ Amend T-01 in one of two ways. (a) Preferred: change the Verify line to 'pnpm ex
 
 ## Task entry (from `03-tasks.md`)
 
-**T-01** — TypeScript types (slice 0: Foundation, status: pending)
+**T-01** — TypeScript types  (slice 0: Foundation, status: done)
 
 **What:**
 
@@ -378,8 +378,15 @@ async toggleChip(id, chipId) {
   - **§D7 rules:** match path moved from `/users/{userId}/pets/{petId}/incidents/...` to `/users/{userId}/incidents/...` (top-level), matching the new layout. Convention citation updated to point at vets/petVets/vetKeys (which are also user-scoped non-pet subcollections) rather than feedings/medications/doseLogs.
   - **DQ-8 added:** Caregiver theme color tokens vs wireframe palette mismatches need designer confirmation. Not blocking tasks phase but blocking pixel-accurate visual QA.
 
+- **2026-05-02 round 24** — Amended §D6 to add an explicit Deferrals note covering (a) `incidents.chips.*` deferred to T-20 pending DQ-5, and (b) Spanish English-value stubs as a scoped v1 exception (real JSON cannot carry the JSONC `// TODO i18n-es` marker shown in the example). Resolves spec_gap from T-05 (cold-reader vetoed on the §D6/NFR-5 silent-resolution; both deferrals were in T-05's task body but not in cited design). Drift-arbiter agent's first `amend_design` verdict (round 24); applied verbatim. No other §D6 content changed.
+
 ### Task list (T0)
 
 - **2026-05-01** — Initial draft. 47 tasks across 5 slices + foundation. Tasks reference spec/design at the time of authoring; if spec/design amend, T- entries here may need re-citation.
 
 - **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.
+
+- **2026-05-02** — T-04: clarified verify line to specify `pnpm run test:rules` as the gate and explicitly exclude `pnpm run deploy:dev` (a post-merge human step per plan §11 round-24); resolves spec_gap from T-04 (verify-line silence on deploy-vs-emulator boundary). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim.
+
+- **2026-05-02** — T-03: clarified verify line to specify emulator load (`firebase emulators:start --only firestore`) as the gate and explicitly exclude `firebase deploy --only firestore:indexes` (a post-merge human step per plan §11 round-24, mirroring the T-04 round-24 amendment); resolves spec_gap from T-03 (verify line invoking shared-infrastructure deploy against builder's no-deploy convention). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim. NOTE: this is the third task-local verify-line clarification (T-01 round 19, T-04 round 24, T-03 round 24); arbiter recommends a methodology-level builder-prompt amendment ("verify never includes infra-deploy commands") rather than continuing per-task. Captured as PR-B material; not addressed in this PR.
+

@@ -370,6 +370,11 @@ All strings live in `src/locales/{en,es}/common.json`. New top-level namespace `
 
 NFR-7 reminder: tone stays neutral. No "Great job logging!" or success microcopy.
 
+**Deferrals (v1 foundation scope):**
+
+- `incidents.chips.*` keys are NOT added in the foundation i18n task. They are deferred to T-20 (chip rendering), which is gated on DQ-5 closing (final ChipId catalog). The §D11 round-4 cross-reference under DQ-5 already notes this dependency; this entry makes the deferral visible to consumers of §D6 directly. Until then, the `incidents.chips` subtree is intentionally absent from `common.json` — `useTranslation` calls against chip keys must not occur in foundation-slice code.
+- The JSONC example above uses `//` comments for editorial clarity, but real `src/locales/es/common.json` is strict JSON and cannot carry inline `// TODO i18n-es` markers. For v1, Spanish entries under `incidents.*` MAY be one-line English-value stubs (i.e. the same string as the `en` value). Translation-quality work is tracked as a dedicated post-foundation task and is not blocking for foundation completion. This is a scoped, time-boxed exception to NFR-5 coverage and applies only to the new `incidents` namespace; pre-existing namespaces are unchanged.
+
 ---
 
 ## §D7 Firestore Rules Diff
@@ -465,3 +470,4 @@ Coverage target: 80% lines for `src/features/incidents/**` and 100% of `Incident
   - **MEDIUM D24 (i18n null shape):** dropped the `callVetMissing: null` key; replaced with a JSON comment documenting the deliberate absence.
   - **§D7 rules:** match path moved from `/users/{userId}/pets/{petId}/incidents/...` to `/users/{userId}/incidents/...` (top-level), matching the new layout. Convention citation updated to point at vets/petVets/vetKeys (which are also user-scoped non-pet subcollections) rather than feedings/medications/doseLogs.
   - **DQ-8 added:** Caregiver theme color tokens vs wireframe palette mismatches need designer confirmation. Not blocking tasks phase but blocking pixel-accurate visual QA.
+- **2026-05-02 round 24** — Amended §D6 to add an explicit Deferrals note covering (a) `incidents.chips.*` deferred to T-20 pending DQ-5, and (b) Spanish English-value stubs as a scoped v1 exception (real JSON cannot carry the JSONC `// TODO i18n-es` marker shown in the example). Resolves spec_gap from T-05 (cold-reader vetoed on the §D6/NFR-5 silent-resolution; both deferrals were in T-05's task body but not in cited design). Drift-arbiter agent's first `amend_design` verdict (round 24); applied verbatim. No other §D6 content changed.
