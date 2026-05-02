@@ -6,6 +6,7 @@
     "src/tests/**/*.rules.test.ts"
   ],
   "project": ["src/**/*.{ts,tsx}"],
+  "ignore": ["src/features/incidents/types.ts"],
   "ignoreDependencies": [
     "eslint-config-prettier",
     "eslint-plugin-prettier",

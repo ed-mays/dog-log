@@ -1,0 +1,20 @@
+{
+  "case_id": "regression-T-01-V2-amended",
+  "task_id": "T-01",
+  "source": "Round-21 V2 builder hand-test on T-01 with the TDD-waiver Note from PR #160 — closes round-17/18/19/20 loop empirically",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/regression/T-01-V2-amended.input.md"
+  },
+  "expected": {
+    "status": "success",
+    "files_touched_pattern": "src/features/incidents/types\\.ts",
+    "notes_pattern": "(?i)TDD.*waived|type-only|slice 0|imported nowhere"
+  },
+  "actual_baseline": {
+    "status": "success",
+    "commit_sha": "bdeeac4f522b8399fa451aa411a0e7cf0e7730a7",
+    "files_touched": ["src/features/incidents/types.ts"],
+    "notes": "Slice 0 foundation. Types file matches §D3 verbatim (including the IncidentUpdateInput comment about BR-29 runtime enforcement). File is imported nowhere — confirmed via grep on both raw path and @features/incidents alias. Verified `pnpm exec tsc -b` exits 0 with no output. Per task Notes, TDD-first is waived (§D3 specifies declarations not behavior; verify gate is intentionally structural). No test was written; downstream tasks will exercise these types via their own consumers' tests. Commit-msg hook validated citations: harness: commit OK — cites: T-01, §5, §D3."
+  },
+  "notes": "Closes the round-17→21 loop empirically. The harness's value claim — escalation + arbiter amendment + re-run produces a clean build — is now validated end-to-end on a real task. The fresh subagent recognized that the Note IS the arbiter resolution from rounds 19-20 ('precisely the kind of explicit task-level note that TDD does not apply that the prompt describes as a valid drift-arbiter resolution') and did NOT re-escalate. Compare: V1 (round 17) silent success without flagging; V2 round-18 clean spec_gap; V2 round-21 (this) clean success on the amended task. Trajectory: amend → re-dispatch → success, with no scope expansion."
+}
