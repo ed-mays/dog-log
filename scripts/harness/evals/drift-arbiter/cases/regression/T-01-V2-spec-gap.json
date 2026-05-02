@@ -1,0 +1,28 @@
+{
+  "case_id": "regression-T-01-V2-spec-gap",
+  "task_id": "T-01",
+  "source": "Round-18 V2 builder hand-test on T-01 (the trigger event for plan §8 step 7)",
+  "input": {
+    "spec_gap": {
+      "task_id": "T-01",
+      "cited_section": "§D3 (design) — Data Model — Concrete; Verify line for T-01",
+      "gap_description": "The builder system prompt rule #2 (TDD discipline) requires writing tests first that assert the cited ACs and confirming RED before implementing. Task T-01 cites no ACs (it cites §D3, a concrete type definitions block) and its Verify line is structural: 'pnpm exec tsc -b passes with the new file imported nowhere.' Writing a test for the types would necessarily import the new file, which would violate the verify gate's 'imported nowhere' precondition. There are also no behavioral ACs to assert in Given/When/Then form — §D3 is a verbatim TypeScript declaration block, not a behavior spec. The TDD rule and the Verify line therefore conflict on this task.",
+      "suggested_amendment": "Amend T-01 in one of two ways. (a) Preferred: change the Verify line to 'pnpm exec tsc -b passes' and explicitly waive TDD for pure type-declaration tasks (declare a project convention that type-only files in src/features/<domain>/types.ts are exercised by their first consumer's tests in a later task, not by self-contained tests). (b) Alternative: keep the structural verify gate but add an explicit one-time pushback in the task notes authorizing the builder to skip rule #2 because there are no behavioral ACs in §D3 and the verify line is intentionally structural to keep slice 0 dependency-free.",
+      "files_inspected": [
+        "/Users/edmays/src/dog-log/CLAUDE.md",
+        "/Users/edmays/src/dog-log/src/features/medications/types.ts"
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "amend_task",
+    "amendment": {
+      "file": "03-tasks.md",
+      "anchor_pattern": "T-01",
+      "before_pattern": "(?i)tsc -b.*imported nowhere|Verify",
+      "after_pattern": "(?i)tsc -b passes|TDD.*waived|type-only|type declarations|no ACs|TDD does not apply",
+      "changelog_entry_pattern": "(?i)T-01|TDD|verify line|type-only"
+    }
+  },
+  "notes": "First real spec_gap in the wild. Round-18 V2 builder produced this. Both V2-suggested resolutions land in 03-tasks.md (not spec or design), validating the §11 architecture amendment that adds amend_task as a fourth verdict. The arbiter's job here: pick option (a) verify-line-amendment, option (b) task-note pushback, or a synthesis — all are valid. Empirically validated round 19: fresh subagent picked option (b) (added Note: line waiving TDD; preserved verify line); pattern updated to match phrasing from either resolution. Should NOT amend §D3 (which is correctly stating the types) or any BR (no spec rule needs to change)."
+}

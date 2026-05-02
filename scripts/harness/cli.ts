@@ -33,6 +33,11 @@ import {
   buildColdReaderInput,
   formatColdReaderInputMarkdown,
 } from './lib/cold-reader-input.ts';
+import {
+  buildDriftArbiterInput,
+  formatDriftArbiterInputMarkdown,
+  type SpecGapPayload,
+} from './lib/drift-arbiter-input.ts';
 import { parseTaskList } from './lib/task-parser.ts';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
@@ -41,6 +46,8 @@ const DEFAULT_TASK_FILE = 'docs/specs/incident-capture/03-tasks.md';
 const BUILDER_PROMPT_PATH = 'scripts/harness/lib/prompts/builder.md';
 const COLD_READER_PROMPT_PATH =
   'scripts/harness/lib/prompts/cold-reader-code.md';
+const DRIFT_ARBITER_PROMPT_PATH =
+  'scripts/harness/lib/prompts/drift-arbiter.md';
 
 function usage(): string {
   return [
@@ -56,6 +63,9 @@ function usage(): string {
     '  cold-read <task-id>        Render the cold-reader system prompt + per-task',
     '                             input (cited sections + diff). Use --diff to',
     '                             pull the diff from a git ref-range.',
+    '  arbitrate <spec-gap-file>  Render the drift-arbiter system prompt + per-',
+    '                             arbitration input. <spec-gap-file> is a JSON',
+    '                             file matching the SpecGapPayload shape.',
     '',
     'Options:',
     `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
@@ -401,6 +411,83 @@ function main(): void {
         }
       }
       process.stdout.write(formatColdReaderInputMarkdown(input));
+      process.stdout.write('\n');
+      process.exit(input.missing_citations.length === 0 ? 0 : 2);
+      break;
+    }
+    case 'arbitrate': {
+      const specGapFile = positionals[1];
+      if (!specGapFile) {
+        fail('arbitrate requires a spec_gap JSON file path\n\n' + usage());
+      }
+      const gapPath = resolve(process.cwd(), specGapFile);
+      let raw: string;
+      try {
+        raw = readFileSync(gapPath, 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read spec_gap file '${specGapFile}': ${reason}`);
+      }
+      let spec_gap: SpecGapPayload;
+      try {
+        spec_gap = JSON.parse(raw) as SpecGapPayload;
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`spec_gap file '${specGapFile}' is not valid JSON: ${reason}`);
+      }
+      if (
+        !spec_gap.task_id ||
+        !spec_gap.cited_section ||
+        !spec_gap.gap_description
+      ) {
+        fail(
+          `spec_gap file is missing required fields (task_id, cited_section, gap_description)`
+        );
+      }
+
+      const tasksMd = readTaskFile(filePath);
+      const featureDir = dirname(filePath);
+      let specMd: string;
+      let designMd: string;
+      try {
+        specMd = readFileSync(join(featureDir, '01-spec.md'), 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read spec file: ${reason}`);
+      }
+      try {
+        designMd = readFileSync(join(featureDir, '02-design.md'), 'utf8');
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`could not read design file: ${reason}`);
+      }
+
+      const input = buildDriftArbiterInput({
+        spec_gap,
+        specMarkdown: specMd,
+        designMarkdown: designMd,
+        tasksMarkdown: tasksMd,
+      });
+
+      if (values.json) {
+        process.stdout.write(`${JSON.stringify(input, null, 2)}\n`);
+        process.exit(input.missing_citations.length === 0 ? 0 : 2);
+      }
+
+      if (!values['no-system-prompt']) {
+        const promptPath = resolve(process.cwd(), DRIFT_ARBITER_PROMPT_PATH);
+        try {
+          const systemPrompt = readFileSync(promptPath, 'utf8');
+          process.stdout.write(systemPrompt);
+          process.stdout.write('\n---\n\n');
+        } catch (err) {
+          const reason = err instanceof Error ? err.message : String(err);
+          fail(
+            `could not read drift-arbiter prompt '${DRIFT_ARBITER_PROMPT_PATH}': ${reason}`
+          );
+        }
+      }
+      process.stdout.write(formatDriftArbiterInputMarkdown(input));
       process.stdout.write('\n');
       process.exit(input.missing_citations.length === 0 ? 0 : 2);
       break;
