@@ -1,0 +1,24 @@
+{
+  "case_id": "regression-PR-152-S1",
+  "artifact_kind": "prose",
+  "task_id": "spec-cold-read-round-1",
+  "source": "PR #152 round-1 cold read — finding S1",
+  "input": {
+    "artifact_path": "docs/specs/incident-capture/01-spec.md",
+    "context_refs": ["BR-26", "BR-28"],
+    "context_note": "BR-28 (round-1 form) said: when activation happens from a pet-scoped surface, petId MUST be pre-filled. BR-26 said: a second activation while one is active MUST resume the existing incident, including its current pet-set/unset state. These collide when the second activation is from a pet-scoped surface."
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "HIGH",
+        "scope_check": 3,
+        "cited_section": "BR-28",
+        "evidence_pattern": "(?i)BR-26|BR-28|pre-fill|resume",
+        "description_pattern": "(?i)contradict|collide|conflict|resume"
+      }
+    ]
+  },
+  "notes": "Internal contradiction between two BRs. The cold-reader's job is to surface that BR-28's pre-fill rule and BR-26's preserve-state-on-resume rule conflict in a specific case the producer didn't address. This is exactly the kind of finding the producer cannot see in their own work — they wrote both BRs and didn't notice the collision."
+}

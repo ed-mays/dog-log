@@ -1,0 +1,24 @@
+{
+  "case_id": "regression-PR-152-D5",
+  "artifact_kind": "prose",
+  "task_id": "design-doc-cold-read",
+  "source": "PR #152 round-1 design cold read — finding D5",
+  "input": {
+    "artifact_path": "docs/specs/incident-capture/02-design.md",
+    "context_refs": ["§D2", "§D5"],
+    "context_note": "§D2 asserted 'FAB hidden on /incidents/active (would be a no-op)'. §D5 listed DQ-3 as still open with `Needs confirm` and an alternative ('repurpose as a STOP alias'). Self-contradiction within the same document."
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "scope_check": 4,
+        "cited_section": "§D5",
+        "evidence_pattern": "(?i)DQ-3|FAB|/incidents/active",
+        "description_pattern": "(?i)contradict|self-contradict|open question|asserted"
+      }
+    ]
+  },
+  "notes": "Document contradicts its own open-questions register. Either §D2 should defer to DQ-3, or DQ-3 should be marked resolved. CRITICAL because tasks phase will read both and have no way to decide which is authoritative."
+}

@@ -1,0 +1,27 @@
+{
+  "case_id": "regression-T-09-cross-feature-import",
+  "artifact_kind": "code",
+  "task_id": "T-09",
+  "source": "Synthetic; modeled on a realistic builder mistake. While implementing the IncidentTimer hook, the producer reaches for an existing utility from the medications feature instead of the time utility under utils/.",
+  "input": {
+    "task_description": "useIncidentTimer hook",
+    "verify_line": "Hook test: given startedAt = Date.now() - 65_000, returned elapsed is 00:01:05. With fake timers advancing 250ms, the hook re-renders.",
+    "cited_spec_refs": ["BR-3"],
+    "cited_design_refs": ["§D2", "§D8"],
+    "diff_summary": "useIncidentTimer.ts imports `formatHHMMSS` from `@features/medications/utils/time` instead of using a shared utility under @utils. The medications utility was never anticipated by §D2's file map for incidents.",
+    "diff_path": "fixtures/T-09-cross-feature-import.diff"
+  },
+  "expected": {
+    "verdict": "approve",
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "scope_check": 5,
+        "cited_section": "§D2",
+        "evidence_pattern": "(?i)@features/medications|cross-feature|import",
+        "description_pattern": "(?i)cross.feature|coupling|medications|file map|not anticipated"
+      }
+    ]
+  },
+  "notes": "Single-finding MEDIUM case to test scope-check #5 (hidden coupling). The verdict is `approve` because MEDIUM doesn't veto — this is also testing that the cold-reader's verdict logic is correct (veto only on CRITICAL/HIGH). Easy to misclassify this as HIGH if the cold-reader thinks 'cross-feature import = bad'; the prompt is explicit that hidden coupling is MEDIUM unless it violates a cited NFR. NFR-1/NFR-2 are not cited here, so MEDIUM is correct."
+}
