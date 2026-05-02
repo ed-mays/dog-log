@@ -19,7 +19,7 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` blo
 
 Groundwork that has zero user-visible effect but unblocks all downstream slices.
 
-### `[ ]` T-01 — TypeScript types
+### `[x]` T-01 — TypeScript types
 
 - **Cite:** spec §5 (data model); design §D3 (TypeScript types)
 - **What:** Create `src/features/incidents/types.ts` with `Incident`, `IncidentTypeId`, `Severity`, `ChipId`, `JournalEntry`, `IncidentCreateInput`, `IncidentUpdateInput`. Include the BR-29 runtime-invariant comment from design §D3.
@@ -44,7 +44,7 @@ Groundwork that has zero user-visible effect but unblocks all downstream slices.
 - **What:** Add `match /incidents/{incidentId} { allow read, write: if isOwner(userId); }` inside the `match /users/{userId}` block in `firestore.rules`. Match the project convention (one-line ownership rule).
 - **Verify:** Rules-tests cover (a) owner can read/write own incident, (b) other user cannot read/write someone else's. Existing rules-test setup is the pattern.
 
-### `[ ]` T-05 — i18n key scaffolding
+### `[x]` T-05 — i18n key scaffolding
 
 - **Cite:** spec NFR-5; design §D6
 - **What:** Add `incidents` namespace shell to `src/locales/en/common.json` and `src/locales/es/common.json` with all keys from design §D6 except chip-specific ones. Spanish translations can be one-line LATER stubs marked `// TODO i18n-es` per project pattern.

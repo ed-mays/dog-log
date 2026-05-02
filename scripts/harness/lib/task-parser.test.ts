@@ -52,9 +52,15 @@ describe('parseTaskList — against real 03-tasks.md', () => {
     expect(ids).toEqual(['DQ-4', 'DQ-5', 'DQ-8']);
   });
 
-  it('all tasks start in pending state', () => {
+  it('every parsed task has a known status', () => {
+    const validStatuses = new Set([
+      'pending',
+      'in_progress',
+      'done',
+      'blocked',
+    ]);
     for (const t of real.tasks) {
-      expect(t.status).toBe('pending');
+      expect(validStatuses.has(t.status)).toBe(true);
     }
   });
 
@@ -278,9 +284,10 @@ describe('nextActionableTask', () => {
     expect(next?.id).toBe('T-01');
   });
 
-  it('on the real task list, returns T-01 first', () => {
+  it('on the real task list, returns the first pending task in document order', () => {
     const next = nextActionableTask(real);
-    expect(next?.id).toBe('T-01');
+    const firstPending = real.tasks.find((t) => t.status === 'pending');
+    expect(next?.id).toBe(firstPending?.id);
   });
 });
 

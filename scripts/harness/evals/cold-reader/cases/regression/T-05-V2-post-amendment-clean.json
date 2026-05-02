@@ -1,0 +1,21 @@
+{
+  "case_id": "regression-T-05-V2-post-amendment-clean",
+  "artifact_kind": "code",
+  "task_id": "T-05",
+  "source": "Round-24 cold-reader hand-test on the SAME T-05 i18n diff but AFTER the §D6 amendment landed (round-24 arbiter `amend_design`). Validates that the design amendment closes the cold-reader veto without changing any code.",
+  "input": {
+    "task_description": "T-05 — i18n key scaffolding (incidents namespace, excluding chips per amended §D6 deferral)",
+    "verify_line": "useTranslation('common') resolves all the new keys with no missing-key console warnings.",
+    "cited_spec_refs": ["NFR-5"],
+    "cited_design_refs": [
+      "§D6 (post-round-24 amendment with explicit Deferrals note)"
+    ],
+    "diff_summary": "Same diff as `pre-amendment-veto` case (commit 9b6a582). Only the cited design changed.",
+    "diff_path": "git show 9b6a582"
+  },
+  "expected": {
+    "verdict": "approve",
+    "findings": []
+  },
+  "notes": "Companion to `regression-T-05-V2-pre-amendment-veto`. The pair proves: (a) cold-reader correctly emits veto when cited design doesn't authorize task-body deferrals; (b) the same diff produces clean approve once the design is amended to authorize the deferrals. Round-24 arbiter loop closes the gap with a §D6 amendment (no code change). This is the methodology proof: when the cited spec/design is wrong, fix the spec/design, not the code."
+}

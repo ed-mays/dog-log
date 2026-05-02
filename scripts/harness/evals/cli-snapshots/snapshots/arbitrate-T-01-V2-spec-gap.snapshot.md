@@ -180,7 +180,7 @@ Amend T-01 in one of two ways. (a) Preferred: change the Verify line to 'pnpm ex
 
 ## Task entry (from `03-tasks.md`)
 
-**T-01** — TypeScript types  (slice 0: Foundation, status: pending)
+**T-01** — TypeScript types  (slice 0: Foundation, status: done)
 
 **What:**
 
@@ -377,6 +377,8 @@ async toggleChip(id, chipId) {
   - **MEDIUM D24 (i18n null shape):** dropped the `callVetMissing: null` key; replaced with a JSON comment documenting the deliberate absence.
   - **§D7 rules:** match path moved from `/users/{userId}/pets/{petId}/incidents/...` to `/users/{userId}/incidents/...` (top-level), matching the new layout. Convention citation updated to point at vets/petVets/vetKeys (which are also user-scoped non-pet subcollections) rather than feedings/medications/doseLogs.
   - **DQ-8 added:** Caregiver theme color tokens vs wireframe palette mismatches need designer confirmation. Not blocking tasks phase but blocking pixel-accurate visual QA.
+
+- **2026-05-02 round 24** — Amended §D6 to add an explicit Deferrals note covering (a) `incidents.chips.*` deferred to T-20 pending DQ-5, and (b) Spanish English-value stubs as a scoped v1 exception (real JSON cannot carry the JSONC `// TODO i18n-es` marker shown in the example). Resolves spec_gap from T-05 (cold-reader vetoed on the §D6/NFR-5 silent-resolution; both deferrals were in T-05's task body but not in cited design). Drift-arbiter agent's first `amend_design` verdict (round 24); applied verbatim. No other §D6 content changed.
 
 ### Task list (T0)
 

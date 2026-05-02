@@ -1,0 +1,27 @@
+{
+  "case_id": "regression-T-05-V2-i18n-keys",
+  "task_id": "T-05",
+  "source": "Round-24 V2 builder hand-test on T-05 (i18n key scaffolding). Second non-T-01 dispatch in foundation slice. Surfaced a real scope-judgment call: task says use TODO i18n-es marker, but JSON doesn't allow comments — subagent navigated by using English values as stubs.",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/regression/T-05-V2-i18n-keys.input.md"
+  },
+  "expected": {
+    "status": "success",
+    "files_touched_pattern": "src/locales/(en|es)/common\\.json",
+    "notes_pattern": "(?i)(TODO i18n-es|JSON.*comment|stub|chip|DQ-5)"
+  },
+  "actual_baseline": {
+    "status": "success",
+    "commit_sha": "9b6a58245c454d85ce4d394933a19e025047809a",
+    "files_touched": [
+      "src/locales/en/common.json",
+      "src/locales/es/common.json",
+      "src/locales/incidents.i18n.test.ts"
+    ],
+    "wall_clock_seconds": 266,
+    "tokens_consumed": 68312,
+    "tool_uses": 32,
+    "notes": "Subagent added incidents namespace inside common.json per §D6. Excluded chips.* per task scope (T-20 owns those, gated by DQ-5). Spanish stubs used English values because JSON disallows the design's `// TODO i18n-es` comment marker — a legitimate spec_gap that the subagent navigated rather than escalating. Documented the trade-off in commit body. Also added a new test file (incidents.i18n.test.ts, 57 tests) asserting every key resolves in both locales — the subagent invented this verify mechanism rather than relying on console-warning-watching, which is a stronger guarantee."
+  },
+  "notes": "Real PR-B fixture material — trigger #2 (cited design conflicts with project convention) was a defensible escalation here (the design's `// TODO i18n-es` marker is incompatible with strict-JSON files), but the subagent navigated. Whether this should have been a SPEC_GAP is a methodology call: the verify line was satisfiable without escalation, but the design's stated convention was technically impossible to follow. Captured here for future builder-prompt iteration consideration. Also: subagent invented its own stronger verify mechanism (test file) — more than the verify line literally required, but in service of the verify line's intent. Both behaviors are worth examining when iterating the builder prompt's discipline rules."
+}

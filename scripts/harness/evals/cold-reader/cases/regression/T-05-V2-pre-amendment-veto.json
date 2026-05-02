@@ -1,0 +1,34 @@
+{
+  "case_id": "regression-T-05-V2-pre-amendment-veto",
+  "artifact_kind": "code",
+  "task_id": "T-05",
+  "source": "Round-24 cold-reader hand-test on the T-05 i18n diff BEFORE the §D6 amendment. The cold-reader correctly emitted veto with two HIGH findings — task-body caveats (chip deferral, Spanish-stub convention) were invisible to it because they lived in task notes rather than cited design. This is the canonical case for the 'silent producer resolution' failure mode the cold-reader is designed to catch.",
+  "input": {
+    "task_description": "T-05 — i18n key scaffolding (incidents namespace, excluding chips per task body)",
+    "verify_line": "useTranslation('common') resolves all the new keys with no missing-key console warnings.",
+    "cited_spec_refs": ["NFR-5"],
+    "cited_design_refs": ["§D6"],
+    "diff_summary": "Adds incidents namespace to en/es common.json. Excludes incidents.chips.* (deferred to T-20). Spanish entries use English values as stubs (JSON disallows comments per task body). Adds incidents.i18n.test.ts asserting all keys resolve.",
+    "diff_path": "git show 9b6a582"
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "HIGH",
+        "scope_check": 4,
+        "cited_section": "§D6",
+        "evidence_pattern": "(?i)(chips|chip subtree|chips\\.\\*|D6.*chips)",
+        "description_pattern": "(?i)(chips.*omitted|chips subtree|chips deferred|incidents\\.chips|design.*chips)"
+      },
+      {
+        "severity": "HIGH",
+        "scope_check": 3,
+        "cited_section": "NFR-5",
+        "evidence_pattern": "(?i)(es/common|es common|spanish|es namespace|english.*stub|english.*spanish)",
+        "description_pattern": "(?i)(spanish.*english|english.*spanish|silent.*resolution|stub|translation)"
+      }
+    ]
+  },
+  "notes": "Empirical proof the cold-reader catches the 'silent producer resolution' pattern when task-body caveats aren't reflected in cited spec/design. Companion to `regression-T-05-V2-post-amendment-clean-diff` which captures the same diff post-§D6-amendment producing clean approve. Together: the pair demonstrates the full escalation→resolution loop through the cold-reader/arbiter pipeline. Methodology finding: the underlying root cause (task-body caveats invisible to cold-reader) is logged as PR-B/methodology material; either builder needs to require cited-artifact authorization for deferrals, or cold-reader input needs visibility into task notes."
+}
