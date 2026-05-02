@@ -62,7 +62,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/repositories/IncidentRepository.ts` extending `BaseRepository<Incident>` against path `users/${userId}/incidents`. Methods: `create(input)`, `get(id)`, `update(id, partial)`, `findActiveForUser()` (returns null if none). Follow `PetMedicationRepository` pattern.
 - **Verify:** Unit tests using `vi.mock('firebase/firestore')` per the established repo-test pattern (see `PetMedicationRepository.test.ts`, `DoseLogRepository.test.ts`, etc.): create → get round-trip; update changes only specified fields; `findActiveForUser` returns the one incident with `endedAt == null && deletedAt == null`. Firestore security boundary is covered by `src/tests/firestore.rules.test.ts` (extended in T-04), not by repo unit tests. Emulator-backed repo testing is a project-wide refactor decision, out of scope for this task.
 
-### `[ ]` T-07 — incidentService (basic)
+### `[x]` T-07 — incidentService (basic)
 
 - **Cite:** spec BR-2 (timer at moment of gesture), BR-13 (STOP), BR-26 (singleton); design §D2
 - **What:** Create `src/services/incidentService.ts` with `createIncident({ petId, startedAt })`, `stopIncident(id)`, `findActiveIncident()`. Composes `IncidentRepository`. Generates client-side UUID synchronously; persists in background.
