@@ -74,7 +74,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/store/useIncidentStore.ts` with `activeIncident` state, `startIncident({ petId })` action (synchronous state update + async persist), `stopIncident()` action. Hydration action `hydrateActiveIncident()` for auth boot (T-29).
 - **Verify:** Store tests: `startIncident` synchronously sets state; `stopIncident` clears active and sets endedAt on the prior active.
 
-### `[ ]` T-09 — useIncidentTimer hook
+### `[x]` T-09 — useIncidentTimer hook
 
 - **Cite:** spec BR-3 (live elapsed); design §D8 timer cadence
 - **What:** Create `src/features/incidents/hooks/useIncidentTimer.ts`. Reads `startedAt` from a passed-in incident; uses `requestAnimationFrame` to update a state hook every ~250ms; returns formatted elapsed (HH:MM:SS).
