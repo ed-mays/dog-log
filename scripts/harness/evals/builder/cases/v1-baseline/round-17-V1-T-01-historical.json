@@ -1,0 +1,27 @@
+{
+  "case_id": "v1-baseline-round-17-V1-T-01-historical",
+  "task_id": "T-01",
+  "source": "Round-17 e2e hand-test on T-01 with V1 builder prompt (pre-PR-#158, before the 6th drift-trigger landed). Captured here as a frozen historical record — the V1 prompt no longer exists in the active codebase, so this baseline cannot be re-run. It documents what V1 actually produced so future prompt iterations have a concrete anti-baseline to compare against.",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/_shared/T-01-pre-amendment.input.md",
+    "builder_prompt_version": "V1 (pre-PR-#158; commit prior to feat/harness-builder-drift-rule)",
+    "git_ref_for_v1_prompt": "before commit 98c6cd1"
+  },
+  "actual_output": {
+    "status": "success",
+    "commit_sha": "977ce4e (round-17 throwaway branch experiment/harness-e2e-T-01; never merged)",
+    "files_touched": ["src/features/incidents/types.ts"],
+    "verify_run": {
+      "typecheck": "pass",
+      "lint": "pass",
+      "test": "pass"
+    },
+    "wall_clock_seconds": 93,
+    "tokens_consumed": 65000,
+    "tool_uses": 9,
+    "notes_field_text": "T-01 cites no ACs and the verify line forbids importing the produced file. Writing a test would violate the verify gate. Picked verify-line over TDD rule and explained reasoning here. Created src/features/incidents/types.ts matching design §D3 verbatim."
+  },
+  "interpretation": "This output was the BUG. V1 had no escalation path for the rule conflict, so the agent navigated by picking one side and proceeding. The conflict was real but the prompt provided no mechanism to surface it; agent reasoning lived in `notes` instead of triggering an arbiter resolution. PR #158 added the 6th drift-trigger to fix this; round 18 validated the fix; round 19 built the arbiter; round 20 applied the amendment; round 21 re-ran V2 cleanly.",
+  "comparison": "Compare with `regression/round-18-V2-T-01-spec-gap.json` — same input, V2 prompt, expected outcome flips from `success` to `spec_gap`. The pair is the per-case proof that V2's behavior change is intentional and correct.",
+  "notes": "V1-baseline cases live here, separate from regression/adversarial, because they are NOT executable against the current codebase — V1 prompts no longer exist. They document historical truth and exist for: (1) prompt-iteration auditing — when V3+ ships, compare claimed improvements against this concrete baseline; (2) methodology archaeology — explain WHY the V2 change was needed without re-deriving from the session log; (3) cross-reference — the integration trajectory case `trajectory-T-01-loop-closure` cites this as step 1's evidence."
+}
