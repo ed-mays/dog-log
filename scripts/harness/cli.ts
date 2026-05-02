@@ -39,6 +39,9 @@ import {
   type SpecGapPayload,
 } from './lib/drift-arbiter-input.ts';
 import { parseTaskList } from './lib/task-parser.ts';
+import { dispatchBuilder } from './lib/dispatch/builder-dispatch.ts';
+import { dispatchColdReader } from './lib/dispatch/cold-reader-dispatch.ts';
+import { dispatchArbiter } from './lib/dispatch/arbiter-dispatch.ts';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -66,14 +69,22 @@ function usage(): string {
     '  arbitrate <spec-gap-file>  Render the drift-arbiter system prompt + per-',
     '                             arbitration input. <spec-gap-file> is a JSON',
     '                             file matching the SpecGapPayload shape.',
+    '  build <task-id>            Dispatch a builder subagent on the task. Uses',
+    '                             claude -p; returns the structured exit + cost.',
+    '  review <task-id>           Dispatch a cold-reader subagent on the task',
+    '                             diff. Use --diff for ref-range (default',
+    '                             HEAD~1..HEAD).',
+    '  arbitrate-run <spec-gap-file>',
+    '                             Dispatch a drift-arbiter subagent on the gap.',
     '',
     'Options:',
     `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
     '  --json                     Emit JSON instead of human-readable text.',
     '  --no-system-prompt         Render only the per-task input (omit prompt).',
-    '  --diff <ref-range>         For cold-read: git ref-range to diff (e.g.',
-    '                             `main..HEAD` or `<sha>~1..<sha>`). Defaults to',
-    '                             the current uncommitted diff (`git diff HEAD`).',
+    '  --diff <ref-range>         For cold-read / review: git ref-range to diff',
+    '                             (e.g. `main..HEAD`). Defaults to the current',
+    '                             uncommitted diff for cold-read and HEAD~1..HEAD',
+    '                             for review.',
     '  -h, --help                 Show this help.',
   ].join('\n');
 }
@@ -492,9 +503,191 @@ function main(): void {
       process.exit(input.missing_citations.length === 0 ? 0 : 2);
       break;
     }
+    case 'build': {
+      const taskId = positionals[1];
+      if (!taskId) {
+        fail('build requires a task id (e.g. T-11)\n\n' + usage());
+      }
+      void runBuild(taskId, filePath, fileArg, values.json).catch((err) => {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`build dispatch failed: ${reason}`);
+      });
+      break;
+    }
+    case 'review': {
+      const taskId = positionals[1];
+      if (!taskId) {
+        fail('review requires a task id\n\n' + usage());
+      }
+      void runReview(taskId, filePath, fileArg, values.diff, values.json).catch(
+        (err) => {
+          const reason = err instanceof Error ? err.message : String(err);
+          fail(`review dispatch failed: ${reason}`);
+        }
+      );
+      break;
+    }
+    case 'arbitrate-run': {
+      const gapFile = positionals[1];
+      if (!gapFile) {
+        fail('arbitrate-run requires a spec_gap JSON file path\n\n' + usage());
+      }
+      void runArbitrate(gapFile, filePath, fileArg, values.json).catch(
+        (err) => {
+          const reason = err instanceof Error ? err.message : String(err);
+          fail(`arbitrate-run dispatch failed: ${reason}`);
+        }
+      );
+      break;
+    }
     default:
       fail(`unknown command '${command}'\n\n${usage()}`);
   }
+}
+
+async function runBuild(
+  taskId: string,
+  filePath: string,
+  fileArg: string,
+  json: boolean
+): Promise<void> {
+  process.stderr.write(
+    `harness: dispatching builder subagent for ${taskId} (this may take several minutes)...\n`
+  );
+  const { exit, raw } = await dispatchBuilder({
+    taskId,
+    taskListPath: filePath,
+  });
+  if (json) {
+    process.stdout.write(
+      `${JSON.stringify(
+        {
+          file: fileArg,
+          task_id: taskId,
+          exit,
+          cost_usd: raw.costUsd,
+          duration_ms: raw.durationMs,
+          num_turns: raw.numTurns,
+          session_id: raw.sessionId,
+        },
+        null,
+        2
+      )}\n`
+    );
+  } else {
+    process.stdout.write(`builder exit: ${exit.status}\n`);
+    process.stdout.write(`  cost: $${raw.costUsd.toFixed(4)}\n`);
+    process.stdout.write(
+      `  duration: ${(raw.durationMs / 1000).toFixed(1)}s\n`
+    );
+    process.stdout.write(`  turns: ${raw.numTurns}\n`);
+    process.stdout.write(`  session: ${raw.sessionId}\n`);
+    if (exit.status === 'success' && exit.commit_sha) {
+      process.stdout.write(`  commit: ${exit.commit_sha}\n`);
+    }
+    if (exit.status === 'spec_gap') {
+      process.stdout.write(
+        `  cited: ${exit.cited_section}\n  gap: ${exit.gap_description}\n`
+      );
+    }
+    if (exit.status === 'verify_fail') {
+      process.stdout.write(
+        `  verify_command: ${exit.verify_command}\n  attempts: ${exit.attempts}\n`
+      );
+    }
+  }
+  process.exit(exit.status === 'success' ? 0 : 2);
+}
+
+async function runReview(
+  taskId: string,
+  filePath: string,
+  fileArg: string,
+  diffRange: string | undefined,
+  json: boolean
+): Promise<void> {
+  process.stderr.write(
+    `harness: dispatching cold-reader subagent for ${taskId}...\n`
+  );
+  const { exit, raw } = await dispatchColdReader({
+    taskId,
+    diffRange,
+    taskListPath: filePath,
+  });
+  if (json) {
+    process.stdout.write(
+      `${JSON.stringify(
+        {
+          file: fileArg,
+          task_id: taskId,
+          exit,
+          cost_usd: raw.costUsd,
+          duration_ms: raw.durationMs,
+        },
+        null,
+        2
+      )}\n`
+    );
+  } else {
+    process.stdout.write(`cold-reader verdict: ${exit.verdict}\n`);
+    process.stdout.write(`  cost: $${raw.costUsd.toFixed(4)}\n`);
+    process.stdout.write(`  findings: ${exit.findings.length}\n`);
+    for (const finding of exit.findings) {
+      process.stdout.write(
+        `  - ${finding.severity} #${finding.scope_check} (${finding.cited_section}): ${finding.description.slice(0, 100)}\n`
+      );
+    }
+    if (exit.summary) {
+      process.stdout.write(`  summary: ${exit.summary}\n`);
+    }
+  }
+  process.exit(exit.verdict === 'approve' ? 0 : 2);
+}
+
+async function runArbitrate(
+  gapFile: string,
+  filePath: string,
+  fileArg: string,
+  json: boolean
+): Promise<void> {
+  const gapPath = resolve(process.cwd(), gapFile);
+  const raw = readFileSync(gapPath, 'utf8');
+  const specGap = JSON.parse(raw) as SpecGapPayload;
+  process.stderr.write(
+    `harness: dispatching arbiter subagent for ${specGap.task_id}...\n`
+  );
+  const { exit, raw: dispatchRaw } = await dispatchArbiter({
+    specGap,
+    taskListPath: filePath,
+  });
+  if (json) {
+    process.stdout.write(
+      `${JSON.stringify(
+        {
+          file: fileArg,
+          spec_gap: specGap,
+          exit,
+          cost_usd: dispatchRaw.costUsd,
+          duration_ms: dispatchRaw.durationMs,
+        },
+        null,
+        2
+      )}\n`
+    );
+  } else {
+    process.stdout.write(`arbiter verdict: ${exit.verdict}\n`);
+    process.stdout.write(`  cost: $${dispatchRaw.costUsd.toFixed(4)}\n`);
+    if (exit.amended_section) {
+      process.stdout.write(`  amended: ${exit.amended_section}\n`);
+    }
+    if (exit.amendment_text) {
+      process.stdout.write(`  text: ${exit.amendment_text.slice(0, 200)}\n`);
+    }
+    if (exit.pushback_message) {
+      process.stdout.write(`  pushback: ${exit.pushback_message}\n`);
+    }
+  }
+  process.exit(0);
 }
 
 main();
