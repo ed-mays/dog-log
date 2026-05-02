@@ -1,0 +1,29 @@
+{
+  "case_id": "regression-T-02-V2-foundation-flag",
+  "task_id": "T-02",
+  "source": "Round-24 V2 builder hand-test on T-02 (feature flag). First multi-task organic harness run; second non-T-01 dispatch. Validates that the V2 builder picks up data-driven precedent patterns (single union + single defaults map) rather than creating a new file per the plan's incorrect assumption.",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/regression/T-02-V2-foundation-flag.input.md"
+  },
+  "expected": {
+    "status": "success",
+    "files_touched_pattern": "src/featureFlags/(config|types)\\.ts",
+    "notes_pattern": "(?i)(vetsEnabled|precedent|union|defaultFeatureFlags|remoteConfig)"
+  },
+  "actual_baseline": {
+    "status": "success",
+    "commit_sha": "02880a8755c7cfd45e8a44c8ee052a0e7b8f767f",
+    "files_touched": [
+      "src/featureFlags/types.ts",
+      "src/featureFlags/config.ts",
+      "src/featureFlags/hooks/useFeatureFlag.test.tsx",
+      "src/featureFlags/components/FeatureFlagsContext.test.tsx",
+      "src/featureFlags/components/FeatureFlagsDevTool.test.tsx"
+    ],
+    "wall_clock_seconds": 191,
+    "tokens_consumed": 64894,
+    "tool_uses": 25,
+    "notes": "Subagent grep'd for `vetsEnabled` and discovered the data-driven pattern: single FeatureFlag union member + single defaults map entry; remoteConfigService derives keys from Object.keys(defaultFeatureFlags) so no third edit is needed there. Mirror was minimal (2 functional lines). 3 test fixture files needed `incidentsEnabled: false` added to keep tsc -b green after widening the union — flagged in notes as mechanical type-driven edits, not behavior changes. The subagent correctly judged this as in-scope rather than escalating as a SPEC_GAP — a reasonable reading: §D2 file map doesn't list test files, but type-soundness of test fixtures is a direct consequence of the union edit."
+  },
+  "notes": "Validates: (a) V2 builder picks up implicit precedent patterns from grep, not just the literal §D2 file list; (b) builder makes scope-judgment calls about type-driven mechanical edits without escalating; (c) the harness pattern works on a non-T-01 task. The plan's 'Files expected to change' incorrectly listed `src/featureFlags/incidentsFlag.ts` as a new file — the subagent correctly disregarded the plan and mirrored the actual precedent. Empirical confirmation that subagent reasoning trumps plan-author guesses about file structure."
+}

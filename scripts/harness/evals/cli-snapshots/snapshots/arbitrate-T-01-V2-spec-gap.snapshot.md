@@ -180,7 +180,7 @@ Amend T-01 in one of two ways. (a) Preferred: change the Verify line to 'pnpm ex
 
 ## Task entry (from `03-tasks.md`)
 
-**T-01** — TypeScript types (slice 0: Foundation, status: pending)
+**T-01** — TypeScript types  (slice 0: Foundation, status: pending)
 
 **What:**
 
@@ -383,3 +383,4 @@ async toggleChip(id, chipId) {
 - **2026-05-01** — Initial draft. 47 tasks across 5 slices + foundation. Tasks reference spec/design at the time of authoring; if spec/design amend, T- entries here may need re-citation.
 
 - **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.
+

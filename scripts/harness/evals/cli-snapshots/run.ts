@@ -44,7 +44,10 @@ const SNAPSHOTS: Snapshot[] = [
   },
   {
     id: 'cold-read-T-01-no-diff',
-    cli_args: ['cold-read', 'T-01'],
+    // Use HEAD..HEAD to force an empty diff regardless of working-tree state.
+    // (The CLI defaults to `git diff HEAD` which is sensitive to uncommitted
+    // changes — fine for real cold-reads, broken for snapshot stability.)
+    cli_args: ['cold-read', 'T-01', '--diff', 'HEAD..HEAD'],
     snapshot_file: resolve(SNAPSHOT_DIR, 'cold-read-T-01-no-diff.snapshot.md'),
   },
   {

@@ -26,7 +26,7 @@ Groundwork that has zero user-visible effect but unblocks all downstream slices.
 - **Verify:** `pnpm exec tsc -b` passes with the new file imported nowhere.
 - **Notes:** TDD-first is waived for this task. §D3 specifies type declarations, not behavior, and the verify gate is intentionally structural (file imported nowhere) to keep slice 0 dependency-free. These types will be exercised by the first consumer's tests in a downstream task; do not write a self-contained test that imports this file.
 
-### `[ ]` T-02 — Feature flag
+### `[x]` T-02 — Feature flag
 
 - **Cite:** spec §6 NFR-5 (flag-gated rollout follows project pattern); design §D2 (`incidentsEnabled` flag)
 - **What:** Add `incidentsEnabled` flag to `src/featureFlags/` + Firebase Remote Config defaults (off in prod, on in dev/staging initially).

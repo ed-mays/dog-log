@@ -1,0 +1,19 @@
+{
+  "case_id": "regression-T-02-V2-clean-diff",
+  "artifact_kind": "code",
+  "task_id": "T-02",
+  "source": "Round-24 cold-reader hand-test on the T-02 feature flag diff (commit 02880a8). First organic cold-reader run on real builder output (prior 7 cases were 4 prose from PR #152 + 3 synthetic code). Validates the cold-reader's behavior on a clean diff that mirrors a known precedent.",
+  "input": {
+    "task_description": "T-02 — Feature flag (incidentsEnabled, mirrors vetsEnabled)",
+    "verify_line": "useFeatureFlag('incidentsEnabled') returns false by default; flipping the dev flag flips the value. Pattern matches existing vetsEnabled.",
+    "cited_spec_refs": ["NFR-5"],
+    "cited_design_refs": ["§D2"],
+    "diff_summary": "Adds incidentsEnabled to FeatureFlag union (types.ts) + defaultFeatureFlags map (config.ts). Adds 2 unit tests in useFeatureFlag.test.tsx. Updates 2 existing test fixtures (FeatureFlagsContext.test.tsx, FeatureFlagsDevTool.test.tsx) to include the new key for type completeness.",
+    "diff_path": "git show 02880a8"
+  },
+  "expected": {
+    "verdict": "approve",
+    "findings": []
+  },
+  "notes": "First clean-diff regression case from a real builder run. Cold-reader correctly recognized: (1) cited NFR-5 / §D2 are forward-looking for the incident UI, not requirements THIS task implements; (2) no silent design choices (env var name follows convention); (3) no §D2 file-map drift; (4) no cross-feature coupling. Cold-reader's notes flagged that AppRoutes.tsx is not touched (per §D2 routes should be gated behind incidentsEnabled) — but correctly noted no routes are added in this task either, so there is nothing to gate yet. This 'flag for awareness, do not emit as finding' behavior is exactly what the prompt's negative-scope rules call for. Cost: 21s wall clock, 49k tokens, 2 tool uses (much cheaper than typical builder runs because cold-reader does not execute code)."
+}
