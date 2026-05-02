@@ -80,7 +80,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/features/incidents/hooks/useIncidentTimer.ts`. Reads `startedAt` from a passed-in incident; uses `requestAnimationFrame` to update a state hook every ~250ms; returns formatted elapsed (HH:MM:SS).
 - **Verify:** Hook test: given `startedAt = Date.now() - 65_000`, returned elapsed is `00:01:05`. With fake timers advancing 250ms, the hook re-renders.
 
-### `[ ]` T-10 — IncidentTimer component
+### `[x]` T-10 — IncidentTimer component
 
 - **Cite:** spec BR-3, NFR-6 (a11y polite live region); design §D9
 - **What:** Create `src/features/incidents/components/IncidentTimer.tsx`. Renders the elapsed value with monospace styling (Caregiver theme tokens). Wraps the elapsed text (not milliseconds) in `aria-live="polite"`.
