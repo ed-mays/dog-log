@@ -133,7 +133,7 @@
     },
     {
       "id": "T-04",
-      "status": "pending",
+      "status": "done",
       "slice": 0,
       "spec_citations": [
         "NFR:NFR-8"

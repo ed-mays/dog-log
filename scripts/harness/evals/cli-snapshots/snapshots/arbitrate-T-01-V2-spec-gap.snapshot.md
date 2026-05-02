@@ -386,3 +386,5 @@ async toggleChip(id, chipId) {
 
 - **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.
 
+- **2026-05-02** — T-04: clarified verify line to specify `pnpm run test:rules` as the gate and explicitly exclude `pnpm run deploy:dev` (a post-merge human step per plan §11 round-24); resolves spec_gap from T-04 (verify-line silence on deploy-vs-emulator boundary). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim.
+

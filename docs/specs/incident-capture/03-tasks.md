@@ -38,11 +38,11 @@ Groundwork that has zero user-visible effect but unblocks all downstream slices.
 - **What:** Add composite indexes to `firestore.indexes.json`: `(petId asc, deletedAt asc, startedAt desc)` for history; `(endedAt asc, deletedAt asc)` for active-lookup.
 - **Verify:** `firebase deploy --only firestore:indexes` succeeds against the dev project; indexes show as building/built in Firestore console.
 
-### `[ ]` T-04 — Firestore rules
+### `[x]` T-04 — Firestore rules
 
 - **Cite:** spec NFR-8; design §D7
 - **What:** Add `match /incidents/{incidentId} { allow read, write: if isOwner(userId); }` inside the `match /users/{userId}` block in `firestore.rules`. Match the project convention (one-line ownership rule).
-- **Verify:** Rules-tests cover (a) owner can read/write own incident, (b) other user cannot read/write someone else's. Existing rules-test setup is the pattern.
+- **Verify:** `pnpm run test:rules` passes new assertions covering (a) owner can read/write own incident, (b) other user cannot read/write someone else's. Existing rules-test setup is the pattern. Deploying the rules to the dev project is a separate post-merge human step (`pnpm run deploy:dev`), not part of this task's verify gate.
 
 ### `[x]` T-05 — i18n key scaffolding
 
@@ -332,3 +332,4 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 
 - **2026-05-01** — Initial draft. 47 tasks across 5 slices + foundation. Tasks reference spec/design at the time of authoring; if spec/design amend, T- entries here may need re-citation.
 - **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.
+- **2026-05-02** — T-04: clarified verify line to specify `pnpm run test:rules` as the gate and explicitly exclude `pnpm run deploy:dev` (a post-merge human step per plan §11 round-24); resolves spec_gap from T-04 (verify-line silence on deploy-vs-emulator boundary). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim.

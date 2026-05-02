@@ -1,0 +1,32 @@
+{
+  "case_id": "regression-round-24-T-04-verify-line-amendment",
+  "task_id": "T-04",
+  "source": "Round-24 drift-arbiter pre-emptive run on T-04 verify-line spec_gap. Second `amend_task` for verify-line clarification (T-01 was first in round 19). Surfaced a methodology observation: a third such amendment would justify adding an explicit no-deploy rule to the builder prompt itself.",
+  "input": {
+    "spec_gap": {
+      "task_id": "T-04",
+      "cited_section": "T-04 verify line in 03-tasks.md",
+      "gap_description": "T-04's verify line says 'Rules-tests cover (a) owner can read/write own incident, (b) other user cannot read/write someone else's. Existing rules-test setup is the pattern.' This is emulator-based via `pnpm run test:rules` (which uses `firebase-tools emulators:exec` against `@firebase/rules-unit-testing`). However, the surrounding methodology (plan §11 round-24) requires that infra-deploy steps be post-merge human steps, not subagent-invoked, to keep blast radius bounded. T-04's verify line as written is technically emulator-only already (no `firebase deploy` mentioned), but the harness convention should be made explicit so a future builder iteration doesn't reach for `pnpm run deploy:dev` (which DOES include `firestore:rules`) under the assumption that 'verify' equals 'deploy'. The gap: the verify line is silent about the deploy-vs-emulator distinction, leaving room for builder over-reach.",
+      "suggested_amendment": "Amend T-04's verify line to be explicit about emulator-only verify and post-merge human deploy.",
+      "files_inspected": []
+    }
+  },
+  "expected": {
+    "verdict": "amend_task",
+    "amendment": {
+      "file": "03-tasks.md",
+      "anchor_pattern": "(?i)(T-04|Verify line)",
+      "before_pattern": "(?i)(Rules-tests cover|owner can|cross-user)",
+      "after_pattern": "(?i)(test:rules|emulator|deploy.*human|post-merge|deploy:dev.*not)",
+      "changelog_entry_pattern": "(?i)(T-04|verify line|test:rules|deploy.*human|round 24)"
+    }
+  },
+  "actual_baseline": {
+    "verdict": "amend_task",
+    "wall_clock_seconds": 33,
+    "tokens_consumed": 49761,
+    "tool_uses": 5,
+    "notes": "Arbiter accepted the suggested amendment shape, refined the wording, and kept the rest of T-04 unchanged (minimal blast radius). Methodology observation surfaced in arbiter's notes: 'If a third lands, the harness may benefit from a methodology-level note in the builder prompt that verify never includes infra-deploy commands, rather than continuing to clarify per-task.' Captured as PR-B fixture material."
+  },
+  "notes": "Second `amend_task` for verify-line clarification (T-01 round 19 was first). The methodology observation in actual_baseline.notes is a pending PR-B candidate: if a third such amendment lands (e.g. T-03 will likely produce one), the builder prompt should be amended to include an explicit no-deploy rule rather than continuing per-task clarifications."
+}

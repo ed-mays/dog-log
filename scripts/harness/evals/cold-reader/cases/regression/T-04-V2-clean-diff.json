@@ -1,0 +1,19 @@
+{
+  "case_id": "regression-T-04-V2-clean-diff",
+  "artifact_kind": "code",
+  "task_id": "T-04",
+  "source": "Round-24 cold-reader hand-test on the T-04 Firestore rules diff (commit 9033c67). Second clean-diff regression case from a real builder run (after T-02-V2-clean-diff). Validates cold-reader behavior on infra-touching code (rules) — first such case in the corpus.",
+  "input": {
+    "task_description": "T-04 — Firestore rules: add match /incidents/{incidentId} ownership rule",
+    "verify_line": "pnpm run test:rules passes new owner-can-read/write and cross-user-cannot assertions; deploy is post-merge human step.",
+    "cited_spec_refs": ["NFR-8"],
+    "cited_design_refs": ["§D7"],
+    "diff_summary": "Adds incidents match block to firestore.rules at the same nesting level as vets/petVets/vetKeys (user-scoped, not pet-scoped per §D7). Adds 2 rules-test cases (alice owns, alice cannot access bob).",
+    "diff_path": "git show 9033c67"
+  },
+  "expected": {
+    "verdict": "approve",
+    "findings": []
+  },
+  "notes": "Cold-reader correctly recognized: (a) the §D7 design explicitly defers document-level invariants (BR-13/16/28/29) and petId validity to the client, so absence of server-side field validation is in-scope by design and not a finding; (b) test paths use users/alice/incidents/incident1 matching the user-scoped (not pet-scoped) layout in §D7. Notable: this is the cold-reader's first encounter with a rules-test diff (precedent file: src/tests/firestore.rules.test.ts) and it correctly traversed the alice-vs-bob assertion pattern without drifting into 'I'd have used helper X' style commentary."
+}
