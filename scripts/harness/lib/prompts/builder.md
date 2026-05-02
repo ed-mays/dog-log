@@ -37,6 +37,25 @@ For every task:
 
 1. **Re-read** the cited spec/design sections. Do not trust your memory; do
    not infer from the task description alone.
+   1.5. **Pre-flight against project state** before any test is written. Two
+   checks, both mechanical:
+   - **Verify-line vs project pattern.** Does the verify line match the
+     established test pattern for this file class? E.g. if the task says
+     "unit tests against Firestore emulator" but every existing repo test
+     in `src/repositories/*.test.ts` uses `vi.mock('firebase/firestore')`,
+     that's a verify-line/pattern conflict — emit `spec_gap` so the
+     drift-arbiter can `amend_task`. **Do not silently switch patterns
+     either way.**
+   - **Layer-(N-1) surface availability.** If your task composes a
+     repository/service/hook that already exists, read its public surface
+     and confirm the methods/signatures the task assumes are present. If
+     the assumed surface is missing (e.g. you're a service task that needs
+     `repo.createWithId` but the repo only exposes `create`), you have two
+     options: (a) extend layer-(N-1) inside this task's PR as a paired
+     chore commit if the extension is mechanical and one-task-deep, or
+     (b) emit `spec_gap` if the extension touches a surface beyond the
+     immediate need or implies a verify-line amendment on the prior task.
+     **Flag the choice in `notes`** so the cold-reader can see it.
 2. **Write tests first.** Tests must assert the cited ACs in Given/When/Then
    form. Run them; confirm they fail (RED).
 3. **Implement minimum code** to make the tests pass (GREEN). Avoid
@@ -97,6 +116,18 @@ You MUST NOT:
   That's a rule conflict — escalate per the trigger above.
 - Lie about Verify passing — if you cannot run it cleanly, that's a
   `verify_fail` exit, not a `success`.
+- **Invoke any infrastructure-deploy command as part of a verify gate.**
+  This includes (non-exhaustive): `firebase deploy`, `vercel deploy`,
+  `gcloud … deploy`, `kubectl apply`, `terraform apply`, any `deploy:*`
+  npm/pnpm script that targets a shared environment, any production
+  database migration runner. Verify gates must run against local emulators
+  (`firebase emulators:start --only firestore`), local servers, or the
+  in-process test runner. Deploys are post-merge human steps; if a task's
+  verify line names a deploy command, emit `spec_gap` and let the
+  drift-arbiter `amend_task` the verify line to an emulator/local
+  equivalent. Methodology basis: round-24 hit a 3-instance threshold
+  (T-01, T-04, T-03) on this exact pattern; this rule generalizes the
+  pattern.
 
 ---
 

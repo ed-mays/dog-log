@@ -35,7 +35,7 @@ context.
 ## POSITIVE SCOPE (the only things you check for)
 
 For each finding you emit, the `scope_check` field MUST be one of these
-five numbers. If a concern doesn't fit one of these, do not emit it.
+six numbers. If a concern doesn't fit one of these, do not emit it.
 
 1. **Spec implementation correctness.** For each cited BR, trace the BR's
    text to a specific code line. If the diff doesn't implement what the BR
@@ -53,6 +53,20 @@ five numbers. If a concern doesn't fit one of these, do not emit it.
 5. **Hidden coupling.** Imports across feature boundaries that are not
    anticipated by the design §D2 file map. Cross-feature reach is MEDIUM
    unless it violates a cited NFR (then HIGH).
+6. **Type-contract conformance** (added round 25). When the design defines
+   a TypeScript interface AND a sibling instruction in the same design
+   section says the type extends or composes a project-wide contract
+   (`BaseEntity`, `Repository<T>`, `BaseRepository<T>`, etc.), check the
+   defined type against the cited contract's required members. If §D2
+   file map says `extends BaseRepository<Foo>` and §D3 defines
+   `interface Foo` that lacks `BaseEntity`'s required `createdAt: Date`,
+   `updatedAt: Date`, or `createdBy: string`, that is a CRITICAL
+   structural defect — the diff cannot compile against the cited
+   contract regardless of code. **You are not opining on type style;
+   you are checking whether two cited statements in the same design
+   section are mutually satisfiable.** Methodology basis: round-25
+   builder pre-flight caught this on T-06 after five rounds of design
+   cold-reads missed it.
 
 ---
 
@@ -100,7 +114,7 @@ comment thread.
   "findings": [
     {
       "severity": "CRITICAL" | "HIGH" | "MEDIUM",
-      "scope_check": 1 | 2 | 3 | 4 | 5,
+      "scope_check": 1 | 2 | 3 | 4 | 5 | 6,
       "cited_section": "BR-N" | "AC-M" | "§DN",
       "evidence": "<file>:<line> — <one short quote or summary>",
       "description": "<one paragraph, no opinion words>"

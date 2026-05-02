@@ -47,7 +47,7 @@ Each case is a JSON file:
     "findings": [
       {
         "severity": "CRITICAL" | "HIGH" | "MEDIUM",
-        "scope_check": 1 | 2 | 3 | 4 | 5,
+        "scope_check": 1 | 2 | 3 | 4 | 5 | 6,
         "cited_section": "BR-7" | ["BR-15", "§5"],
         "evidence_pattern": "<regex against finding.evidence>",
         "description_pattern": "<regex against finding.description>"
