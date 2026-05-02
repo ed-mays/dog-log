@@ -1,5 +1,7 @@
 import {
   collection,
+  doc,
+  setDoc,
   query,
   where,
   limit,
@@ -40,6 +42,35 @@ export class IncidentRepository extends BaseRepository<Incident> {
       journal: [],
       deletedAt: null,
     });
+  }
+
+  // Known-id write per design §D8 NFR-2: caller (incidentService / store)
+  // generates the UUID synchronously so the timer can start before the
+  // Firestore write resolves. Uses setDoc rather than BaseRepository.create
+  // (which uses addDoc and a server-assigned id).
+  async createIncidentWithId(
+    id: string,
+    input: IncidentCreateInput & { userId: string; createdBy: string }
+  ): Promise<Incident> {
+    try {
+      const now = new Date();
+      const fields = {
+        ...input,
+        endedAt: null,
+        type: null,
+        severity: null,
+        chips: [],
+        journal: [],
+        deletedAt: null,
+        createdAt: now,
+        updatedAt: now,
+      };
+      const docRef = doc(db, this.collectionPath, id);
+      await setDoc(docRef, this.entityToDocument(fields));
+      return { id, ...fields } as Incident;
+    } catch (error) {
+      throw this.handleError(error, `createIncidentWithId(${id})`);
+    }
   }
 
   async findActiveForUser(): Promise<Incident | null> {

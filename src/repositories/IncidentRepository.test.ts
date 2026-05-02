@@ -7,6 +7,7 @@ import {
   addDoc,
   updateDoc,
   doc,
+  setDoc,
   getDoc,
   getDocs,
   query,
@@ -25,6 +26,7 @@ vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
   addDoc: vi.fn(),
   updateDoc: vi.fn(),
+  setDoc: vi.fn(),
   deleteDoc: vi.fn(),
   doc: vi.fn(),
   getDoc: vi.fn(),
@@ -77,6 +79,39 @@ describe('IncidentRepository', () => {
         userId,
         createdBy: userId,
         startedAt,
+      });
+    });
+  });
+
+  describe('createIncidentWithId', () => {
+    it('writes via setDoc at the explicit id and returns a fully-formed Incident', async () => {
+      const startedAt = new Date('2026-05-02T10:00:00.000Z');
+      (doc as Mock).mockReturnValue({ id: 'client-uuid' });
+      (setDoc as Mock).mockResolvedValue(undefined);
+
+      const result = await repository.createIncidentWithId('client-uuid', {
+        petId: 'pet-1',
+        startedAt,
+        userId,
+        createdBy: userId,
+      });
+
+      expect(doc).toHaveBeenCalledWith(
+        db,
+        `users/${userId}/incidents`,
+        'client-uuid'
+      );
+      expect(setDoc).toHaveBeenCalled();
+      expect(result).toMatchObject({
+        id: 'client-uuid',
+        petId: 'pet-1',
+        userId,
+        createdBy: userId,
+        startedAt,
+        endedAt: null,
+        deletedAt: null,
+        chips: [],
+        journal: [],
       });
     });
   });
