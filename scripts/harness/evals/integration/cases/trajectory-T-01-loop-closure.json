@@ -1,0 +1,50 @@
+{
+  "case_id": "trajectory-T-01-loop-closure",
+  "task_id": "T-01",
+  "title": "Round 17→21 — close the TDD/verify-line escalation loop",
+  "description": "The harness's flagship demonstration: a real conflict (TDD rule vs structural verify line) was silently navigated by V1 builder, escalated correctly by V2 builder, resolved by drift-arbiter, applied to the task artifact, and re-built cleanly. Five steps across five PRs (#157→#161). This trajectory is the canonical proof that the harness's value proposition (escalation + amendment + re-run produces clean build instead of silent drift) actually obtains.",
+  "steps": [
+    {
+      "step": 1,
+      "round": 17,
+      "agent": "builder",
+      "case_ref": "scripts/harness/evals/builder/cases/adversarial/round-17-V1-T-01-silent-tdd-conflict.json",
+      "outcome": "success (silent — wrong)",
+      "notes": "V1 builder produced success and explained the rule conflict in `notes` instead of escalating. The bug. PR #157 merged the V1 prompt; round 17 surfaced this on a throwaway branch."
+    },
+    {
+      "step": 2,
+      "round": 18,
+      "agent": "builder",
+      "case_ref": "scripts/harness/evals/builder/cases/regression/round-18-V2-T-01-spec-gap.json",
+      "outcome": "spec_gap (correct escalation)",
+      "notes": "V2 builder (after PR #158 added 6th drift-trigger) emitted spec_gap on the SAME input. The fix validated. Bonus: caught IncidentCreateInput scope ambiguity in §D3."
+    },
+    {
+      "step": 3,
+      "round": 19,
+      "agent": "drift-arbiter",
+      "case_ref": "scripts/harness/evals/drift-arbiter/cases/regression/T-01-V2-spec-gap.json",
+      "outcome": "amend_task (correct verdict)",
+      "notes": "Arbiter MVP (PR #159) hand-tested against the round-18 spec_gap. Picked option (b) of the V2 builder's two suggestions: preserve verify line, add Note: waiving TDD. Stayed in scope (didn't touch §D3 or any BR)."
+    },
+    {
+      "step": 4,
+      "round": 20,
+      "agent": "human",
+      "case_ref": "PR #160 (commits d96327e + 6d23fd1)",
+      "outcome": "amendment applied to 03-tasks.md",
+      "notes": "Applied verbatim with one grammar correction (Note → Notes; logged as round-20 finding for future arbiter-prompt iteration). Plus a follow-up test fix for the legitimately-invalidated builder-input.test.ts assertion."
+    },
+    {
+      "step": 5,
+      "round": 21,
+      "agent": "builder",
+      "case_ref": "scripts/harness/evals/builder/cases/regression/T-01-V2-amended.json",
+      "outcome": "success (correct, with reasoning)",
+      "notes": "V2 builder re-run on amended T-01. Recognized the Note as the arbiter resolution; did NOT re-escalate. Produced types.ts matching §D3 verbatim; tsc -b clean. Commit bdeeac4 in PR #161."
+    }
+  ],
+  "expected_full_loop": "Five steps demonstrate: a rule conflict the system designs allow (V1 path), the conflict surfaced and escalated (V2 path), the conflict resolved with minimal blast radius (arbiter), and the resolution applied + re-validated (round 21). Total cost: ~244k subagent tokens, 5 PRs, ~5 hours human attention. The pattern is reusable for any future agent-role rule conflict.",
+  "validation": "Run each referenced per-agent case via its respective eval runner: `pnpm tsx scripts/harness/evals/builder/run.ts`, `pnpm tsx scripts/harness/evals/drift-arbiter/run.ts`. Each must load cleanly. The integration runner (this suite) only validates that the trajectory's referenced files all exist and parse — it does NOT re-execute the trajectory. Real re-execution lands when controller dispatch ships; until then, the trajectory is a documentation + cross-reference artifact."
+}

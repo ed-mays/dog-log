@@ -1,0 +1,525 @@
+{
+  "slice_count": 6,
+  "slices": [
+    {
+      "index": 0,
+      "name": "Foundation",
+      "task_count": 5,
+      "task_ids": ["T-01", "T-02", "T-03", "T-04", "T-05"]
+    },
+    {
+      "index": 1,
+      "name": "Minimum viable activation (one-tap → timer → STOP → saved)",
+      "task_count": 11,
+      "task_ids": [
+        "T-06",
+        "T-07",
+        "T-08",
+        "T-09",
+        "T-10",
+        "T-11",
+        "T-12",
+        "T-13",
+        "T-14",
+        "T-15",
+        "T-16"
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Mid-event editing (severity, chips, journal, vet call)",
+      "task_count": 10,
+      "task_ids": [
+        "T-17",
+        "T-18",
+        "T-19",
+        "T-20",
+        "T-21",
+        "T-22",
+        "T-23",
+        "T-24",
+        "T-25",
+        "T-26"
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Multi-pet, history, resume",
+      "task_count": 10,
+      "task_ids": [
+        "T-27",
+        "T-28",
+        "T-29",
+        "T-30",
+        "T-31",
+        "T-32",
+        "T-33",
+        "T-34",
+        "T-35",
+        "T-36"
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Lifecycle (delete, time-edit constraints, error states)",
+      "task_count": 5,
+      "task_ids": ["T-37", "T-38", "T-39", "T-40", "T-41"]
+    },
+    {
+      "index": 5,
+      "name": "Verification & close",
+      "task_count": 6,
+      "task_ids": ["T-42", "T-43", "T-44", "T-45", "T-46", "T-47"]
+    }
+  ],
+  "task_count": 47,
+  "tasks": [
+    {
+      "id": "T-01",
+      "status": "pending",
+      "slice": 0,
+      "spec_citations": ["spec_section:§5"],
+      "design_citations": ["design_section:§D3"],
+      "dq_tags": [],
+      "has_notes": true
+    },
+    {
+      "id": "T-02",
+      "status": "pending",
+      "slice": 0,
+      "spec_citations": ["NFR:NFR-5", "spec_section:§6"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-03",
+      "status": "pending",
+      "slice": 0,
+      "spec_citations": [],
+      "design_citations": ["design_section:§D3"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-04",
+      "status": "pending",
+      "slice": 0,
+      "spec_citations": ["NFR:NFR-8"],
+      "design_citations": ["design_section:§D7"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-05",
+      "status": "pending",
+      "slice": 0,
+      "spec_citations": ["NFR:NFR-5"],
+      "design_citations": ["design_section:§D6"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-06",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["spec_section:§5"],
+      "design_citations": ["design_section:§D2", "design_section:§D3"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-07",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-13", "BR:BR-2", "BR:BR-26"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-08",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-2", "BR:BR-26"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-09",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-3"],
+      "design_citations": ["design_section:§D8"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-10",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-3", "NFR:NFR-6"],
+      "design_citations": ["design_section:§D9"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-11",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-12", "BR:BR-13"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-12",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-14", "BR:BR-25"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-13",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-1", "BR:BR-14"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-14",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-1", "BR:BR-27", "BR:BR-28"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-15",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["BR:BR-27"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-16",
+      "status": "pending",
+      "slice": 1,
+      "spec_citations": ["AC:AC-1", "AC:AC-18", "AC:AC-20", "AC:AC-6"],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-17",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": [
+        "BR:BR-19",
+        "BR:BR-22",
+        "BR:BR-6",
+        "BR:BR-7",
+        "BR:BR-8",
+        "BR:BR-9"
+      ],
+      "design_citations": ["design_section:§D3"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-18",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["BR:BR-30"],
+      "design_citations": ["design_section:§D3"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-19",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["OQ:OQ-3"],
+      "design_citations": ["design_section:§D5"],
+      "dq_tags": ["DQ-5"],
+      "has_notes": true
+    },
+    {
+      "id": "T-20",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["NFR:NFR-5"],
+      "design_citations": ["design_section:§D6"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-21",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["BR:BR-6", "NFR:NFR-3", "NFR:NFR-6"],
+      "design_citations": ["design_section:§D9"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-22",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["BR:BR-30", "BR:BR-8", "BR:BR-9"],
+      "design_citations": ["DQ:DQ-4", "design_section:§D5"],
+      "dq_tags": ["DQ-4"],
+      "has_notes": true
+    },
+    {
+      "id": "T-23",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["BR:BR-19", "BR:BR-20", "BR:BR-32", "BR:BR-7"],
+      "design_citations": ["design_section:§D5"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-24",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["BR:BR-10", "BR:BR-11"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-25",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": ["BR:BR-14"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-26",
+      "status": "pending",
+      "slice": 2,
+      "spec_citations": [
+        "AC:AC-2",
+        "AC:AC-21",
+        "AC:AC-3",
+        "AC:AC-4",
+        "AC:AC-5",
+        "AC:AC-7"
+      ],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-27",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-1", "BR:BR-28", "NFR:NFR-3"],
+      "design_citations": ["DQ:DQ-7", "design_section:§D5"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-28",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-1", "BR:BR-26", "BR:BR-28"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-29",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-26"],
+      "design_citations": ["DQ:DQ-2", "design_section:§D5"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-30",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-26"],
+      "design_citations": ["DQ:DQ-2", "design_section:§D5"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-31",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-23", "BR:BR-24", "BR:BR-25"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-32",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-25"],
+      "design_citations": ["design_section:§D2"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-33",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-23"],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-34",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-21"],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-35",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": ["BR:BR-21"],
+      "design_citations": ["design_section:§D1"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-36",
+      "status": "pending",
+      "slice": 3,
+      "spec_citations": [
+        "AC:AC-10",
+        "AC:AC-11",
+        "AC:AC-15",
+        "AC:AC-19",
+        "AC:AC-20",
+        "AC:AC-21",
+        "AC:AC-8",
+        "AC:AC-9"
+      ],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-37",
+      "status": "pending",
+      "slice": 4,
+      "spec_citations": ["BR:BR-33"],
+      "design_citations": ["design_section:§D4"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-38",
+      "status": "pending",
+      "slice": 4,
+      "spec_citations": ["BR:BR-33", "NFR:NFR-7"],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-39",
+      "status": "pending",
+      "slice": 4,
+      "spec_citations": ["AC:AC-23", "BR:BR-16"],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-40",
+      "status": "pending",
+      "slice": 4,
+      "spec_citations": ["NFR:NFR-2"],
+      "design_citations": ["design_section:§D8"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-41",
+      "status": "pending",
+      "slice": 4,
+      "spec_citations": ["AC:AC-22", "AC:AC-23"],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-42",
+      "status": "pending",
+      "slice": 5,
+      "spec_citations": ["spec_section:§9"],
+      "design_citations": ["design_section:§D10"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-43",
+      "status": "pending",
+      "slice": 5,
+      "spec_citations": [],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-44",
+      "status": "pending",
+      "slice": 5,
+      "spec_citations": ["AC:AC-14", "spec_section:§9"],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-45",
+      "status": "pending",
+      "slice": 5,
+      "spec_citations": [],
+      "design_citations": ["design_section:§D10"],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-46",
+      "status": "pending",
+      "slice": 5,
+      "spec_citations": [],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    },
+    {
+      "id": "T-47",
+      "status": "pending",
+      "slice": 5,
+      "spec_citations": [],
+      "design_citations": [],
+      "dq_tags": [],
+      "has_notes": false
+    }
+  ],
+  "open_dqs": ["DQ-4", "DQ-5", "DQ-8"]
+}
