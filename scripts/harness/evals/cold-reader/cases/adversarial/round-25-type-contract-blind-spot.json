@@ -1,0 +1,27 @@
+{
+  "case_id": "adversarial-round-25-type-contract-blind-spot",
+  "artifact_kind": "code",
+  "task_id": "T-06",
+  "source": "Round-25 builder pre-flight on T-06 IncidentRepository discovered that the design's §D3 TypeScript interface used ISO strings and lacked a createdBy field, while §D2 file map instructed 'extends BaseRepository<Incident>'. BaseRepository requires `T extends BaseEntity` (Date fields + createdBy). Five rounds of design cold-reads (1, 3, 4, 5, 24) missed it because the cold-reader prompt had no positive-scope check for whether design-defined types satisfy project-wide contracts referenced by sibling instructions in the same design section. Added scope_check #6 (Type-contract conformance) to the cold-reader prompt in this PR; this case pins the regression.",
+  "input": {
+    "task_description": "T-06 — IncidentRepository (basic CRUD) — implement per §D2/§D3 verbatim, including the as-shipped (pre-amendment) ISO-string Incident interface and the §D2 'extends BaseRepository<Incident>' instruction.",
+    "verify_line": "Unit tests using vi.mock('firebase/firestore') per established repo-test pattern.",
+    "cited_spec_refs": ["§5"],
+    "cited_design_refs": ["§D2", "§D3"],
+    "diff_summary": "An IncidentRepository implementation that faithfully implements design §D3's TypeScript interface (ISO strings for createdAt/updatedAt, no createdBy field) AND §D2's 'extends BaseRepository<Incident>' instruction. The diff cannot type-check against BaseRepository<T extends BaseEntity> because Incident as defined in §D3 does not satisfy BaseEntity. The design itself is internally inconsistent; the diff is faithful but structurally broken.",
+    "diff_path": "fixtures/T-06-pre-amendment-faithful-impl.diff"
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "scope_check": 6,
+        "cited_section": ["§D3", "§D2"],
+        "evidence_pattern": "(?i)(BaseEntity|createdAt.*Date|createdBy|extends BaseRepository|Incident.*string)",
+        "description_pattern": "(?i)(does not satisfy|missing.*createdBy|missing.*createdAt|cannot.*compile|type contract|does not extend BaseEntity|ISO string.*Date)"
+      }
+    ]
+  },
+  "notes": "The adversarial seed: a clean-looking diff that faithfully implements the design and would superficially pass scope checks 1-5 (the BR/AC traceability looks intact, no silent design choices, the file map matches), yet is fundamentally broken because two cited statements in the same design section are mutually unsatisfiable. Without scope_check #6 the cold-reader has no rule to flag this. The fix is structural: cold-reader must check type-contract reachability between cited interfaces and cited contracts. Companion to the round-25 §D11 amend_design entry that fixed the underlying design defect."
+}

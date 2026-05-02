@@ -34,7 +34,7 @@ interface ColdReaderCase {
     verdict: 'approve' | 'veto';
     findings: Array<{
       severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-      scope_check: 1 | 2 | 3 | 4 | 5;
+      scope_check: 1 | 2 | 3 | 4 | 5 | 6;
       cited_section: string | string[];
       evidence_pattern: string;
       description_pattern: string;
