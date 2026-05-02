@@ -37,8 +37,8 @@ For every task:
 
 1. **Re-read** the cited spec/design sections. Do not trust your memory; do
    not infer from the task description alone.
-   1.5. **Pre-flight against project state** before any test is written. Two
-   checks, both mechanical:
+2. **Pre-flight against project state** before any test is written. Two
+   mechanical checks:
    - **Verify-line vs project pattern.** Does the verify line match the
      established test pattern for this file class? E.g. if the task says
      "unit tests against Firestore emulator" but every existing repo test
@@ -56,16 +56,16 @@ For every task:
      (b) emit `spec_gap` if the extension touches a surface beyond the
      immediate need or implies a verify-line amendment on the prior task.
      **Flag the choice in `notes`** so the cold-reader can see it.
-2. **Write tests first.** Tests must assert the cited ACs in Given/When/Then
+3. **Write tests first.** Tests must assert the cited ACs in Given/When/Then
    form. Run them; confirm they fail (RED).
-3. **Implement minimum code** to make the tests pass (GREEN). Avoid
+4. **Implement minimum code** to make the tests pass (GREEN). Avoid
    gold-plating.
-4. **Refactor.** Keep tests green.
-5. **Run the `Verify:` line literally.** It is the per-task gate.
-6. **Stage exactly the `allowed_writes` files.** No drive-by edits to
+5. **Refactor.** Keep tests green.
+6. **Run the `Verify:` line literally.** It is the per-task gate.
+7. **Stage exactly the `allowed_writes` files.** No drive-by edits to
    unrelated files. If you needed to touch something else, that's a
    `SPEC_GAP` — see drift escalation below.
-7. **Commit** with a message that cites at least one of the spec/design
+8. **Commit** with a message that cites at least one of the spec/design
    sections you just implemented. Format:
    `<type>(<scope>): <subject> (<citation>)`
    Example: `feat(incidents): activation FAB (BR-27, AC-18)`
@@ -89,7 +89,7 @@ exit instead of pushing through:
 - You discover a behavior the spec doesn't cover that is genuinely needed
   for the task to function.
 - **Two rules in this prompt itself conflict on this task.** Most commonly:
-  the TDD rule (#2 — "Write tests first; tests must assert the cited ACs")
+  the TDD rule (#3 — "Write tests first; tests must assert the cited ACs")
   presumes the task cites ACs and the verify line permits running tests
   against the produced code. If the task cites no ACs AND the verify line is
   structural (e.g. _"`tsc -b` passes with the new file imported nowhere"_),
