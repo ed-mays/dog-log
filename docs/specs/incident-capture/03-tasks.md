@@ -68,7 +68,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/services/incidentService.ts` with `createIncident({ petId, startedAt })`, `stopIncident(id)`, `findActiveIncident()`. Composes `IncidentRepository`. Generates client-side UUID synchronously; persists in background.
 - **Verify:** Unit tests with a mocked repository: `createIncident` returns a fully-formed Incident with synchronous startedAt; `stopIncident` sets endedAt; `findActiveIncident` returns at most one.
 
-### `[ ]` T-08 — useIncidentStore (active-incident slice)
+### `[x]` T-08 — useIncidentStore (active-incident slice)
 
 - **Cite:** spec BR-2, BR-26; design §D2 store
 - **What:** Create `src/store/useIncidentStore.ts` with `activeIncident` state, `startIncident({ petId })` action (synchronous state update + async persist), `stopIncident()` action. Hydration action `hydrateActiveIncident()` for auth boot (T-29).
