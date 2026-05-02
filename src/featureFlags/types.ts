@@ -9,5 +9,6 @@ export type FeatureFlag =
   | 'petPhotosEnabled'
   | 'feedingsEnabled'
   | 'medicationsEnabled'
-  | 'themesEnabled';
+  | 'themesEnabled'
+  | 'incidentsEnabled';
 export type FeatureFlags = Record<FeatureFlag, boolean>;

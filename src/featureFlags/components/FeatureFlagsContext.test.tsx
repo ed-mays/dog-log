@@ -21,6 +21,7 @@ const allFalseFlags: FeatureFlags = {
   feedingsEnabled: false,
   medicationsEnabled: false,
   themesEnabled: false,
+  incidentsEnabled: false,
 };
 
 describe('FeatureFlagsContext', () => {
