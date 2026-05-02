@@ -1,0 +1,27 @@
+{
+  "case_id": "regression-T-06-arrayUnion",
+  "artifact_kind": "code",
+  "task_id": "T-06",
+  "source": "Synthetic; modeled on a realistic builder mistake. The producer reads §D3, sees `journal: array<...>`, knows about Firestore `arrayUnion`, and reaches for it without re-reading §D3's RMW mandate.",
+  "input": {
+    "task_description": "IncidentRepository (basic CRUD)",
+    "verify_line": "Unit tests against Firestore emulator: create → get round-trip; update changes only specified fields; findActiveForUser returns the one incident with endedAt == null && deletedAt == null.",
+    "cited_spec_refs": ["§5"],
+    "cited_design_refs": ["§D2", "§D3"],
+    "diff_summary": "IncidentRepository.appendJournal uses `updateDoc(ref, { journal: arrayUnion(entry) })` instead of the RMW pattern §D3 mandates.",
+    "diff_path": "fixtures/T-06-arrayUnion.diff"
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "scope_check": 4,
+        "cited_section": "§D3",
+        "evidence_pattern": "(?i)arrayUnion|appendJournal|RMW|read-modify-write",
+        "description_pattern": "(?i)arrayUnion|RMW|read-modify-write|append order"
+      }
+    ]
+  },
+  "notes": "This is the exact failure mode the §D3 explanatory text exists to prevent. If the cold-reader misses it, the prompt isn't pulling its weight on scope-check #4 (drift from cited design sections). Empirically validated: the round-15 hand-test of the cold-reader against this case caught it as CRITICAL/scope_check 4 with both correct evidence and description matches."
+}

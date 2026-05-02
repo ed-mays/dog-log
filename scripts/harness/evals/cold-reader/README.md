@@ -48,7 +48,7 @@ Each case is a JSON file:
       {
         "severity": "CRITICAL" | "HIGH" | "MEDIUM",
         "scope_check": 1 | 2 | 3 | 4 | 5,
-        "cited_section": "BR-7",
+        "cited_section": "BR-7" | ["BR-15", "§5"],
         "evidence_pattern": "<regex against finding.evidence>",
         "description_pattern": "<regex against finding.description>"
       }
@@ -61,11 +61,22 @@ The runner checks:
 
 - `verdict` matches exactly.
 - Every expected finding has a corresponding actual finding whose
-  `severity`, `scope_check`, `cited_section` match AND whose `evidence` /
-  `description` match the regex patterns.
+  `severity` and `scope_check` match exactly, whose `cited_section`
+  matches one of the acceptable alternatives (string or any-of-array),
+  AND whose `evidence` / `description` match the regex patterns.
 - Recall = (matched expected) / (total expected).
 - Precision = (matched expected) / (total actual). Extra actual findings
   reduce precision.
+
+`cited_section` accepts a single string OR an array of acceptable
+alternatives — for findings rooted in the verify line, two equally-valid
+spec citations may both be correct (e.g. `BR-15` and `§5`). Per the
+prompt's "nearest BR/§" rule, the cold-reader picks the most-specific
+one; the case author lists every reasonable choice in the array. The
+runner accepts a match against any of them. Allowed citation forms:
+`BR-N`, `NFR-N`, `AC-N`, `US-N`, `OQ-N`, `DQ-N`, `§N`, `§DN`. The runner
+fails fast on any other value at load time so fixtures stay in sync with
+the prompt's grammar.
 
 ## Bootstrap status
 

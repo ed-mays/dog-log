@@ -111,6 +111,15 @@ comment thread.
 }
 ```
 
+**`cited_section` MUST be one of: `BR-N`, `NFR-N`, `AC-N`, `US-N`, `OQ-N`,
+`DQ-N`, `§N`, `§DN`.** No other values are valid. Findings rooted in the
+verify line MUST cite the most-specific BR/§ that the verify line is
+testing — not the literal string `"verify_line"`. If the verify line tests
+behavior not covered by a single BR, cite the broader spec section listed
+in the task's citations (e.g. `§5` for data-model-shaped tests). When two
+spec citations could equally describe the same finding, prefer the more
+specific one (e.g. `BR-15` over `§4`).
+
 Verdict logic, deterministic:
 
 - Any CRITICAL OR HIGH finding → `verdict: "veto"`

@@ -1,0 +1,34 @@
+{
+  "case_id": "regression-T-06-stub-method",
+  "artifact_kind": "code",
+  "task_id": "T-06",
+  "source": "Synthetic; modeled on a realistic builder mistake. The producer ships a `findActiveForUser()` stub returning null with a TODO, and tests that only assert the method exists — bypassing the verify line's actual behavior requirement.",
+  "input": {
+    "task_description": "IncidentRepository (basic CRUD)",
+    "verify_line": "Unit tests against Firestore emulator: create → get round-trip; update changes only specified fields; findActiveForUser returns the one incident with endedAt == null && deletedAt == null.",
+    "cited_spec_refs": ["§5"],
+    "cited_design_refs": ["§D2", "§D3"],
+    "diff_summary": "IncidentRepository.findActiveForUser is `// TODO: implement query; return null;`. Tests assert only that the method exists (`typeof repo.findActiveForUser === 'function'`).",
+    "diff_path": "fixtures/T-06-stub-method.diff"
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "scope_check": 1,
+        "cited_section": ["BR-26", "§5"],
+        "evidence_pattern": "(?i)TODO|findActiveForUser|stub|return null",
+        "description_pattern": "(?i)findActiveForUser|stub|TODO|verify line|not implemented"
+      },
+      {
+        "severity": "HIGH",
+        "scope_check": 2,
+        "cited_section": ["BR-26", "§5"],
+        "evidence_pattern": "(?i)typeof.*function|toBeTruthy|exists",
+        "description_pattern": "(?i)test|assert|verify line|coverage|round-trip|update"
+      }
+    ]
+  },
+  "notes": "Two-finding case. Tests the cold-reader's ability to (a) catch a stubbed implementation that lies about completion (CRITICAL/scope_check 1), and (b) catch shallow tests that don't assert verify-line behavior (HIGH/scope_check 2). The cited_section uses the array form because the verify line is testing behavior implied by both BR-26 (singleton) and §5 (data model) — either is a valid cite per the prompt's nearest-BR/§ rule. Demonstrates the multi-acceptable-cite pattern added round 16."
+}
