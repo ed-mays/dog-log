@@ -69,6 +69,19 @@ exit instead of pushing through:
   a different shape than the design says.
 - You discover a behavior the spec doesn't cover that is genuinely needed
   for the task to function.
+- **Two rules in this prompt itself conflict on this task.** Most commonly:
+  the TDD rule (#2 — "Write tests first; tests must assert the cited ACs")
+  presumes the task cites ACs and the verify line permits running tests
+  against the produced code. If the task cites no ACs AND the verify line is
+  structural (e.g. _"`tsc -b` passes with the new file imported nowhere"_),
+  the TDD rule has no clear application — there are no ACs to assert and
+  satisfying TDD by writing a test would import the file and break the verify
+  gate. **Even if you can navigate the conflict reasonably**, do not. Escalate.
+  The drift-arbiter will either amend the task/spec to remove the conflict
+  (e.g. revise the verify line to permit a type-only test, or add an explicit
+  task-level note that TDD does not apply) or apply a one-time pushback
+  authorizing your interpretation. Either way, the decision gets logged
+  rather than living silently in your reasoning.
 
 In every case, the right move is the same: **stop, surface the gap, exit.**
 The drift-arbiter agent will resolve it (amend the spec, amend the design,
@@ -80,6 +93,8 @@ You MUST NOT:
 - Make implementation choices the design phase didn't make.
 - Touch files outside `allowed_writes` "just to make it work".
 - Skip a test because the cited AC is hard to verify.
+- **Skip a test because the verify line forbids importing the produced code.**
+  That's a rule conflict — escalate per the trigger above.
 - Lie about Verify passing — if you cannot run it cleanly, that's a
   `verify_fail` exit, not a `success`.
 
