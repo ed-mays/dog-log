@@ -2,6 +2,8 @@
 // This file is intentionally not imported anywhere yet (slice 0 foundation).
 // Downstream tasks will import these types and exercise them via tests.
 
+import type { BaseEntity } from '@repositories/types';
+
 export type IncidentTypeId =
   | 'seizure'
   | 'injury'
@@ -21,22 +23,23 @@ export type ChipId = string;
 export interface JournalEntry {
   elapsedSeconds: number; // BR-9, BR-31 — stored at write, never recomputed
   text: string;
-  addedAt: string; // ISO 8601 instant
+  addedAt: Date; // BR-30 instant of append
 }
 
-export interface Incident {
-  id: string;
-  userId: string; // owner — drives security rules (NFR-8)
+// Extends BaseEntity to align with project-wide repository contract
+// (every other entity in src/repositories/ follows this convention via
+// BaseRepository<T extends BaseEntity>). BaseEntity provides:
+//   id: string; createdAt: Date; updatedAt: Date; createdBy: string;
+export interface Incident extends BaseEntity {
+  userId: string; // owner — drives security rules (NFR-8); duplicates createdBy for query convenience
   petId: string; // BR-28 — required at all times
-  startedAt: string; // ISO 8601 instant — set at activation (BR-2)
-  endedAt: string | null; // ISO 8601 instant — set at STOP (BR-13)
+  startedAt: Date; // set at activation (BR-2)
+  endedAt: Date | null; // set at STOP (BR-13)
   type: IncidentTypeId | null; // BR-4, BR-19
   severity: Severity | null; // BR-6
   chips: ChipId[]; // BR-7, BR-20 — ordered, deduped at write
   journal: JournalEntry[]; // BR-30 — append-only after STOP
-  createdAt: string; // server-assigned (Firestore serverTimestamp)
-  updatedAt: string; // server-maintained on every write (BR-18)
-  deletedAt: string | null; // BR-33 — soft-delete timestamp; null when not deleted
+  deletedAt: Date | null; // BR-33 — soft-delete timestamp; null when not deleted
 }
 
 export type IncidentCreateInput = Pick<Incident, 'petId' | 'startedAt'>;
@@ -46,5 +49,5 @@ export type IncidentCreateInput = Pick<Incident, 'petId' | 'startedAt'>;
 // admits a malformed `''` or a cast `null`. Tests in incidentService.test.ts
 // MUST cover the rejection path.
 export type IncidentUpdateInput = Partial<
-  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'petId'>
+  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'createdBy' | 'petId'>
 > & { petId?: string };
