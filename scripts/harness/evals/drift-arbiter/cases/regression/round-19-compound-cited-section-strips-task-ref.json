@@ -1,0 +1,25 @@
+{
+  "case_id": "regression-round-19-compound-cited-section-strips-task-ref",
+  "task_id": "T-01",
+  "source": "Round-19 drift-arbiter MVP build. The round-18 spec_gap had `cited_section: \"§D3 (design) — Data Model — Concrete; Verify line for T-01\"` — a compound string mixing a real design citation with a task-ref. The first implementation of `normalizeCitedSections()` extracted `T-01` from this string as a citation, which created a phantom missing-citation warning (T-01 is a task ref, not a spec/design citation, and is already carried separately on `spec_gap.task_id`). Fixed by removing `T-` from the citation extraction regex.",
+  "input": {
+    "spec_gap": {
+      "task_id": "T-01",
+      "cited_section": "§D3 (design) — Data Model — Concrete; Verify line for T-01",
+      "gap_description": "Synthetic compound-cite case: the cited_section combines a real design ref (§D3) with a task ref (T-01). The arbiter's input assembler must extract §D3 as a citation but NOT extract T-01 (task refs are separately carried on spec_gap.task_id and pulling them out of compound strings creates phantom missing-citation warnings).",
+      "suggested_amendment": "Pure regression case for the input assembler grammar — no specific amendment expected; any verdict that doesn't crash on the input is acceptable.",
+      "files_inspected": []
+    }
+  },
+  "expected": {
+    "verdict": "amend_task",
+    "amendment": {
+      "file": "03-tasks.md",
+      "anchor_pattern": "T-01",
+      "before_pattern": "",
+      "after_pattern": "(?i)(verify|TDD|type|note)",
+      "changelog_entry_pattern": "(?i)(T-01|verify|TDD|round)"
+    }
+  },
+  "notes": "Anchored regression for the input-assembler grammar. The bug was in `scripts/harness/lib/drift-arbiter-input.ts` `normalizeCitedSections()` — the citation-extraction regex initially included `T-` and pulled task refs out of compound cited_section strings. Documented in session log round 19. The case verifies that the input-prep pipeline handles compound strings without phantom warnings; the patterns are loose because the *behavior under test* is the input parser, not the arbiter's verdict. If a future input-assembler iteration accidentally re-introduces T- to the citation regex, this case still loads (no crash) but the resulting builder input will list T-01 in `missing_citations` — surfaced via the input assembler's tests, not this case's verdict patterns."
+}

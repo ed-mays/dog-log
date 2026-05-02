@@ -80,11 +80,11 @@ the prompt's grammar.
 
 ## Bootstrap status
 
-| Suite                   | Cases seeded | Source                                 |
-| ----------------------- | ------------ | -------------------------------------- |
-| `cases/regression/`     | 4 (prose)    | PR #152 cold-read threads              |
-| `cases/negative-scope/` | 0            | Pending — needs hand-constructed diffs |
-| `cases/adversarial/`    | 0            | Pending — needs hand-constructed diffs |
+| Suite                   | Cases seeded         | Source                                                           |
+| ----------------------- | -------------------- | ---------------------------------------------------------------- |
+| `cases/regression/`     | 4 (prose) + 3 (code) | PR #152 cold-read threads + 3 synthetic CODE cases               |
+| `cases/negative-scope/` | 1                    | Round-15 verify-line-improvised-citation (bug-regression corpus) |
+| `cases/adversarial/`    | 0                    | Pending — needs hand-constructed diffs (PR-C of plan §11)        |
 
 The first 3–5 builder PRs become the bootstrap set for code regression
 cases as we manually rate cold-reader output.

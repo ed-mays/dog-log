@@ -1,0 +1,17 @@
+{
+  "case_id": "regression-round-18-V2-T-01-spec-gap",
+  "task_id": "T-01",
+  "source": "Round-18 V1-vs-V2 head-to-head on the original (pre-amendment) T-01. V2 builder correctly emitted `spec_gap` naming the new 6th drift-trigger (rule conflict). First real spec_gap in the wild — the seed case that informed the drift-arbiter MVP (PR #159).",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/_shared/T-01-pre-amendment.input.md"
+  },
+  "expected": {
+    "status": "spec_gap",
+    "spec_gap_pattern": "(?i)(TDD.*verify|verify.*TDD|imported nowhere|rule conflict|two rules|trigger #?6|sixth trigger)"
+  },
+  "actual_baseline": {
+    "status": "spec_gap",
+    "notes": "V2 builder explicitly named the new sixth trigger as the reason for escalation, described the conflict accurately, and proposed two reasonable resolutions. Bonus: also caught a scope ambiguity about whether IncidentCreateInput/IncidentUpdateInput belong in T-01 (they're derived types not strictly in §5 spec). 27s wall clock, 46k tokens, 2 tool uses — much cheaper than V1's silent success (93s, 65k, 9 tool uses). Captured in session log round 18."
+  },
+  "notes": "Companion to `adversarial-round-17-V1-T-01-silent-tdd-conflict`: same input, V2 prompt instead of V1, expected outcome is escalation. Together the pair proves the V2 prompt's 6th trigger fires correctly AND that the silent-navigation V1 behavior was a real defect, not a reasonable judgment call. Both are anchored to the SHARED pre-amendment input (`_shared/T-01-pre-amendment.input.md`), so a single edit to the source artifact updates both fixtures consistently. The third member of the round-17→21 trajectory triple is `regression-T-01-V2-amended` (post-amendment success on the amended task)."
+}

@@ -1,0 +1,12 @@
+{
+  "case_id": "adversarial-round-12-skip-cite-in-help-text",
+  "source": "Round-12 session log: the citation linter's first commit landed via an unintended [skip-cite] match — its own help text mentioned the token by name and the substring check matched it. Fixed in PR #155 follow-up by anchoring the marker to start-of-line.",
+  "input": {
+    "commit_message": "feat(harness): add citation-linter and commit-msg hook\n\nThis adds scripts/harness/lib/citation-linter.ts. The CLI prints help\ndescribing accepted exemptions, including the [skip-cite] marker which\npower users can place at the start of a line.\n\nThe scope=harness exemption applies to tooling commits."
+  },
+  "expected": {
+    "valid": true,
+    "exempt_reason_pattern": "(?i)exempt commit scope 'harness'"
+  },
+  "notes": "The bug: a pre-anchor regex saw the literal string '[skip-cite]' inside the body's help-text reference and exempted the commit on that basis instead of on the legitimate scope=harness exemption. The fix: SKIP_TOKEN_RE is now `/^\\[skip-cite(?::[^\\]]*)?]/m` (start-of-line anchored, multiline mode) AND the scope/type checks run first so the right reason wins. Both halves of the fix matter — if either regresses, this case catches it. The expected exempt reason is 'exempt commit scope harness' (NOT the [skip-cite] marker), proving both the anchoring fix and the ordering fix are intact."
+}

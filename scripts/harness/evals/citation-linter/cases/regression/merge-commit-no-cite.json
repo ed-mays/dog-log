@@ -1,0 +1,12 @@
+{
+  "case_id": "regression-merge-commit-no-cite",
+  "source": "Standard GitHub merge-commit subject — must always pass even without a spec citation, because the cited work lives in the merged PR's commits.",
+  "input": {
+    "commit_message": "Merge pull request #157 from ed-mays/feat/harness-cold-reader\n\nfeat(harness): MVP step 5 — cold-reader prompt + input-prep + eval scaffold"
+  },
+  "expected": {
+    "valid": true,
+    "exempt_reason_pattern": "(?i)merge commit"
+  },
+  "notes": "Merge commits are always exempt. The body still mentions the merged feature but the linter MUST recognize the 'Merge ' subject prefix and exempt without requiring a citation. Catches any future regression that drops the merge exemption (e.g., from over-tightening conventional-commit enforcement)."
+}

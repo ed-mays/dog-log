@@ -1,0 +1,12 @@
+{
+  "case_id": "negative-scope-legitimate-skip-cite-marker",
+  "source": "The [skip-cite] marker is the documented power-user escape hatch. When placed at the start of a line (per the round-12 fix), it must exempt the commit even when no other exemption applies.",
+  "input": {
+    "commit_message": "fix: emergency hotfix for production crash\n\n[skip-cite: post-incident; spec citation will be added in follow-up doc PR]\n\nDeployed under SEV1 protocol; reverting tomorrow if root cause is not\nidentified within 4h."
+  },
+  "expected": {
+    "valid": true,
+    "exempt_reason_pattern": "(?i)skip-cite"
+  },
+  "notes": "The fix-type subject is NOT in the exempt-types list (only chore/style/ci/build are). Without the [skip-cite] marker this would fail validation. The marker on its own line MUST exempt. Confirms the post-round-12 ordering: scope/type checked first, then [skip-cite] as the final exempt path."
+}

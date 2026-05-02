@@ -71,11 +71,11 @@ The runner checks:
 
 ## Bootstrap status
 
-| Suite                   | Cases seeded | Source                                                          |
-| ----------------------- | ------------ | --------------------------------------------------------------- |
-| `cases/regression/`     | 1            | Round-18 V2 builder spec_gap on T-01                            |
-| `cases/negative-scope/` | 0            | Pending — needs hand-constructed pushback cases                 |
-| `cases/adversarial/`    | 0            | Pending — needs hand-constructed multi-artifact-ambiguity cases |
+| Suite                   | Cases seeded | Source                                                                |
+| ----------------------- | ------------ | --------------------------------------------------------------------- |
+| `cases/regression/`     | 2            | Round-18 V2 spec_gap on T-01; round-19 compound-cited-section grammar |
+| `cases/negative-scope/` | 0            | Pending — pushback cases (PR-B of plan §11)                           |
+| `cases/adversarial/`    | 1            | Round-20 singular-Note grammar (bug-regression corpus)                |
 
 The first 3–5 real builder runs will produce additional regression cases as
 spec_gaps emerge in the wild.

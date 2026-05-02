@@ -1,0 +1,12 @@
+{
+  "case_id": "negative-scope-process-task-harness-scope",
+  "source": "Round-10 finding: process tasks (T-43/46/47) cite docs not §; the harness scope exemption is the intended mechanism, not a workaround. This case anchors that intent — a real harness commit with no spec citation must pass via the scope exemption.",
+  "input": {
+    "commit_message": "feat(harness): add task-parser library\n\nPure parsing of 03-tasks.md into typed Task[] with citations, deps,\nslice. No LLM. Will be reused by controller, builder-input, and\ncold-reader-input."
+  },
+  "expected": {
+    "valid": true,
+    "exempt_reason_pattern": "(?i)scope 'harness'"
+  },
+  "notes": "This is the canonical case for the harness scope exemption. If someone tightens the linter to require citations even on harness commits, this case fails — and the methodology breaks (every harness PR would need a fake spec citation, polluting the citation graph). The exemption is intentional and load-bearing for the methodology's separation of feature work from tooling work."
+}
