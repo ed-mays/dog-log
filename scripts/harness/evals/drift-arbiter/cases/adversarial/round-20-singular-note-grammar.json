@@ -1,0 +1,25 @@
+{
+  "case_id": "adversarial-round-20-singular-note-grammar",
+  "task_id": "T-01",
+  "source": "Round-20 amendment-application step. The arbiter's round-19 proposal wrote `**Note:**` (singular) but the task-parser's field grammar only accepts `**Notes:**` (plural). The amendment was syntactically invalid as written — applied with the plural form and surfaced as a finding for future arbiter-prompt iteration.",
+  "input": {
+    "spec_gap": {
+      "task_id": "T-01",
+      "cited_section": "§D3 (design); Verify line for T-01",
+      "gap_description": "Same TDD/verify-line conflict as round-18, presented again. The adversarial element: this case asserts the arbiter's proposed amendment uses the plural field name `**Notes:**` (which the parser accepts) and NOT `**Note:**` (which the parser silently ignores).",
+      "suggested_amendment": "Add a TDD-waiver entry under the `**Notes:**` field of T-01.",
+      "files_inspected": []
+    }
+  },
+  "expected": {
+    "verdict": "amend_task",
+    "amendment": {
+      "file": "03-tasks.md",
+      "anchor_pattern": "T-01",
+      "before_pattern": "",
+      "after_pattern": "(?i)\\*\\*Notes:\\*\\*|(?<!\\*)Notes:",
+      "changelog_entry_pattern": "(?i)(T-01|TDD|verify|note)"
+    }
+  },
+  "notes": "Anchors the post-round-20 expectation that arbiter-proposed amendments to `03-tasks.md` use the parser-compatible field grammar. The `after_pattern` tolerates both bold and unbolded forms but REQUIRES the plural 'Notes' (the negative lookbehind ensures we're not matching the singular 'Note:'). Methodology lesson logged in session round 20: 'the arbiter should know about the parser's field grammar (could be added to its system prompt, or — better — included as part of the input the arbiter receives so it stays in sync with the parser implementation).' This case is the regression anchor for whichever fix lands first. Until then it documents the contract: arbiter output → parser-compatible grammar."
+}

@@ -1,0 +1,19 @@
+{
+  "case_id": "adversarial-round-17-V1-T-01-silent-tdd-conflict",
+  "task_id": "T-01",
+  "source": "Round-17 e2e hand-test on T-01 (throwaway branch experiment/harness-e2e-T-01). V1 builder prompt produced silent `success` instead of escalating the TDD/verify-line conflict. The bug that triggered building the V2 prompt (PR #158) and the drift-arbiter (PR #159).",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/_shared/T-01-pre-amendment.input.md"
+  },
+  "expected": {
+    "status": "spec_gap",
+    "spec_gap_pattern": "(?i)TDD.*verify|verify.*TDD|imported nowhere|rule conflict|two rules"
+  },
+  "actual_baseline": {
+    "status": "success",
+    "commit_sha": "977ce4e (round-17, throwaway branch — not on main)",
+    "files_touched": ["src/features/incidents/types.ts"],
+    "notes": "V1 builder reasoned: 'T-01 cites no ACs and the verify line forbids importing the produced file. Writing a test would violate the verify gate. Picked verify-line over TDD rule and explained in notes.' This is the silent-navigation bug — the conflict was real but the V1 prompt had no escalation path so the agent chose one side and proceeded. Logged in the session log as round 17 ('the headline lesson')."
+  },
+  "notes": "This is the load-bearing 'do not regress' anchor for the V2 prompt's 6th drift-escalation trigger. If a future builder-prompt iteration removes or weakens trigger #6 (rule conflict), this case fails: the agent will produce `success` instead of `spec_gap`. The case uses the SAME pre-amendment T-01 input as `regression-round-18-V2-T-01-spec-gap`; the only difference is the active builder system prompt at re-run time. Companion to `regression-T-01-V2-amended` (which captures the post-arbiter-amendment success path)."
+}

@@ -1,0 +1,12 @@
+{
+  "case_id": "regression-PR-152-feat-with-br-cite",
+  "source": "Conventional-commit shape used throughout the incident-capture work — feature commit citing one or more BR/§ refs in the subject line.",
+  "input": {
+    "commit_message": "feat(incidents): add foundation TypeScript types (§D3, §5)\n\nFirst slice-0 file. Matches design §D3 verbatim. File is intentionally\nimported nowhere per T-01's Verify line; downstream tasks will exercise\nthese types via their own consumers' tests.\n\nCites: T-01, §D3, §5"
+  },
+  "expected": {
+    "valid": true,
+    "citations_must_include": ["§D3", "§5", "T-01"]
+  },
+  "notes": "Canonical happy-path: a feature commit citing both spec sections (§5) and design sections (§D3) plus a task ref (T-01). All three citation forms appear; all must be extracted. If the linter ever stops extracting any of these, this case catches it."
+}

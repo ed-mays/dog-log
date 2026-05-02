@@ -1,0 +1,19 @@
+{
+  "case_id": "negative-scope-round-15-verify-line-improvised-citation",
+  "artifact_kind": "code",
+  "task_id": "T-06",
+  "source": "Round-15 cold-reader hand-test on a synthetic broken T-06 IncidentRepository. The cold-reader correctly produced 7 in-scope findings BUT improvised a `cited_section: \"verify line (create → get round-trip)\"` value for one of them — out-of-format per the citation grammar (BR-N, NFR-N, AC-N, US-N, OQ-N, DQ-N, §N, §DN). Fixed in PR #157 round-16 follow-up by adding explicit prompt guidance: 'findings rooted in the verify line MUST cite the most-specific BR/§ that the verify line is testing — never the literal string verify_line.'",
+  "input": {
+    "task_description": "IncidentRepository (basic CRUD) — verify a clean implementation",
+    "verify_line": "Unit tests against Firestore emulator: create → get round-trip; update changes only specified fields; findActiveForUser returns the one incident with endedAt == null && deletedAt == null.",
+    "cited_spec_refs": ["§5"],
+    "cited_design_refs": ["§D2", "§D3"],
+    "diff_summary": "A clean repository that satisfies §D3's RMW pattern and the verify-line contracts. ZERO real spec violations. Constructed to tempt the cold-reader into emitting a verify-line-rooted finding with an improvised cited_section.",
+    "diff_path": "fixtures/T-06-clean-implementation.diff"
+  },
+  "expected": {
+    "verdict": "approve",
+    "findings": []
+  },
+  "notes": "The negative-scope test: cold-reader must NOT emit any CRITICAL/HIGH findings on a clean diff, AND if it emits anything at all, the cited_section MUST conform to the grammar (BR-N | NFR-N | AC-N | US-N | OQ-N | DQ-N | §N | §DN). The runner's load-time validation (`VALID_CITATION_RE`) catches the latter automatically — if a future cold-reader iteration regresses to improvised citations like 'verify line', any case that captures such an output will fail to load. This case anchors the *behavior* (no findings on a clean diff) while the schema validator catches the *grammar* regression. Together they prevent the round-15 bug class from re-emerging."
+}

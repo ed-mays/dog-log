@@ -58,3 +58,24 @@ structural stub plus regression fixtures.
 - regression: actual status matches expected; files_touched / spec_gap pattern matches
 - negative-scope: builder escalates instead of expanding scope
 - adversarial: correct escalation trigger fires (the right item from the 6-trigger list)
+
+## Bootstrap status
+
+| Suite                   | Cases seeded | Source                                                                     |
+| ----------------------- | ------------ | -------------------------------------------------------------------------- |
+| `cases/regression/`     | 2            | T-01-V2-amended (round 21); round-18 V2 spec_gap on pre-amendment T-01     |
+| `cases/negative-scope/` | 0            | Pending — drive-by-edit / silent-default-pick cases (PR-B of plan §11)     |
+| `cases/adversarial/`    | 1            | Round-17 V1 silent-tdd-conflict (bug-regression corpus; trigger #6 anchor) |
+
+## Shared fixtures
+
+`cases/_shared/` holds rendered builder inputs reused across multiple cases.
+The leading underscore keeps the loader (which iterates `regression/`,
+`negative-scope/`, `adversarial/` only) from picking it up as a case
+directory. Currently:
+
+- `_shared/T-01-pre-amendment.input.md` — the rendered builder input for T-01
+  _before_ PR #160's TDD-waiver Note. Used by both
+  `adversarial/round-17-V1-T-01-silent-tdd-conflict` and
+  `regression/round-18-V2-T-01-spec-gap`. Updating the source artifact for
+  one case automatically updates both.
