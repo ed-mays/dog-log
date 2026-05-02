@@ -24,6 +24,7 @@ Groundwork that has zero user-visible effect but unblocks all downstream slices.
 - **Cite:** spec §5 (data model); design §D3 (TypeScript types)
 - **What:** Create `src/features/incidents/types.ts` with `Incident`, `IncidentTypeId`, `Severity`, `ChipId`, `JournalEntry`, `IncidentCreateInput`, `IncidentUpdateInput`. Include the BR-29 runtime-invariant comment from design §D3.
 - **Verify:** `pnpm exec tsc -b` passes with the new file imported nowhere.
+- **Notes:** TDD-first is waived for this task. §D3 specifies type declarations, not behavior, and the verify gate is intentionally structural (file imported nowhere) to keep slice 0 dependency-free. These types will be exercised by the first consumer's tests in a downstream task; do not write a self-contained test that imports this file.
 
 ### `[ ]` T-02 — Feature flag
 
@@ -330,3 +331,4 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 ## §T0 Tasks Changelog
 
 - **2026-05-01** — Initial draft. 47 tasks across 5 slices + foundation. Tasks reference spec/design at the time of authoring; if spec/design amend, T- entries here may need re-citation.
+- **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.

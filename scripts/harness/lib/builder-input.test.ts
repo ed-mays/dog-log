@@ -44,9 +44,12 @@ describe('buildBuilderInput — T-01 (foundation, smallest surface)', () => {
     expect(designD3.body).toMatch(/interface Incident/);
   });
 
-  it('passes through the Verify line and absence of notes', () => {
+  it('passes through the Verify line and the TDD-waiver Notes', () => {
     expect(input.verify).toMatch(/tsc -b/);
-    expect(input.notes).toBeNull();
+    // T-01 carries a TDD-first waiver Note added by the drift-arbiter
+    // (round 19) and applied as a follow-up amendment (round 20).
+    // Previously this test asserted notes was null.
+    expect(input.notes).toMatch(/TDD-first is waived/);
     expect(input.dq_tags).toEqual([]);
   });
 
