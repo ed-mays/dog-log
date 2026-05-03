@@ -3,6 +3,10 @@ import { useEffect, useState } from 'react';
 // Per design §D8: render the timer with requestAnimationFrame, throttling
 // state updates to ~250ms (visible second resolution per BR-3, but smoother
 // to the eye). startedAt is the source of truth; elapsed is computed.
+//
+// Per §D2 post-STOP invariant (BR-14, BR-25, round-31 amend_design): when
+// endedAt is set, the timer freezes at endedAt - startedAt and the rAF loop
+// is skipped — the surface stays open showing the final duration.
 const TICK_THROTTLE_MS = 250;
 
 function formatElapsed(elapsedMs: number): string {
@@ -15,10 +19,15 @@ function formatElapsed(elapsedMs: number): string {
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
-export function useIncidentTimer(startedAt: Date): string {
+export function useIncidentTimer(
+  startedAt: Date,
+  endedAt: Date | null = null
+): string {
   const [now, setNow] = useState(() => Date.now());
+  const isFrozen = endedAt !== null;
 
   useEffect(() => {
+    if (isFrozen) return;
     let rafId = 0;
     let lastTick = Date.now();
     const tick = () => {
@@ -31,7 +40,10 @@ export function useIncidentTimer(startedAt: Date): string {
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, []);
+  }, [isFrozen]);
 
+  if (endedAt) {
+    return formatElapsed(endedAt.getTime() - startedAt.getTime());
+  }
   return formatElapsed(now - startedAt.getTime());
 }
