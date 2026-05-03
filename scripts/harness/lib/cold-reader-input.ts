@@ -14,6 +14,12 @@ import type { Citation, Task } from './task-parser';
 export interface ColdReaderInput {
   task_id: string;
   task_description: string;
+  /** The verbatim "What" line from the task body. Per finding #6 (round 37,
+   * widened round 39): cold-reader needs this to evaluate scope_check 7
+   * (does the diff implement every method/symbol/file named here, with the
+   * exact names given). Without this, scope #1 only sees BR coverage at the
+   * spec level, which is too loose. */
+  task_what: string | null;
   /** Per-spec methodology: the cold-reader sees verbatim cited regions only,
    * not the full spec/design. The flat list keeps the prompt deterministic. */
   cited_spec_sections: Array<{ ref: string; body: string }>;
@@ -62,6 +68,7 @@ export function buildColdReaderInput(
   return {
     task_id: task.id,
     task_description: task.description,
+    task_what: task.what,
     cited_spec_sections: specCites,
     cited_design_sections: designCites,
     verify_line: task.verify,
@@ -118,6 +125,23 @@ export function formatColdReaderInputMarkdown(input: ColdReaderInput): string {
 
   if (input.verify_line) {
     out.push(`**Verify line (per-task gate):** ${input.verify_line}`);
+    out.push('');
+  }
+
+  if (input.task_what) {
+    out.push('## Task contract (verbatim "What" line)');
+    out.push('');
+    out.push(
+      "_The 'What' line is the verbatim contract for this task. Treat every"
+    );
+    out.push(
+      'method/symbol/file/option named here as a verbatim requirement; renaming,'
+    );
+    out.push(
+      'collapsing, or omitting any named entity is a divergence (see scope_check 7)._'
+    );
+    out.push('');
+    out.push(input.task_what.trim());
     out.push('');
   }
 

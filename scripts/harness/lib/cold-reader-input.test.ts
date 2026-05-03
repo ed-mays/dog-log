@@ -55,6 +55,28 @@ describe('buildColdReaderInput — T-01 with a sample diff', () => {
     expect(input.task_description).toMatch(/TypeScript types/);
   });
 
+  it('carries the verbatim task_what for scope_check 7 (finding #6)', () => {
+    expect(input.task_what).not.toBeNull();
+    // T-01's What line names the file path and exported types — the
+    // scope-7-relevant content cold-reader needs.
+    expect(input.task_what!).toMatch(/types\.ts/);
+    expect(input.task_what!).toMatch(/Incident/);
+  });
+
+  it('renders a Task contract section in the markdown when task_what is set', () => {
+    const md = formatColdReaderInputMarkdown(input);
+    expect(md).toMatch(/## Task contract \(verbatim "What" line\)/);
+    expect(md).toMatch(/scope_check 7/);
+  });
+
+  it('omits the Task contract section when task_what is null', () => {
+    const md = formatColdReaderInputMarkdown({
+      ...input,
+      task_what: null,
+    });
+    expect(md).not.toMatch(/## Task contract/);
+  });
+
   it('extracts the cited spec/design sections (separated)', () => {
     expect(input.cited_spec_sections.map((c) => c.ref)).toEqual(['§5']);
     expect(input.cited_design_sections.map((c) => c.ref)).toEqual(['§D3']);

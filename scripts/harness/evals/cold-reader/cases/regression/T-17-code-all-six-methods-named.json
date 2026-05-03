@@ -1,0 +1,20 @@
+{
+  "case_id": "regression-T-17-all-six-methods-named",
+  "artifact_kind": "code",
+  "task_id": "T-17",
+  "source": "Positive (approve) twin of T-17-collapsed-named-methods. Same task_what; this diff implements all six named methods as separate exports. Cold-reader should approve on the scope-7 dimension (no scope-7 finding emitted).",
+  "input": {
+    "task_description": "incidentService extensions (mutations)",
+    "task_what": "Add to incidentService: setSeverity, clearSeverity, toggleChip, appendJournal (computes elapsedSeconds against incident.startedAt at call time per BR-31), setType, clearType. All use repository methods that wrap RMW per design §D3.",
+    "verify_line": "Unit tests for each method; tests cover the BR-22 invariant (changing type leaves severity, chips, journal untouched) and BR-31 (elapsedSeconds stored at write time, not recomputed).",
+    "cited_spec_refs": ["BR-6", "BR-7", "BR-8", "BR-9", "BR-19", "BR-22"],
+    "cited_design_refs": ["§D3"],
+    "diff_summary": "incidentService.ts exports 6 distinct methods: setSeverity(userId, incidentId, severity), clearSeverity(userId, incidentId), toggleChip(userId, incidentId, chipId), appendJournal({ userId, incidentId, text, now? }), setType(userId, incidentId, type), clearType(userId, incidentId). All six methods named exactly per the task contract. Tests cover all six method paths plus BR-22 invariant and BR-31 service-side computation.",
+    "diff_path": "fixtures/T-17-all-six-methods.diff"
+  },
+  "expected": {
+    "verdict": "approve",
+    "findings": []
+  },
+  "notes": "Positive control for scope_check 7. If scope #7 starts firing on this diff, the prompt has drifted into over-strict mode (e.g., requiring exact arg shape rather than named-symbol presence). The arg shape can vary (positional vs object) as long as the named symbols exist; that's a different scope concern (#3 silent design choice, scope #6 type-contract conformance) caught by other tests."
+}
