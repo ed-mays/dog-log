@@ -1,0 +1,30 @@
+{
+  "case_id": "regression-round-29-T11-success-baseline",
+  "task_id": "T-11",
+  "source": "Round-29 third T-11 dispatch — first SUCCESS exit emitted live by the harness on a real slice task. Validates the full chain of round-27/28/29 fixes: dispatcher resilience (PR #169 / cherry-picked into #170), verify-command derivation rule (round-27 fix in #170), final-verify-rerun rule (round-28 fix in #170), bypassPermissions for builder (round-29 fix this PR). Cost: $0.4765, 128s, 25 turns. Produced commit fdd3113 with 2 passing tests, citation `(BR-12, BR-13)` accepted by the citation linter. First harness-driven slice-1 commit.",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/regression/round-29-T11-success-baseline.input.md"
+  },
+  "expected": {
+    "status": "success",
+    "files_touched_pattern": "src/features/incidents/components/StopButton(\\.test)?\\.tsx",
+    "notes_pattern": "(?i)(BR-12|BR-13|aria-label|stopIncident|i18n)"
+  },
+  "actual_baseline": {
+    "status": "success",
+    "commit_sha": "fdd3113689f663be1f9b0ca94a74ccdb5615b813",
+    "files_touched": [
+      "src/features/incidents/components/StopButton.tsx",
+      "src/features/incidents/components/StopButton.test.tsx"
+    ],
+    "wall_clock_seconds": 128,
+    "tokens_consumed": null,
+    "cost_usd": 0.4765,
+    "tool_uses": null,
+    "session_id": "d0e33d47-e08e-4abc-9d91-04f727de1384",
+    "stop_reason": "end_turn",
+    "num_turns": 25,
+    "notes": "First-ever live `success` exit from the harness on a slice task. Cost is 33% lower than round-27 (Jest-syntax verify_fail at $0.71) and 30% lower than round-28 (false-negative verify_fail at $0.68) — prompt is converging. Citation `(BR-12, BR-13)` matches the citation linter's acceptable forms. Tests independently verified (2/2 pass via `pnpm exec vitest run <path>`). T-11 marked [x] in 03-tasks.md. Slice 1: 5/11 → 6/11."
+  },
+  "notes": "Companion to the verify_fail trio: round-27 (Jest-syntax verify_command), round-28 (false-negative attempt-counting), round-29 attempt 1 (bypassPermissions needed for Bash). Together the four cases trace the full empirical methodology arc on T-11 — three failures surfaced three real prompt/dispatcher bugs, each shipped as a fix; the success case validates that all four amendments compose cleanly on a real slice task. Cumulative T-11 spend: $0.71 + $0.68 + $0.65 + $0.48 = $2.52 across 4 dispatches, with 1 commit. The methodology fixes shipped along the way are the load-bearing return; the cost-per-success will continue to drop as the prompt stabilizes through T-12..T-15."
+}

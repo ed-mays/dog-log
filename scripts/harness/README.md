@@ -27,7 +27,7 @@ Spawns a fresh Claude Code subagent in a clean session, parses the structured ex
 **Prerequisites:** `claude` CLI installed and authenticated (this is the same `claude` you use to start an interactive session). Subagents inherit your auth + plugins + settings.
 
 ```bash
-# Builder — writes code, runs verify, commits. Requires acceptEdits permission.
+# Builder — writes code, runs verify, commits. Uses bypassPermissions (deny list is the safety net).
 pnpm tsx scripts/harness/cli.ts build T-11
 
 # Cold-reader — read-only review of HEAD~1..HEAD diff against cited spec/design.
@@ -42,11 +42,11 @@ Each command supports `--json` for machine-readable output (suitable for piping 
 
 ### Dispatch defaults
 
-| Role        | Model    | Permission mode    | Tool denials                                                                                                            | Timeout |
-| ----------- | -------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------- | ------- |
-| Builder     | `sonnet` | `acceptEdits`      | Bash deny on `firebase deploy`, `vercel deploy`, `gcloud`, `kubectl apply`, `terraform apply` (round-25 no-deploy rule) | 30 min  |
-| Cold-reader | `sonnet` | `plan` (read-only) | _none_                                                                                                                  | 10 min  |
-| Arbiter     | `sonnet` | `acceptEdits`      | Bash entirely (arbiter writes spec/design only, never runs commands)                                                    | 10 min  |
+| Role        | Model    | Permission mode     | Tool denials                                                                                                                                                                                                                                                                                | Timeout |
+| ----------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Builder     | `sonnet` | `bypassPermissions` | Bash deny on `firebase deploy`, `vercel deploy`, `gcloud`, `kubectl apply`, `terraform apply` (round-25 no-deploy rule). The deny list is the safety boundary; `bypassPermissions` is required so the subagent can run its own verify gate (round-29 finding — `acceptEdits` blocked Bash). | 30 min  |
+| Cold-reader | `sonnet` | `plan` (read-only)  | _none_                                                                                                                                                                                                                                                                                      | 10 min  |
+| Arbiter     | `sonnet` | `acceptEdits`       | Bash entirely (arbiter writes spec/design only, never runs commands)                                                                                                                                                                                                                        | 10 min  |
 
 Override via opts on `dispatchBuilder`/`dispatchColdReader`/`dispatchArbiter` if calling directly from TS.
 

@@ -86,7 +86,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/features/incidents/components/IncidentTimer.tsx`. Renders the elapsed value with monospace styling (Caregiver theme tokens). Wraps the elapsed text (not milliseconds) in `aria-live="polite"`.
 - **Verify:** Component test: renders elapsed text; has `aria-live="polite"`; uses theme typography.
 
-### `[ ]` T-11 — StopButton component
+### `[x]` T-11 — StopButton component
 
 - **Cite:** spec BR-12, BR-13; design §D2 file map
 - **What:** Create `src/features/incidents/components/StopButton.tsx`. Calls `useIncidentStore.stopIncident` on tap. Has accessible name from i18n `incidents.stop`.
