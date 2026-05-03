@@ -202,11 +202,23 @@ export async function orchestrateTask(
     }
 
     // status === 'success'
-    lastCommitSha = buildResult.exit.commit_sha;
+    // Per finding #9 (round 38, T-20): builder's reported commit_sha is a
+    // free-text string the model invents; first 7 chars usually match the
+    // real short SHA but the remaining 33 chars are sometimes invented. Trust
+    // git instead — the builder commits then exits, so HEAD IS the produced
+    // commit at this point.
+    try {
+      lastCommitSha = deps.resolveHeadSha();
+    } catch (err) {
+      return halt(
+        'halt_verify_fail',
+        `failed to resolve HEAD sha after builder dispatch: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
     if (!lastCommitSha) {
       return halt(
         'halt_verify_fail',
-        'builder reported success but did not include commit_sha'
+        'git rev-parse HEAD returned empty after builder dispatch'
       );
     }
 
@@ -486,6 +498,10 @@ function dispatchEndPayload(
       const e = result.exit as ColdReaderExit;
       base.verdict = e.verdict;
       base.findings_count = e.findings.length;
+      // Per finding #10 (round 39, T-22): on veto, operator otherwise needs
+      // to re-dispatch ($0.25-0.35) just to read the finding text. Capture
+      // the full findings array so state.json is sufficient for diagnosis.
+      base.findings = e.findings;
     }
     if (role === 'arbiter') {
       const e = result.exit as ArbiterExit;
