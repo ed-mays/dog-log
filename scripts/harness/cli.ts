@@ -34,6 +34,7 @@ import {
   formatColdReaderInputMarkdown,
 } from './lib/cold-reader-input.ts';
 import { checkTaskContract } from './lib/task-contract-check.ts';
+import { deriveVerifyCommand } from './lib/derive-verify-command.ts';
 import {
   buildDriftArbiterInput,
   formatDriftArbiterInputMarkdown,
@@ -373,6 +374,7 @@ function main(): void {
         task,
         specMarkdown: specMd,
         designMarkdown: designMd,
+        derivedVerifyCommand: cliDeriveVerifyCommand(task.verify),
       });
 
       if (values.json) {
@@ -992,6 +994,19 @@ async function runWatch(
   );
   await watchState({ statePath: path, noColor });
   process.exit(0);
+}
+
+function cliDeriveVerifyCommand(
+  verifyLine: string | null
+): ReturnType<typeof deriveVerifyCommand> | null {
+  try {
+    const pkgPath = resolve(process.cwd(), 'package.json');
+    const raw = readFileSync(pkgPath, 'utf8');
+    const pkg = JSON.parse(raw) as { scripts?: Record<string, string> };
+    return deriveVerifyCommand(verifyLine, pkg);
+  } catch {
+    return null;
+  }
 }
 
 main();
