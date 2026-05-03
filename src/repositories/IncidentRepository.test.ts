@@ -14,7 +14,10 @@ import {
   where,
   limit,
 } from 'firebase/firestore';
-import type { IncidentCreateInput } from '@features/incidents/types';
+import type {
+  IncidentCreateInput,
+  JournalEntry,
+} from '@features/incidents/types';
 
 // Mock Firebase per established repo-test pattern (see PetMedicationRepository.test.ts).
 // Verify line for T-06 was amended in round 25 to use vi.mock instead of the emulator.
@@ -244,6 +247,131 @@ describe('IncidentRepository', () => {
 
       const result = await repository.findActiveForUser();
       expect(result).toBeNull();
+    });
+  });
+
+  describe('appendJournal', () => {
+    const startedAt = new Date('2026-05-02T10:00:00.000Z');
+    const existingEntries: JournalEntry[] = [
+      {
+        elapsedSeconds: 10,
+        text: 'entry 1',
+        addedAt: new Date('2026-05-02T10:00:10.000Z'),
+      },
+      {
+        elapsedSeconds: 20,
+        text: 'entry 2',
+        addedAt: new Date('2026-05-02T10:00:20.000Z'),
+      },
+      {
+        elapsedSeconds: 30,
+        text: 'entry 3',
+        addedAt: new Date('2026-05-02T10:00:30.000Z'),
+      },
+    ];
+
+    const makeSnapshot = (journal: JournalEntry[]) => ({
+      exists: () => true,
+      id: 'incident-id',
+      data: () => ({
+        petId: 'pet-1',
+        userId,
+        createdBy: userId,
+        startedAt: { toDate: () => startedAt },
+        endedAt: null,
+        chips: ['chip-a'],
+        journal: journal.map((e) => ({
+          elapsedSeconds: e.elapsedSeconds,
+          text: e.text,
+          addedAt: { toDate: () => e.addedAt },
+        })),
+        createdAt: { toDate: () => startedAt },
+        updatedAt: { toDate: () => startedAt },
+        deletedAt: null,
+        type: null,
+        severity: null,
+      }),
+    });
+
+    it('produces a journal of length 4 with the new entry last (BR-30 append-only RMW)', async () => {
+      (doc as Mock).mockReturnValue({});
+      (getDoc as Mock).mockResolvedValue(makeSnapshot(existingEntries));
+      (setDoc as Mock).mockResolvedValue(undefined);
+
+      const newEntry: JournalEntry = {
+        elapsedSeconds: 40,
+        text: 'entry 4',
+        addedAt: new Date('2026-05-02T10:00:40.000Z'),
+      };
+
+      const result = await repository.appendJournal('incident-id', newEntry);
+
+      expect(result.journal).toHaveLength(4);
+      expect(result.journal[3]).toEqual(newEntry);
+      expect(setDoc).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          journal: expect.arrayContaining([
+            expect.objectContaining({ text: 'entry 4', elapsedSeconds: 40 }),
+          ]),
+        }),
+        { merge: true }
+      );
+    });
+  });
+
+  describe('toggleChip', () => {
+    const startedAt = new Date('2026-05-02T10:00:00.000Z');
+
+    const makeSnapshot = (chips: string[]) => ({
+      exists: () => true,
+      id: 'incident-id',
+      data: () => ({
+        petId: 'pet-1',
+        userId,
+        createdBy: userId,
+        startedAt: { toDate: () => startedAt },
+        endedAt: null,
+        chips,
+        journal: [],
+        createdAt: { toDate: () => startedAt },
+        updatedAt: { toDate: () => startedAt },
+        deletedAt: null,
+        type: null,
+        severity: null,
+      }),
+    });
+
+    it('adds a chip when absent (BR-7 toggle)', async () => {
+      (doc as Mock).mockReturnValue({});
+      (getDoc as Mock).mockResolvedValue(makeSnapshot(['chip-a', 'chip-b']));
+      (setDoc as Mock).mockResolvedValue(undefined);
+
+      const result = await repository.toggleChip('incident-id', 'chip-c');
+
+      expect(result.chips).toEqual(['chip-a', 'chip-b', 'chip-c']);
+      expect(setDoc).toHaveBeenCalledWith(
+        expect.anything(),
+        { chips: ['chip-a', 'chip-b', 'chip-c'] },
+        { merge: true }
+      );
+    });
+
+    it('removes a chip when present and preserves the rest (BR-7 toggle)', async () => {
+      (doc as Mock).mockReturnValue({});
+      (getDoc as Mock).mockResolvedValue(
+        makeSnapshot(['chip-a', 'chip-b', 'chip-c'])
+      );
+      (setDoc as Mock).mockResolvedValue(undefined);
+
+      const result = await repository.toggleChip('incident-id', 'chip-b');
+
+      expect(result.chips).toEqual(['chip-a', 'chip-c']);
+      expect(setDoc).toHaveBeenCalledWith(
+        expect.anything(),
+        { chips: ['chip-a', 'chip-c'] },
+        { merge: true }
+      );
     });
   });
 });

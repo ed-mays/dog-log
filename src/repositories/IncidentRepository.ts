@@ -11,7 +11,12 @@ import {
 } from 'firebase/firestore';
 import { db } from '@app-firebase';
 import { BaseRepository } from './base/BaseRepository';
-import type { Incident, IncidentCreateInput } from '@features/incidents/types';
+import type {
+  Incident,
+  IncidentCreateInput,
+  JournalEntry,
+  ChipId,
+} from '@features/incidents/types';
 
 // Per design §D3: top-level user-scoped collection (NOT a per-pet
 // subcollection — BR-29 requires petId reassignment as a single-doc setDoc).
@@ -70,6 +75,44 @@ export class IncidentRepository extends BaseRepository<Incident> {
       return { id, ...fields } as Incident;
     } catch (error) {
       throw this.handleError(error, `createIncidentWithId(${id})`);
+    }
+  }
+
+  // RMW per design §D3: read current journal, append, write back via setDoc
+  // merge. Does NOT use arrayUnion — see §D3 rationale (order guarantee under
+  // single-writer-per-incident invariant BR-26).
+  async appendJournal(id: string, entry: JournalEntry): Promise<Incident> {
+    try {
+      const current = await this.getById(id);
+      if (!current) {
+        throw new Error(`Incident ${id} not found`);
+      }
+      const newJournal = [...current.journal, entry];
+      const docRef = doc(db, this.collectionPath, id);
+      await setDoc(docRef, { journal: newJournal }, { merge: true });
+      return { ...current, journal: newJournal };
+    } catch (error) {
+      throw this.handleError(error, `appendJournal(${id})`);
+    }
+  }
+
+  // RMW toggle per design §D3: adds chipId if absent, removes if present.
+  // Does NOT use arrayUnion/arrayRemove — toggle requires a conditional that
+  // array helpers cannot express (BR-7).
+  async toggleChip(id: string, chipId: ChipId): Promise<Incident> {
+    try {
+      const current = await this.getById(id);
+      if (!current) {
+        throw new Error(`Incident ${id} not found`);
+      }
+      const next = current.chips.includes(chipId)
+        ? current.chips.filter((c) => c !== chipId)
+        : [...current.chips, chipId];
+      const docRef = doc(db, this.collectionPath, id);
+      await setDoc(docRef, { chips: next }, { merge: true });
+      return { ...current, chips: next };
+    } catch (error) {
+      throw this.handleError(error, `toggleChip(${id})`);
     }
   }
 
