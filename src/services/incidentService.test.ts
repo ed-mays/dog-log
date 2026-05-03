@@ -120,3 +120,29 @@ describe('incidentService.findActiveIncident', () => {
     expect(result).toBeNull();
   });
 });
+
+describe('incidentService.getIncident', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('passes through to repository.getById and returns the incident', async () => {
+    const startedAt = new Date('2026-05-02T10:00:00.000Z');
+    mockGetById.mockResolvedValue({
+      id: 'incident-2',
+      userId,
+      petId: 'pet-1',
+      startedAt,
+      endedAt: null,
+    });
+    const result = await incidentService.getIncident(userId, 'incident-2');
+    expect(mockGetById).toHaveBeenCalledWith('incident-2');
+    expect(result).toMatchObject({ id: 'incident-2' });
+  });
+
+  it('returns null when the repository finds no incident', async () => {
+    mockGetById.mockResolvedValue(null);
+    const result = await incidentService.getIncident(userId, 'missing');
+    expect(result).toBeNull();
+  });
+});
