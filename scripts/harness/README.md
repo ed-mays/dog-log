@@ -79,7 +79,9 @@ Override via opts on `dispatchBuilder`/`dispatchColdReader`/`dispatchArbiter` if
 
 ### State persistence
 
-Not yet implemented. Each dispatch is currently stateless — no `.harness/state.json`, no event log, no retry tracking across invocations. The next iteration will add an append-only event log so the controller can resume mid-slice and produce per-PR cost/duration reports.
+`harness orchestrate` writes `.harness/state.json` (gitignored) as an append-only event log: one event per dispatch, plus `amendment_applied` / `amendment_apply_failed` / `cycle_halt` markers. Per-task summary (cost, dispatches, halt reason) is reconstructible from the log via `summarizeRun()` in `lib/state-store.ts`.
+
+Resume mid-cycle is **not** supported in v1 — the log is purely an audit trail. The individual `build`/`review`/`arbitrate-run` commands remain stateless.
 
 ## Eval suites
 
