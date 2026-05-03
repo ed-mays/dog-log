@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { incidentService } from '@services/incidentService';
 import { useAuthStore } from '@store/auth.store';
-import type { Incident } from '@features/incidents/types';
+import type { Incident, Severity } from '@features/incidents/types';
 
 // Per design §D8 NFR-2: startIncident generates the UUID and startedAt
 // synchronously, sets activeIncident, then persists in the background.
@@ -22,6 +22,10 @@ export interface IncidentState {
   startIncident: (args: { petId: string }) => Promise<void>;
   stopIncident: () => Promise<void>;
   hydrateActiveIncident: () => Promise<void>;
+  // BR-6: severity is settable, changeable, clearable by single-tap chip interaction.
+  // Paired chore added in T-21 — service methods existed; store surface was missing.
+  setSeverity: (severity: Severity) => Promise<void>;
+  clearSeverity: () => Promise<void>;
 }
 
 function buildOptimisticIncident(
@@ -103,6 +107,40 @@ export const useIncidentStore = create(
         set({
           error:
             error instanceof Error ? error.message : 'Failed to stop incident',
+        });
+      }
+    },
+
+    setSeverity: async (severity) => {
+      const active = get().activeIncident;
+      const userId = useAuthStore.getState().user?.uid;
+      if (!active || !userId) return;
+
+      set({ activeIncident: { ...active, severity }, error: null });
+
+      try {
+        await incidentService.setSeverity(userId, active.id, severity);
+      } catch (error) {
+        set({
+          error:
+            error instanceof Error ? error.message : 'Failed to set severity',
+        });
+      }
+    },
+
+    clearSeverity: async () => {
+      const active = get().activeIncident;
+      const userId = useAuthStore.getState().user?.uid;
+      if (!active || !userId) return;
+
+      set({ activeIncident: { ...active, severity: null }, error: null });
+
+      try {
+        await incidentService.clearSeverity(userId, active.id);
+      } catch (error) {
+        set({
+          error:
+            error instanceof Error ? error.message : 'Failed to clear severity',
         });
       }
     },
