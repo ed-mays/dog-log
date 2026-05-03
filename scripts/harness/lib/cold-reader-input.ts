@@ -9,6 +9,7 @@
  */
 
 import { extractRequirement, extractSpecSection } from './spec-parser';
+import type { TaskContractCheckResult } from './task-contract-check';
 import type { Citation, Task } from './task-parser';
 
 export interface ColdReaderInput {
@@ -32,6 +33,12 @@ export interface ColdReaderInput {
   changed_files: string[];
   /** Refs the task cited that we couldn't extract — same surfacing pattern as BuilderInput. */
   missing_citations: string[];
+  /** Pre-flight result from task-contract-check.ts (Axis 6). When provided,
+   * the markdown formatter renders a "## Pre-flight: task contract symbols"
+   * section so the cold-reader gets authoritative present/missing-symbol data
+   * rather than re-deriving it from the diff. Null/omitted = pre-flight not
+   * run (older callers, or when task_what is empty). */
+  task_contract_check?: TaskContractCheckResult | null;
 }
 
 export interface BuildColdReaderInputOptions {
@@ -40,6 +47,8 @@ export interface BuildColdReaderInputOptions {
   designMarkdown: string;
   /** Raw `git diff` output. */
   diff: string;
+  /** Optional pre-flight task-contract result (Axis 6). */
+  taskContractCheck?: TaskContractCheckResult | null;
 }
 
 /**
@@ -48,7 +57,7 @@ export interface BuildColdReaderInputOptions {
 export function buildColdReaderInput(
   opts: BuildColdReaderInputOptions
 ): ColdReaderInput {
-  const { task, specMarkdown, designMarkdown, diff } = opts;
+  const { task, specMarkdown, designMarkdown, diff, taskContractCheck } = opts;
 
   const specCites: Array<{ ref: string; body: string }> = [];
   const designCites: Array<{ ref: string; body: string }> = [];
@@ -75,6 +84,7 @@ export function buildColdReaderInput(
     diff,
     changed_files: extractChangedFiles(diff),
     missing_citations: missing,
+    task_contract_check: taskContractCheck ?? null,
   };
 }
 
@@ -142,6 +152,45 @@ export function formatColdReaderInputMarkdown(input: ColdReaderInput): string {
     );
     out.push('');
     out.push(input.task_what.trim());
+    out.push('');
+  }
+
+  if (
+    input.task_contract_check &&
+    input.task_contract_check.symbols.length > 0
+  ) {
+    const tcc = input.task_contract_check;
+    out.push('## Pre-flight: task contract symbols');
+    out.push('');
+    out.push(
+      '_Mechanical pre-flight (Axis 6): each backtick-quoted symbol from the'
+    );
+    out.push("'What' line above was searched in the diff. Treat this list as");
+    out.push(
+      'authoritative for scope_check 7 — you do not need to re-derive it.'
+    );
+    out.push(
+      'A symbol marked MISSING is a divergence unless the cited spec/design'
+    );
+    out.push('explicitly permits the omission._');
+    out.push('');
+    out.push(`**Present (${tcc.present.length}):**`);
+    if (tcc.present.length === 0) {
+      out.push('- _(none)_');
+    } else {
+      for (const s of tcc.present) {
+        out.push(`- \`${s.symbol}\` (${s.kind}) — ${s.evidence ?? ''}`);
+      }
+    }
+    out.push('');
+    out.push(`**Missing (${tcc.missing.length}):**`);
+    if (tcc.missing.length === 0) {
+      out.push('- _(none — all task-contract symbols present)_');
+    } else {
+      for (const s of tcc.missing) {
+        out.push(`- \`${s.symbol}\` (${s.kind})`);
+      }
+    }
     out.push('');
   }
 

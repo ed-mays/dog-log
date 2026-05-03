@@ -33,6 +33,7 @@ import {
   buildColdReaderInput,
   formatColdReaderInputMarkdown,
 } from './lib/cold-reader-input.ts';
+import { checkTaskContract } from './lib/task-contract-check.ts';
 import {
   buildDriftArbiterInput,
   formatDriftArbiterInputMarkdown,
@@ -449,6 +450,7 @@ function main(): void {
         specMarkdown: specMd,
         designMarkdown: designMd,
         diff,
+        taskContractCheck: checkTaskContract(task.what, diff),
       });
 
       if (values.json) {
