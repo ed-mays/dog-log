@@ -23,6 +23,7 @@
     "harness": "tsx scripts/harness/cli.ts",
     "knip": "knip",
     "knip:fix": "knip --fix --allow-remove-files",
+    "preflight": "pnpm run lint && pnpm knip --no-progress && pnpm run build && pnpm run test:coverage",
     "start:firebase": "firebase emulators:start --only auth,firestore,storage",
     "prepare": "husky",
     "deploy:dev": "firebase use dev && firebase deploy --only hosting,firestore:rules,storage",
