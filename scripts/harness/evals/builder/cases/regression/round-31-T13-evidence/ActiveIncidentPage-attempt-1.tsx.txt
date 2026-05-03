@@ -1,0 +1,18 @@
+import { Navigate } from 'react-router-dom';
+import { Box } from '@mui/material';
+import { IncidentCaptureSurface } from '../components/IncidentCaptureSurface';
+import { useIncidentStore } from '@store/useIncidentStore';
+
+export default function ActiveIncidentPage() {
+  const { activeIncident } = useIncidentStore();
+
+  if (!activeIncident) {
+    return <Navigate to="/pets" replace />;
+  }
+
+  return (
+    <Box aria-label="active incident page">
+      <IncidentCaptureSurface incident={activeIncident} />
+    </Box>
+  );
+}

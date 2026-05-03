@@ -1,0 +1,76 @@
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+
+vi.mock('@store/useIncidentStore');
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    Navigate: vi.fn(() => null),
+  };
+});
+vi.mock('../components/IncidentCaptureSurface', () => ({
+  IncidentCaptureSurface: () => <div data-testid="incident-capture-surface" />,
+}));
+
+import { render, screen } from '@testing-library/react';
+import { Navigate } from 'react-router-dom';
+import { useIncidentStore, type IncidentState } from '@store/useIncidentStore';
+import type { Incident } from '@features/incidents/types';
+
+function makeIncident(overrides: Partial<Incident> = {}): Incident {
+  const now = new Date('2026-05-02T10:00:00.000Z');
+  return {
+    id: 'inc-1',
+    userId: 'user-1',
+    createdBy: 'user-1',
+    petId: 'pet-1',
+    startedAt: now,
+    endedAt: null,
+    type: null,
+    severity: null,
+    chips: [],
+    journal: [],
+    deletedAt: null,
+    createdAt: now,
+    updatedAt: now,
+    ...overrides,
+  };
+}
+
+describe('ActiveIncidentPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders IncidentCaptureSurface when an active incident exists (§D2)', async () => {
+    const incident = makeIncident();
+    vi.mocked(useIncidentStore).mockReturnValue({
+      activeIncident: incident,
+    } as unknown as IncidentState);
+
+    const { default: ActiveIncidentPage } =
+      await import('./ActiveIncidentPage');
+    render(<ActiveIncidentPage />);
+
+    expect(screen.getByTestId('incident-capture-surface')).toBeInTheDocument();
+    expect(vi.mocked(Navigate)).not.toHaveBeenCalled();
+  });
+
+  it('redirects to /pets when no active incident exists (§D2)', async () => {
+    vi.mocked(useIncidentStore).mockReturnValue({
+      activeIncident: null,
+    } as unknown as IncidentState);
+
+    const { default: ActiveIncidentPage } =
+      await import('./ActiveIncidentPage');
+    render(<ActiveIncidentPage />);
+
+    expect(
+      screen.queryByTestId('incident-capture-surface')
+    ).not.toBeInTheDocument();
+    expect(vi.mocked(Navigate)).toHaveBeenCalledWith(
+      expect.objectContaining({ to: '/pets', replace: true }),
+      undefined
+    );
+  });
+});

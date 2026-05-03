@@ -116,8 +116,8 @@ describe('useIncidentStore', () => {
     });
   });
 
-  describe('stopIncident (BR-13)', () => {
-    it('clears activeIncident and sets endedAt on the prior active', async () => {
+  describe('stopIncident (BR-13, BR-14)', () => {
+    it('keeps activeIncident populated with endedAt set after STOP (§D2 post-STOP invariant)', async () => {
       const endedAt = new Date('2026-05-02T10:30:00.000Z');
       vi.mocked(incidentService.stopIncident).mockResolvedValue(
         fakeActive({ endedAt })
@@ -130,7 +130,15 @@ describe('useIncidentStore', () => {
         await result.current.stopIncident();
       });
 
-      expect(result.current.activeIncident).toBeNull();
+      // §D2 post-STOP invariant (round-31 amend_design): activeIncident
+      // remains populated with endedAt set, NOT nulled. This keeps the
+      // surface open after STOP per BR-14 and unifies live + post-stop
+      // phases per BR-25. The page's redirect now triggers only on
+      // "no incident has ever been started this session", not on "STOP
+      // just fired".
+      expect(result.current.activeIncident).not.toBeNull();
+      expect(result.current.activeIncident?.endedAt).toBeInstanceOf(Date);
+      expect(result.current.activeIncident?.id).toBe('incident-1');
       expect(incidentService.stopIncident).toHaveBeenCalledWith(
         expect.objectContaining({
           userId: 'user-1',

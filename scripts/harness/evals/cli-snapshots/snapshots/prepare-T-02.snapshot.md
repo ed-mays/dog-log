@@ -85,7 +85,7 @@ For every task:
        rule generalizes the lesson.
 7. **Run the verify ONE FINAL TIME** before constructing your exit
    payload. The TDD cycle in steps 3-5 includes test runs that are
-   *expected* to fail (RED → GREEN). Those iterations do NOT determine
+   _expected_ to fail (RED → GREEN). Those iterations do NOT determine
    the structured exit. **Only the final post-refactor verify run
    determines `success` vs `verify_fail`.** If your final run passes,
    emit `status: success`. If it fails, emit `status: verify_fail`

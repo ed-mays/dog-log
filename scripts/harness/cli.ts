@@ -717,14 +717,23 @@ async function runArbitrate(
         `  raw_result_text (last 1000 chars):\n---\n${dispatchRaw.resultText.slice(-1000)}\n---\n`
       );
     }
-    if (exit?.amended_section) {
-      process.stdout.write(`  amended: ${exit.amended_section}\n`);
+    if (exit?.rationale) {
+      process.stdout.write(`  rationale: ${exit.rationale}\n`);
     }
-    if (exit?.amendment_text) {
-      process.stdout.write(`  text: ${exit.amendment_text.slice(0, 200)}\n`);
+    if (exit?.amendment) {
+      process.stdout.write(`  file:   ${exit.amendment.file}\n`);
+      process.stdout.write(`  anchor: ${exit.amendment.anchor}\n`);
+      process.stdout.write(`  before:\n---\n${exit.amendment.before}\n---\n`);
+      process.stdout.write(`  after:\n---\n${exit.amendment.after}\n---\n`);
+      process.stdout.write(
+        `  changelog_entry: ${exit.amendment.changelog_entry}\n`
+      );
     }
-    if (exit?.pushback_message) {
-      process.stdout.write(`  pushback: ${exit.pushback_message}\n`);
+    if (exit?.pushback_clarification) {
+      process.stdout.write(`  pushback: ${exit.pushback_clarification}\n`);
+    }
+    if (exit?.notes) {
+      process.stdout.write(`  notes: ${exit.notes}\n`);
     }
   }
   process.exit(0);
