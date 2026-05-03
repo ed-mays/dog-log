@@ -20,6 +20,12 @@ Package manager is **pnpm** (pinned via `packageManager` field). Use `pnpm`, not
 - Run a single test: `pnpm exec vitest run path/to/file.test.tsx` (add `-t "name"` to filter by test name)
 - Deploy: `pnpm run deploy:dev` / `pnpm run deploy:staging` (sets `firebase use` then deploys hosting + firestore.rules + storage)
 
+### Local CI parity
+
+`pnpm run preflight` runs the full set of checks CI runs in `ci-pr.yml`'s main job: `lint && knip && build && test:coverage`. Wired into `.husky/pre-push` so every push runs them locally first. Mirror is intentional — it eliminates the local==CI drift that historically bit us when `knip` flagged in-progress slice exports as dead code (rounds 26+).
+
+The one CI check NOT in `preflight` is `pnpm run test:rules` (Firestore + Storage rules under emulator). Emulator setup is heavy (~30s) so it's intentionally local-optional. Run it manually when touching `firestore.rules` / `storage.rules`: `pnpm run test:rules` (requires the Firebase emulator suite installed).
+
 Local Firebase Auth emulator runs on `localhost:9099`; the app auto-connects when running on `localhost` (see `src/firebase.ts`). Do not sign in with real accounts against the emulator.
 
 ## Architecture
