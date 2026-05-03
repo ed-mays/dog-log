@@ -26,6 +26,8 @@ export interface IncidentState {
   // Paired chore added in T-21 — service methods existed; store surface was missing.
   setSeverity: (severity: Severity) => Promise<void>;
   clearSeverity: () => Promise<void>;
+  // BR-8, BR-9: append journal entry with elapsed time
+  appendJournal: (text: string) => Promise<void>;
 }
 
 function buildOptimisticIncident(
@@ -158,6 +160,42 @@ export const useIncidentStore = create(
             error instanceof Error
               ? error.message
               : 'Failed to hydrate incident',
+        });
+      }
+    },
+
+    appendJournal: async (text: string) => {
+      const active = get().activeIncident;
+      const userId = useAuthStore.getState().user?.uid;
+      if (!active || !userId) return;
+
+      const now = new Date();
+      const elapsedSeconds = Math.floor(
+        (now.getTime() - active.startedAt.getTime()) / 1000
+      );
+
+      const newEntry = {
+        elapsedSeconds,
+        text,
+        addedAt: now,
+      };
+
+      set({
+        activeIncident: { ...active, journal: [...active.journal, newEntry] },
+        error: null,
+      });
+
+      try {
+        await incidentService.appendJournal({
+          userId,
+          incidentId: active.id,
+          text,
+          now,
+        });
+      } catch (error) {
+        set({
+          error:
+            error instanceof Error ? error.message : 'Failed to append journal',
         });
       }
     },
