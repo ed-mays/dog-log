@@ -627,7 +627,79 @@ Slice 1 can resume — but with three load-bearing differences from rounds 24–
 
 ### Round 27 — Live e2e: first real `harness build` dispatch on T-11
 
-_Pending — to be appended after the dispatch run completes._
+**The headline:** First live `pnpm tsx scripts/harness/cli.ts build T-11` dispatch ran end-to-end. The subagent built T-11 (StopButton) **correctly** — the produced code + tests pass when run directly via Vitest. But the harness reported `verify_fail` after 4 retry attempts because the subagent constructed its verify command using **Jest CLI syntax** (`pnpm run test:unit -- --testPathPattern=StopButton`) — Vitest doesn't recognize that flag. **Cost: $0.7135. Duration: 212s. Turns: 25.** First `verify_fail` exit emitted in the wild across rounds 17–27.
+
+Round 27 also surfaced a dispatcher-resilience bug (the parser threw on missing/non-conforming exit text, discarding cost/duration/session metadata in the process) and shipped the fix in the same PR (#169).
+
+#### What happened on the live dispatch (the real ground truth)
+
+Two attempts:
+
+**Attempt 1.** `pnpm tsx scripts/harness/cli.ts build T-11` returned `harness: build dispatch failed: builder dispatch: missing or invalid status field (got undefined)`. The CLI threw because `parseBuilderExit` couldn't find a `status` field. All metadata (cost, duration, session id, stop_reason) was discarded. Worse: the subagent's actual work (StopButton.tsx + test, both correct, both producing 2/2 passing tests) was sitting in the working tree uncommitted — and the operator couldn't tell from the harness output what had actually happened.
+
+**Attempt 2** (after the dispatcher fix to capture raw on parse failure): same task, same prompt, this time returned a clean structured exit:
+
+```
+builder exit: verify_fail
+  cost: $0.7135
+  duration: 212.3s
+  turns: 25
+  session: 71c67702-fb6f-46a2-9cc9-93c1d062daa4
+  stop_reason: end_turn
+  verify_command: pnpm run test:unit -- --testPathPattern=StopButton
+  attempts: 4
+```
+
+Same outcome (correct code, no commit). This time the harness verdict was legible: the subagent emitted `verify_fail` because it couldn't get its constructed verify command to pass. The constructed command is Jest syntax; the project uses Vitest. After 4 retries it gave up.
+
+#### Two methodology findings
+
+**Finding #1 — Dispatcher must never silently fail on parse error.** The original `parseBuilderExit` (and its cold-reader/arbiter siblings) threw on a missing/malformed exit, discarding the JSON envelope's structured metadata (cost, duration, num_turns, session_id, stop_reason) and the raw result text. **This made attempt 1 undebuggable.** **Shipped this round (PR #169):** all three role dispatchers now return `{ exit: <Type> | null, raw, parseError? }` instead of throwing; the CLI prints `parse_error` + last 1000 chars of raw text + all metadata when the parse fails. The harness equivalent of "always log, never silently fail."
+
+**Finding #2 — Subagent invents verify commands from descriptive verify lines.** T-11's verify line says: _"Component test: tap fires the store action; aria-label matches the i18n value."_ This is descriptive (what should be true) rather than commanded (what to run). The subagent inferred a command — and inferred wrong. **Two candidate fixes (NOT shipped this round; methodology iteration material for round 28+):**
+
+1. **Builder prompt amendment** — instruct subagents to consult `package.json` `scripts` block (and CLAUDE.md test-runner notes) before constructing verify commands. Default for unit tests in this project: `pnpm exec vitest run <path>`.
+2. **Verify-line policy** — require task verify lines to specify the exact runner command for non-default tools. Methodology-level constraint affecting the artifact-generation phase.
+
+Both have tradeoffs. (1) trusts the subagent to do project archaeology mid-task; (2) shifts work to the spec/design author. A/B-test on the next live dispatch.
+
+#### What didn't happen (intentionally)
+
+- **No T-11 commit.** Subagent's code is correct, but the harness gate said `verify_fail`. Honoring the gate is what makes the gate trustworthy. **Slice 1 stays at 5/11 done.**
+- **No cold-reader / arbiter run.** No commit, no diff to review. No `spec_gap`, nothing for the arbiter to resolve.
+- **No state.json event log.** Out of scope for this round; documented as still-pending in §7.
+
+#### What DID happen (the load-bearing wins)
+
+- **Dispatch primitive validated end-to-end.** PR #167's wiring actually works against the real `claude` binary. Full chain — task input rendering → prompt assembly → spawn → JSON envelope parse → structured exit parse → CLI report — produced a meaningful, accurate result.
+- **First real cost/duration baseline.** $0.7135, 212s, 25 turns, 4 verify retries. Comparison: hand-driving T-11 in the prior session took ~5 minutes of human time at zero direct LLM cost (just conversation overhead). The live dispatch cost real money but freed the human. Future rounds compare slice-task baselines as the harness improves.
+- **First-ever `verify_fail` exit in the wild.** All prior rounds (17–26) produced only `success` (16) and `spec_gap` (4) exits. Captured as `regression-round-27-T11-verify-fail-vitest-jest-confusion` with both attempts' StopButton implementations preserved as evidence in `round-27-T11-evidence/` (`.tsx.txt` extension to keep vitest from globbing them). Builder regression bucket: 8 → 9.
+- **Dispatcher resilience is a permanent win.** Future parse failures across all three roles produce diagnostic output instead of a thrown error.
+
+#### Process notes
+
+- **The user's frustration with round 26's pivot was retroactively justified by round 27.** Hand-built T-11 in the prior session would have produced correct code without surfacing finding #1 (dispatcher silent kill) OR finding #2 (verify-command construction gap). Both findings are only visible when an actual subagent runs. Slice 1 was the right test corpus for this exact reason.
+- **Round 27 spent $0.7135 on a task that didn't ship code.** Cost of a real test of the harness. Methodology-finding return on that spend is high.
+- **The harness gate fired correctly even when its verdict was "wrong" for stupid reasons.** This is a feature: the harness reflects what the subagent thinks happened, not the operator's after-the-fact correction. The fix is to make the subagent smarter, not to override the gate.
+
+#### Coverage delta
+
+| Suite                           | After round 26 | After round 27           |
+| ------------------------------- | -------------- | ------------------------ |
+| builder regression              | 8              | 9 (+1 first verify_fail) |
+| dispatch unit tests             | 40             | 40                       |
+| **Live dispatch runs (real $)** | **0**          | **2** ($0.71 total)      |
+| **`verify_fail` exits emitted** | **0**          | **1** (FIRST ever)       |
+
+#### What this enables next
+
+Three obvious follow-ups in priority order:
+
+1. **Methodology fix for finding #2.** Update `builder.md` to consult `package.json` scripts before constructing verify commands. Cheaper than option B. Ship as small PR; validate by re-dispatching T-11.
+2. **Re-dispatch T-11 after the fix.** If the subagent now picks `pnpm exec vitest run <path>`, T-11 should produce a clean `success` with a commit. Slice 1 advances to 6/11.
+3. **Continue slice 1 through the harness.** T-12..T-15 dispatched in sequence. Each task = a real cost data point + organic methodology findings. Slice 1 PR (#165) eventually moves draft → ready when T-11..T-16 all green.
+
+**Open question for the user:** ship finding-#2 fix as a small standalone PR, or bundle it with re-dispatch of T-11 and the resulting commit (if successful)?
 
 ---
 
