@@ -15,7 +15,11 @@ gates merge.
 You receive:
 
 - **`task_id`** — e.g. `T-07`
-- **`task_description`** — verbatim from the task list
+- **`task_description`** — verbatim one-line summary
+- **`task_what`** — verbatim "What" line from the task body. **This is the
+  task's contract.** Every method/symbol/file/option named here is a
+  verbatim requirement; renaming, collapsing, or omitting any named entity
+  is a divergence (see scope_check 7).
 - **`cited_spec_sections`** — verbatim text of every spec section/requirement
   the task cites. You may NOT infer beyond what's here. If the spec doesn't
   explicitly say something, the spec doesn't say it.
@@ -35,7 +39,7 @@ context.
 ## POSITIVE SCOPE (the only things you check for)
 
 For each finding you emit, the `scope_check` field MUST be one of these
-six numbers. If a concern doesn't fit one of these, do not emit it.
+seven numbers. If a concern doesn't fit one of these, do not emit it.
 
 1. **Spec implementation correctness.** For each cited BR, trace the BR's
    text to a specific code line. If the diff doesn't implement what the BR
@@ -67,6 +71,20 @@ six numbers. If a concern doesn't fit one of these, do not emit it.
    section are mutually satisfiable.** Methodology basis: round-25
    builder pre-flight caught this on T-06 after five rounds of design
    cold-reads missed it.
+7. **Task contract conformance** (added round 42, finding #6). Read the
+   `task_what` input verbatim. For every method name, symbol, file path,
+   option, or behavior named there, check that the diff implements it
+   with the **exact name** given. Renaming (`setSeverity` accepting `null`
+   instead of separate `setSeverity` + `clearSeverity` when both are
+   named), collapsing (4 methods where 6 are named), reshaping (caller-
+   supplied arg where the task says service computes), or omitting any
+   named entity is a divergence. Emit as **CRITICAL** if the omission
+   breaks a contract callers will rely on; **HIGH** if it's silently
+   collapsing a named symmetry. Methodology basis: T-17 (round 37) shipped
+   with two such divergences and cold-reader missed both because it had
+   no access to the task body — the cited BRs were too loose to constrain
+   the API shape. The `task_what` field exists precisely so this scope
+   has bite.
 
 ---
 
@@ -131,7 +149,7 @@ observations — use it freely, but keep it inside the JSON.
 }
 ```
 
-**Methodology basis:** round-34 cold-reader emitted `**Verdict: \`approve\` — no findings.**` as bold-prose preamble before the JSON-shaped notes; parser found no `verdict` field; orchestrator halted at $0.55 for a clean approve. JSON-fenced-only is the operationally correct format because it's what the parser is built for.
+**Methodology basis:** round-34 cold-reader emitted `**Verdict: \`approve\` — no findings.\*\*`as bold-prose preamble before the JSON-shaped notes; parser found no`verdict` field; orchestrator halted at $0.55 for a clean approve. JSON-fenced-only is the operationally correct format because it's what the parser is built for.
 
 **`cited_section` MUST be one of: `BR-N`, `NFR-N`, `AC-N`, `US-N`, `OQ-N`,
 `DQ-N`, `§N`, `§DN`.** No other values are valid. Findings rooted in the
@@ -175,6 +193,14 @@ ground truth for whether your scoping is right. Trust it over your instincts.
 # Task under review: T-01 — TypeScript types
 
 **Verify line (per-task gate):** `pnpm exec tsc -b` passes with the new file imported nowhere.
+
+## Task contract (verbatim "What" line)
+
+_The 'What' line is the verbatim contract for this task. Treat every
+method/symbol/file/option named here as a verbatim requirement; renaming,
+collapsing, or omitting any named entity is a divergence (see scope_check 7)._
+
+Create `src/features/incidents/types.ts` with `Incident`, `IncidentTypeId`, `Severity`, `ChipId`, `JournalEntry`, `IncidentCreateInput`, `IncidentUpdateInput`. Include the BR-29 runtime-invariant comment from design §D3.
 
 ## Cited spec sections
 

@@ -1,0 +1,28 @@
+{
+  "case_id": "regression-T-17-collapsed-named-methods",
+  "artifact_kind": "code",
+  "task_id": "T-17",
+  "source": "Real builder divergence from round 37 (T-17). Surfaced finding #6: cold-reader scope #1 (BR coverage) was satisfied because each cited BR had some test, but the task's 'What' line explicitly named SIX distinct mutation methods (setSeverity, clearSeverity, toggleChip, appendJournal, setType, clearType) and the builder shipped only FOUR (collapsed clearSeverity into setSeverity(null) and clearType into setType(null)). Cold-reader missed both divergences pre-PR-B-2 because the prompt didn't load task_what.",
+  "input": {
+    "task_description": "incidentService extensions (mutations)",
+    "task_what": "Add to incidentService: setSeverity, clearSeverity, toggleChip, appendJournal (computes elapsedSeconds against incident.startedAt at call time per BR-31), setType, clearType. All use repository methods that wrap RMW per design §D3.",
+    "verify_line": "Unit tests for each method; tests cover the BR-22 invariant (changing type leaves severity, chips, journal untouched) and BR-31 (elapsedSeconds stored at write time, not recomputed).",
+    "cited_spec_refs": ["BR-6", "BR-7", "BR-8", "BR-9", "BR-19", "BR-22"],
+    "cited_design_refs": ["§D3"],
+    "diff_summary": "incidentService.ts exports 4 methods: setSeverity(args: { severity: Severity | null }), setType(args: { type: IncidentTypeId | null }), toggleChip, appendJournal. No clearSeverity. No clearType. Tests cover all 4 method paths including null-handling.",
+    "diff_path": "fixtures/T-17-collapsed-methods.diff"
+  },
+  "expected": {
+    "verdict": "veto",
+    "findings": [
+      {
+        "severity": "HIGH",
+        "scope_check": 7,
+        "cited_section": ["task_what"],
+        "evidence_pattern": "(?i)setSeverity|setType|null|clearSeverity|clearType",
+        "description_pattern": "(?i)clearSeverity|clearType|six|named|verbatim|exact name|collapse|nullable"
+      }
+    ]
+  },
+  "notes": "Single-finding case demonstrating scope_check 7 firing. The cold-reader should: (a) read task_what verbatim, (b) enumerate the six named symbols, (c) cross-check against the diff, (d) emit a HIGH finding flagging clearSeverity + clearType as missing. Severity is HIGH (not CRITICAL) per the scope-7 rubric: silently collapsing a named symmetry is HIGH; a contract-breaking omission would be CRITICAL. This case predates PR-B-2 (it's the empirical motivation for finding #6's resolution) and is the regression test that scope_check 7 must keep passing."
+}
