@@ -10,6 +10,8 @@ vi.mock('@services/incidentService', () => ({
     createIncident: vi.fn(),
     stopIncident: vi.fn(),
     findActiveIncident: vi.fn(),
+    setSeverity: vi.fn(),
+    clearSeverity: vi.fn(),
   },
 }));
 
@@ -156,6 +158,68 @@ describe('useIncidentStore', () => {
       });
 
       expect(incidentService.stopIncident).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setSeverity / clearSeverity (BR-6)', () => {
+    it('sets severity optimistically and persists via service', async () => {
+      vi.mocked(incidentService.setSeverity).mockResolvedValue(
+        fakeActive({ severity: 'moderate' })
+      );
+      useIncidentStore.setState({ activeIncident: fakeActive() });
+
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.setSeverity('moderate');
+      });
+
+      expect(result.current.activeIncident?.severity).toBe('moderate');
+      expect(incidentService.setSeverity).toHaveBeenCalledWith(
+        'user-1',
+        'incident-1',
+        'moderate'
+      );
+    });
+
+    it('no-ops setSeverity when no active incident', async () => {
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.setSeverity('mild');
+      });
+      expect(incidentService.setSeverity).not.toHaveBeenCalled();
+    });
+
+    it('clears severity optimistically and persists via service', async () => {
+      vi.mocked(incidentService.clearSeverity).mockResolvedValue(
+        fakeActive({ severity: null })
+      );
+      useIncidentStore.setState({
+        activeIncident: fakeActive({ severity: 'severe' }),
+      });
+
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.clearSeverity();
+      });
+
+      expect(result.current.activeIncident?.severity).toBeNull();
+      expect(incidentService.clearSeverity).toHaveBeenCalledWith(
+        'user-1',
+        'incident-1'
+      );
+    });
+
+    it('captures error on setSeverity persist failure', async () => {
+      vi.mocked(incidentService.setSeverity).mockRejectedValue(
+        new Error('boom')
+      );
+      useIncidentStore.setState({ activeIncident: fakeActive() });
+
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.setSeverity('mild');
+      });
+      expect(result.current.error).toBe('boom');
     });
   });
 
