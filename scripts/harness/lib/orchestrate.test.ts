@@ -167,7 +167,10 @@ describe('orchestrateTask — happy path', () => {
     expect(result.outcome).toBe('success');
     expect(result.builderDispatches).toBe(1);
     expect(result.arbiterDispatches).toBe(0);
-    expect(result.lastCommitSha).toBe('abc123');
+    // Per finding #9: lastCommitSha comes from resolveHeadSha (mock default
+    // 'commit-abc'), NOT from the builder's reported (potentially hallucinated)
+    // commit_sha 'abc123'. See dedicated finding-#9 test below.
+    expect(result.lastCommitSha).toBe('commit-abc');
     expect(result.totalCostUsd).toBeCloseTo(0.77); // 0.5 + 0.27
     expect(deps.dispatchBuilder).toHaveBeenCalledTimes(1);
     expect(deps.dispatchColdReader).toHaveBeenCalledTimes(1);
@@ -204,7 +207,9 @@ describe('orchestrateTask — full escalation cycle', () => {
     expect(result.outcome).toBe('success');
     expect(result.builderDispatches).toBe(2);
     expect(result.arbiterDispatches).toBe(1);
-    expect(result.lastCommitSha).toBe('second-commit');
+    // Per finding #9: lastCommitSha comes from resolveHeadSha (mock default
+    // 'commit-abc'), NOT from the builder's reported 'second-commit'.
+    expect(result.lastCommitSha).toBe('commit-abc');
     expect(deps.applyAmendment).toHaveBeenCalledTimes(1);
     const amendmentCalls = (deps.applyAmendment as ReturnType<typeof vi.fn>)
       .mock.calls;
@@ -441,6 +446,92 @@ describe('orchestrateTask — state.json correctness', () => {
       'dispatch_end',
       'orchestrate_end',
     ]);
+  });
+
+  it('uses resolveHeadSha (NOT builder.exit.commit_sha) as the source of truth for the post-build SHA — finding #9', async () => {
+    // Builder reports a hallucinated SHA; resolveHeadSha returns the real one.
+    const deps = makeDeps({
+      dispatchBuilder: vi
+        .fn()
+        .mockResolvedValueOnce(builderSuccess('hallucinated-deadbeef')),
+      dispatchColdReader: vi.fn().mockResolvedValueOnce(reviewApprove()),
+      resolveHeadSha: () => 'real-head-cafe',
+    });
+    const result = await orchestrateTask({
+      taskId: 'T-14',
+      statePath,
+      cwd: workDir,
+      deps,
+    });
+    expect(result.lastCommitSha).toBe('real-head-cafe');
+
+    // The dispatch_start for cold-reader must reference the REAL sha
+    // (cold-reader's diff range needs git to actually find the commit).
+    const coldStart = result.state.events.find(
+      (e) =>
+        e.type === 'dispatch_start' &&
+        (e.payload as { role?: string }).role === 'cold-reader'
+    );
+    expect(coldStart).toBeTruthy();
+    expect((coldStart!.payload as { diff_sha?: string }).diff_sha).toBe(
+      'real-head-cafe'
+    );
+  });
+
+  it('halts gracefully when resolveHeadSha throws — finding #9 robustness', async () => {
+    const deps = makeDeps({
+      dispatchBuilder: vi.fn().mockResolvedValueOnce(builderSuccess('any')),
+      resolveHeadSha: () => {
+        throw new Error('not a git repository');
+      },
+    });
+    const result = await orchestrateTask({
+      taskId: 'T-14',
+      statePath,
+      cwd: workDir,
+      deps,
+    });
+    expect(result.outcome).toBe('halt_verify_fail');
+    expect(result.haltReason).toMatch(/not a git repository/);
+  });
+
+  it('captures full cold-reader findings array in dispatch_end payload — finding #10', async () => {
+    const deps = makeDeps({
+      dispatchBuilder: vi.fn().mockResolvedValueOnce(builderSuccess('x')),
+      dispatchColdReader: vi.fn().mockResolvedValueOnce(reviewVeto(2, 'AC-4')),
+    });
+    const result = await orchestrateTask({
+      taskId: 'T-22',
+      statePath,
+      cwd: workDir,
+      deps,
+    });
+    const coldEnd = result.state.events.find(
+      (e) =>
+        e.type === 'dispatch_end' &&
+        (e.payload as { role?: string }).role === 'cold-reader'
+    );
+    expect(coldEnd).toBeTruthy();
+    const payload = coldEnd!.payload as {
+      verdict: string;
+      findings_count: number;
+      findings: Array<{
+        severity: string;
+        scope_check: number;
+        cited_section: string;
+        evidence: string;
+        description: string;
+      }>;
+    };
+    expect(payload.verdict).toBe('veto');
+    expect(payload.findings_count).toBe(1);
+    expect(payload.findings).toHaveLength(1);
+    expect(payload.findings[0]).toMatchObject({
+      severity: 'HIGH',
+      scope_check: 2,
+      cited_section: 'AC-4',
+      description: expect.stringContaining('mock veto'),
+    });
   });
 
   it('records amendment_applied event on successful application', async () => {
