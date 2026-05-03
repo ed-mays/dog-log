@@ -33,3 +33,6 @@ package-lock.json
 test_output.txt
 test-output.json
 DELETE-ME.txt
+
+# Harness runtime state (round-26 architecture plan §1)
+.harness/

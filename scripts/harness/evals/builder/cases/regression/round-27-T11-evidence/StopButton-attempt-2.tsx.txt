@@ -1,0 +1,20 @@
+import { Button } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { useIncidentStore } from '@store/useIncidentStore';
+
+export function StopButton() {
+  const { t } = useTranslation();
+  const { stopIncident } = useIncidentStore();
+  const label = t('incidents.stop', 'STOP');
+
+  return (
+    <Button
+      variant="contained"
+      color="error"
+      aria-label={label}
+      onClick={() => void stopIncident()}
+    >
+      {label}
+    </Button>
+  );
+}

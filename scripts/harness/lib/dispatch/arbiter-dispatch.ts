@@ -43,8 +43,9 @@ export interface ArbiterDispatchOptions {
 }
 
 export interface ArbiterDispatchResult {
-  exit: ArbiterExit;
+  exit: ArbiterExit | null;
   raw: DispatchResult;
+  parseError?: string;
 }
 
 const DEFAULT_TASK_LIST = 'docs/specs/incident-capture/03-tasks.md';
@@ -84,8 +85,13 @@ export async function dispatchArbiter(
     spawnImpl: opts.spawnImpl,
   });
 
-  const exit = parseArbiterExit(raw.resultText);
-  return { exit, raw };
+  try {
+    const exit = parseArbiterExit(raw.resultText);
+    return { exit, raw };
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    return { exit: null, raw, parseError: reason };
+  }
 }
 
 export function parseArbiterExit(text: string): ArbiterExit {

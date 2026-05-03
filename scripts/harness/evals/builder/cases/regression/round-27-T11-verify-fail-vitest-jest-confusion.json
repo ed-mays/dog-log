@@ -1,0 +1,31 @@
+{
+  "case_id": "regression-round-27-T11-verify-fail-vitest-jest-confusion",
+  "task_id": "T-11",
+  "source": "Round-27 first live e2e dispatch via `pnpm tsx scripts/harness/cli.ts build T-11`. The subagent produced correct StopButton code + tests (independently verified to pass) but emitted `verify_fail` after 4 attempts because it constructed the verify command using Jest CLI syntax (`pnpm run test:unit -- --testPathPattern=StopButton`) rather than Vitest's positional arg pattern. The task's verify line says 'Component test: tap fires the store action; aria-label matches the i18n value' — it does NOT specify the exact command, leaving the subagent to invent one. Two methodology findings: (a) builder needs to consult package.json scripts / CLAUDE.md for the project's test runner; (b) verify-line specificity matters when the project uses non-default tools.",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/regression/round-27-T11-verify-fail-vitest-jest-confusion.input.md"
+  },
+  "expected": {
+    "status": "verify_fail",
+    "verify_command_pattern": "(?i)(testPathPattern|--testPathPattern|jest|test:unit)",
+    "attempts_min": 1
+  },
+  "actual_baseline": {
+    "status": "verify_fail",
+    "verify_command": "pnpm run test:unit -- --testPathPattern=StopButton",
+    "attempts": 4,
+    "wall_clock_seconds": 212,
+    "tokens_consumed": null,
+    "cost_usd": 0.7135,
+    "tool_uses": null,
+    "session_id": "71c67702-fb6f-46a2-9cc9-93c1d062daa4",
+    "stop_reason": "end_turn",
+    "num_turns": 25,
+    "files_touched_evidence": [
+      "scripts/harness/evals/builder/cases/regression/round-27-T11-evidence/StopButton-attempt-2.tsx",
+      "scripts/harness/evals/builder/cases/regression/round-27-T11-evidence/StopButton-attempt-2.test.tsx"
+    ],
+    "notes": "Subagent's code is correct — independently verified by `pnpm exec vitest run src/features/incidents/components/StopButton.test.tsx` produces 2/2 passing tests. The harness's verify_fail verdict reflects the subagent's wrong command construction, not bad code. This is the FIRST verify_fail exit emitted in the wild (rounds 17-26 produced only success/spec_gap)."
+  },
+  "notes": "Methodology carry-overs (round 27): (1) update builder.md to instruct subagents to consult package.json `scripts` block before constructing verify commands, OR (2) require task verify lines to specify the exact runner command for non-default test tools. Both candidate fixes worth A/B once the next live dispatch happens. Companion file: `round-27-T11-evidence/` directory holds both the attempt-1 (parse_error before round-27 dispatcher fix) and attempt-2 (verify_fail with proper exit) StopButton implementations. Both produce correct code; both fail the harness gate for different reasons."
+}

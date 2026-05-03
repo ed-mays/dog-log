@@ -81,8 +81,12 @@ export interface BuilderDispatchOptions {
 }
 
 export interface BuilderDispatchResult {
-  exit: BuilderExit;
+  /** The parsed structured exit, OR null when the subagent did not emit one. */
+  exit: BuilderExit | null;
+  /** Raw envelope from claude -p (cost, duration, turns, session, full result text). */
   raw: DispatchResult;
+  /** When `exit` is null, why the parse failed. */
+  parseError?: string;
 }
 
 const DEFAULT_TASK_LIST = 'docs/specs/incident-capture/03-tasks.md';
@@ -139,8 +143,13 @@ export async function dispatchBuilder(
     spawnImpl: opts.spawnImpl,
   });
 
-  const exit = parseBuilderExit(raw.resultText);
-  return { exit, raw };
+  try {
+    const exit = parseBuilderExit(raw.resultText);
+    return { exit, raw };
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    return { exit: null, raw, parseError: reason };
+  }
 }
 
 export function parseBuilderExit(text: string): BuilderExit {

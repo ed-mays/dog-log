@@ -1,0 +1,43 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { StopButton } from './StopButton';
+import { useIncidentStore, type IncidentState } from '@store/useIncidentStore';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (_key: string, defaultValue: string) => defaultValue,
+  }),
+}));
+
+vi.mock('@store/useIncidentStore');
+
+describe('StopButton', () => {
+  const mockStopIncident = vi.fn().mockResolvedValue(undefined);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useIncidentStore).mockReturnValue({
+      stopIncident: mockStopIncident,
+      activeIncident: null,
+      isLoading: false,
+      error: null,
+      startIncident: vi.fn(),
+      hydrateActiveIncident: vi.fn(),
+    } as unknown as IncidentState);
+  });
+
+  it('renders with aria-label matching the i18n value (BR-12)', () => {
+    render(<StopButton />);
+    expect(screen.getByRole('button', { name: 'STOP' })).toBeInTheDocument();
+  });
+
+  it('calls stopIncident store action on tap (BR-13)', async () => {
+    const user = userEvent.setup();
+    render(<StopButton />);
+
+    await user.click(screen.getByRole('button', { name: 'STOP' }));
+
+    expect(mockStopIncident).toHaveBeenCalledTimes(1);
+  });
+});

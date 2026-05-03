@@ -48,8 +48,9 @@ export interface ColdReaderDispatchOptions {
 }
 
 export interface ColdReaderDispatchResult {
-  exit: ColdReaderExit;
+  exit: ColdReaderExit | null;
   raw: DispatchResult;
+  parseError?: string;
 }
 
 const DEFAULT_TASK_LIST = 'docs/specs/incident-capture/03-tasks.md';
@@ -95,8 +96,13 @@ export async function dispatchColdReader(
     spawnImpl: opts.spawnImpl,
   });
 
-  const exit = parseColdReaderExit(raw.resultText);
-  return { exit, raw };
+  try {
+    const exit = parseColdReaderExit(raw.resultText);
+    return { exit, raw };
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    return { exit: null, raw, parseError: reason };
+  }
 }
 
 function readGitDiff(range: string, cwd?: string): string {
