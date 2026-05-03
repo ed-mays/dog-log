@@ -28,6 +28,14 @@ const EditVetPage = lazy(
   () => import('@features/veterinarians/pages/EditVetPage')
 );
 
+// Incidents feature pages (slice 1)
+const ActiveIncidentPage = lazy(
+  () => import('@features/incidents/pages/ActiveIncidentPage')
+);
+const SavedIncidentPage = lazy(
+  () => import('@features/incidents/pages/SavedIncidentPage')
+);
+
 export function AppRoutes() {
   const enablePetList = useFeatureFlag('petListEnabled');
   const enableAddPet = useFeatureFlag('addPetEnabled');
@@ -36,6 +44,7 @@ export function AppRoutes() {
   const { initializing } = useAuthStore();
   const isAuthenticated = useIsAuthenticated();
   const enableVets = useFeatureFlag('vetsEnabled');
+  const incidentsEnabled = useFeatureFlag('incidentsEnabled');
 
   if (initializing) {
     return <LoadingIndicator />;
@@ -124,6 +133,27 @@ export function AppRoutes() {
           element={
             enableVets ? (
               <EditVetPage />
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
+          }
+        />
+        {/* Incidents routes (flag-gated, BR-27) */}
+        <Route
+          path="/incidents/active"
+          element={
+            incidentsEnabled ? (
+              <ActiveIncidentPage />
+            ) : (
+              <Navigate to="/feature-unavailable" replace />
+            )
+          }
+        />
+        <Route
+          path="/pets/:petId/incidents/:incidentId"
+          element={
+            incidentsEnabled ? (
+              <SavedIncidentPage />
             ) : (
               <Navigate to="/feature-unavailable" replace />
             )

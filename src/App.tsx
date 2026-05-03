@@ -3,6 +3,7 @@ import { ErrorIndicator } from '@components/common/ErrorIndicator/ErrorIndicator
 import { RoutePrefetcher } from '@features/pets/RoutePrefetcher';
 import { NavigationBar } from '@components/common/NavigationBar/NavigationBar';
 import { FeatureFlagsDevTool } from '@featureFlags/components/FeatureFlagsDevTool';
+import { EmergencyActivationFab } from '@components/common/EmergencyActivationFab';
 
 import './App.css';
 import { AppRoutes } from './AppRoutes';
@@ -30,6 +31,7 @@ const App = () => {
       {isLoading && <LoadingIndicator />}
       {hasError && <ErrorIndicator text={errorText} />}
       <AppRoutes />
+      <EmergencyActivationFab />
       {import.meta.env.DEV && <FeatureFlagsDevTool />}
     </div>
   );
