@@ -12,6 +12,7 @@ vi.mock('@services/incidentService', () => ({
     findActiveIncident: vi.fn(),
     setSeverity: vi.fn(),
     clearSeverity: vi.fn(),
+    appendJournal: vi.fn(),
   },
 }));
 
@@ -269,6 +270,84 @@ describe('useIncidentStore', () => {
       });
 
       expect(result.current.activeIncident).toBeNull();
+    });
+  });
+
+  describe('appendJournal (BR-8, BR-9, BR-30, AC-4)', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('AC-4: Given an active incident 92s old, When appendJournal is called, Then optimistic entry has elapsedSeconds = 92', async () => {
+      const startedAt = new Date('2026-05-02T10:00:00.000Z');
+      vi.setSystemTime(new Date(startedAt.getTime() + 92_000));
+      vi.mocked(incidentService.appendJournal).mockResolvedValue(
+        fakeActive({ startedAt, journal: [] })
+      );
+      useIncidentStore.setState({ activeIncident: fakeActive({ startedAt }) });
+
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.appendJournal('shaking starting');
+      });
+
+      const entries = result.current.activeIncident!.journal;
+      expect(entries).toHaveLength(1);
+      expect(entries[0]!.elapsedSeconds).toBe(92);
+      expect(entries[0]!.text).toBe('shaking starting');
+
+      // Service receives the SAME `now` the store used — guarantees persisted
+      // elapsedSeconds matches the optimistic value (no ms drift).
+      expect(incidentService.appendJournal).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId: 'user-1',
+          incidentId: 'incident-1',
+          text: 'shaking starting',
+          now: expect.any(Date),
+        })
+      );
+      const passedNow = vi.mocked(incidentService.appendJournal).mock
+        .calls[0]![0].now!;
+      expect(
+        Math.floor((passedNow.getTime() - startedAt.getTime()) / 1000)
+      ).toBe(92);
+    });
+
+    it('is a no-op when no active incident exists', async () => {
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.appendJournal('some text');
+      });
+
+      expect(incidentService.appendJournal).not.toHaveBeenCalled();
+    });
+
+    it('is a no-op when no auth user exists', async () => {
+      (useAuthStore.getState as Mock).mockReturnValue({ user: null });
+      useIncidentStore.setState({ activeIncident: fakeActive() });
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.appendJournal('some text');
+      });
+
+      expect(incidentService.appendJournal).not.toHaveBeenCalled();
+    });
+
+    it('captures error on persist failure', async () => {
+      vi.mocked(incidentService.appendJournal).mockRejectedValue(
+        new Error('append-fail')
+      );
+      useIncidentStore.setState({ activeIncident: fakeActive() });
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.appendJournal('some text');
+      });
+
+      expect(result.current.error).toBe('append-fail');
     });
   });
 });
