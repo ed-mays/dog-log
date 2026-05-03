@@ -1202,9 +1202,79 @@ Three findings (#6, #7, #9, #10) closed; one (#11) merged into #7's resolution. 
 
 ---
 
+### Round 43 — Slice-3 readiness gate (T-27) + harness next-generation exploration + Axes 4+5 ship
+
+**Context:** PR-B trio merged (rounds 42, PRs #196/#197/#198). T-27 ActivationPetPicker dispatched as the slice-3 readiness gate to verify all three PR-B improvements work together on a real task. While T-27 ran in background, user asked for thinking on seven harness-improvement axes; result captured as plan §11 exploration document. After T-27 + pushback completed, shipped Axes 4+5 (observability bundle).
+
+#### Round 43 trajectory
+
+**T-27 dispatch (slice-3 readiness gate):**
+
+| Step                                                  | Cost             | Outcome                                                       |
+| ----------------------------------------------------- | ---------------- | ------------------------------------------------------------- |
+| Orchestrator: builder #1                              | $1.25            | success commit `b91d895`                                      |
+| Cold-reader #1                                        | $0.17            | veto, 1 finding (full findings array captured per #10)        |
+| Arbiter #1                                            | $0.27            | `amend_task`                                                  |
+| amendment_applied                                     | —                | applied to 03-tasks.md                                        |
+| Builder #2                                            | $0.37            | success                                                       |
+| Cold-reader #2                                        | $0.15            | veto, 1 finding                                               |
+| Arbiter #2                                            | $0.20            | `pushback` (no further amendment needed)                      |
+| **Orchestrator halt** (v1 doesn't auto-loop pushback) | (subtotal $2.42) | halt_pushback_unsupported                                     |
+| Manual `harness pushback T-27 --findings ... --reset` | $1.15            | **success commit `695e81c`** (validates PR-B-3 in production) |
+| **Total round 43 dispatch cost**                      | **$3.57**        | T-27 shipped (PR #200)                                        |
+
+**All four PR-B improvements validated end-to-end in production:**
+
+- ✅ Finding #9 — state.json captured real SHA `b91d895` then `695e81c` from `git rev-parse HEAD` (no hallucination)
+- ✅ Finding #10 — both cold-reader veto events captured `FULL_FINDINGS_PRESENT` (no $0.25-$0.35 re-dispatch tax)
+- ✅ Finding #6 — cold-reader scope #7 caught the divergence twice (the same task body that the cold-reader couldn't see in round 37)
+- ✅ Finding #7 (PR-B-3) — `harness pushback T-27 --findings <path> --reset` recovered cleanly from arbiter pushback, logged a `pushback_dispatch` event to state.json
+
+**Harness next-generation exploration (plan §11):**
+
+User asked, while T-27 ran in background, for thinking on seven improvement axes:
+
+1. Packaging the harness for other computers/projects
+2. Reworking agents to use Claude Code skills (and context-management implications)
+3. Whether sonnet is the right model for every role
+4. Progress reporting while agents work
+5. Long-term logging for harness-tuning analytics
+6. Replacing LLM work with deterministic tools where possible
+7. General architectural improvements
+
+Output: a multi-axis exploration document in plan §11 with options + recommendations + decision matrix per axis. Recommended next ship: Axes 5 + 4 bundled (long-term logging + progress reporting). Plan approved.
+
+**Axes 4 + 5 implementation (PR #201 — observability bundle):**
+
+- New `scripts/harness/lib/dispatches-log.ts`: append-only JSONL store at `.harness/dispatches.jsonl`. One line per `dispatch_end` / `pushback_dispatch` event. Survives across runs and tasks. Skips malformed lines defensively.
+- `state-store.ts` `appendEvent` dual-writes: state.json (current run, unchanged) + dispatches.jsonl (long-term, additive). Backward-compatible — `dispatchesLogPath: null` opts out (used in tests).
+- New `scripts/harness/lib/stats.ts`: pure aggregation. Per-role cost histogram (min/avg/max), verdict distribution, cold-reader veto rate, builder/pushback success rate, recent-N. Filters by task / role / since.
+- New `harness stats` CLI command: reads `.harness/dispatches.jsonl`, emits human or `--json`.
+- New `scripts/harness/lib/watch.ts`: polls state.json (default 500ms), pretty-prints each event with elapsed-time stamp, color-coded by event type, running cost meter. Exits cleanly on `orchestrate_end` or `maxWaitMs` cap. File-poll over `fs.watch` because state.json uses atomic-rename writes (fs.watch loses the inode under that pattern on macOS).
+- New `harness watch` CLI command. `--state <path>` to override default; `--no-color` for CI/log-capture.
+
+**Tests:** 21 new (dispatches-log: 4, stats: 11, watch: 6 — including 3 dual-write integration assertions on `appendEvent`). Full suite 1166/1167 pass.
+
+#### Round 43 cost
+
+- T-27 dispatch (slice-3 readiness gate): **$3.57 subagent**
+- Axes 4+5 implementation (PR #201): **$0 subagent** (pure harness code)
+- Plan §11 exploration: $0 (read-only research + plan-file writes)
+- **Round 43 total: $3.57 subagent + ~3 hours operator**
+
+#### Round 43 findings (harness)
+
+**Finding #14 (new): `harness pushback --reset` should refuse if HEAD's commit isn't a builder-shipped task commit.** Surfaced when operator created `orchestrate/t-27-pushback` branch off main and ran `pushback --reset`. HEAD~1 was the previous merged PR (the doc-log entry from PR #199), not a builder commit for T-27. `git reset --hard HEAD~1` clobbered the unrelated merged commit. Worked around by `git rebase main` post-push. Fix: validate HEAD's commit message matches the task ID before resetting; otherwise refuse and surface the operator's intent for confirmation.
+
+#### Round 43 bottom line
+
+PR-B trio's working demonstrated end-to-end: builder commits to commit_sha (real, not hallucinated), cold-reader fires scope #7 twice on the same divergence, state.json carries findings without re-dispatch, arbiter pushback paths trigger, and `harness pushback` completes the loop. Plus the harness gained its first analytics surface (Axes 4+5). Slice 3 unblocked at 1/10. The harness improvement pipeline (per plan §11) has Axis 6 next: deterministic tools for task_what symbol validation + verify-command derivation.
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-42. **Slice 1 closed (11/11), slice 2 closed (10/10), PR-B trio shipped (#196, #197, #198).** Methodology debt: **0** for shippable findings (#5 + #8 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding, not a harness finding). Builder cost-per-task converged within tier; cold-reader prompt overhauled mid-cycle; orchestrator + state.json + pushback CLI all operationally complete.
+**Active branch:** `main` post-round-43. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 1/10 (T-27 shipped); PR-B trio shipped (#196/#197/#198); doc snapshot refresh shipped (#195); observability bundle in flight (#201).** Methodology debt: **0** for shippable findings (#5, #8 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #14 surfaced this round, deferred to next harness PR). Builder cost-per-task converged within tier; cold-reader scope #7 + task body added; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped.
 
 ### Merged to main (chronological)
 
@@ -1254,18 +1324,32 @@ Three findings (#6, #7, #9, #10) closed; one (#11) merged into #7's resolution. 
 | #196 | 42       | PR-B-1 — orchestrator SHA derivation + cold-reader findings capture in state.json (findings #9, #10)                                                              |
 | #197 | 42       | PR-B-2 — cold-reader sees task body + scope #7 contract conformance (finding #6)                                                                                  |
 | #198 | 42       | PR-B-3 — `harness pushback T-N --findings <path> [--reset]` CLI command (findings #7, #11)                                                                        |
+| #199 | 42       | Session log rounds 38-42 (slice 2 + PR-B trio narrative)                                                                                                          |
+| #200 | 43       | T-27 ActivationPetPicker (slice-3 readiness gate) — full PR-B integration test in production; finding #14 surfaced                                                |
+| #201 | 43       | Observability bundle (Axes 4+5) — `.harness/dispatches.jsonl`, `harness stats`, `harness watch`                                                                   |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
 ### Open
 
-- **Slice 1 closed (11/11), slice 2 closed (10/10), PR-B trio shipped.** Harness operationally complete: real-SHA orchestrator, full-findings state.json, cold-reader sees task body + scope #7, operator-pushback CLI.
-- **Round 43 candidate:** dispatch `harness orchestrate T-27` (ActivationPetPicker — leaf component, MUI bottom Drawer, similar shape to T-21). First task to verify all three PR-B improvements work together: (a) state.json should contain real SHA at dispatch_end (not hallucinated), (b) state.json should contain full findings array if cold-reader vetoes, (c) cold-reader prompt should show the verbatim "What" line as a Task contract section. Expected cost: ~$1.43 (component tier baseline). If cold-reader vetoes with scope_check 1-2, exercise the new `harness pushback` CLI for first time.
+- **Slices 1+2 closed (21/21); slice 3 at 1/10 (T-27).** PR-B trio shipped (#196/#197/#198) + observability bundle in flight (#201). Harness operationally complete with analytics surface.
+- **Round 44 candidates (two parallel tracks possible):**
+  - **(harness)** Axis 6 — deterministic tools per plan §11. Two scripts: `task-contract-check.ts` (regex-extracts named symbols from task_what; greps diff; injects pre-flagged "missing symbols" into cold-reader input — would have caught T-17's two divergences without an LLM running) + `derive-verify-command.ts` (reads package.json scripts, returns canonical verify command — eliminates round-27-style invented Jest syntax). Pure harness code, ~$0 subagent, ~3h.
+  - **(slice 3)** T-28 EmergencyActivationFab upgrade (multi-pet picker + resume short-circuit per BR-26). First slice-3 dispatch under the full PR-B + observability stack; the operator can use `harness watch` for live progress + `harness stats` post-merge to confirm dispatches.jsonl populated correctly.
 - **Open harness work (deferred):**
   - **#5** — invariant propagation slice-end cold-read. Single instance (round 35); threshold = 2nd recurrence.
   - **#8** — forward-of-wire-up file friction (auto-detect at pre-push). Single instance (round 38); threshold = 2nd recurrence.
   - **#12** — cold-reader verdict non-determinism. Single instance (round 41); needs 5x quantification before designing fix.
   - **#13** — article-grade documentation reconstruction. Process finding (round 42); deferred by user.
+  - **#14** — `harness pushback --reset` should validate HEAD belongs to the task (round 43). Single instance; fix is ~10 LOC, queue with next harness PR or after a 2nd instance.
+- **Plan §11 axes status:**
+  - Axis 4 (progress reporting) — shipping in PR #201
+  - Axis 5 (long-term logging) — shipping in PR #201
+  - Axis 6 (deterministic tools) — next harness investment
+  - Axis 1 (packaging) — defer until 1+ second-project use case
+  - Axis 3 (model per role) — defer; needs Axis 5's stats data first
+  - Axis 2 (skills migration) — defer indefinitely; not a meaningful gain at current architecture
+  - Axis 7 (general arch — worktree-per-task, resume, etc.) — backlog
 
 ### Spec artifacts
 
