@@ -1,0 +1,31 @@
+{
+  "case_id": "regression-round-28-T11-verify-fail-false-negative",
+  "task_id": "T-11",
+  "source": "Round-28 second live e2e dispatch on T-11. With the round-28 builder.md verify-command derivation rule in place, the subagent constructed the CORRECT verify command (`pnpm exec vitest run src/features/incidents/components/StopButton.test.tsx`) — finding #2 from round 27 fixed cleanly. But the subagent still emitted `verify_fail` after 3 attempts despite the final code state passing all tests (independently verified: 3/3 pass, tsc clean, lint clean). New finding (round 28 #3): subagent counts intermediate TDD-cycle test failures (RED phase) as verify_fail attempts and emits verify_fail without re-running the verify after the final refactor. Methodology fix shipped this PR: builder.md TDD step 7 now explicitly requires a final verify re-run before constructing the exit payload.",
+  "input": {
+    "rendered_builder_input_path": "scripts/harness/evals/builder/cases/regression/round-28-T11-verify-fail-false-negative.input.md"
+  },
+  "expected": {
+    "status": "verify_fail",
+    "verify_command_pattern": "(?i)(vitest run|src/features/incidents/components/StopButton)",
+    "attempts_min": 1
+  },
+  "actual_baseline": {
+    "status": "verify_fail",
+    "verify_command": "pnpm exec vitest run src/features/incidents/components/StopButton.test.tsx",
+    "attempts": 3,
+    "wall_clock_seconds": 248,
+    "tokens_consumed": null,
+    "cost_usd": 0.6802,
+    "tool_uses": null,
+    "session_id": "4ab2f02b-43d0-4298-8c52-d596bcf87678",
+    "stop_reason": "end_turn",
+    "num_turns": 26,
+    "files_touched_evidence": [
+      "scripts/harness/evals/builder/cases/regression/round-28-T11-evidence/StopButton.tsx.txt",
+      "scripts/harness/evals/builder/cases/regression/round-28-T11-evidence/StopButton.test.tsx.txt"
+    ],
+    "notes": "Subagent's code is correct AND its verify command is correct. The verify_fail is a false negative — the final code state passes 3/3 tests when run via the exact command the subagent reported. Hypothesis: subagent confused intermediate RED-phase failures with verify-gate failures, and emitted verify_fail without re-running verify on the final post-refactor state. Round-28 builder.md amendment (TDD step 7) explicitly addresses this. Validation requires another live re-dispatch — not in this PR to keep cost bounded; tracked as a follow-up."
+  },
+  "notes": "Companion to `regression-round-27-T11-verify-fail-vitest-jest-confusion`. Together the pair traces the methodology evolution: round 27 found the verify-command-construction gap (fixed in this PR's first commit), round 28 found the false-negative-attempt-counting gap (fixed in this PR's third commit). Both required real subagent runs to surface. The validation re-dispatch (T-11 attempt 3) is a follow-up; if it succeeds with `status: success` and a real commit, slice 1 advances to 6/11 and the third companion case captures the success baseline."
+}
