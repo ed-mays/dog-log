@@ -42,6 +42,25 @@ describe('useIncidentTimer', () => {
     expect(result.current).toBe('00:00:00');
   });
 
+  it('freezes at endedAt - startedAt when endedAt is set (post-STOP §D2)', () => {
+    const startedAt = new Date('2026-05-02T10:00:00.000Z');
+    const endedAt = new Date(startedAt.getTime() + 90_000);
+    // Set "now" well past endedAt to prove the hook ignores it when frozen.
+    vi.setSystemTime(new Date(startedAt.getTime() + 600_000));
+
+    const { result } = renderHook(() => useIncidentTimer(startedAt, endedAt));
+
+    expect(result.current).toBe('00:01:30');
+
+    act(() => {
+      vi.setSystemTime(new Date(startedAt.getTime() + 700_000));
+      vi.advanceTimersByTime(300);
+    });
+
+    // Still frozen.
+    expect(result.current).toBe('00:01:30');
+  });
+
   it('re-renders as time advances (rAF + 250ms throttle per §D8)', () => {
     const start = new Date('2026-05-02T10:00:00.000Z');
     vi.setSystemTime(start);

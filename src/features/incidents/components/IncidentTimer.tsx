@@ -3,13 +3,19 @@ import { useIncidentTimer } from '@features/incidents/hooks/useIncidentTimer';
 
 interface IncidentTimerProps {
   startedAt: Date;
+  endedAt?: Date | null;
 }
 
 // Per design §D9: monospace digits (no jitter), aria-live="polite" on the
 // elapsed text only — milliseconds are intentionally absent so screen
 // readers don't get flooded.
-export function IncidentTimer({ startedAt }: IncidentTimerProps) {
-  const elapsed = useIncidentTimer(startedAt);
+//
+// §D2 post-STOP invariant: endedAt freezes the displayed elapsed.
+export function IncidentTimer({
+  startedAt,
+  endedAt = null,
+}: IncidentTimerProps) {
+  const elapsed = useIncidentTimer(startedAt, endedAt);
 
   return (
     <Box

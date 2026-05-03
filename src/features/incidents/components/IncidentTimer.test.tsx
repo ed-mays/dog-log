@@ -31,6 +31,16 @@ describe('IncidentTimer', () => {
     expect(live).toHaveAttribute('aria-live', 'polite');
   });
 
+  it('freezes at the stopped duration when endedAt is provided (§D2 post-STOP)', () => {
+    const startedAt = new Date('2026-05-02T10:00:00.000Z');
+    const endedAt = new Date(startedAt.getTime() + 75_000);
+    vi.setSystemTime(new Date(startedAt.getTime() + 600_000));
+
+    render(<IncidentTimer startedAt={startedAt} endedAt={endedAt} />);
+
+    expect(screen.getByText('00:01:15')).toBeInTheDocument();
+  });
+
   it('uses monospace font-family per design §D9 (so digits do not jitter)', () => {
     const now = new Date('2026-05-02T10:00:00.000Z');
     vi.setSystemTime(now);

@@ -14,7 +14,10 @@ export function IncidentCaptureSurface({
 }: IncidentCaptureSurfaceProps) {
   return (
     <Box>
-      <IncidentTimer startedAt={incident.startedAt} />
+      <IncidentTimer
+        startedAt={incident.startedAt}
+        endedAt={incident.endedAt}
+      />
       {incident.endedAt === null && <StopButton />}
     </Box>
   );
