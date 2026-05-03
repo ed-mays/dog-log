@@ -468,7 +468,14 @@ function dispatchEndPayload(
     session_id: result.raw.sessionId,
     stop_reason: result.raw.stopReason,
   };
-  if (result.parseError) base.parse_error = result.parseError;
+  if (result.parseError) {
+    base.parse_error = result.parseError;
+    // Preserve raw text on parse failure so debugging doesn't require a
+    // re-dispatch (round-34 finding: orchestrator halted on cold-reader
+    // parse error but raw text was lost; manual re-dispatch was needed
+    // to see the actual response).
+    base.raw_result_text = result.raw.resultText;
+  }
   if ('exit' in result && result.exit) {
     if (role === 'builder') {
       const e = result.exit as BuilderExit;
