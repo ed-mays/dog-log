@@ -7,6 +7,13 @@ import type { Incident } from '@features/incidents/types';
 // Per design §D8 NFR-2: startIncident generates the UUID and startedAt
 // synchronously, sets activeIncident, then persists in the background.
 // The timer can read startedAt before the Firestore write resolves.
+//
+// Per §D2 post-STOP store invariant (BR-14, BR-25, round-31 amend_design):
+// stopIncident() sets endedAt on activeIncident rather than nulling it.
+// activeIncident clears to null only on startIncident(), explicit user
+// dismissal from the stopped surface, or auth sign-out. This keeps the
+// surface open after STOP per BR-14 and unifies live + post-stop phases
+// per BR-25.
 
 export interface IncidentState {
   activeIncident: Incident | null;
@@ -79,7 +86,12 @@ export const useIncidentStore = create(
       if (!active || !userId) return;
 
       const endedAt = new Date();
-      set({ activeIncident: null, error: null });
+      // §D2 post-STOP invariant: keep activeIncident populated with endedAt
+      // set, so ActiveIncidentPage stays open after STOP per BR-14.
+      set({
+        activeIncident: { ...active, endedAt },
+        error: null,
+      });
 
       try {
         await incidentService.stopIncident({

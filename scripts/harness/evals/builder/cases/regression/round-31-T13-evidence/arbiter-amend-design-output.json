@@ -1,0 +1,32 @@
+{
+  "file": "docs/specs/incident-capture/03-tasks.md",
+  "spec_gap": {
+    "task_id": "T-13",
+    "cited_section": ["BR-14", "§D2", "§D5"],
+    "gap_description": "Round-31 cold-reader vetoed T-13's ActiveIncidentPage with HIGH #3 (silent design choice on BR-14). The page reads activeIncident from useIncidentStore and redirects to /pets when activeIncident is null. But useIncidentStore.stopIncident() (T-08, already shipped in PR #170 as part of slice-1 foundation) sets activeIncident: null on STOP. So the moment a user taps STOP, ActiveIncidentPage redirects them away — directly violating BR-14 ('same surface stays open after STOP'). The spec says what should happen UX-side; the design §D2/§D5 doesn't explicitly govern the store's post-STOP state nor the page's behavior when activeIncident transitions null mid-session. Three fix paths exist: (A) amend T-08's stopIncident to keep activeIncident set with endedAt populated (clear only on next startIncident or explicit dismissal), (B) amend T-13 to track a 'recently stopped' flag separate from activeIncident, (C) some third option the arbiter hasn't seen yet. Option A appears most aligned with BR-25 ('same surface live and post-stop') because it keeps the in-memory model unified for both phases of an incident's lifecycle. Pick the smallest amendment that resolves BR-14 cleanly and unblocks T-13 re-dispatch.",
+    "suggested_amendment": "Strongly suggest amending design §D2 (or §D4 state machine) to explicitly state: useIncidentStore.activeIncident remains populated after STOP (with endedAt set) until either (i) a new incident is started, or (ii) the user navigates away from /incidents/active by an explicit affordance, or (iii) auth signs out. ActiveIncidentPage's redirect-to-/pets condition then becomes 'no activeIncident has ever been set in this session', not 'activeIncident is null right now'. T-08's stopIncident action would update endedAt on the existing activeIncident rather than clearing it. This unifies the live and post-stop phases per BR-25 and resolves BR-14 cleanly. Open to other resolutions if the arbiter sees a cleaner path.",
+    "files_inspected": [
+      "src/store/useIncidentStore.ts",
+      "src/features/incidents/pages/ActiveIncidentPage.tsx",
+      "src/features/incidents/components/IncidentCaptureSurface.tsx",
+      "docs/specs/incident-capture/01-spec.md",
+      "docs/specs/incident-capture/02-design.md"
+    ]
+  },
+  "exit": {
+    "verdict": "amend_design",
+    "rationale": "BR-14 is unambiguous: the surface MUST remain open after STOP; the user MUST NOT be navigated away. §D2's file-map comment for useIncidentStore.ts says only 'Zustand: activeIncident + per-pet history maps' — it never specifies what stopIncident() does to the activeIncident field. That silence is the gap. Because T-13's redirect reads activeIncident from the store, the store's post-STOP behavior is the upstream contract T-13 depends on. Fixing the store invariant in §D2 is the minimal upstream amendment: once stopIncident() is specified to set endedAt rather than null activeIncident, T-13's existing redirect condition ('redirect if no active incident') becomes correct without any change to the task or route description — post-STOP, activeIncident is non-null. The builder's Option A is correct; the amendment lands in the store's file-map comment rather than the routes table because the root contract is behavioral (what the action does), not routing (what the page renders). No new BRs, DQs, or sections are warranted — this is a clarification of an existing design element.",
+    "amendment": {
+      "file": "02-design.md",
+      "anchor": "§D2 useIncidentStore.ts file-map comment",
+      "before": "  useIncidentStore.ts                   # Zustand: activeIncident + per-pet history maps",
+      "after": "  useIncidentStore.ts                   # Zustand: activeIncident + per-pet history maps.\n                                        # Post-STOP store invariant (BR-14, BR-25): stopIncident()\n                                        # sets endedAt on activeIncident rather than nulling it.\n                                        # activeIncident clears to null only on startIncident(),\n                                        # explicit user dismissal from the stopped surface, or auth sign-out.",
+      "changelog_entry": "2026-05-02 — Amended §D2 useIncidentStore.ts file-map comment to add post-STOP store invariant: stopIncident() sets endedAt on activeIncident rather than nulling it; field clears only on startIncident(), explicit dismissal, or sign-out. Resolves spec_gap from T-13 (round-31 cold-reader HIGH #3: silent design choice on BR-14 — stopIncident() nulling activeIncident caused ActiveIncidentPage to redirect on STOP, violating BR-14). No spec change, no task change, no route-description change needed."
+    },
+    "notes": "T-08's stopIncident() implementation (already shipped in PR #170) will need a paired chore commit to align with this invariant before T-13 can pass its verify gate — it currently sets activeIncident: null. That is a downstream code fix, not a second arbitration; the builder can handle it on T-13 re-dispatch. Additionally: the §D1 v3 right-panel table already cites BR-14 with 'Same surface stays open after STOP' and shows 'Keep observing / Save entry' CTAs — the design had the right UX intent everywhere except the store contract. If the cold-reader recurs on T-13 (prior_arbitrations would hit 2), bias toward pushback: the gap is fully resolved at the design layer by this amendment."
+  },
+  "parse_error": null,
+  "cost_usd": 0.21236760000000002,
+  "duration_ms": 78368,
+  "stop_reason": "end_turn"
+}

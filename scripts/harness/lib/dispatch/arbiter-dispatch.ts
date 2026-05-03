@@ -24,12 +24,29 @@ export type ArbiterVerdict =
   | 'amend_task'
   | 'pushback';
 
+/** Amendment payload per the arbiter prompt's output contract. */
+export interface ArbiterAmendment {
+  /** Target file: `01-spec.md` | `02-design.md` | `03-tasks.md`. */
+  file: string;
+  /** Stable identifier where the change lands (e.g. 'BR-15', '§D3 Indexes table'). */
+  anchor: string;
+  /** Exact verbatim text being replaced; empty string for pure addition. */
+  before: string;
+  /** Exact text to substitute. */
+  after: string;
+  /** Text to append to the artifact's changelog (§10 / §D11 / §T0). */
+  changelog_entry: string;
+}
+
 export interface ArbiterExit {
   verdict: ArbiterVerdict;
-  amended_section?: string;
-  amendment_text?: string;
-  changelog_entry?: string;
-  pushback_message?: string;
+  /** One paragraph: why this verdict, why minimal. */
+  rationale?: string;
+  /** Present when verdict is amend_*; structured per ArbiterAmendment. */
+  amendment?: ArbiterAmendment;
+  /** Only present when verdict='pushback'. */
+  pushback_clarification?: string;
+  /** Optional out-of-scope observations the human might want. */
   notes?: string;
 }
 
