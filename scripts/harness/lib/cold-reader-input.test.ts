@@ -247,3 +247,116 @@ describe('formatColdReaderInputMarkdown', () => {
     expect(out2).toMatch(/_\(none — empty diff\)_/);
   });
 });
+
+describe('formatColdReaderInputMarkdown — task-contract-check pre-flight (Axis 6)', () => {
+  const baseInput = buildColdReaderInput({
+    task: task('T-01'),
+    specMarkdown: specMd,
+    designMarkdown: designMd,
+    diff: SAMPLE_DIFF,
+  });
+
+  it('omits the pre-flight section when no check is provided', () => {
+    const out = formatColdReaderInputMarkdown(baseInput);
+    expect(out).not.toMatch(/Pre-flight: task contract symbols/);
+  });
+
+  it('omits the pre-flight section when the check has zero symbols', () => {
+    const out = formatColdReaderInputMarkdown({
+      ...baseInput,
+      task_contract_check: { symbols: [], present: [], missing: [] },
+    });
+    expect(out).not.toMatch(/Pre-flight: task contract symbols/);
+  });
+
+  it('renders present + missing partitions when symbols exist', () => {
+    const present = {
+      symbol: 'Incident',
+      kind: 'identifier' as const,
+      present: true,
+      evidence: '+export interface Incident {',
+    };
+    const missing = {
+      symbol: 'JournalEntry',
+      kind: 'identifier' as const,
+      present: false,
+      evidence: null,
+    };
+    const out = formatColdReaderInputMarkdown({
+      ...baseInput,
+      task_contract_check: {
+        symbols: [present, missing],
+        present: [present],
+        missing: [missing],
+      },
+    });
+    expect(out).toMatch(/## Pre-flight: task contract symbols/);
+    expect(out).toMatch(/scope_check 7/);
+    expect(out).toMatch(/\*\*Present \(1\):\*\*/);
+    expect(out).toMatch(
+      /`Incident` \(identifier\) — \+export interface Incident/
+    );
+    expect(out).toMatch(/\*\*Missing \(1\):\*\*/);
+    expect(out).toMatch(/`JournalEntry` \(identifier\)/);
+  });
+
+  it('shows _(none)_ markers for empty partitions', () => {
+    const sym = {
+      symbol: 'Incident',
+      kind: 'identifier' as const,
+      present: true,
+      evidence: '+interface Incident {}',
+    };
+    const out = formatColdReaderInputMarkdown({
+      ...baseInput,
+      task_contract_check: {
+        symbols: [sym],
+        present: [sym],
+        missing: [],
+      },
+    });
+    expect(out).toMatch(/all task-contract symbols present/);
+  });
+});
+
+describe('buildColdReaderInput — accepts taskContractCheck option', () => {
+  it('passes the check through to the output', () => {
+    const fakeCheck = {
+      symbols: [
+        {
+          symbol: 'Incident',
+          kind: 'identifier' as const,
+          present: true,
+          evidence: 'line',
+        },
+      ],
+      present: [
+        {
+          symbol: 'Incident',
+          kind: 'identifier' as const,
+          present: true,
+          evidence: 'line',
+        },
+      ],
+      missing: [],
+    };
+    const input = buildColdReaderInput({
+      task: task('T-01'),
+      specMarkdown: specMd,
+      designMarkdown: designMd,
+      diff: SAMPLE_DIFF,
+      taskContractCheck: fakeCheck,
+    });
+    expect(input.task_contract_check).toBe(fakeCheck);
+  });
+
+  it('defaults task_contract_check to null when not provided', () => {
+    const input = buildColdReaderInput({
+      task: task('T-01'),
+      specMarkdown: specMd,
+      designMarkdown: designMd,
+      diff: SAMPLE_DIFF,
+    });
+    expect(input.task_contract_check).toBeNull();
+  });
+});

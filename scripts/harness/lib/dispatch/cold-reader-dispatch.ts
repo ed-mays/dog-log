@@ -12,6 +12,7 @@ import {
   buildColdReaderInput,
   formatColdReaderInputMarkdown,
 } from '../cold-reader-input';
+import { checkTaskContract } from '../task-contract-check';
 import { parseTaskList } from '../task-parser';
 import { dispatchSubagent, type DispatchResult } from '../subagent-dispatch';
 import { parseStructuredExit } from './parse-structured-exit';
@@ -77,11 +78,15 @@ export async function dispatchColdReader(
   if (!task) {
     throw new Error(`cold-reader dispatch: task ${opts.taskId} not found`);
   }
+  // Axis 6 finding #6: pre-flag task-contract symbols mechanically rather
+  // than relying on the cold-reader to re-derive them from the 'What' line.
+  const taskContractCheck = checkTaskContract(task.what, diff);
   const crInput = buildColdReaderInput({
     task,
     specMarkdown: specMd,
     designMarkdown: designMd,
     diff,
+    taskContractCheck,
   });
   const inputMd = formatColdReaderInputMarkdown(crInput);
 

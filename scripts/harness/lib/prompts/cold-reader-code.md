@@ -71,20 +71,32 @@ seven numbers. If a concern doesn't fit one of these, do not emit it.
    section are mutually satisfiable.** Methodology basis: round-25
    builder pre-flight caught this on T-06 after five rounds of design
    cold-reads missed it.
-7. **Task contract conformance** (added round 42, finding #6). Read the
-   `task_what` input verbatim. For every method name, symbol, file path,
-   option, or behavior named there, check that the diff implements it
-   with the **exact name** given. Renaming (`setSeverity` accepting `null`
-   instead of separate `setSeverity` + `clearSeverity` when both are
-   named), collapsing (4 methods where 6 are named), reshaping (caller-
-   supplied arg where the task says service computes), or omitting any
-   named entity is a divergence. Emit as **CRITICAL** if the omission
-   breaks a contract callers will rely on; **HIGH** if it's silently
-   collapsing a named symmetry. Methodology basis: T-17 (round 37) shipped
-   with two such divergences and cold-reader missed both because it had
-   no access to the task body — the cited BRs were too loose to constrain
-   the API shape. The `task_what` field exists precisely so this scope
-   has bite.
+7. **Task contract conformance** (added round 42, finding #6; pre-flight
+   added round 44, Axis 6). Read the `task_what` input verbatim. For every
+   method name, symbol, file path, option, or behavior named there, check
+   that the diff implements it with the **exact name** given. Renaming
+   (`setSeverity` accepting `null` instead of separate `setSeverity` +
+   `clearSeverity` when both are named), collapsing (4 methods where 6
+   are named), reshaping (caller-supplied arg where the task says service
+   computes), or omitting any named entity is a divergence. Emit as
+   **CRITICAL** if the omission breaks a contract callers will rely on;
+   **HIGH** if it's silently collapsing a named symmetry.
+
+   **Pre-flight input (Axis 6):** when a `## Pre-flight: task contract
+symbols` section appears in your input, treat its `Missing` list as
+   authoritative — the harness has already grepped the diff for each
+   backtick-quoted symbol from `task_what`. Each `Missing` entry is a
+   scope_check 7 candidate; you decide severity (CRITICAL vs HIGH) and
+   whether the cited spec/design explicitly permits the omission. You
+   do NOT need to re-derive symbols the pre-flight already classified
+   `Present`; trust the evidence line. If pre-flight is absent (older
+   inputs or empty `task_what`), do the derivation yourself.
+
+   Methodology basis: T-17 (round 37) shipped with two such divergences
+   and cold-reader missed both because it had no access to the task
+   body — the cited BRs were too loose to constrain the API shape. The
+   `task_what` field exists precisely so this scope has bite; the
+   pre-flight removes verdict non-determinism on the mechanical step.
 
 ---
 
