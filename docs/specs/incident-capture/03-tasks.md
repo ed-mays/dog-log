@@ -92,7 +92,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/features/incidents/components/StopButton.tsx`. Calls `useIncidentStore.stopIncident` on tap. Has accessible name from i18n `incidents.stop`.
 - **Verify:** Component test: tap fires the store action; `aria-label` matches the i18n value.
 
-### `[ ]` T-12 — IncidentCaptureSurface (minimum)
+### `[x]` T-12 — IncidentCaptureSurface (minimum)
 
 - **Cite:** spec BR-14, BR-25 (same surface live and post-stop); design §D2
 - **What:** Create `src/features/incidents/components/IncidentCaptureSurface.tsx`. Initial form: takes an Incident prop, renders `<IncidentTimer>` and `<StopButton>` only. (Severity, chips, journal, vet card added in slice 2.)
