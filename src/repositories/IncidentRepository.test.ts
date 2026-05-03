@@ -293,6 +293,20 @@ describe('IncidentRepository', () => {
       }),
     });
 
+    it('throws when the incident does not exist', async () => {
+      (doc as Mock).mockReturnValue({});
+      (getDoc as Mock).mockResolvedValue({ exists: () => false });
+
+      await expect(
+        repository.appendJournal('missing-id', {
+          elapsedSeconds: 0,
+          text: 'x',
+          addedAt: new Date(),
+        })
+      ).rejects.toThrow(/missing-id/);
+      expect(setDoc).not.toHaveBeenCalled();
+    });
+
     it('produces a journal of length 4 with the new entry last (BR-30 append-only RMW)', async () => {
       (doc as Mock).mockReturnValue({});
       (getDoc as Mock).mockResolvedValue(makeSnapshot(existingEntries));
@@ -340,6 +354,16 @@ describe('IncidentRepository', () => {
         type: null,
         severity: null,
       }),
+    });
+
+    it('throws when the incident does not exist', async () => {
+      (doc as Mock).mockReturnValue({});
+      (getDoc as Mock).mockResolvedValue({ exists: () => false });
+
+      await expect(
+        repository.toggleChip('missing-id', 'chip-a')
+      ).rejects.toThrow(/missing-id/);
+      expect(setDoc).not.toHaveBeenCalled();
     });
 
     it('adds a chip when absent (BR-7 toggle)', async () => {
