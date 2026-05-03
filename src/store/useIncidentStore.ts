@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { incidentService } from '@services/incidentService';
 import { useAuthStore } from '@store/auth.store';
-import type { Incident, Severity } from '@features/incidents/types';
+import type { ChipId, Incident, Severity } from '@features/incidents/types';
 
 // Per design §D8 NFR-2: startIncident generates the UUID and startedAt
 // synchronously, sets activeIncident, then persists in the background.
@@ -28,6 +28,9 @@ export interface IncidentState {
   clearSeverity: () => Promise<void>;
   // BR-8, BR-9: append journal entry with elapsed time
   appendJournal: (text: string) => Promise<void>;
+  // BR-7: chips toggleable by single-tap, no required minimum.
+  // Paired chore added in T-23 — service/repo existed; store surface was missing.
+  toggleChip: (chipId: ChipId) => Promise<void>;
 }
 
 function buildOptimisticIncident(
@@ -160,6 +163,27 @@ export const useIncidentStore = create(
             error instanceof Error
               ? error.message
               : 'Failed to hydrate incident',
+        });
+      }
+    },
+
+    toggleChip: async (chipId) => {
+      const active = get().activeIncident;
+      const userId = useAuthStore.getState().user?.uid;
+      if (!active || !userId) return;
+
+      const nextChips = active.chips.includes(chipId)
+        ? active.chips.filter((c) => c !== chipId)
+        : [...active.chips, chipId];
+
+      set({ activeIncident: { ...active, chips: nextChips }, error: null });
+
+      try {
+        await incidentService.toggleChip(userId, active.id, chipId);
+      } catch (error) {
+        set({
+          error:
+            error instanceof Error ? error.message : 'Failed to toggle chip',
         });
       }
     },
