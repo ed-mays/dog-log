@@ -38,6 +38,27 @@ pnpm tsx scripts/harness/cli.ts review T-11 --diff main..HEAD
 pnpm tsx scripts/harness/cli.ts arbitrate-run gap.json
 ```
 
+## Orchestrator (round 1)
+
+Chains build → review → (arbiter+apply) automatically. Logs every step to `.harness/state.json` (gitignored).
+
+```bash
+pnpm tsx scripts/harness/cli.ts orchestrate T-14
+```
+
+**v1 routing:**
+
+- Build success → cold-reader. Approve → done. Veto routes by `scope_check`:
+  - `1, 2` (builder error: BR not implemented, AC not asserted) → **halt for human**. v1 doesn't auto-retry builder with veto context.
+  - `3, 4, 5, 6` (spec/design ambiguity) → arbiter → apply amendment via deterministic `before` → `after` substitution → re-dispatch builder → re-cold-read.
+- Build `spec_gap` → arbiter directly.
+- Arbiter `pushback` → halt for human (v1 doesn't feed pushback into builder input).
+- Apply-amendment failure (before doesn't match exactly, or matches >1) → halt for human.
+
+**Caps:** 2 builder retries (3 total), 2 arbiter dispatches, $5 / 30 min total. Halts for human on cap.
+
+**State:** every event lands in `.harness/state.json` as an append-only log. Resume mid-cycle is NOT supported in v1; the log is purely an audit trail (cost, dispatches, amendments, halt reason).
+
 Each command supports `--json` for machine-readable output (suitable for piping into another tool).
 
 ### Dispatch defaults
@@ -58,7 +79,9 @@ Override via opts on `dispatchBuilder`/`dispatchColdReader`/`dispatchArbiter` if
 
 ### State persistence
 
-Not yet implemented. Each dispatch is currently stateless — no `.harness/state.json`, no event log, no retry tracking across invocations. The next iteration will add an append-only event log so the controller can resume mid-slice and produce per-PR cost/duration reports.
+`harness orchestrate` writes `.harness/state.json` (gitignored) as an append-only event log: one event per dispatch, plus `amendment_applied` / `amendment_apply_failed` / `cycle_halt` markers. Per-task summary (cost, dispatches, halt reason) is reconstructible from the log via `summarizeRun()` in `lib/state-store.ts`.
+
+Resume mid-cycle is **not** supported in v1 — the log is purely an audit trail. The individual `build`/`review`/`arbitrate-run` commands remain stateless.
 
 ## Eval suites
 

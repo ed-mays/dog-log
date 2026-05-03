@@ -42,6 +42,10 @@ import { parseTaskList } from './lib/task-parser.ts';
 import { dispatchBuilder } from './lib/dispatch/builder-dispatch.ts';
 import { dispatchColdReader } from './lib/dispatch/cold-reader-dispatch.ts';
 import { dispatchArbiter } from './lib/dispatch/arbiter-dispatch.ts';
+import {
+  orchestrateTask,
+  summarizeOrchestrateResult,
+} from './lib/orchestrate.ts';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -76,6 +80,9 @@ function usage(): string {
     '                             HEAD~1..HEAD).',
     '  arbitrate-run <spec-gap-file>',
     '                             Dispatch a drift-arbiter subagent on the gap.',
+    '  orchestrate <task-id>      Chain build → review → (arbiter+apply) until',
+    '                             success, halt for human, or hit a cap. Logs',
+    '                             every step to .harness/state.json.',
     '',
     'Options:',
     `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
@@ -540,6 +547,19 @@ function main(): void {
       );
       break;
     }
+    case 'orchestrate': {
+      const taskId = positionals[1];
+      if (!taskId) {
+        fail('orchestrate requires a task id (e.g. T-14)\n\n' + usage());
+      }
+      void runOrchestrate(taskId, filePath, fileArg, values.json).catch(
+        (err) => {
+          const reason = err instanceof Error ? err.message : String(err);
+          fail(`orchestrate failed: ${reason}`);
+        }
+      );
+      break;
+    }
     default:
       fail(`unknown command '${command}'\n\n${usage()}`);
   }
@@ -737,6 +757,44 @@ async function runArbitrate(
     }
   }
   process.exit(0);
+}
+
+async function runOrchestrate(
+  taskId: string,
+  filePath: string,
+  fileArg: string,
+  json: boolean
+): Promise<void> {
+  process.stderr.write(
+    `harness: orchestrating ${taskId} — chained build → review → (arbiter) loop. This may take 5-15 minutes.\n`
+  );
+  const result = await orchestrateTask({
+    taskId,
+    taskListPath: filePath,
+  });
+  if (json) {
+    process.stdout.write(
+      `${JSON.stringify(
+        {
+          file: fileArg,
+          task_id: taskId,
+          outcome: result.outcome,
+          builder_dispatches: result.builderDispatches,
+          arbiter_dispatches: result.arbiterDispatches,
+          total_cost_usd: result.totalCostUsd,
+          last_commit_sha: result.lastCommitSha,
+          halt_reason: result.haltReason,
+          state_path: '.harness/state.json',
+        },
+        null,
+        2
+      )}\n`
+    );
+  } else {
+    process.stdout.write(`${summarizeOrchestrateResult(result)}\n`);
+    process.stdout.write(`state log: .harness/state.json\n`);
+  }
+  process.exit(result.outcome === 'success' ? 0 : 2);
 }
 
 main();
