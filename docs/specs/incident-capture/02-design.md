@@ -172,30 +172,35 @@ export type Severity = 'mild' | 'moderate' | 'severe';
 // belong to which type, but stored chips are not foreign keys.
 export type ChipId = string;
 
+import type { BaseEntity } from '@repositories/types';
+
 export interface JournalEntry {
   elapsedSeconds: number; // BR-9, BR-31 — stored at write, never recomputed
   text: string;
-  addedAt: string; // ISO 8601 instant
+  addedAt: Date; // BR-30 instant of append
 }
 
-export interface Incident {
-  id: string;
-  userId: string; // owner — drives security rules (NFR-8)
+// Extends BaseEntity to align with project-wide repository contract
+// (every other entity in src/repositories/ follows this convention via
+// BaseRepository<T extends BaseEntity>). BaseEntity provides:
+//   id: string; createdAt: Date; updatedAt: Date; createdBy: string;
+// The Firestore layout below stores these as Timestamps; BaseRepository's
+// documentToEntity / entityToDocument converters handle the round-trip.
+export interface Incident extends BaseEntity {
+  userId: string; // owner — drives security rules (NFR-8); duplicates createdBy for query convenience
   petId: string; // BR-28 — required at all times (revert of round-1 reframe)
-  startedAt: string; // ISO 8601 instant — set at activation (BR-2)
-  endedAt: string | null; // ISO 8601 instant — set at STOP (BR-13)
+  startedAt: Date; // set at activation (BR-2)
+  endedAt: Date | null; // set at STOP (BR-13)
   type: IncidentTypeId | null; // BR-4, BR-19
   severity: Severity | null; // BR-6
   chips: ChipId[]; // BR-7, BR-20 — ordered, deduped at write
   journal: JournalEntry[]; // BR-30 — append-only after STOP
-  createdAt: string; // server-assigned (Firestore serverTimestamp)
-  updatedAt: string; // server-maintained on every write (BR-18)
-  deletedAt: string | null; // BR-33 — soft-delete timestamp; null when not deleted
+  deletedAt: Date | null; // BR-33 — soft-delete timestamp; null when not deleted
 }
 
 export type IncidentCreateInput = Pick<Incident, 'petId' | 'startedAt'>;
 export type IncidentUpdateInput = Partial<
-  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'petId'>
+  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'createdBy' | 'petId'>
 > & { petId?: string }; // pet may be reassigned but never cleared (BR-29)
 // Note: BR-29's "never cleared" invariant is enforced at runtime in
 // incidentService.update() — the type allows `petId?: string`, which still
@@ -471,3 +476,4 @@ Coverage target: 80% lines for `src/features/incidents/**` and 100% of `Incident
   - **§D7 rules:** match path moved from `/users/{userId}/pets/{petId}/incidents/...` to `/users/{userId}/incidents/...` (top-level), matching the new layout. Convention citation updated to point at vets/petVets/vetKeys (which are also user-scoped non-pet subcollections) rather than feedings/medications/doseLogs.
   - **DQ-8 added:** Caregiver theme color tokens vs wireframe palette mismatches need designer confirmation. Not blocking tasks phase but blocking pixel-accurate visual QA.
 - **2026-05-02 round 24** — Amended §D6 to add an explicit Deferrals note covering (a) `incidents.chips.*` deferred to T-20 pending DQ-5, and (b) Spanish English-value stubs as a scoped v1 exception (real JSON cannot carry the JSONC `// TODO i18n-es` marker shown in the example). Resolves spec_gap from T-05 (cold-reader vetoed on the §D6/NFR-5 silent-resolution; both deferrals were in T-05's task body but not in cited design). Drift-arbiter agent's first `amend_design` verdict (round 24); applied verbatim. No other §D6 content changed.
+- **2026-05-02 round 25** — Amended §D3 TypeScript interface to extend `BaseEntity` and use `Date` for all timestamp fields (`startedAt`, `endedAt`, `deletedAt`, plus inherited `createdAt`/`updatedAt`), aligning with the project-wide repository contract (every other entity in `src/repositories/` extends `BaseEntity`; `BaseRepository`'s converters round-trip Date ↔ Firestore Timestamp). Added `createdBy: string` (inherited from `BaseEntity`); `userId` retained as a separate stored field because it's both the owner and the query-convenience field for security rules (NFR-8). Updated `IncidentCreateInput`/`IncidentUpdateInput` to omit `createdBy`. `JournalEntry.addedAt` also flipped string → Date for symmetry; in-array Date storage is fine because the array entries are plain objects converted by `BaseRepository`'s recursive `convertTimestamps`/`convertDates` walkers. Resolves spec_gap from T-06 (the as-shipped Incident type from T-01 used ISO strings, which contradicted §D3's "Follow `PetMedicationRepository` pattern" instruction — `PetMedicationRepository` extends `BaseRepository<T extends BaseEntity>` which requires Date). Five rounds of design cold-reads (rounds 1, 3, 4, 5, 24) missed this; surfaced by builder pre-flight on T-06 (round 25). Drift-arbiter `amend_design`; T-01's `src/features/incidents/types.ts` updated in the same PR as a paired chore commit. No spec change. No behavior change. **Methodology note:** this is the second `amend_design` verdict (after round 24's §D6 deferrals); both surfaced from the foundation/early-slice work where types were defined ahead of consumers. Carry-over candidate fixture for PR-B per-verdict arbiter cases.

@@ -56,31 +56,31 @@ Groundwork that has zero user-visible effect but unblocks all downstream slices.
 
 Goal after this slice: a single-pet user can tap a global FAB, see a running timer, tap STOP, and the entry persists to Firestore. No severity, no chips, no journal yet — just the spine.
 
-### `[ ]` T-06 — IncidentRepository (basic CRUD)
+### `[x]` T-06 — IncidentRepository (basic CRUD)
 
 - **Cite:** spec §5; design §D2 file map, §D3 layout
 - **What:** Create `src/repositories/IncidentRepository.ts` extending `BaseRepository<Incident>` against path `users/${userId}/incidents`. Methods: `create(input)`, `get(id)`, `update(id, partial)`, `findActiveForUser()` (returns null if none). Follow `PetMedicationRepository` pattern.
-- **Verify:** Unit tests against Firestore emulator: create → get round-trip; update changes only specified fields; `findActiveForUser` returns the one incident with `endedAt == null && deletedAt == null`.
+- **Verify:** Unit tests using `vi.mock('firebase/firestore')` per the established repo-test pattern (see `PetMedicationRepository.test.ts`, `DoseLogRepository.test.ts`, etc.): create → get round-trip; update changes only specified fields; `findActiveForUser` returns the one incident with `endedAt == null && deletedAt == null`. Firestore security boundary is covered by `src/tests/firestore.rules.test.ts` (extended in T-04), not by repo unit tests. Emulator-backed repo testing is a project-wide refactor decision, out of scope for this task.
 
-### `[ ]` T-07 — incidentService (basic)
+### `[x]` T-07 — incidentService (basic)
 
 - **Cite:** spec BR-2 (timer at moment of gesture), BR-13 (STOP), BR-26 (singleton); design §D2
 - **What:** Create `src/services/incidentService.ts` with `createIncident({ petId, startedAt })`, `stopIncident(id)`, `findActiveIncident()`. Composes `IncidentRepository`. Generates client-side UUID synchronously; persists in background.
 - **Verify:** Unit tests with a mocked repository: `createIncident` returns a fully-formed Incident with synchronous startedAt; `stopIncident` sets endedAt; `findActiveIncident` returns at most one.
 
-### `[ ]` T-08 — useIncidentStore (active-incident slice)
+### `[x]` T-08 — useIncidentStore (active-incident slice)
 
 - **Cite:** spec BR-2, BR-26; design §D2 store
 - **What:** Create `src/store/useIncidentStore.ts` with `activeIncident` state, `startIncident({ petId })` action (synchronous state update + async persist), `stopIncident()` action. Hydration action `hydrateActiveIncident()` for auth boot (T-29).
 - **Verify:** Store tests: `startIncident` synchronously sets state; `stopIncident` clears active and sets endedAt on the prior active.
 
-### `[ ]` T-09 — useIncidentTimer hook
+### `[x]` T-09 — useIncidentTimer hook
 
 - **Cite:** spec BR-3 (live elapsed); design §D8 timer cadence
 - **What:** Create `src/features/incidents/hooks/useIncidentTimer.ts`. Reads `startedAt` from a passed-in incident; uses `requestAnimationFrame` to update a state hook every ~250ms; returns formatted elapsed (HH:MM:SS).
 - **Verify:** Hook test: given `startedAt = Date.now() - 65_000`, returned elapsed is `00:01:05`. With fake timers advancing 250ms, the hook re-renders.
 
-### `[ ]` T-10 — IncidentTimer component
+### `[x]` T-10 — IncidentTimer component
 
 - **Cite:** spec BR-3, NFR-6 (a11y polite live region); design §D9
 - **What:** Create `src/features/incidents/components/IncidentTimer.tsx`. Renders the elapsed value with monospace styling (Caregiver theme tokens). Wraps the elapsed text (not milliseconds) in `aria-live="polite"`.
@@ -334,3 +334,4 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **2026-05-01** — T-01: added `Note` waiving TDD-first for this pure type-declaration task; resolves spec_gap from T-01 (TDD rule vs. structural "imported nowhere" verify gate). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 19) and applied verbatim.
 - **2026-05-02** — T-04: clarified verify line to specify `pnpm run test:rules` as the gate and explicitly exclude `pnpm run deploy:dev` (a post-merge human step per plan §11 round-24); resolves spec_gap from T-04 (verify-line silence on deploy-vs-emulator boundary). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim.
 - **2026-05-02** — T-03: clarified verify line to specify emulator load (`firebase emulators:start --only firestore`) as the gate and explicitly exclude `firebase deploy --only firestore:indexes` (a post-merge human step per plan §11 round-24, mirroring the T-04 round-24 amendment); resolves spec_gap from T-03 (verify line invoking shared-infrastructure deploy against builder's no-deploy convention). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim. NOTE: this is the third task-local verify-line clarification (T-01 round 19, T-04 round 24, T-03 round 24); arbiter recommends a methodology-level builder-prompt amendment ("verify never includes infra-deploy commands") rather than continuing per-task. Captured as PR-B material; not addressed in this PR.
+- **2026-05-02** — T-06: clarified verify line to specify `vi.mock('firebase/firestore')` per the established repo-test pattern (see `PetMedicationRepository.test.ts` and 4 sibling repo tests) and explicitly note that the security boundary is covered by `src/tests/firestore.rules.test.ts`, not by repo unit tests. Resolves spec_gap from T-06 (verify line "Firestore emulator" conflicts with the project's mock-based repo-test pattern; no repo currently uses emulator-backed unit tests). Spec/design unchanged. User chose `amend_task` (option 1 of 3) in plan §11 round-25 interview; reasoning recorded in plan §11 info-gathering log. NOTE: this is **instance #1** of a new pattern (emulator-vs-mocks for repo unit tests), distinct from the round-24 no-deploy thread. Watch T-07/T-08 for recurrence; threshold to promote to a builder-prompt rule is 3 instances.

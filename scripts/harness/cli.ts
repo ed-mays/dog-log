@@ -554,7 +554,7 @@ async function runBuild(
   process.stderr.write(
     `harness: dispatching builder subagent for ${taskId} (this may take several minutes)...\n`
   );
-  const { exit, raw } = await dispatchBuilder({
+  const { exit, raw, parseError } = await dispatchBuilder({
     taskId,
     taskListPath: filePath,
   });
@@ -565,38 +565,48 @@ async function runBuild(
           file: fileArg,
           task_id: taskId,
           exit,
+          parse_error: parseError ?? null,
+          raw_result_text: parseError ? raw.resultText : undefined,
           cost_usd: raw.costUsd,
           duration_ms: raw.durationMs,
           num_turns: raw.numTurns,
           session_id: raw.sessionId,
+          stop_reason: raw.stopReason,
         },
         null,
         2
       )}\n`
     );
   } else {
-    process.stdout.write(`builder exit: ${exit.status}\n`);
+    process.stdout.write(`builder exit: ${exit?.status ?? 'PARSE_FAILED'}\n`);
     process.stdout.write(`  cost: $${raw.costUsd.toFixed(4)}\n`);
     process.stdout.write(
       `  duration: ${(raw.durationMs / 1000).toFixed(1)}s\n`
     );
     process.stdout.write(`  turns: ${raw.numTurns}\n`);
     process.stdout.write(`  session: ${raw.sessionId}\n`);
-    if (exit.status === 'success' && exit.commit_sha) {
+    process.stdout.write(`  stop_reason: ${raw.stopReason}\n`);
+    if (parseError) {
+      process.stdout.write(`  parse_error: ${parseError}\n`);
+      process.stdout.write(
+        `  raw_result_text (last 1000 chars):\n---\n${raw.resultText.slice(-1000)}\n---\n`
+      );
+    }
+    if (exit?.status === 'success' && exit.commit_sha) {
       process.stdout.write(`  commit: ${exit.commit_sha}\n`);
     }
-    if (exit.status === 'spec_gap') {
+    if (exit?.status === 'spec_gap') {
       process.stdout.write(
         `  cited: ${exit.cited_section}\n  gap: ${exit.gap_description}\n`
       );
     }
-    if (exit.status === 'verify_fail') {
+    if (exit?.status === 'verify_fail') {
       process.stdout.write(
         `  verify_command: ${exit.verify_command}\n  attempts: ${exit.attempts}\n`
       );
     }
   }
-  process.exit(exit.status === 'success' ? 0 : 2);
+  process.exit(exit?.status === 'success' ? 0 : 2);
 }
 
 async function runReview(
@@ -609,7 +619,7 @@ async function runReview(
   process.stderr.write(
     `harness: dispatching cold-reader subagent for ${taskId}...\n`
   );
-  const { exit, raw } = await dispatchColdReader({
+  const { exit, raw, parseError } = await dispatchColdReader({
     taskId,
     diffRange,
     taskListPath: filePath,
@@ -621,27 +631,41 @@ async function runReview(
           file: fileArg,
           task_id: taskId,
           exit,
+          parse_error: parseError ?? null,
+          raw_result_text: parseError ? raw.resultText : undefined,
           cost_usd: raw.costUsd,
           duration_ms: raw.durationMs,
+          stop_reason: raw.stopReason,
         },
         null,
         2
       )}\n`
     );
   } else {
-    process.stdout.write(`cold-reader verdict: ${exit.verdict}\n`);
+    process.stdout.write(
+      `cold-reader verdict: ${exit?.verdict ?? 'PARSE_FAILED'}\n`
+    );
     process.stdout.write(`  cost: $${raw.costUsd.toFixed(4)}\n`);
-    process.stdout.write(`  findings: ${exit.findings.length}\n`);
-    for (const finding of exit.findings) {
+    process.stdout.write(`  stop_reason: ${raw.stopReason}\n`);
+    if (parseError) {
+      process.stdout.write(`  parse_error: ${parseError}\n`);
       process.stdout.write(
-        `  - ${finding.severity} #${finding.scope_check} (${finding.cited_section}): ${finding.description.slice(0, 100)}\n`
+        `  raw_result_text (last 1000 chars):\n---\n${raw.resultText.slice(-1000)}\n---\n`
       );
     }
-    if (exit.summary) {
-      process.stdout.write(`  summary: ${exit.summary}\n`);
+    if (exit) {
+      process.stdout.write(`  findings: ${exit.findings.length}\n`);
+      for (const finding of exit.findings) {
+        process.stdout.write(
+          `  - ${finding.severity} #${finding.scope_check} (${finding.cited_section}): ${finding.description.slice(0, 100)}\n`
+        );
+      }
+      if (exit.summary) {
+        process.stdout.write(`  summary: ${exit.summary}\n`);
+      }
     }
   }
-  process.exit(exit.verdict === 'approve' ? 0 : 2);
+  process.exit(exit?.verdict === 'approve' ? 0 : 2);
 }
 
 async function runArbitrate(
@@ -656,7 +680,11 @@ async function runArbitrate(
   process.stderr.write(
     `harness: dispatching arbiter subagent for ${specGap.task_id}...\n`
   );
-  const { exit, raw: dispatchRaw } = await dispatchArbiter({
+  const {
+    exit,
+    raw: dispatchRaw,
+    parseError,
+  } = await dispatchArbiter({
     specGap,
     taskListPath: filePath,
   });
@@ -667,23 +695,35 @@ async function runArbitrate(
           file: fileArg,
           spec_gap: specGap,
           exit,
+          parse_error: parseError ?? null,
+          raw_result_text: parseError ? dispatchRaw.resultText : undefined,
           cost_usd: dispatchRaw.costUsd,
           duration_ms: dispatchRaw.durationMs,
+          stop_reason: dispatchRaw.stopReason,
         },
         null,
         2
       )}\n`
     );
   } else {
-    process.stdout.write(`arbiter verdict: ${exit.verdict}\n`);
+    process.stdout.write(
+      `arbiter verdict: ${exit?.verdict ?? 'PARSE_FAILED'}\n`
+    );
     process.stdout.write(`  cost: $${dispatchRaw.costUsd.toFixed(4)}\n`);
-    if (exit.amended_section) {
+    process.stdout.write(`  stop_reason: ${dispatchRaw.stopReason}\n`);
+    if (parseError) {
+      process.stdout.write(`  parse_error: ${parseError}\n`);
+      process.stdout.write(
+        `  raw_result_text (last 1000 chars):\n---\n${dispatchRaw.resultText.slice(-1000)}\n---\n`
+      );
+    }
+    if (exit?.amended_section) {
       process.stdout.write(`  amended: ${exit.amended_section}\n`);
     }
-    if (exit.amendment_text) {
+    if (exit?.amendment_text) {
       process.stdout.write(`  text: ${exit.amendment_text.slice(0, 200)}\n`);
     }
-    if (exit.pushback_message) {
+    if (exit?.pushback_message) {
       process.stdout.write(`  pushback: ${exit.pushback_message}\n`);
     }
   }

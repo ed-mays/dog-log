@@ -85,7 +85,7 @@ For every task:
        rule generalizes the lesson.
 7. **Run the verify ONE FINAL TIME** before constructing your exit
    payload. The TDD cycle in steps 3-5 includes test runs that are
-   _expected_ to fail (RED → GREEN). Those iterations do NOT determine
+   *expected* to fail (RED → GREEN). Those iterations do NOT determine
    the structured exit. **Only the final post-refactor verify run
    determines `success` vs `verify_fail`.** If your final run passes,
    emit `status: success`. If it fails, emit `status: verify_fail`
@@ -241,3 +241,132 @@ Match `CLAUDE.md` and the existing project conventions discovered in
 `context_files`. Project-specific rules ALWAYS override your defaults.
 When in doubt, mirror the precedent files literally — that's what the design
 phase chose them as the precedent for.
+
+---
+
+# Task: T-11 — StopButton component
+
+**Slice:** 1 (Minimum viable activation (one-tap → timer → STOP → saved))
+
+## Cited spec/design context
+
+### BR-12 (spec)
+
+- **BR-12** — A STOP action MUST be available throughout the active incident.
+
+### BR-13 (spec)
+
+- **BR-13** — On STOP, the timer MUST freeze at the current elapsed time and the incident MUST persist with `endedAt = now`. (Pet is always set per BR-28; no pet picker is invoked at STOP.)
+
+### §D2 (design)
+
+## §D2 Architecture
+
+Following the medications precedent (`src/features/medications/*`, `src/repositories/PetMedicationRepository.ts`, `src/services/petMedicationService.ts`, `src/store/usePetMedicationStore.ts`).
+
+### File map
+
+```
+src/features/incidents/
+  pages/
+    ActiveIncidentPage.tsx              # /incidents/active route — loads activeIncident from store, renders <IncidentCaptureSurface>
+    ActiveIncidentPage.test.tsx
+    SavedIncidentPage.tsx               # /pets/:petId/incidents/:id route — loads incident by id, renders <IncidentCaptureSurface>
+    SavedIncidentPage.test.tsx
+  components/
+    IncidentCaptureSurface.tsx          # SHARED surface used by both pages (BR-14, BR-25 — same surface live, post-stop, re-opened)
+    IncidentCaptureSurface.test.tsx
+    IncidentTimer.tsx                   # monospace hero, ticks every ~250ms (see §D8)
+    IncidentTimer.test.tsx
+    SeverityChips.tsx                   # 3-up grid (BR-6)
+    SeverityChips.test.tsx
+    ObservationChips.tsx                # type-aware grid (BR-7, BR-19, BR-32)
+    ObservationChips.test.tsx
+    IncidentJournal.tsx                 # append-only textarea (BR-8, BR-9, BR-30)
+    IncidentJournal.test.tsx
+    VetCallCard.tsx                     # tel: link (BR-10, BR-11)
+    VetCallCard.test.tsx
+    ActivationPetPicker.tsx             # bottom-Drawer picker shown when global FAB is tapped on a non-pet-scoped surface for multi-pet users (BR-28 third rule, DQ-7 resolution)
+    ActivationPetPicker.test.tsx
+    StopButton.tsx                      # (BR-12, BR-13)
+    StopButton.test.tsx
+    DeleteIncidentAction.tsx            # soft-delete trigger (BR-33)
+    DeleteIncidentAction.test.tsx
+    ResumeIncidentBanner.tsx            # global persistent banner offering to navigate to active incident (DQ-2 resolution)
+    ResumeIncidentBanner.test.tsx
+    IncidentHistoryList.tsx             # per-pet list (BR-23, BR-24, BR-25)
+    IncidentHistoryList.test.tsx
+  hooks/
+    useActiveIncident.ts                # selector + actions (start, stop, mutate, delete)
+    useActiveIncident.test.ts
+    useIncidentTimer.ts                 # rAF-driven elapsed seconds
+    useIncidentTimer.test.ts
+  types.ts                              # Incident, IncidentType, Severity, ChipId
+  chipCatalog.ts                        # static type→chips map (resolves OQ-3)
+
+src/repositories/
+  IncidentRepository.ts                 # CRUD against Firestore (NFR-8, BR-15)
+
+src/services/
+  incidentService.ts                    # business logic, composes repository
+                                        # — exposes getRecentTypesForPet(petId, limit=10): IncidentTypeId[]
+                                        #   for BR-21's MRU-per-pet sort. Implementation: query per-pet history
+                                        #   (composite index already covers it), map to types, dedupe preserving order.
+
+src/store/
+  useIncidentStore.ts                   # Zustand: activeIncident + per-pet history maps
+
+src/components/common/
+  EmergencyActivationFab.tsx            # global FAB, mounted in App.tsx (BR-27, AC-18)
+  EmergencyActivationFab.test.tsx
+```
+
+### Routes
+
+Add to `src/AppRoutes.tsx`:
+
+- `/incidents/active` → `ActiveIncidentPage` (auth-guarded; redirects to `/pets` if no active incident)
+- `/pets/:petId/incidents/:incidentId` → `SavedIncidentPage` (auth-guarded; pet-scoped per BR-23/25)
+
+Both gated behind a new `incidentsEnabled` feature flag, matching the existing pattern (`enableVets`, `enablePetList`, etc. in `src/AppRoutes.tsx:31-39`).
+
+### Global activation FAB (BR-27, AC-18)
+
+`EmergencyActivationFab` mounts in `src/App.tsx` outside the route tree so it survives navigation. Hidden when:
+
+- user is unauthenticated
+- the active route is `/incidents/active` (DQ-3 resolution: hidden — no-op there; the active surface itself owns navigation)
+- `incidentsEnabled` flag is off
+- the user has zero pets (per BR-27's round-5 zero-pet exception, added in spec to make this design behavior consistent with the requirement)
+
+Built with MUI `<Fab>`, positioned bottom-right with `position: fixed`. Tap target ≥56×56 (BR-27, NFR-3).
+
+**Tap behavior** (per BR-26 short-circuit and BR-28's three rules):
+
+| Pre-condition              | Surface                       | Pet count | Behavior                                                                                                                   |
+| -------------------------- | ----------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Active incident exists** | any                           | any       | Navigate to `/incidents/active` (resume — BR-26, AC-11). All other rules below skip.                                       |
+| No active incident         | Pet-scoped (e.g. `/pets/:id`) | any       | Activate immediately with that pet (1 tap, AC-20).                                                                         |
+| No active incident         | Non-pet-scoped                | exactly 1 | Activate immediately with the only pet (1 tap, AC-20).                                                                     |
+| No active incident         | Non-pet-scoped                | 2+        | Open `ActivationPetPicker` as an MUI bottom Drawer (DQ-7 resolution); the pet tap IS the activation (2 taps total, AC-19). |
+
+---
+
+## Verify (the per-task gate)
+
+Component test: tap fires the store action; `aria-label` matches the i18n value.
+
+## Project context files
+
+Read these for project conventions:
+- `CLAUDE.md`
+
+## Files you may create or modify
+
+_None pre-specified. Derive from the cited design §D2 file map and stage only those._
+
+## Budget
+
+- tokens: ~100,000
+- wall clock: 15 min
+- retries on verify_fail: 2

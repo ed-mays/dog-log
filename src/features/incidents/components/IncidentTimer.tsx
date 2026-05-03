@@ -1,0 +1,29 @@
+import { Box } from '@mui/material';
+import { useIncidentTimer } from '@features/incidents/hooks/useIncidentTimer';
+
+interface IncidentTimerProps {
+  startedAt: Date;
+}
+
+// Per design §D9: monospace digits (no jitter), aria-live="polite" on the
+// elapsed text only — milliseconds are intentionally absent so screen
+// readers don't get flooded.
+export function IncidentTimer({ startedAt }: IncidentTimerProps) {
+  const elapsed = useIncidentTimer(startedAt);
+
+  return (
+    <Box
+      component="span"
+      aria-live="polite"
+      sx={{
+        fontFamily: 'monospace',
+        fontVariantNumeric: 'tabular-nums',
+        fontSize: '2.5rem',
+        fontWeight: 600,
+        letterSpacing: '0.05em',
+      }}
+    >
+      {elapsed}
+    </Box>
+  );
+}
