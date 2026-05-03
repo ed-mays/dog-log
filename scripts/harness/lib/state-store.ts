@@ -26,7 +26,8 @@ export type StateEventType =
   | 'dispatch_end'
   | 'amendment_applied'
   | 'amendment_apply_failed'
-  | 'cycle_halt';
+  | 'cycle_halt'
+  | 'pushback_dispatch';
 
 export interface StateEvent {
   ts: string; // ISO 8601

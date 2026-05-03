@@ -46,6 +46,7 @@ import {
   orchestrateTask,
   summarizeOrchestrateResult,
 } from './lib/orchestrate.ts';
+import { dispatchPushback } from './lib/pushback-dispatch.ts';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -83,6 +84,12 @@ function usage(): string {
     '  orchestrate <task-id>      Chain build → review → (arbiter+apply) until',
     '                             success, halt for human, or hit a cap. Logs',
     '                             every step to .harness/state.json.',
+    '  pushback <task-id>         Re-dispatch builder with operator findings as',
+    '                             explicit context. Use --findings <path> to',
+    '                             point at a markdown file with findings; pass',
+    '                             --reset to first `git reset --hard HEAD~1`',
+    '                             (discards the previous orchestrator commit).',
+    '                             Logs a pushback_dispatch event to state.json.',
     '',
     'Options:',
     `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
@@ -92,6 +99,8 @@ function usage(): string {
     '                             (e.g. `main..HEAD`). Defaults to the current',
     '                             uncommitted diff for cold-read and HEAD~1..HEAD',
     '                             for review.',
+    '  --findings <path>          For pushback: markdown file with operator findings.',
+    '  --reset                    For pushback: `git reset --hard HEAD~1` first.',
     '  -h, --help                 Show this help.',
   ].join('\n');
 }
@@ -223,6 +232,8 @@ function main(): void {
       help: { type: 'boolean', short: 'h', default: false },
       'no-system-prompt': { type: 'boolean', default: false },
       diff: { type: 'string' },
+      findings: { type: 'string' },
+      reset: { type: 'boolean', default: false },
     },
     allowPositionals: true,
   });
@@ -560,6 +571,33 @@ function main(): void {
       );
       break;
     }
+    case 'pushback': {
+      const taskId = positionals[1];
+      if (!taskId) {
+        fail(
+          'pushback requires a task id (e.g. T-22) and --findings <path>\n\n' +
+            usage()
+        );
+      }
+      if (!values.findings) {
+        fail(
+          'pushback requires --findings <path> (markdown file with operator findings)\n\n' +
+            usage()
+        );
+      }
+      void runPushback(
+        taskId,
+        values.findings,
+        values.reset === true,
+        filePath,
+        fileArg,
+        values.json
+      ).catch((err) => {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`pushback failed: ${reason}`);
+      });
+      break;
+    }
     default:
       fail(`unknown command '${command}'\n\n${usage()}`);
   }
@@ -795,6 +833,64 @@ async function runOrchestrate(
     process.stdout.write(`state log: .harness/state.json\n`);
   }
   process.exit(result.outcome === 'success' ? 0 : 2);
+}
+
+async function runPushback(
+  taskId: string,
+  findingsPath: string,
+  reset: boolean,
+  filePath: string,
+  fileArg: string,
+  json: boolean
+): Promise<void> {
+  process.stderr.write(
+    `harness: pushback re-dispatch for ${taskId} (findings: ${findingsPath}${reset ? ', after git reset --hard HEAD~1' : ''})...\n`
+  );
+  const result = await dispatchPushback({
+    taskId,
+    findingsPath,
+    reset,
+    taskListPath: filePath,
+  });
+  if (json) {
+    process.stdout.write(
+      `${JSON.stringify(
+        {
+          file: fileArg,
+          task_id: taskId,
+          findings_source: findingsPath,
+          reset,
+          status: result.exit?.status ?? null,
+          parse_error: result.parseError ?? null,
+          commit_sha: result.commitSha ?? null,
+          cost_usd: result.raw.costUsd,
+          duration_ms: result.raw.durationMs,
+          num_turns: result.raw.numTurns,
+          state_path: '.harness/state.json',
+        },
+        null,
+        2
+      )}\n`
+    );
+  } else {
+    process.stdout.write(`pushback: ${result.exit?.status ?? 'parse_error'}\n`);
+    process.stdout.write(`  cost: $${result.raw.costUsd.toFixed(4)}\n`);
+    process.stdout.write(
+      `  duration: ${(result.raw.durationMs / 1000).toFixed(1)}s\n`
+    );
+    process.stdout.write(`  num_turns: ${result.raw.numTurns}\n`);
+    if (result.commitSha) {
+      process.stdout.write(`  commit_sha: ${result.commitSha}\n`);
+    }
+    if (result.parseError) {
+      process.stdout.write(`  parse_error: ${result.parseError}\n`);
+      process.stdout.write(
+        `  raw_result_text (last 1000 chars):\n---\n${result.raw.resultText.slice(-1000)}\n---\n`
+      );
+    }
+    process.stdout.write(`state log: .harness/state.json\n`);
+  }
+  process.exit(result.exit?.status === 'success' ? 0 : 2);
 }
 
 main();
