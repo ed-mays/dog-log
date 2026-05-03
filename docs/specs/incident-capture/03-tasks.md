@@ -110,7 +110,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/components/common/EmergencyActivationFab.tsx`. Hidden per the four hide-conditions from design §D2. Tap behavior: pre-fill petId from a pet-scoped surface (read from route params); for non-pet-scoped surface with exactly one pet, use that pet. **Multi-pet picker deferred to T-23.** **Resume short-circuit deferred to T-25.**
 - **Verify:** Component test: tap with petId fires `startIncident` synchronously and navigates to `/incidents/active`. Hidden when unauthenticated, when on `/incidents/active`, when flag off.
 
-### `[ ]` T-15 — Routes + App.tsx mount
+### `[x]` T-15 — Routes + App.tsx mount
 
 - **Cite:** spec BR-27 (global FAB); design §D2 routes
 - **What:** Add `/incidents/active` route to `AppRoutes.tsx` (flag-gated). Mount `<EmergencyActivationFab>` in `src/App.tsx` outside the route tree.

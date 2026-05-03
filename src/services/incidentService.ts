@@ -44,6 +44,14 @@ export class IncidentService {
     const repo = new IncidentRepository(userId);
     return repo.findActiveForUser();
   }
+
+  async getIncident(
+    userId: string,
+    incidentId: string
+  ): Promise<Incident | null> {
+    const repo = new IncidentRepository(userId);
+    return repo.getById(incidentId);
+  }
 }
 
 export const incidentService = new IncidentService();

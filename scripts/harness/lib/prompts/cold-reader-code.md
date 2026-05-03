@@ -104,8 +104,14 @@ elevate it to a finding.
 
 ## Output format
 
-Emit JSON. The harness parses this directly to gate merge and produce the PR
-comment thread.
+**Emit a single JSON object inside a fenced ` ```json ` block. NO prose
+before or after the fence.** No prelude like "Verdict: approve". No
+follow-up explanation outside the JSON. The harness's parser looks for
+a fenced JSON block with a `verdict` field; anything else fails with
+`invalid verdict (got undefined)` and the orchestrator halts.
+
+The JSON's `notes` field is the only place for out-of-scope prose
+observations — use it freely, but keep it inside the JSON.
 
 ```json
 {
@@ -124,6 +130,8 @@ comment thread.
   "notes": "<optional — out-of-scope concerns the human might want to see>"
 }
 ```
+
+**Methodology basis:** round-34 cold-reader emitted `**Verdict: \`approve\` — no findings.\*\*`as bold-prose preamble before the JSON-shaped notes; parser found no`verdict` field; orchestrator halted at $0.55 for a clean approve. JSON-fenced-only is the operationally correct format because it's what the parser is built for.
 
 **`cited_section` MUST be one of: `BR-N`, `NFR-N`, `AC-N`, `US-N`, `OQ-N`,
 `DQ-N`, `§N`, `§DN`.** No other values are valid. Findings rooted in the
