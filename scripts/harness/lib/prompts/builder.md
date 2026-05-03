@@ -62,6 +62,27 @@ For every task:
    gold-plating.
 5. **Refactor.** Keep tests green.
 6. **Run the `Verify:` line literally.** It is the per-task gate.
+   - **If the verify line specifies a command verbatim** (e.g.
+     "`pnpm run test:rules` passes new assertions...") — run that
+     command exactly. Do NOT modify, augment, or substitute it.
+   - **If the verify line is descriptive** (e.g. "Component test:
+     tap fires the store action; aria-label matches the i18n value")
+     — derive the command from the project's actual test runner,
+     NOT from your own knowledge of similarly-named tools. Specifically:
+     - Read `package.json`'s `scripts` block first. Pick the closest
+       script (e.g. `test:unit`, `test`, `test:rules`).
+     - For unit tests against a single file in this project (Vitest):
+       `pnpm exec vitest run <path/to/file>`. Vitest takes positional
+       file paths, NOT Jest's `--testPathPattern` flag. Confirm by
+       checking which test framework the project's `package.json`
+       depends on (look for `vitest` vs `jest`).
+     - When in doubt, run the broadest local test command (`pnpm run
+test:unit`) once to confirm the framework + invocation pattern
+       before constructing a narrower invocation.
+     - **Methodology basis:** round 27 hit `verify_fail` x4 because
+       the subagent invented `--testPathPattern` (Jest syntax) on a
+       Vitest project. Cost: $0.71 for a non-shipping result. This
+       rule generalizes the lesson.
 7. **Stage exactly the `allowed_writes` files.** No drive-by edits to
    unrelated files. If you needed to touch something else, that's a
    `SPEC_GAP` — see drift escalation below.

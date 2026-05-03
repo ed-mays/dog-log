@@ -218,30 +218,35 @@ export type Severity = 'mild' | 'moderate' | 'severe';
 // belong to which type, but stored chips are not foreign keys.
 export type ChipId = string;
 
+import type { BaseEntity } from '@repositories/types';
+
 export interface JournalEntry {
   elapsedSeconds: number; // BR-9, BR-31 — stored at write, never recomputed
   text: string;
-  addedAt: string; // ISO 8601 instant
+  addedAt: Date; // BR-30 instant of append
 }
 
-export interface Incident {
-  id: string;
-  userId: string; // owner — drives security rules (NFR-8)
+// Extends BaseEntity to align with project-wide repository contract
+// (every other entity in src/repositories/ follows this convention via
+// BaseRepository<T extends BaseEntity>). BaseEntity provides:
+//   id: string; createdAt: Date; updatedAt: Date; createdBy: string;
+// The Firestore layout below stores these as Timestamps; BaseRepository's
+// documentToEntity / entityToDocument converters handle the round-trip.
+export interface Incident extends BaseEntity {
+  userId: string; // owner — drives security rules (NFR-8); duplicates createdBy for query convenience
   petId: string; // BR-28 — required at all times (revert of round-1 reframe)
-  startedAt: string; // ISO 8601 instant — set at activation (BR-2)
-  endedAt: string | null; // ISO 8601 instant — set at STOP (BR-13)
+  startedAt: Date; // set at activation (BR-2)
+  endedAt: Date | null; // set at STOP (BR-13)
   type: IncidentTypeId | null; // BR-4, BR-19
   severity: Severity | null; // BR-6
   chips: ChipId[]; // BR-7, BR-20 — ordered, deduped at write
   journal: JournalEntry[]; // BR-30 — append-only after STOP
-  createdAt: string; // server-assigned (Firestore serverTimestamp)
-  updatedAt: string; // server-maintained on every write (BR-18)
-  deletedAt: string | null; // BR-33 — soft-delete timestamp; null when not deleted
+  deletedAt: Date | null; // BR-33 — soft-delete timestamp; null when not deleted
 }
 
 export type IncidentCreateInput = Pick<Incident, 'petId' | 'startedAt'>;
 export type IncidentUpdateInput = Partial<
-  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'petId'>
+  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'createdBy' | 'petId'>
 > & { petId?: string }; // pet may be reassigned but never cleared (BR-29)
 // Note: BR-29's "never cleared" invariant is enforced at runtime in
 // incidentService.update() — the type allows `petId?: string`, which still
@@ -336,8 +341,6 @@ async toggleChip(id, chipId) {
 
 ### Design §D11
 
-- **2026-05-01** — Initial draft. Open: DQ-1, DQ-2, DQ-3, DQ-4, DQ-5.
-
 - **2026-05-01 round 3** — Re-sync after spec OQ-2 revert and OQ-7 closure.
   - **DQ-1 closed:** incidents move to per-pet subcollection (`users/{userId}/pets/{petId}/incidents/...`) matching project convention; the top-level recommendation in §D3 was rewritten.
   - **§D2:** `PetPicker.tsx` renamed to `ActivationPetPicker.tsx` (purpose changed from STOP-time pet picker to multi-pet activation picker); FAB tap-behavior table added.
@@ -380,6 +383,8 @@ async toggleChip(id, chipId) {
 
 - **2026-05-02 round 24** — Amended §D6 to add an explicit Deferrals note covering (a) `incidents.chips.*` deferred to T-20 pending DQ-5, and (b) Spanish English-value stubs as a scoped v1 exception (real JSON cannot carry the JSONC `// TODO i18n-es` marker shown in the example). Resolves spec_gap from T-05 (cold-reader vetoed on the §D6/NFR-5 silent-resolution; both deferrals were in T-05's task body but not in cited design). Drift-arbiter agent's first `amend_design` verdict (round 24); applied verbatim. No other §D6 content changed.
 
+- **2026-05-02 round 25** — Amended §D3 TypeScript interface to extend `BaseEntity` and use `Date` for all timestamp fields (`startedAt`, `endedAt`, `deletedAt`, plus inherited `createdAt`/`updatedAt`), aligning with the project-wide repository contract (every other entity in `src/repositories/` extends `BaseEntity`; `BaseRepository`'s converters round-trip Date ↔ Firestore Timestamp). Added `createdBy: string` (inherited from `BaseEntity`); `userId` retained as a separate stored field because it's both the owner and the query-convenience field for security rules (NFR-8). Updated `IncidentCreateInput`/`IncidentUpdateInput` to omit `createdBy`. `JournalEntry.addedAt` also flipped string → Date for symmetry; in-array Date storage is fine because the array entries are plain objects converted by `BaseRepository`'s recursive `convertTimestamps`/`convertDates` walkers. Resolves spec_gap from T-06 (the as-shipped Incident type from T-01 used ISO strings, which contradicted §D3's "Follow `PetMedicationRepository` pattern" instruction — `PetMedicationRepository` extends `BaseRepository<T extends BaseEntity>` which requires Date). Five rounds of design cold-reads (rounds 1, 3, 4, 5, 24) missed this; surfaced by builder pre-flight on T-06 (round 25). Drift-arbiter `amend_design`; T-01's `src/features/incidents/types.ts` updated in the same PR as a paired chore commit. No spec change. No behavior change. **Methodology note:** this is the second `amend_design` verdict (after round 24's §D6 deferrals); both surfaced from the foundation/early-slice work where types were defined ahead of consumers. Carry-over candidate fixture for PR-B per-verdict arbiter cases.
+
 ### Task list (T0)
 
 - **2026-05-01** — Initial draft. 47 tasks across 5 slices + foundation. Tasks reference spec/design at the time of authoring; if spec/design amend, T- entries here may need re-citation.
@@ -389,4 +394,6 @@ async toggleChip(id, chipId) {
 - **2026-05-02** — T-04: clarified verify line to specify `pnpm run test:rules` as the gate and explicitly exclude `pnpm run deploy:dev` (a post-merge human step per plan §11 round-24); resolves spec_gap from T-04 (verify-line silence on deploy-vs-emulator boundary). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim.
 
 - **2026-05-02** — T-03: clarified verify line to specify emulator load (`firebase emulators:start --only firestore`) as the gate and explicitly exclude `firebase deploy --only firestore:indexes` (a post-merge human step per plan §11 round-24, mirroring the T-04 round-24 amendment); resolves spec_gap from T-03 (verify line invoking shared-infrastructure deploy against builder's no-deploy convention). Spec/design unchanged. Amendment proposed by drift-arbiter agent (round 24) and applied verbatim. NOTE: this is the third task-local verify-line clarification (T-01 round 19, T-04 round 24, T-03 round 24); arbiter recommends a methodology-level builder-prompt amendment ("verify never includes infra-deploy commands") rather than continuing per-task. Captured as PR-B material; not addressed in this PR.
+
+- **2026-05-02** — T-06: clarified verify line to specify `vi.mock('firebase/firestore')` per the established repo-test pattern (see `PetMedicationRepository.test.ts` and 4 sibling repo tests) and explicitly note that the security boundary is covered by `src/tests/firestore.rules.test.ts`, not by repo unit tests. Resolves spec_gap from T-06 (verify line "Firestore emulator" conflicts with the project's mock-based repo-test pattern; no repo currently uses emulator-backed unit tests). Spec/design unchanged. User chose `amend_task` (option 1 of 3) in plan §11 round-25 interview; reasoning recorded in plan §11 info-gathering log. NOTE: this is **instance #1** of a new pattern (emulator-vs-mocks for repo unit tests), distinct from the round-24 no-deploy thread. Watch T-07/T-08 for recurrence; threshold to promote to a builder-prompt rule is 3 instances.
 

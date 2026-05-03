@@ -231,30 +231,35 @@ export type Severity = 'mild' | 'moderate' | 'severe';
 // belong to which type, but stored chips are not foreign keys.
 export type ChipId = string;
 
+import type { BaseEntity } from '@repositories/types';
+
 export interface JournalEntry {
   elapsedSeconds: number; // BR-9, BR-31 — stored at write, never recomputed
   text: string;
-  addedAt: string; // ISO 8601 instant
+  addedAt: Date; // BR-30 instant of append
 }
 
-export interface Incident {
-  id: string;
-  userId: string; // owner — drives security rules (NFR-8)
+// Extends BaseEntity to align with project-wide repository contract
+// (every other entity in src/repositories/ follows this convention via
+// BaseRepository<T extends BaseEntity>). BaseEntity provides:
+//   id: string; createdAt: Date; updatedAt: Date; createdBy: string;
+// The Firestore layout below stores these as Timestamps; BaseRepository's
+// documentToEntity / entityToDocument converters handle the round-trip.
+export interface Incident extends BaseEntity {
+  userId: string; // owner — drives security rules (NFR-8); duplicates createdBy for query convenience
   petId: string; // BR-28 — required at all times (revert of round-1 reframe)
-  startedAt: string; // ISO 8601 instant — set at activation (BR-2)
-  endedAt: string | null; // ISO 8601 instant — set at STOP (BR-13)
+  startedAt: Date; // set at activation (BR-2)
+  endedAt: Date | null; // set at STOP (BR-13)
   type: IncidentTypeId | null; // BR-4, BR-19
   severity: Severity | null; // BR-6
   chips: ChipId[]; // BR-7, BR-20 — ordered, deduped at write
   journal: JournalEntry[]; // BR-30 — append-only after STOP
-  createdAt: string; // server-assigned (Firestore serverTimestamp)
-  updatedAt: string; // server-maintained on every write (BR-18)
-  deletedAt: string | null; // BR-33 — soft-delete timestamp; null when not deleted
+  deletedAt: Date | null; // BR-33 — soft-delete timestamp; null when not deleted
 }
 
 export type IncidentCreateInput = Pick<Incident, 'petId' | 'startedAt'>;
 export type IncidentUpdateInput = Partial<
-  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'petId'>
+  Omit<Incident, 'id' | 'userId' | 'createdAt' | 'createdBy' | 'petId'>
 > & { petId?: string }; // pet may be reassigned but never cleared (BR-29)
 // Note: BR-29's "never cleared" invariant is enforced at runtime in
 // incidentService.update() — the type allows `petId?: string`, which still
