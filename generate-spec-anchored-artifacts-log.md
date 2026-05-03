@@ -985,6 +985,7 @@ The harness has now shipped 5 of 6 slice-1 builder-driven tasks (T-11..T-15) end
 | T-14 | $1.25                       | $0.36                                        | —              | $1.61 | first try, **orchestrated**                                                         |
 | T-15 | $1.25                       | $0.48 + $0.55 + $0.31 (3 cold-read attempts) | —              | $2.59 | builder first try, cold-reader format issue + retry, **orchestrated**               |
 | T-18 | ~$0.62                      | ~$0.27                                       | —              | $0.89 | first try, **orchestrated**, repository tier (operator backfilled 2 coverage tests) |
+| T-17 | $0.85 + $0.66 (re-dispatch) | $0.27 (approved, missed both divergences)    | —              | $1.78 | cold-reader-approved spec divergence, **operator pushback** re-dispatch             |
 
 Pattern:
 
@@ -1075,9 +1076,55 @@ T-18 = **first proof of the orchestrator's value.** Single command, no operator 
 
 ---
 
+### Round 37 — T-17 + first operator pushback (cold-reader-approved divergence)
+
+**Context:** T-17 = incidentService extensions consuming T-18's RMW methods. The task "What" line names six methods explicitly (`setSeverity`, `clearSeverity`, `toggleChip`, `appendJournal`, `setType`, `clearType`) and explicitly says `appendJournal` "computes elapsedSeconds against incident.startedAt at call time per BR-31."
+
+#### Round 37 trajectory
+
+1. **Orchestrator dispatched (`harness orchestrate T-17`):** Single chain. Builder shipped commit `15797e36` ($0.85), cold-reader returned `approve` ($0.27). Total reported: **$1.12, success, 0 amendments**. Looked like a clean second-orchestrated-task win.
+2. **Operator review caught two divergences before push:**
+   - **Divergence A:** Builder shipped 4 methods, not 6. `setSeverity(severity: Severity | null)` and `setType(type: IncidentTypeId | null)` accepted nullable args so `null` achieved the clearing, collapsing the contract. Reasonable as API design but contradicts the explicit task contract.
+   - **Divergence B:** `appendJournal` accepted `elapsedSeconds: number` as a required caller arg (with comment "service must NOT recompute"). Inverted from the "What" line — the spec says service computes from `(now - incident.startedAt)`. Builder mis-read BR-31's "stored at write time and MUST NOT be recomputed" as "caller supplies" rather than "later edits to startedAt don't recompute past entries."
+3. **Pushback re-dispatch (manual):** Reset commit, rendered `harness prepare T-17`, appended a `## Operator pushback (round 37 re-dispatch)` section with the two findings as explicit feedback (including the corrected `appendJournal` shape inline), and shelled out to `claude -p --permission-mode bypassPermissions` directly. The harness has no native operator-pushback path when cold-reader returned approve — there's a `pushback` verdict in the arbiter but no equivalent for "operator caught what cold-reader missed."
+4. **Re-dispatch shipped commit `89b579f2` ($0.66, 22 turns).** All six methods exported as named distinct symbols, `appendJournal` accepts only `text` from caller and computes `elapsedSeconds` internally, defensive throw branch tested per round-36 finding #6.
+5. **PR #185 merged.** Slice 2 at 2/10.
+
+#### Round 37 cost
+
+| Component                      | Cost      | Notes                                                  |
+| ------------------------------ | --------- | ------------------------------------------------------ |
+| Builder (orchestrator attempt) | $0.85     | shipped, then reverted                                 |
+| Cold-reader (approved)         | $0.27     | missed both divergences                                |
+| Pushback re-dispatch           | $0.66     | manual `claude -p` invocation outside the orchestrator |
+| **Total round 37**             | **$1.78** | ~58% premium over a clean dispatch ($1.12)             |
+
+The premium is the cost of the harness gap (no operator-pushback channel). When the channel exists, operator labor drops sharply; the dollar cost stays similar.
+
+#### Round 37 findings (harness)
+
+**Finding #6 confirmed and widened:** Cold-reader scope #1 ("does the diff implement each cited BR?") and scope #3 ("did the producer silently resolve a spec ambiguity?") both **failed on T-17**, with the divergences sitting in plain sight against the task's "What" line. Two structural causes:
+
+- Cold-reader loads the cited spec/design _sections_ but doesn't load the _task_ body itself. The "What" line names six methods; cold-reader couldn't see that and could only count BR coverage — and BR-6 (severity) loosely permits the 4-method nullable design.
+- Cold-reader's "BR coverage" check is satisfied by _any_ test asserting _any_ aspect of the BR. BR-31 has a test for the stored-vs-recomputed semantic; cold-reader didn't cross-check whose responsibility the computation is.
+
+**Fix candidate:** cold-reader prompt loads the task body and treats the "What" line as a verbatim contract. Add positive scope #7: "Does the diff implement every method/symbol/file named in the task's 'What' line, with the exact names given?" Mechanical to evaluate.
+
+**Finding #7 (new):** **Harness has no operator-pushback path when cold-reader returns approve.** Today, when an operator catches a divergence post-approval, the only options are: (a) operator-fix in a follow-up commit (defeats the orchestrator), (b) revert and re-dispatch with no veto context (likely reproduces the bug), or (c) reset, manually re-render the input + append pushback + shell to `claude -p`. (c) was used in round 37; it works but breaks the harness contract (no state.json event, no cost accounting, no integration with `harness orchestrate`).
+
+**Fix candidate:** new CLI command `harness pushback T-N --findings findings.md [--reset]`. Renders the standard per-task input + appends a `## Operator pushback` section + dispatches the builder with the augmented prompt + logs as `pushback_dispatch` in state.json. `--reset` runs `git reset --hard HEAD~1` first if the previous commit needs to be discarded.
+
+Captured as PR-B-priority work; not addressed this round. Threshold to act: **2nd organic recurrence in slice 2** (already at 1).
+
+#### Round 37 bottom line
+
+T-17 shipped honoring the spec verbatim. **First confirmed instance of cold-reader-approved-but-spec-wrong** in the project's history. The harness's "build → review → approve → ship" chain now empirically needs an operator-review backstop until cold-reader scope #7 lands.
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-36. **Slice 1 closed (11/11)**, slice 2 at **1/10** (T-18 shipped). Methodology debt: **0**. Builder cost-per-task converged: $0.48-$0.62 (component/repository) / $1.25 (page); cold-reader $0.27-$0.55; arbiter $0.21-$0.31.
+**Active branch:** `main` post-round-37. **Slice 1 closed (11/11)**, slice 2 at **2/10** (T-17, T-18 shipped). Methodology debt: **0** (findings #6 expanded and #7 captured, both queued for PR-B). Builder cost-per-task converged: $0.48-$0.85 (component/repository/service) / $1.25 (page); cold-reader $0.27-$0.55; arbiter $0.21-$0.31.
 
 ### Merged to main (chronological)
 
@@ -1112,15 +1159,20 @@ T-18 = **first proof of the orchestrator's value.** Single command, no operator 
 | #181 | 35       | Frozen-timer fix — `useIncidentTimer(startedAt, endedAt)` honors §D2 post-STOP invariant; surfaced by T-16 manual smoke                                           |
 | #182 | 35       | Slice 1 closed (T-16 [x]); §T0 entry recording the bug + harness lesson; drift-arbiter-input test de-fragiled (no more rotation churn)                            |
 | #183 | 36       | T-18 ships via orchestrator (first multi-dispatch slice-2 task); operator backfilled 2 not-found-branch tests for coverage gate                                   |
+| #184 | 35–36    | Session log rounds 35-36 (slice 1 closed, T-18 orchestrated)                                                                                                      |
+| #185 | 37       | T-17 ships via pushback re-dispatch (first cold-reader-approved spec divergence); 6 named mutation methods; service computes elapsedSeconds                       |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
 ### Open
 
 - **Slice 1 closed (11/11).** All foundation + start/stop incident capture lives end-to-end against Firestore.
-- **Slice 2 in flight at 1/10:** T-18 shipped (round 36). T-17 is the next orchestrator candidate (incidentService extensions consuming T-18's RMW methods).
-- **Round 37 candidate:** dispatch T-17 (incidentService extensions: setSeverity, clearSeverity, toggleChip, appendJournal, setType, clearType). Predictions: (a) cost lands ~$0.75 (service-tier, sibling to T-07's $0.48 + slightly more breadth); (b) cold-reader catches BR-22 invariant test if missing (changing type leaves severity/chips/journal untouched); (c) cold-reader scope #2 still doesn't cover defensive throws (round-36 finding #6 unaddressed) — watch whether builder ships them organically or operator backfills again.
-- **Open harness work (PR-B candidates):** finding #5 (invariant propagation across slice) and finding #6 (defensive-throw coverage) both deferred. Threshold to address: 2nd organic recurrence in slice 2.
+- **Slice 2 in flight at 2/10:** T-17, T-18 shipped. T-19 (chipCatalog content) is the next orchestrator candidate — small data file, ~$0.30-$0.50 expected, low surface area.
+- **Round 38 candidate:** dispatch T-19 (chipCatalog.ts — 8 type entries with their chip arrays). Predictions: (a) cost lands sub-$0.50 (data-tier task, smallest of slice 2); (b) cold-reader scope #1 trivially passes since the spec section is concrete; (c) finding #6 won't fire (no methods, no throw branches); (d) finding #7 won't fire (no spec ambiguity to silently resolve).
+- **Open harness work (PR-B candidates, by priority):**
+  - **#7 (highest)** — operator-pushback CLI command (`harness pushback T-N --findings findings.md`). Surfaced round 37, threshold to act = 2nd organic recurrence (already at 1).
+  - **#6** — cold-reader scope #7 (verbatim "What" line as contract). Surfaced round 36, confirmed and widened round 37.
+  - **#5** — invariant propagation cold-read (slice-end automatic sweep). Surfaced round 35, single instance.
 
 ### Spec artifacts
 
