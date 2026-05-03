@@ -1122,9 +1122,89 @@ T-17 shipped honoring the spec verbatim. **First confirmed instance of cold-read
 
 ---
 
+### Rounds 38-41 — slice 2 ships (T-19 through T-26)
+
+**Context:** Slice 2 = mid-event editing (severity, observation chips with carry-over, journal with elapsed prefix, vet call card, full capture surface). 8 remaining tasks after T-17/T-18; targeted at proving the orchestrator across more task tiers (data file, i18n, leaf components, composing component, manual smoke).
+
+#### Per-task cost summary (orchestrator-driven dispatches only)
+
+| Round | Task                        | Outcome                          | Total | Pushback?    | Operator interventions                                         |
+| ----- | --------------------------- | -------------------------------- | ----- | ------------ | -------------------------------------------------------------- |
+| 38    | T-19 chipCatalog (data)     | success first-try                | $0.57 | —            | knip ignore + 3 shape tests (forward-of-wire-up)               |
+| 38    | T-20 chip i18n keys         | success after manual cold-reader | $0.87 | —            | manual cold-reader re-dispatch (orchestrator bug — finding #9) |
+| 39    | T-21 SeverityChips          | success first-try, paired chore  | $1.43 | —            | 6 store-coverage backfill tests                                |
+| 39    | T-22 IncidentJournal        | veto then pushback success       | $3.13 | yes (manual) | 2 dispatches (re-read findings + manual pushback)              |
+| 40    | T-23 ObservationChips       | success first-try                | $1.50 | —            | none                                                           |
+| 40    | T-24 VetCallCard            | success first-try                | $1.18 | —            | none                                                           |
+| 41    | T-25 IncidentCaptureSurface | veto-then-approve (verdict flip) | $1.26 | —            | manual cold-reader re-dispatch + 1 backfill test               |
+| 41    | T-26 manual smoke           | passed                           | $0    | —            | human gate                                                     |
+
+**Slice 2 cumulative subagent cost: $9.94 across 8 dispatches + 3 manual cold-reader/pushback re-dispatches = $11.13 actual when including the operator-recovery cost.**
+
+#### Findings opened during the slice (all deferred to PR-B/round 42)
+
+| #   | Surfaced                          | Category                                                             |
+| --- | --------------------------------- | -------------------------------------------------------------------- |
+| #5  | round 35 (T-16 frozen-timer bug)  | invariant propagation across previously-shipped tasks                |
+| #6  | round 36 + 37 + 39 (T-17 + T-22)  | cold-reader doesn't load task body; scope #2 misses defensive throws |
+| #7  | round 37 (T-17 manual pushback)   | no native operator-pushback path when cold-reader returned approve   |
+| #8  | round 38 (T-19 knip + coverage)   | forward-of-wire-up file friction                                     |
+| #9  | round 38 (T-20 SHA hallucination) | builder hallucinates commit_sha in structured exit                   |
+| #10 | round 39 (T-22 veto)              | state.json doesn't capture cold-reader finding text                  |
+| #11 | round 39 (T-22 pushback urgency)  | pushback CLI absence costs ~12 min operator labor                    |
+| #12 | round 41 (T-25 verdict flip)      | cold-reader verdict non-determinism on identical input               |
+
+#### Slice 2 bottom line
+
+Empirical proof that the orchestrator works across task tiers (data → i18n → repository → service → leaf component → composing component → manual smoke). Cold-reader emerged as the bottleneck — every finding in rounds 38-41 was either a cold-reader miss, cold-reader inconsistency, or a workflow gap rooted in cold-reader output being inadequate. Builder + arbiter prompts hold steady; the next generation of harness investment is cold-reader prompt + workflow.
+
+---
+
+### Round 42 — PR-B harness improvements (findings #6, #7, #9, #10)
+
+**Context:** Slice 2 closed → harness backlog has 4 ripe findings (single-instance findings #5, #8 deferred; #12 deferred pending 5x quantification). User direction: plan first, then ship. Three PRs sequenced for independent review.
+
+#### Round 42 trajectory
+
+**PR-B-1 (PR #196): orchestrator robustness — findings #9, #10 (~30 LOC, 4 new tests)**
+
+- Replaced builder-reported `commit_sha` with `deps.resolveHeadSha()` in `orchestrate.ts:205` (uses existing `git rev-parse HEAD` dep — first 7 chars of builder's hallucinated SHA matched real, remaining 33 invented)
+- Added `findings: e.findings` (full ColdReaderFinding[]) to `dispatchEndPayload()` for cold-reader role — backward-compatible since `StateEvent.payload` is `Record<string, unknown>`
+- 2 new finding-#9 tests (happy-path with hallucinated builder SHA + halt-when-resolveHeadSha-throws); 1 new finding-#10 test; 2 existing tests updated to expect resolveHeadSha return value
+
+**PR-B-2 (PR #197): cold-reader sees task body + scope #7 — finding #6 (~50 LOC + snapshot regen + 2 fixture cases)**
+
+- Extended `ColdReaderInput` with `task_what: string | null` carrying the verbatim "What" line from the task body
+- New `## Task contract (verbatim "What" line)` markdown section between Verify line and cited spec sections
+- Added positive scope #7 to `cold-reader-code.md`: read task_what verbatim; renaming/collapsing/reshaping/omitting any named symbol is a divergence (HIGH for silent collapse, CRITICAL for contract breakage)
+- Regenerated `cold-read-T-01-no-diff.snapshot.md` (intentional snapshot diff)
+- 2 new cold-reader regression cases: T-17-collapsed-named-methods (negative, expects scope_check 7 veto) + T-17-all-six-methods-named (positive control)
+- 4 new cold-reader-input tests (carry/render/null-omit behavior)
+
+**PR-B-3 (PR #198): operator pushback CLI — findings #7, #11 (~210 LOC + 9 tests)**
+
+- New `dispatchPushback()` module: validates findings file, optional `git reset --hard HEAD~1`, renders standard builder input, appends `## Operator pushback re-dispatch` section with findings body, dispatches builder via existing wrapper, parses BuilderExit, resolves commit_sha from `git rev-parse HEAD` (per finding #9), logs `pushback_dispatch` event to state.json
+- New `case 'pushback'` in CLI with `--findings <path>` and `--reset` flags; new `runPushback()` outputs cost/duration/sha summary or parse_error+raw_result_text on failure
+- Added `pushback_dispatch` to `StateEventType` union
+- 9 new tests: file-not-found, empty-findings, task-not-found, refuse-reset-on-no-HEAD~1, happy path (verifies prompt assembly + state.json payload), reset path, parse-error path, plus 2 for renderPushbackSection helper
+
+#### Round 42 cost
+
+**$0 subagent.** All three PRs are pure harness code (no LLM dispatches). Operator labor: ~2.5 hours from plan approval through PR-3 merge (PR-1 ~30 min, PR-2 ~60 min including snapshot regen + fixtures, PR-3 ~75 min for new file + tests + CLI surface). Round 42 is the first round in the harness's 41-round history with $0 subagent cost — the work is purely the harness itself, no feature dispatch.
+
+#### Round 42 bottom line
+
+Three findings (#6, #7, #9, #10) closed; one (#11) merged into #7's resolution. PR-B finished within plan's estimated time. The harness now has: real-SHA orchestrator, full-findings state.json (no more $0.25-$0.35 re-dispatch tax to read what cold-reader said), cold-reader that loads the task body and treats "What" line as verbatim contract, and a one-command operator-pushback path that logs to state.json. Slice 3 entry will be the first verification of all three improvements working together.
+
+#### Round 42 finding (process)
+
+**Finding #13 (process, not harness):** Article-grade documentation cannot be reconstructed from session log + PR descriptions. The session log captures round summaries; PR descriptions capture outcomes; both lose the conversational deliberation, exact LLM finding text, exact operator-pushback wording, and "in the moment" rationale that an experiential article needs. Multiple compactions across the session ate the conversational dialogue. The writeup `agentic-flow-documentation-v1.md` (refreshed in PR #195) is a state-snapshot — useful as scaffolding, not sufficient as primary article material. Captured the process lesson as a memory: when user signals article intent, set up transcript-level per-round notes immediately. **Reconstruction effort deferred** by user direction; future writeups for slices 3-5 should layer transcript-level notes on top of the session-log/PR-description scaffold from the start.
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-37. **Slice 1 closed (11/11)**, slice 2 at **2/10** (T-17, T-18 shipped). Methodology debt: **0** (findings #6 expanded and #7 captured, both queued for PR-B). Builder cost-per-task converged: $0.48-$0.85 (component/repository/service) / $1.25 (page); cold-reader $0.27-$0.55; arbiter $0.21-$0.31.
+**Active branch:** `main` post-round-42. **Slice 1 closed (11/11), slice 2 closed (10/10), PR-B trio shipped (#196, #197, #198).** Methodology debt: **0** for shippable findings (#5 + #8 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding, not a harness finding). Builder cost-per-task converged within tier; cold-reader prompt overhauled mid-cycle; orchestrator + state.json + pushback CLI all operationally complete.
 
 ### Merged to main (chronological)
 
@@ -1161,18 +1241,31 @@ T-17 shipped honoring the spec verbatim. **First confirmed instance of cold-read
 | #183 | 36       | T-18 ships via orchestrator (first multi-dispatch slice-2 task); operator backfilled 2 not-found-branch tests for coverage gate                                   |
 | #184 | 35–36    | Session log rounds 35-36 (slice 1 closed, T-18 orchestrated)                                                                                                      |
 | #185 | 37       | T-17 ships via pushback re-dispatch (first cold-reader-approved spec divergence); 6 named mutation methods; service computes elapsedSeconds                       |
+| #186 | 37       | Session log round 37 (T-17 + first operator pushback)                                                                                                             |
+| #187 | 38       | T-19 chipCatalog ships via orchestrator (first data-tier orchestrated task); knip ignore + 3 shape tests for forward-of-wire-up                                   |
+| #188 | 38       | T-20 chip i18n keys ship; orchestrator hit SHA hallucination bug (#9); operator manually re-dispatched cold-reader to recover                                     |
+| #189 | 39       | T-21 SeverityChips ships via orchestrator + paired store-method chore; operator backfilled 6 store coverage tests                                                 |
+| #190 | 39       | T-22 IncidentJournal ships via first orchestrated cold-reader-veto + manual pushback re-dispatch (findings #10, #11)                                              |
+| #191 | 40       | T-23 ObservationChips ships first-try via orchestrator (BR-32 carry-over chip group); slice 2 at 7/10                                                             |
+| #192 | 40       | T-24 VetCallCard ships first-try via orchestrator (Primary Vet `tel:` anchor with hide-when-no-vet)                                                               |
+| #193 | 41       | T-25 IncidentCaptureSurface ships (cold-reader verdict non-determinism, finding #12); operator added BR-14 freeze-prop assertion test                             |
+| #194 | 41       | Slice 2 closed (T-26 manual smoke); §T0 entry recording slice cumulative cost + 3 new findings                                                                    |
+| #195 | 41       | Doc refresh of `agentic-flow-documentation-v1.md` snapshot (rounds 32-41); intent flagged as misaligned with article goal — see finding #13                       |
+| #196 | 42       | PR-B-1 — orchestrator SHA derivation + cold-reader findings capture in state.json (findings #9, #10)                                                              |
+| #197 | 42       | PR-B-2 — cold-reader sees task body + scope #7 contract conformance (finding #6)                                                                                  |
+| #198 | 42       | PR-B-3 — `harness pushback T-N --findings <path> [--reset]` CLI command (findings #7, #11)                                                                        |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
 ### Open
 
-- **Slice 1 closed (11/11).** All foundation + start/stop incident capture lives end-to-end against Firestore.
-- **Slice 2 in flight at 2/10:** T-17, T-18 shipped. T-19 (chipCatalog content) is the next orchestrator candidate — small data file, ~$0.30-$0.50 expected, low surface area.
-- **Round 38 candidate:** dispatch T-19 (chipCatalog.ts — 8 type entries with their chip arrays). Predictions: (a) cost lands sub-$0.50 (data-tier task, smallest of slice 2); (b) cold-reader scope #1 trivially passes since the spec section is concrete; (c) finding #6 won't fire (no methods, no throw branches); (d) finding #7 won't fire (no spec ambiguity to silently resolve).
-- **Open harness work (PR-B candidates, by priority):**
-  - **#7 (highest)** — operator-pushback CLI command (`harness pushback T-N --findings findings.md`). Surfaced round 37, threshold to act = 2nd organic recurrence (already at 1).
-  - **#6** — cold-reader scope #7 (verbatim "What" line as contract). Surfaced round 36, confirmed and widened round 37.
-  - **#5** — invariant propagation cold-read (slice-end automatic sweep). Surfaced round 35, single instance.
+- **Slice 1 closed (11/11), slice 2 closed (10/10), PR-B trio shipped.** Harness operationally complete: real-SHA orchestrator, full-findings state.json, cold-reader sees task body + scope #7, operator-pushback CLI.
+- **Round 43 candidate:** dispatch `harness orchestrate T-27` (ActivationPetPicker — leaf component, MUI bottom Drawer, similar shape to T-21). First task to verify all three PR-B improvements work together: (a) state.json should contain real SHA at dispatch_end (not hallucinated), (b) state.json should contain full findings array if cold-reader vetoes, (c) cold-reader prompt should show the verbatim "What" line as a Task contract section. Expected cost: ~$1.43 (component tier baseline). If cold-reader vetoes with scope_check 1-2, exercise the new `harness pushback` CLI for first time.
+- **Open harness work (deferred):**
+  - **#5** — invariant propagation slice-end cold-read. Single instance (round 35); threshold = 2nd recurrence.
+  - **#8** — forward-of-wire-up file friction (auto-detect at pre-push). Single instance (round 38); threshold = 2nd recurrence.
+  - **#12** — cold-reader verdict non-determinism. Single instance (round 41); needs 5x quantification before designing fix.
+  - **#13** — article-grade documentation reconstruction. Process finding (round 42); deferred by user.
 
 ### Spec artifacts
 
