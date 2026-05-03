@@ -98,7 +98,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/features/incidents/components/IncidentCaptureSurface.tsx`. Initial form: takes an Incident prop, renders `<IncidentTimer>` and `<StopButton>` only. (Severity, chips, journal, vet card added in slice 2.)
 - **Verify:** Component test: renders timer and STOP given an active incident; renders timer (no STOP) given a stopped incident.
 
-### `[ ]` T-13 — ActiveIncidentPage
+### `[x]` T-13 — ActiveIncidentPage
 
 - **Cite:** spec BR-1, BR-14; design §D2 routes
 - **What:** Create `src/features/incidents/pages/ActiveIncidentPage.tsx`. Reads `activeIncident` from store; renders `<IncidentCaptureSurface>`. Redirects to `/pets` (or shows empty state) if no active incident.
