@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { IncidentCaptureSurface } from './IncidentCaptureSurface';
 import type { Incident } from '@features/incidents/types';
 import { useIncidentStore, type IncidentState } from '@store/useIncidentStore';
@@ -14,6 +15,23 @@ vi.mock('@store/useIncidentStore');
 
 vi.mock('@features/incidents/hooks/useIncidentTimer', () => ({
   useIncidentTimer: () => '00:01:05',
+}));
+
+// Mock child components to isolate surface composition
+vi.mock('./SeverityChips', () => ({
+  SeverityChips: () => <div data-testid="severity-chips" />,
+}));
+
+vi.mock('./ObservationChips', () => ({
+  ObservationChips: () => <div data-testid="observation-chips" />,
+}));
+
+vi.mock('./IncidentJournal', () => ({
+  IncidentJournal: () => <div data-testid="incident-journal" />,
+}));
+
+vi.mock('./VetCallCard', () => ({
+  VetCallCard: () => <div data-testid="vet-call-card" />,
 }));
 
 function makeIncident(overrides: Partial<Incident> = {}): Incident {
@@ -46,25 +64,48 @@ describe('IncidentCaptureSurface', () => {
     } as unknown as IncidentState);
   });
 
-  it('renders timer and STOP button given an active incident (endedAt === null, BR-14)', () => {
-    const incident = makeIncident({ endedAt: null });
-    render(<IncidentCaptureSurface incident={incident} />);
+  describe('active state (endedAt === null)', () => {
+    it('renders full surface: timer, STOP button, and all sub-sections', () => {
+      render(<IncidentCaptureSurface incident={makeIncident()} />);
 
-    expect(screen.getByText('00:01:05')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'incidents.stop' })
-    ).toBeInTheDocument();
+      expect(screen.getByText('00:01:05')).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'incidents.stop' })
+      ).toBeInTheDocument();
+      expect(screen.getByTestId('severity-chips')).toBeInTheDocument();
+      expect(screen.getByTestId('observation-chips')).toBeInTheDocument();
+      expect(screen.getByTestId('incident-journal')).toBeInTheDocument();
+      expect(screen.getByTestId('vet-call-card')).toBeInTheDocument();
+    });
   });
 
-  it('renders timer but no STOP button given a stopped incident (endedAt !== null, BR-25)', () => {
-    const incident = makeIncident({
-      endedAt: new Date('2026-05-02T10:01:05.000Z'),
-    });
-    render(<IncidentCaptureSurface incident={incident} />);
+  describe('stopped state (endedAt !== null, BR-14, BR-25)', () => {
+    it('renders full surface without STOP button; all other sections stay mounted', () => {
+      const incident = makeIncident({
+        endedAt: new Date('2026-05-02T10:01:05.000Z'),
+      });
+      render(<IncidentCaptureSurface incident={incident} />);
 
+      expect(screen.getByText('00:01:05')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'incidents.stop' })
+      ).not.toBeInTheDocument();
+      expect(screen.getByTestId('severity-chips')).toBeInTheDocument();
+      expect(screen.getByTestId('observation-chips')).toBeInTheDocument();
+      expect(screen.getByTestId('incident-journal')).toBeInTheDocument();
+      expect(screen.getByTestId('vet-call-card')).toBeInTheDocument();
+    });
+  });
+
+  it('STOP click calls stopIncident and surface stays mounted (BR-14)', async () => {
+    const user = userEvent.setup();
+    render(<IncidentCaptureSurface incident={makeIncident()} />);
+
+    await user.click(screen.getByRole('button', { name: 'incidents.stop' }));
+
+    expect(mockStopIncident).toHaveBeenCalledOnce();
+    // Surface stays mounted — BR-14 requires no navigation away
     expect(screen.getByText('00:01:05')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'incidents.stop' })
-    ).not.toBeInTheDocument();
+    expect(screen.getByTestId('severity-chips')).toBeInTheDocument();
   });
 });
