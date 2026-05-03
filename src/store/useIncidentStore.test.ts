@@ -181,6 +181,26 @@ describe('useIncidentStore', () => {
       );
     });
 
+    it('no-ops clearSeverity when no active incident', async () => {
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.clearSeverity();
+      });
+      expect(incidentService.clearSeverity).not.toHaveBeenCalled();
+    });
+
+    it('captures error on clearSeverity persist failure', async () => {
+      vi.mocked(incidentService.clearSeverity).mockRejectedValue(
+        new Error('clear-fail')
+      );
+      useIncidentStore.setState({ activeIncident: fakeActive() });
+      const { result } = renderHook(() => useIncidentStore());
+      await act(async () => {
+        await result.current.clearSeverity();
+      });
+      expect(result.current.error).toBe('clear-fail');
+    });
+
     it('no-ops setSeverity when no active incident', async () => {
       const { result } = renderHook(() => useIncidentStore());
       await act(async () => {
