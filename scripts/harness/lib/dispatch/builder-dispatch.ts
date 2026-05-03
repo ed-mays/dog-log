@@ -7,7 +7,9 @@
  *
  * The builder is configured with:
  *   - model: sonnet (project default for the role)
- *   - permissionMode: acceptEdits (it WILL write code + run verify + commit)
+ *   - permissionMode: bypassPermissions (it WILL write code + run verify + commit;
+ *     `acceptEdits` only auto-accepts file edits and blocks Bash, which made
+ *     the subagent unable to run its own verify gate — round-29 finding)
  *   - disallowedTools: blanket Bash deny on infra-deploy commands as a
  *     belt-and-suspenders backup to the round-25 builder.md no-deploy rule
  */
@@ -70,7 +72,7 @@ export interface BuilderDispatchOptions {
   taskListPath?: string;
   /** Builder system prompt path (defaults to scripts/harness/lib/prompts/builder.md). */
   promptPath?: string;
-  /** Override permission mode (default: acceptEdits). */
+  /** Override permission mode (default: bypassPermissions, with disallowedTools as the safety net). */
   permissionMode?: 'acceptEdits' | 'bypassPermissions' | 'plan';
   /** Override timeout (default: 30 minutes for builder). */
   timeoutMs?: number;
@@ -136,7 +138,7 @@ export async function dispatchBuilder(
   const raw = await dispatchSubagent({
     prompt: fullPrompt,
     model: 'sonnet',
-    permissionMode: opts.permissionMode ?? 'acceptEdits',
+    permissionMode: opts.permissionMode ?? 'bypassPermissions',
     disallowedTools: DEFAULT_DISALLOWED_TOOLS,
     cwd: opts.cwd,
     timeoutMs: opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
