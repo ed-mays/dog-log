@@ -17,6 +17,14 @@ vi.mock('@features/incidents/hooks/useIncidentTimer', () => ({
   useIncidentTimer: () => '00:01:05',
 }));
 
+const mockTimerProps = vi.fn();
+vi.mock('./IncidentTimer', () => ({
+  IncidentTimer: (props: { startedAt: Date; endedAt: Date | null }) => {
+    mockTimerProps(props);
+    return <div data-testid="incident-timer">00:01:05</div>;
+  },
+}));
+
 // Mock child components to isolate surface composition
 vi.mock('./SeverityChips', () => ({
   SeverityChips: () => <div data-testid="severity-chips" />,
@@ -95,6 +103,27 @@ describe('IncidentCaptureSurface', () => {
       expect(screen.getByTestId('incident-journal')).toBeInTheDocument();
       expect(screen.getByTestId('vet-call-card')).toBeInTheDocument();
     });
+  });
+
+  it('forwards incident.endedAt to IncidentTimer so timer freezes post-stop (BR-14)', () => {
+    const startedAt = new Date('2026-05-02T10:00:00.000Z');
+    const endedAt = new Date(startedAt.getTime() + 65_000);
+
+    // Active: endedAt is null → timer runs live
+    const { rerender } = render(
+      <IncidentCaptureSurface incident={makeIncident({ startedAt })} />
+    );
+    expect(mockTimerProps).toHaveBeenLastCalledWith(
+      expect.objectContaining({ startedAt, endedAt: null })
+    );
+
+    // Stopped: endedAt is set → timer is given the freeze prop
+    rerender(
+      <IncidentCaptureSurface incident={makeIncident({ startedAt, endedAt })} />
+    );
+    expect(mockTimerProps).toHaveBeenLastCalledWith(
+      expect.objectContaining({ startedAt, endedAt })
+    );
   });
 
   it('STOP click calls stopIncident and surface stays mounted (BR-14)', async () => {
