@@ -8,6 +8,7 @@
   "project": ["src/**/*.{ts,tsx}"],
   "ignore": [
     "src/features/incidents/types.ts",
+    "src/features/incidents/chipCatalog.ts",
     "src/services/incidentService.ts",
     "src/store/useIncidentStore.ts"
   ],
