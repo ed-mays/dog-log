@@ -76,9 +76,9 @@ For every task:
        file paths, NOT Jest's `--testPathPattern` flag. Confirm by
        checking which test framework the project's `package.json`
        depends on (look for `vitest` vs `jest`).
-     - When in doubt, run the broadest local test command (`pnpm run
-test:unit`) once to confirm the framework + invocation pattern
-       before constructing a narrower invocation.
+     - When in doubt, run the broadest local test command
+       (`pnpm run test:unit`) once to confirm the framework +
+       invocation pattern before constructing a narrower invocation.
      - **Methodology basis:** round 27 hit `verify_fail` x4 because
        the subagent invented `--testPathPattern` (Jest syntax) on a
        Vitest project. Cost: $0.71 for a non-shipping result. This
