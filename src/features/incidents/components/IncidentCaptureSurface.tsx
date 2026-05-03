@@ -1,6 +1,10 @@
 import { Box } from '@mui/material';
 import { IncidentTimer } from './IncidentTimer';
 import { StopButton } from './StopButton';
+import { SeverityChips } from './SeverityChips';
+import { ObservationChips } from './ObservationChips';
+import { IncidentJournal } from './IncidentJournal';
+import { VetCallCard } from './VetCallCard';
 import type { Incident } from '@features/incidents/types';
 
 interface IncidentCaptureSurfaceProps {
@@ -13,12 +17,16 @@ export function IncidentCaptureSurface({
   incident,
 }: IncidentCaptureSurfaceProps) {
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <IncidentTimer
         startedAt={incident.startedAt}
         endedAt={incident.endedAt}
       />
       {incident.endedAt === null && <StopButton />}
+      <SeverityChips incident={incident} />
+      <ObservationChips incident={incident} />
+      <IncidentJournal />
+      <VetCallCard petId={incident.petId} />
     </Box>
   );
 }
