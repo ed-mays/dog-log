@@ -104,7 +104,7 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/features/incidents/pages/ActiveIncidentPage.tsx`. Reads `activeIncident` from store; renders `<IncidentCaptureSurface>`. Redirects to `/pets` (or shows empty state) if no active incident.
 - **Verify:** Component test: renders the surface when an active incident exists; redirects when none.
 
-### `[ ]` T-14 — EmergencyActivationFab (single-pet only)
+### `[x]` T-14 — EmergencyActivationFab (single-pet only)
 
 - **Cite:** spec BR-1, BR-27, BR-28 (rules 1+2 only — pet-scoped or single-pet); design §D2 FAB tap-behavior table (rows 2 + 3)
 - **What:** Create `src/components/common/EmergencyActivationFab.tsx`. Hidden per the four hide-conditions from design §D2. Tap behavior: pre-fill petId from a pet-scoped surface (read from route params); for non-pet-scoped surface with exactly one pet, use that pet. **Multi-pet picker deferred to T-23.** **Resume short-circuit deferred to T-25.**

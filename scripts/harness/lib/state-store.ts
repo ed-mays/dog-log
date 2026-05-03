@@ -10,7 +10,13 @@
  * `event.payload` as an opaque object. Callers structure their own payloads.
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 export type StateEventType =
@@ -109,6 +115,5 @@ function writeStateAtomic(path: string, state: OrchestratorState): void {
   const tmp = `${path}.tmp`;
   writeFileSync(tmp, JSON.stringify(state, null, 2), 'utf8');
   // node:fs renameSync is atomic on POSIX
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('node:fs').renameSync(tmp, path);
+  renameSync(tmp, path);
 }
