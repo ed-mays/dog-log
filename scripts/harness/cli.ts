@@ -47,6 +47,17 @@ import {
   summarizeOrchestrateResult,
 } from './lib/orchestrate.ts';
 import { dispatchPushback } from './lib/pushback-dispatch.ts';
+import {
+  defaultDispatchesLogPath,
+  loadDispatchesLog,
+} from './lib/dispatches-log.ts';
+import {
+  computeStats,
+  formatStatsHuman,
+  type StatsFilters,
+} from './lib/stats.ts';
+import { defaultStatePath } from './lib/state-store.ts';
+import { watchState } from './lib/watch.ts';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
 
@@ -90,6 +101,15 @@ function usage(): string {
     '                             --reset to first `git reset --hard HEAD~1`',
     '                             (discards the previous orchestrator commit).',
     '                             Logs a pushback_dispatch event to state.json.',
+    '  stats                      Aggregate stats from .harness/dispatches.jsonl:',
+    '                             per-role cost histogram, verdict distribution,',
+    '                             per-task rollup, recent dispatches. Use --task,',
+    '                             --role, --since to filter.',
+    '  watch                      Tail .harness/state.json and pretty-print',
+    '                             orchestrator events as they appear. Exits on',
+    '                             orchestrate_end or Ctrl+C. Use --state to',
+    '                             override the watched path; --no-color disables',
+    '                             ANSI codes.',
     '',
     'Options:',
     `  --file <path>              Task list to read (default: ${DEFAULT_TASK_FILE}).`,
@@ -101,6 +121,11 @@ function usage(): string {
     '                             for review.',
     '  --findings <path>          For pushback: markdown file with operator findings.',
     '  --reset                    For pushback: `git reset --hard HEAD~1` first.',
+    '  --task <id>                For stats: filter by task id (e.g. T-22).',
+    '  --role <r>                 For stats: filter by role (builder|cold-reader|arbiter|pushback).',
+    '  --since <iso>              For stats: only entries with ts >= ISO datetime.',
+    '  --state <path>             For watch: state.json path (default `.harness/state.json`).',
+    '  --no-color                 For watch: disable ANSI color codes.',
     '  -h, --help                 Show this help.',
   ].join('\n');
 }
@@ -234,6 +259,11 @@ function main(): void {
       diff: { type: 'string' },
       findings: { type: 'string' },
       reset: { type: 'boolean', default: false },
+      task: { type: 'string' },
+      role: { type: 'string' },
+      since: { type: 'string' },
+      state: { type: 'string' },
+      'no-color': { type: 'boolean', default: false },
     },
     allowPositionals: true,
   });
@@ -598,6 +628,22 @@ function main(): void {
       });
       break;
     }
+    case 'stats': {
+      void runStats(values.task, values.role, values.since, values.json).catch(
+        (err) => {
+          const reason = err instanceof Error ? err.message : String(err);
+          fail(`stats failed: ${reason}`);
+        }
+      );
+      break;
+    }
+    case 'watch': {
+      void runWatch(values.state, values['no-color'] === true).catch((err) => {
+        const reason = err instanceof Error ? err.message : String(err);
+        fail(`watch failed: ${reason}`);
+      });
+      break;
+    }
     default:
       fail(`unknown command '${command}'\n\n${usage()}`);
   }
@@ -891,6 +937,59 @@ async function runPushback(
     process.stdout.write(`state log: .harness/state.json\n`);
   }
   process.exit(result.exit?.status === 'success' ? 0 : 2);
+}
+
+async function runStats(
+  taskId: string | undefined,
+  role: string | undefined,
+  since: string | undefined,
+  json: boolean
+): Promise<void> {
+  const logPath = defaultDispatchesLogPath();
+  const entries = loadDispatchesLog(logPath);
+  if (entries.length === 0) {
+    process.stderr.write(
+      `harness: no dispatches logged at ${logPath}. Run \`harness orchestrate T-N\` first.\n`
+    );
+    process.exit(2);
+  }
+  const filters: StatsFilters = {};
+  if (taskId) filters.taskId = taskId;
+  if (role) {
+    if (
+      role !== 'builder' &&
+      role !== 'cold-reader' &&
+      role !== 'arbiter' &&
+      role !== 'pushback'
+    ) {
+      fail(
+        `--role must be one of: builder, cold-reader, arbiter, pushback (got ${role})`
+      );
+    }
+    filters.role = role;
+  }
+  if (since) filters.since = since;
+  const report = computeStats(entries, filters);
+  if (json) {
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+  } else {
+    process.stdout.write(`${formatStatsHuman(report)}\n`);
+  }
+  process.exit(0);
+}
+
+async function runWatch(
+  statePath: string | undefined,
+  noColor: boolean
+): Promise<void> {
+  const path = statePath
+    ? resolve(process.cwd(), statePath)
+    : defaultStatePath();
+  process.stderr.write(
+    `harness: watching ${path} (Ctrl+C to stop; auto-exits on orchestrate_end)\n`
+  );
+  await watchState({ statePath: path, noColor });
+  process.exit(0);
 }
 
 main();
