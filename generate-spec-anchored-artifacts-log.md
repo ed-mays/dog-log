@@ -823,9 +823,72 @@ If T-12..T-15 all land first-try, slice 1 ships fully harness-driven through T-1
 
 ---
 
+### Round 30 — T-12 first-try success + first live cold-reader run
+
+**The headline:** Round 30 hit both round-29 predictions cleanly. T-12 dispatched first-try at $0.4785 / 148s / commit `ac43e90`. The first-ever live cold-reader run (`harness review T-12 --diff ac43e90~1..ac43e90`) returned `approve` with 0 findings at $0.2704. Both halves of the harness now empirically validated end-to-end on a real slice task. Slice 1: 6/11 → 7/11. Round 30 total: $0.75 / 1 commit / 0 methodology findings / 0 fixes shipped.
+
+#### What happened
+
+`pnpm tsx scripts/harness/cli.ts build T-12` returned:
+
+```
+exit:     success
+cost:     $0.4785
+duration: 148s
+turns:    24
+commit:   ac43e90 — feat(incidents): IncidentCaptureSurface minimum (BR-14, BR-25, §D2)
+```
+
+Subagent's commit shipped a 21-line `IncidentCaptureSurface.tsx` (timer always; STOP only when `endedAt === null`) + 70-line test file with 2 passing tests. Citation linter accepted `(BR-14, BR-25, §D2)`. Tests independently re-verified.
+
+Then `pnpm tsx scripts/harness/cli.ts review T-12 --diff ac43e90~1..ac43e90`:
+
+```
+verdict:  approve
+cost:     $0.2704
+findings: 0
+summary:  Diff satisfies the verify line exactly — both test cases cover the
+          specified render behavior, cross-file imports resolve against existing
+          files, no spec drift or hidden coupling detected.
+```
+
+#### Three round-29 predictions, three results
+
+| Prediction                                                       | Result                                                                                                                            |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Cost lands sub-$0.40 if prompt is converged                      | $0.4785 — **wrong by $0.08**. The floor is ~$0.48, not $0.40. Convergence still confirmed (matches T-11's $0.4765 within $0.002). |
+| First-try success means finding #4 was the last harness-side bug | ✓ confirmed                                                                                                                       |
+| Cold-reader exercisable on the resulting diff                    | ✓ confirmed                                                                                                                       |
+
+#### Coverage delta
+
+| Suite                                   | After round 29 | After round 30               |
+| --------------------------------------- | -------------- | ---------------------------- |
+| Live `success` exits in the wild        | 1 (T-11)       | **2** (T-11, T-12)           |
+| Slice-1 commits via harness             | 1 (`fdd3113`)  | **2** (`fdd3113`, `ac43e90`) |
+| **Live cold-reader runs in the wild**   | **0**          | **1** (T-12, approve)        |
+| **Live `approve` verdicts in the wild** | **0**          | **1**                        |
+
+#### Process notes
+
+- **Cost-per-task convergence holds.** T-11 attempt 5 was $0.4765; T-12 attempt 1 is $0.4785. Two data points within 0.4% of each other on different task types (button vs. composing surface). The prediction error on "sub-$0.40" was overoptimism, not a missed convergence — the floor sits at $0.48 with this prompt, not $0.40.
+- **Cold-reader $0.27 baseline.** Plus-side, that's roughly half the builder cost — running cold-reader on every commit doesn't materially change per-task economics ($0.48 → $0.75). The verdict is also fast (it's read-only `plan` mode; no Bash, no edits).
+- **0 methodology findings, 0 fixes shipped.** First round since the harness rebuild (round 26) where nothing about the harness had to change. Strong signal that the per-role prompts are at a local optimum for slice-1-shaped tasks.
+
+#### What this enables next
+
+The empirical case for **starting orchestration** is now strong but not airtight:
+
+- **Pro-orchestrate now:** 2/2 first-try successes (T-11 attempt 5 + T-12 attempt 1) — the converged-prompt regime is real. Cold-reader works. Per-task cost predictable. 4 tasks left in slice 1; manually dispatching each is operator overhead the harness exists to eliminate.
+- **Pro-one-more-data-point:** 2 successes is a small sample. We've never seen a cold-reader veto in the wild → don't know if the controller's veto-then-rebuild loop is correct. We've never seen a live arbiter dispatch → don't know if amend_spec/amend_design/amend_task verdicts work end-to-end. T-13 (`ActiveIncidentPage`) is a different shape (a page with redirect logic + cross-feature imports) — it's the highest-novelty remaining task. If it lands first-try too, that's 3/3 and orchestration is overdetermined.
+
+**Recommendation: dispatch T-13 ad-hoc as round 31 (gather one more data point), then ship orchestration in round 32.** Cost: ~$0.75 for round 31. Returns: either confirmation (proceed to orchestrator with a 3-task baseline) OR a new finding (which we'd want to address before automating away the human's ability to halt mid-loop).
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-29. Slice 1 at **6/11** with the first-ever harness-driven commit (`fdd3113`) shipped via PR #172. T-11 marked `[x]`. T-12..T-15 pending; T-16 is the manual smoke gate. Methodology debt: **0** (no logged-but-unshipped findings; ship-fix-validate cadence enforced from round 28 onward).
+**Active branch:** `main` post-round-30. Slice 1 at **7/11** — T-11 shipped via PR #172 (`fdd3113`), T-12 shipped via PR #174 (`ac43e90`, plus first live cold-reader approve). T-13..T-15 pending; T-16 is the manual smoke gate. Methodology debt: **0**. Builder cost-per-task converged at ~$0.48; cold-reader at $0.27.
 
 ### Merged to main (chronological)
 
@@ -850,6 +913,8 @@ If T-12..T-15 all land first-try, slice 1 ships fully harness-driven through T-1
 | #170 | 28       | Round-28 bundle — verify-command derivation + final-rerun rules + 2 verify_fail eval cases + slice-1 foundation T-06..T-10                                        |
 | #171 | 28       | `pnpm preflight` script + pre-push integration (local CI parity; surfaced by #170's knip CI failure)                                                              |
 | #172 | 29       | bypassPermissions for builder + first-ever live `success` exit on a slice task (T-11 ships, commit `fdd3113`)                                                     |
+| #173 | 29       | Session log rounds 28 + 29                                                                                                                                        |
+| #174 | 30       | T-12 first-try success + first live cold-reader run (approve, 0 findings); slice 1 at 7/11                                                                        |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
