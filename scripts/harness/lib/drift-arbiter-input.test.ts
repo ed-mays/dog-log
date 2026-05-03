@@ -108,7 +108,10 @@ describe('buildDriftArbiterInput — against round-18 spec_gap', () => {
   });
 
   it('captures recent task §T0 changelog entries', () => {
-    expect(input.recent_task_changelog).toMatch(/Initial draft/);
+    // Asserts non-empty extraction from §T0; specific entry text rotates as
+    // the changelog grows past RECENT_CHANGELOG_ENTRIES (5).
+    expect(input.recent_task_changelog.length).toBeGreaterThan(0);
+    expect(input.recent_task_changelog).toMatch(/2026-05-0\d/);
   });
 
   it('defaults prior_arbitrations_for_this_task to 0', () => {
