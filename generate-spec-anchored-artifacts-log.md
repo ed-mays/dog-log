@@ -1298,9 +1298,58 @@ Axis 6 closed. Two demonstrated failure modes (cold-reader missing scope-7 diver
 
 ---
 
+### Round 45 — T-28 first-try ship + finding #15 fix (live PR-D stack validated)
+
+#### Round 45 trajectory
+
+First slice-3 dispatch under the full PR-B + Axes-4/5 + PR-D stack. Two PRs landed plus a tiny doc-cleanup precursor.
+
+- **PR #206 (precursor) — T-27 checkbox flip.** PR #200 (round 43) shipped T-27 ActivationPetPicker but the operator never marked the `[x]` in `03-tasks.md`. Caught at the start of round 45 because the orchestrator's dependency check would treat T-28 as blocked (T-28 cites T-27's component). 1-line fix + §T0 entry. **Harness lesson captured:** checkbox-flip belongs in the `harness orchestrate` post-merge step (currently relies on manual operator action).
+
+- **PR #207 — T-28 EmergencyActivationFab multi-pet picker (BR-26, BR-28).** Single `harness orchestrate T-28` invocation, first-try success. Builder commit `d22e886` extends FAB tap-handler per BR-28's three-row table — multi-pet non-pet-scoped surface now opens `<ActivationPetPicker>` instead of silently doing nothing. 9-test `EmergencyActivationFab.test.tsx` covers all three rows (resume AC-11, picker AC-19, fast-path AC-20). **Operator backfill (`6377d68`):** function-coverage gate (80% threshold) caught the picker's `onClose` arrow at 66.66% — added 1 test for the picker close path. Cold-reader approved at scope_check granularity; vitest function-coverage is finer-grained than scope_check 7.
+
+- **PR #208 — finding #15 fix (dispatches.jsonl path double-prefix).** Surfaced when `harness stats` returned "no dispatches logged" after T-28 success. Investigation: dual-write WAS happening, but to `.harness/.harness/dispatches.jsonl` instead of `.harness/dispatches.jsonl`. Root cause: `state-store.appendEvent` called `defaultDispatchesLogPath(dirname(path))` where `path` is already the `.harness/state.json` absolute path — the helper then prepends its own `.harness/` segment. Fix: compute the jsonl path as a sibling of state.json directly (`resolve(dirname(path), 'dispatches.jsonl')`), drop the now-unused `defaultDispatchesLogPath` import. Regression-guard test added.
+
+#### Round 45 cost
+
+- Subagent: $1.14 (T-28: $0.92 builder + $0.22 cold-reader)
+- Operator: ~1.5 hours across PR #206 (5 min), PR #207 monitoring + coverage backfill (45 min), PR #208 TDD + fix (40 min)
+- **Round 45 total: $1.14 subagent + ~1.5 hours operator**
+
+#### Round 45 dispatch metrics (T-28)
+
+| Role        | Dispatches | Cost  | Wall clock | Verdict             |
+| ----------- | ---------- | ----- | ---------- | ------------------- |
+| Builder     | 1          | $0.92 | 6:13       | success             |
+| Cold-reader | 1          | $0.22 | 1:48       | approve, 0 findings |
+| Arbiter     | 0          | —     | —          | (not invoked)       |
+| Pushback    | 0          | —     | —          | (not invoked)       |
+
+Stack-validation observations from this single dispatch:
+
+- **PR-B (#196):** orchestrator captured real `commit_sha` from `git rev-parse HEAD`; matches what `git log` reports for the actual builder commit (`d22e886...`). Worked as designed.
+- **PR-B (#197):** cold-reader scope #7 contract conformance — task_what for T-28 names `EmergencyActivationFab` and references existing `ActivationPetPicker`; pre-flight (PR-D-1) ran with all symbols Present (0 missing). Cold-reader emitted 0 findings in 3 turns / 108s — the lightest cold-reader run we've measured.
+- **PR-B (#198):** pushback CLI not exercised; first-try ship.
+- **Axis 4 (#201):** `harness watch` available but not started — foreground orchestrate sufficient at this scale.
+- **Axis 5 (#201):** dispatches.jsonl populated correctly in payload but at the wrong path → finding #15. Fixed in PR #208 same round.
+- **PR-D-1 (#203):** task-contract pre-flight ran. T-28's What-line backtick symbols (`EmergencyActivationFab`, `<ActivationPetPicker>`) all present in the diff; cold-reader received the Present block as authoritative input.
+- **PR-D-2 (#204):** builder received canonical `pnpm exec vitest run src/components/common/EmergencyActivationFab.test.tsx` derived from descriptive verify line via descriptive-default → single-file vitest path. Builder ran exactly that command for verify; no `--testPathPattern`-class invention.
+
+#### Round 45 findings (harness)
+
+**Finding #15 (new, fixed same round): `defaultDispatchesLogPath(dirname(statePath))` double-prefixes `.harness/.harness/dispatches.jsonl`.** State.json captures everything correctly; `harness stats` couldn't find the file because it looks at the canonical path. Fixed by computing the jsonl path as a sibling of state.json directly. Lesson: any helper that produces a path under `.harness/` should be called from a context that owns the cwd, not from a context that's already inside `.harness/`. Or: the helper should accept a "dir containing .harness" rather than a "dir to nest .harness inside" — the API was ambiguous.
+
+**Finding #16 (new, captured for future): function-coverage gate is finer than scope_check 7.** Cold-reader approved T-28 with 0 findings; pre-push coverage gate then caught an untested `onClose` arrow that pushed `EmergencyActivationFab.tsx` to 66.66% function coverage (< 80% threshold). Cold-reader's scope #7 only checks named symbols; un-named anonymous arrow callbacks are invisible to it. **Considerations:** (a) lower the function-coverage threshold for files with high statement+branch coverage, (b) augment task-contract pre-flight to extract anonymous-callback patterns, (c) accept that operator-backfill is the right answer and document it as a known cold-reader blind spot. Single instance (round 45); threshold = 2nd recurrence to act.
+
+#### Round 45 bottom line
+
+The full PR-B + Axes-4/5 + PR-D stack survived its first live exercise. T-28 shipped first-try at $1.14 / 8 minutes — the cleanest orchestrated dispatch to date and the first that exercised PR-D-1 (pre-flight ran, all symbols Present) and PR-D-2 (canonical verify command, no derivation reasoning) end-to-end. One real finding surfaced (#15, dispatches.jsonl path) and was fixed before the next dispatch. One process observation captured for the backlog (#16, coverage-vs-cold-reader granularity). Slice 3 advances 1/10 → 2/10. Per-round operator overhead dropped notably from PR-D-bundle round (~3h) to T-28 round (~1.5h) — most of that is now monitoring + backfill rather than scaffolding.
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-44. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 1/10 (T-27 shipped); PR-B trio shipped (#196/#197/#198); doc snapshot refresh shipped (#195); observability bundle shipped (#201); Axis 6 PR-D bundle shipped (#203/#204).** Methodology debt: **0** for shippable findings (#5, #8 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #14 single instance — fix queued for 2nd recurrence). Builder cost-per-task converged within tier; cold-reader scope #7 + task body + pre-flight added; verify-command derivation lifted to deterministic; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped.
+**Active branch:** `main` post-round-45. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 2/10 (T-27 + T-28 shipped); PR-B trio shipped (#196/#197/#198); doc snapshot refresh shipped (#195); observability bundle shipped (#201) + finding-#15 path fix (#208); Axis 6 PR-D bundle shipped (#203/#204).** Methodology debt: **0** for shippable findings (#5, #8, #14 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #15 fixed same round; #16 single-instance, threshold = 2nd recurrence). Builder cost-per-task converged within tier; cold-reader scope #7 + task body + pre-flight added; verify-command derivation lifted to deterministic; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped + writes to canonical path.
 
 ### Merged to main (chronological)
 
@@ -1356,19 +1405,24 @@ Axis 6 closed. Two demonstrated failure modes (cold-reader missing scope-7 diver
 | #202 | 43       | Session log round 43 (T-27 + plan §11 multi-axis exploration + Axes 4+5 narrative)                                                                                |
 | #203 | 44       | Axis 6 PR-D-1 — `task-contract-check.ts` deterministic pre-flight; cold-reader scope_check 7 consumes Missing list as authoritative                               |
 | #204 | 44       | Axis 6 PR-D-2 — `derive-verify-command.ts` deterministic pnpm-script derivation; builder prompt step 6 trimmed to canonical-first                                 |
+| #205 | 44       | Session log round 44 (Axis 6 PR-D bundle narrative)                                                                                                               |
+| #206 | 45       | T-27 checkbox flip (PR #200 missed it); §T0 entry with harness lesson (orchestrate post-merge step should auto-flip)                                              |
+| #207 | 45       | T-28 EmergencyActivationFab multi-pet picker — first-try orchestrate ship under full PR-B + Axes-4/5 + PR-D stack; operator backfill +1 coverage test             |
+| #208 | 45       | Finding #15 fix — dispatches.jsonl writes to canonical `.harness/dispatches.jsonl` (not double-nested `.harness/.harness/`)                                       |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
 ### Open
 
-- **Slices 1+2 closed (21/21); slice 3 at 1/10 (T-27).** PR-B trio shipped (#196/#197/#198) + observability bundle (#201) + Axis 6 PR-D bundle (#203/#204). Harness operationally complete with analytics surface and two LLM-failure-mode pre-flights (task-contract symbols + verify-command derivation).
-- **Round 45 candidate:** **T-28 EmergencyActivationFab upgrade** (multi-pet picker + resume short-circuit per BR-26). First slice-3 dispatch under the full PR-B + observability + Axis-6 stack; operator can use `harness watch` for live progress, expects builder input to carry the canonical `pnpm run test:unit ...` command (no derivation guessing), and cold-reader to consume the pre-flight symbol list as authoritative.
+- **Slices 1+2 closed (21/21); slice 3 at 2/10 (T-27, T-28).** PR-B trio (#196/#197/#198) + observability bundle (#201) + Axis 6 PR-D bundle (#203/#204) + finding-#15 path fix (#208). Harness operationally complete with analytics surface (now writing to canonical path) and two LLM-failure-mode pre-flights (task-contract symbols + verify-command derivation), validated end-to-end on T-28.
+- **Round 46 candidate:** **T-29 — Auth-boot active-incident hydration** (BR-26; design §D5 DQ-2 resolution). Per `03-tasks.md`, T-29 wires `hydrateActiveIncident()` (added in T-09) into the auth-boot flow so a still-active incident from a prior session resumes on next sign-in. Should be a small dispatch — single store-action edit + auth-shell hook. Run via `harness orchestrate T-29`; expect canonical verify command derivation + task-contract pre-flight to fire as on T-28.
 - **Open harness work (deferred):**
   - **#5** — invariant propagation slice-end cold-read. Single instance (round 35); threshold = 2nd recurrence.
   - **#8** — forward-of-wire-up file friction (auto-detect at pre-push). Single instance (round 38); threshold = 2nd recurrence.
   - **#12** — cold-reader verdict non-determinism. Single instance (round 41); needs 5x quantification before designing fix.
   - **#13** — article-grade documentation reconstruction. Process finding (round 42); deferred by user.
   - **#14** — `harness pushback --reset` should validate HEAD belongs to the task (round 43). Single instance; fix is ~10 LOC, queue with next harness PR or after a 2nd instance.
+  - **#16** — function-coverage gate is finer than scope_check 7 (round 45). Single instance; threshold = 2nd recurrence to act. Three candidate responses queued in §3 round-45 narrative.
 - **Plan §11 axes status:**
   - Axis 4 (progress reporting) — **shipped** PR #201
   - Axis 5 (long-term logging) — **shipped** PR #201
