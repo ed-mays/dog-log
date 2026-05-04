@@ -146,6 +146,10 @@ function makeDeps(overrides: Partial<OrchestrateDeps> = {}): OrchestrateDeps {
       (): ApplyAmendmentResult => ({ ok: true, filePath: 'mock' })
     ),
     resolveHeadSha: () => 'commit-abc',
+    commitCheckboxFlip: () => ({
+      flipped: true,
+      newHeadSha: 'commit-flip',
+    }),
     ...overrides,
   };
 }
@@ -175,6 +179,108 @@ describe('orchestrateTask — happy path', () => {
     expect(deps.dispatchBuilder).toHaveBeenCalledTimes(1);
     expect(deps.dispatchColdReader).toHaveBeenCalledTimes(1);
     expect(deps.dispatchArbiter).not.toHaveBeenCalled();
+  });
+});
+
+describe('orchestrateTask — auto checkbox-flip on success (round-47 escalation)', () => {
+  it('calls commitCheckboxFlip when taskListPath is provided + success outcome', async () => {
+    const flip = vi.fn(() => ({
+      flipped: true as const,
+      newHeadSha: 'commit-flip',
+    }));
+    const deps = makeDeps({
+      dispatchBuilder: vi.fn().mockResolvedValue(builderSuccess('abc123')),
+      dispatchColdReader: vi.fn().mockResolvedValue(reviewApprove()),
+      commitCheckboxFlip: flip,
+    });
+
+    const result = await orchestrateTask({
+      taskId: 'T-30',
+      taskListPath: 'docs/specs/incident-capture/03-tasks.md',
+      statePath,
+      cwd: workDir,
+      deps,
+    });
+
+    expect(result.outcome).toBe('success');
+    expect(flip).toHaveBeenCalledWith(
+      'docs/specs/incident-capture/03-tasks.md',
+      'T-30',
+      workDir
+    );
+    // The flip's newHeadSha becomes the orchestrate result's lastCommitSha.
+    expect(result.lastCommitSha).toBe('commit-flip');
+    const flipEvent = result.state.events.find(
+      (e) => e.type === 'checkbox_flip'
+    );
+    expect(flipEvent).toBeDefined();
+    expect(flipEvent!.payload.flipped).toBe(true);
+    expect(flipEvent!.payload.new_head_sha).toBe('commit-flip');
+  });
+
+  it('skips commitCheckboxFlip when taskListPath is omitted', async () => {
+    const flip = vi.fn();
+    const deps = makeDeps({
+      dispatchBuilder: vi.fn().mockResolvedValue(builderSuccess('abc123')),
+      dispatchColdReader: vi.fn().mockResolvedValue(reviewApprove()),
+      commitCheckboxFlip: flip,
+    });
+    const result = await orchestrateTask({
+      taskId: 'T-30',
+      statePath,
+      cwd: workDir,
+      deps,
+    });
+    expect(result.outcome).toBe('success');
+    expect(flip).not.toHaveBeenCalled();
+    expect(result.lastCommitSha).toBe('commit-abc');
+  });
+
+  it('records the skip-reason in checkbox_flip event when flip returns flipped=false', async () => {
+    const flip = vi.fn(() => ({
+      flipped: false as const,
+      newHeadSha: null,
+      reason: 'task T-30 is already [x]',
+    }));
+    const deps = makeDeps({
+      dispatchBuilder: vi.fn().mockResolvedValue(builderSuccess('abc123')),
+      dispatchColdReader: vi.fn().mockResolvedValue(reviewApprove()),
+      commitCheckboxFlip: flip,
+    });
+    const result = await orchestrateTask({
+      taskId: 'T-30',
+      taskListPath: 'docs/specs/incident-capture/03-tasks.md',
+      statePath,
+      cwd: workDir,
+      deps,
+    });
+    expect(result.outcome).toBe('success');
+    // No new commit happened, so lastCommitSha falls back to the builder
+    // commit (resolveHeadSha mock returns 'commit-abc').
+    expect(result.lastCommitSha).toBe('commit-abc');
+    const flipEvent = result.state.events.find(
+      (e) => e.type === 'checkbox_flip'
+    );
+    expect(flipEvent!.payload.flipped).toBe(false);
+    expect(flipEvent!.payload.reason).toMatch(/already/);
+  });
+
+  it('does NOT call commitCheckboxFlip on cold-reader veto (task did not ship)', async () => {
+    const flip = vi.fn();
+    const deps = makeDeps({
+      dispatchBuilder: vi.fn().mockResolvedValue(builderSuccess('abc123')),
+      dispatchColdReader: vi.fn().mockResolvedValue(reviewVeto(1, 'BR-26')),
+      commitCheckboxFlip: flip,
+    });
+    const result = await orchestrateTask({
+      taskId: 'T-30',
+      taskListPath: 'docs/specs/incident-capture/03-tasks.md',
+      statePath,
+      cwd: workDir,
+      deps,
+    });
+    expect(result.outcome).toBe('halt_builder_error_veto');
+    expect(flip).not.toHaveBeenCalled();
   });
 });
 

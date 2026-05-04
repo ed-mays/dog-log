@@ -28,7 +28,8 @@ export type StateEventType =
   | 'amendment_applied'
   | 'amendment_apply_failed'
   | 'cycle_halt'
-  | 'pushback_dispatch';
+  | 'pushback_dispatch'
+  | 'checkbox_flip';
 
 export interface StateEvent {
   ts: string; // ISO 8601
