@@ -1272,9 +1272,35 @@ PR-B trio's working demonstrated end-to-end: builder commits to commit_sha (real
 
 ---
 
+### Round 44 — Axis 6 deterministic tools (PR-D bundle)
+
+#### Round 44 trajectory
+
+Plan §11's Axis 6 ("replace LLM work with deterministic tools where possible") shipped as a two-PR bundle, both from fresh branches off main, each independently reviewable.
+
+- **PR #203 — `task-contract-check.ts` (PR-D-1).** Extracts backtick-quoted symbols from a task's `What:` line, classifies each as path or identifier, greps the diff with word-boundary matching. Returns present/missing partitions with first-line evidence. Wired into both `dispatchColdReader` and the `cold-read` CLI command. Cold-reader prompt scope_check 7 updated: the `Missing` list is now authoritative pre-flight input rather than something the model re-derives. Addresses Axis 6 / finding #6: T-17's round-37 divergences (4 methods named where 6 were required, reversed `appendJournal` computation site) were both mechanically detectable from the `What:` line and would have been pre-flagged by this check. ~95 LOC + 12 tests + 6 cold-reader-input tests + CLI snapshot regen.
+
+- **PR #204 — `derive-verify-command.ts` (PR-D-2).** Maps the task's `Verify:` line + `package.json` scripts to a canonical `pnpm` command. Two-stage: (1) backtick-fenced `pnpm ...` extracted verbatim, (2) keyword scan (rules → test:rules, build → preflight, integration → test:integration, lint → lint, typecheck/tsc → typecheck) validated against actual scripts; default `test:unit`. Builder dispatcher + CLI `prepare` both invoke; result injected into builder input as `## Verify command (canonical, derived)` section. Builder prompt step 6 trimmed (~20 lines → ~12) — canonical command first, descriptive-derivation fallback only for legacy invocations. Addresses round-27 finding: $0.71 builder dispatch hit `verify_fail` x4 because the subagent invented `--testPathPattern` (Jest syntax) on a Vitest project. The derivation step makes that class of error mechanically impossible. ~120 LOC + 18 tests + 5 builder-input tests + prepare snapshot regen.
+
+#### Round 44 cost
+
+- Subagent: $0 (pure harness code, no agent dispatches)
+- Operator: ~3 hours across PR-D-1 + PR-D-2 (TDD + wiring + snapshot regen + PR open)
+- **Round 44 total: $0 subagent + ~3 hours operator**
+
+#### Round 44 findings (harness)
+
+None new. Round 44 was pure investment in earlier findings (#6 → mechanical pre-flight; round-27 verify-syntax invention → mechanical derivation).
+
+#### Round 44 bottom line
+
+Axis 6 closed. Two demonstrated failure modes (cold-reader missing scope-7 divergence; builder inventing test-runner syntax) lifted from LLM judgment to mechanical derivation. Net effect on per-task harness behavior: cold-reader gets pre-flagged symbol presence/absence as authoritative input rather than re-deriving; builder gets the canonical verify command as a code block rather than instructions to figure it out. Both changes are pre-flight injections — neither replaces the agent, both reduce its surface for known failure modes. T-28 (slice-3 entry) is the next live dispatch and will be the first to exercise the full PR-D stack end-to-end.
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-43. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 1/10 (T-27 shipped); PR-B trio shipped (#196/#197/#198); doc snapshot refresh shipped (#195); observability bundle in flight (#201).** Methodology debt: **0** for shippable findings (#5, #8 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #14 surfaced this round, deferred to next harness PR). Builder cost-per-task converged within tier; cold-reader scope #7 + task body added; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped.
+**Active branch:** `main` post-round-44. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 1/10 (T-27 shipped); PR-B trio shipped (#196/#197/#198); doc snapshot refresh shipped (#195); observability bundle shipped (#201); Axis 6 PR-D bundle shipped (#203/#204).** Methodology debt: **0** for shippable findings (#5, #8 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #14 single instance — fix queued for 2nd recurrence). Builder cost-per-task converged within tier; cold-reader scope #7 + task body + pre-flight added; verify-command derivation lifted to deterministic; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped.
 
 ### Merged to main (chronological)
 
@@ -1327,15 +1353,16 @@ PR-B trio's working demonstrated end-to-end: builder commits to commit_sha (real
 | #199 | 42       | Session log rounds 38-42 (slice 2 + PR-B trio narrative)                                                                                                          |
 | #200 | 43       | T-27 ActivationPetPicker (slice-3 readiness gate) — full PR-B integration test in production; finding #14 surfaced                                                |
 | #201 | 43       | Observability bundle (Axes 4+5) — `.harness/dispatches.jsonl`, `harness stats`, `harness watch`                                                                   |
+| #202 | 43       | Session log round 43 (T-27 + plan §11 multi-axis exploration + Axes 4+5 narrative)                                                                                |
+| #203 | 44       | Axis 6 PR-D-1 — `task-contract-check.ts` deterministic pre-flight; cold-reader scope_check 7 consumes Missing list as authoritative                               |
+| #204 | 44       | Axis 6 PR-D-2 — `derive-verify-command.ts` deterministic pnpm-script derivation; builder prompt step 6 trimmed to canonical-first                                 |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
 ### Open
 
-- **Slices 1+2 closed (21/21); slice 3 at 1/10 (T-27).** PR-B trio shipped (#196/#197/#198) + observability bundle in flight (#201). Harness operationally complete with analytics surface.
-- **Round 44 candidates (two parallel tracks possible):**
-  - **(harness)** Axis 6 — deterministic tools per plan §11. Two scripts: `task-contract-check.ts` (regex-extracts named symbols from task_what; greps diff; injects pre-flagged "missing symbols" into cold-reader input — would have caught T-17's two divergences without an LLM running) + `derive-verify-command.ts` (reads package.json scripts, returns canonical verify command — eliminates round-27-style invented Jest syntax). Pure harness code, ~$0 subagent, ~3h.
-  - **(slice 3)** T-28 EmergencyActivationFab upgrade (multi-pet picker + resume short-circuit per BR-26). First slice-3 dispatch under the full PR-B + observability stack; the operator can use `harness watch` for live progress + `harness stats` post-merge to confirm dispatches.jsonl populated correctly.
+- **Slices 1+2 closed (21/21); slice 3 at 1/10 (T-27).** PR-B trio shipped (#196/#197/#198) + observability bundle (#201) + Axis 6 PR-D bundle (#203/#204). Harness operationally complete with analytics surface and two LLM-failure-mode pre-flights (task-contract symbols + verify-command derivation).
+- **Round 45 candidate:** **T-28 EmergencyActivationFab upgrade** (multi-pet picker + resume short-circuit per BR-26). First slice-3 dispatch under the full PR-B + observability + Axis-6 stack; operator can use `harness watch` for live progress, expects builder input to carry the canonical `pnpm run test:unit ...` command (no derivation guessing), and cold-reader to consume the pre-flight symbol list as authoritative.
 - **Open harness work (deferred):**
   - **#5** — invariant propagation slice-end cold-read. Single instance (round 35); threshold = 2nd recurrence.
   - **#8** — forward-of-wire-up file friction (auto-detect at pre-push). Single instance (round 38); threshold = 2nd recurrence.
@@ -1343,11 +1370,11 @@ PR-B trio's working demonstrated end-to-end: builder commits to commit_sha (real
   - **#13** — article-grade documentation reconstruction. Process finding (round 42); deferred by user.
   - **#14** — `harness pushback --reset` should validate HEAD belongs to the task (round 43). Single instance; fix is ~10 LOC, queue with next harness PR or after a 2nd instance.
 - **Plan §11 axes status:**
-  - Axis 4 (progress reporting) — shipping in PR #201
-  - Axis 5 (long-term logging) — shipping in PR #201
-  - Axis 6 (deterministic tools) — next harness investment
+  - Axis 4 (progress reporting) — **shipped** PR #201
+  - Axis 5 (long-term logging) — **shipped** PR #201
+  - Axis 6 (deterministic tools) — **shipped** PR #203 + #204
   - Axis 1 (packaging) — defer until 1+ second-project use case
-  - Axis 3 (model per role) — defer; needs Axis 5's stats data first
+  - Axis 3 (model per role) — defer; needs Axis 5's stats data first (Haiku quantification round)
   - Axis 2 (skills migration) — defer indefinitely; not a meaningful gain at current architecture
   - Axis 7 (general arch — worktree-per-task, resume, etc.) — backlog
 
