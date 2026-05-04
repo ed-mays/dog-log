@@ -18,11 +18,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import {
-  appendDispatch,
-  defaultDispatchesLogPath,
-  type DispatchLogEntry,
-} from './dispatches-log';
+import { appendDispatch, type DispatchLogEntry } from './dispatches-log';
 
 export type StateEventType =
   | 'orchestrate_start'
@@ -103,8 +99,12 @@ export function appendEvent(
   // never overwritten — survives across orchestrate runs and across tasks.
   if (event.type === 'dispatch_end' || event.type === 'pushback_dispatch') {
     if (opts.dispatchesLogPath !== null) {
+      // Sibling of state.json — `dirname(path)` is the .harness/ directory
+      // already; do NOT pass it to defaultDispatchesLogPath (which prepends
+      // its own `.harness/`, producing the round-45 finding-#15 bug:
+      // `.harness/.harness/dispatches.jsonl`).
       const logPath =
-        opts.dispatchesLogPath ?? defaultDispatchesLogPath(dirname(path));
+        opts.dispatchesLogPath ?? resolve(dirname(path), 'dispatches.jsonl');
       const entry = buildDispatchLogEntry(
         state.run_id,
         event.task_id,
