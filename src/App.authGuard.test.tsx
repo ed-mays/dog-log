@@ -3,6 +3,7 @@ import { render } from '@test-utils';
 import App from './App';
 import {
   installAuthStoreMock,
+  installIncidentStoreMock,
   installPetsStoreMock,
 } from '@testUtils/mocks/mockStoreInstallers';
 import {
@@ -19,12 +20,16 @@ vi.mock('@store/auth.store', () => ({
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
+vi.mock('@store/useIncidentStore', () => ({
+  useIncidentStore: vi.fn(),
+}));
 
 describe('App auth route protection', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     // Prevent pet pre-fetcher from looping
     installPetsStoreMock({ pets: [makePet({ id: '1' })] });
+    installIncidentStoreMock();
   });
 
   it('redirects unauthenticated users to /welcome for /pets', async () => {

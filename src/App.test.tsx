@@ -4,6 +4,7 @@ import App from './App';
 import '@testing-library/jest-dom';
 import {
   installAuthStoreMock,
+  installIncidentStoreMock,
   installPetsStoreMock,
   installUiStoreMock,
 } from '@testUtils/mocks/mockStoreInstallers';
@@ -22,6 +23,9 @@ vi.mock('@store/auth.store', () => ({
 }));
 vi.mock('@store/ui.store', () => ({
   useUiStore: vi.fn(),
+}));
+vi.mock('@store/useIncidentStore', () => ({
+  useIncidentStore: vi.fn(),
 }));
 
 const navBarLabel = 'user-controls';
@@ -47,6 +51,7 @@ describe('App', () => {
       error: null,
     });
     installUiStoreMock({ loading: false, error: null });
+    installIncidentStoreMock();
   });
 
   describe('when loading', () => {
@@ -107,11 +112,33 @@ describe('App', () => {
       expect(petsMock.actions.fetchPets).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('auth-boot active-incident hydration (T-29, DQ-2)', () => {
+    test('Given user is authenticated, When App mounts, Then hydrateActiveIncident is called once (simulates page reload)', async () => {
+      const { hydrateActiveIncident } = installIncidentStoreMock();
+      render(<App />);
+      expect(hydrateActiveIncident).toHaveBeenCalledTimes(1);
+    });
+
+    test('Given user is null (not authenticated), hydrateActiveIncident is not called', async () => {
+      installAuthStoreMock({ user: null, initializing: false });
+      const { hydrateActiveIncident } = installIncidentStoreMock();
+      render(<App />);
+      expect(hydrateActiveIncident).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe('App header', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    installPetsStoreMock({ pets: [] });
+    installAuthStoreMock({ user: testUser, initializing: false, error: null });
+    installUiStoreMock({ loading: false, error: null });
+    installIncidentStoreMock();
+  });
+
   test('shows NavigationBar header when user exists and authEnabled=true', async () => {
-    // defaults from beforeEach: user present; featureFlags default authEnabled=true
     render(<App />);
     expect(await screen.findByLabelText(navBarLabel)).toBeInTheDocument();
   });
