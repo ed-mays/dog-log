@@ -33,6 +33,22 @@ vi.mock('@featureFlags/hooks/useFeatureFlag');
 vi.mock('@store/useIncidentStore');
 vi.mock('@store/pets.store');
 vi.mock('@store/auth.store');
+vi.mock('@features/incidents/components/ActivationPetPicker', () => ({
+  ActivationPetPicker: ({
+    open,
+    onClose,
+  }: {
+    open: boolean;
+    onClose: () => void;
+  }) =>
+    open ? (
+      <div data-testid="activation-pet-picker">
+        <button type="button" onClick={onClose}>
+          close-picker
+        </button>
+      </div>
+    ) : null,
+}));
 
 function makePet(id: string): Pet {
   return {
@@ -193,5 +209,46 @@ describe('EmergencyActivationFab', () => {
     expect(
       screen.queryByRole('button', { name: 'incidents.activate' })
     ).not.toBeInTheDocument();
+  });
+
+  it('closes ActivationPetPicker when its onClose fires (operator-backfill for coverage gate)', async () => {
+    setupDefaults({
+      params: {},
+      pets: [makePet('pet-1'), makePet('pet-2')],
+    });
+
+    const user = userEvent.setup();
+    render(<EmergencyActivationFab />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'incidents.activate' })
+    );
+    expect(screen.getByTestId('activation-pet-picker')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'close-picker' }));
+    expect(
+      screen.queryByTestId('activation-pet-picker')
+    ).not.toBeInTheDocument();
+  });
+
+  // AC-19: non-pet-scoped surface, multiple pets → open ActivationPetPicker (BR-28 third rule)
+  it('opens ActivationPetPicker when multiple pets and surface is non-pet-scoped (AC-19)', async () => {
+    const startIncident = vi.fn();
+    setupDefaults({
+      params: {},
+      pets: [makePet('pet-1'), makePet('pet-2')],
+      startIncident,
+    });
+
+    const user = userEvent.setup();
+    render(<EmergencyActivationFab />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'incidents.activate' })
+    );
+
+    expect(screen.getByTestId('activation-pet-picker')).toBeInTheDocument();
+    expect(startIncident).not.toHaveBeenCalled();
+    expect(routerState.navigate).not.toHaveBeenCalled();
   });
 });

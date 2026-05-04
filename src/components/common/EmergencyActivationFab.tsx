@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Fab } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { useAuthStore } from '@store/auth.store';
 import { useIncidentStore } from '@store/useIncidentStore';
 import { usePetsStore } from '@store/pets.store';
 import { useFeatureFlag } from '@featureFlags/hooks/useFeatureFlag';
+import { ActivationPetPicker } from '@features/incidents/components/ActivationPetPicker';
 
 // Global emergency activation FAB (BR-27, AC-18).
 // Mounts outside the route tree in App.tsx so it survives navigation.
@@ -19,6 +21,7 @@ export function EmergencyActivationFab() {
   const pets = usePetsStore((s) => s.pets);
   const params = useParams<{ id?: string }>();
   const navigate = useNavigate();
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   if (
     !incidentsEnabled ||
@@ -43,24 +46,32 @@ export function EmergencyActivationFab() {
       // the background Firestore write; navigate immediately after the call
       void startIncident({ petId });
       navigate('/incidents/active');
+    } else {
+      // BR-28 third rule: multi-pet, non-pet-scoped → open picker; selecting a pet IS the activation
+      setPickerOpen(true);
     }
-    // Multi-pet, non-pet-scoped → ActivationPetPicker (separate task, T-14 scope ends here)
   };
 
   return (
-    <Fab
-      color="error"
-      aria-label={t('incidents.activate')}
-      onClick={handleTap}
-      sx={{
-        position: 'fixed',
-        bottom: 16,
-        right: 16,
-        width: 56,
-        height: 56,
-      }}
-    >
-      <WarningIcon />
-    </Fab>
+    <>
+      <Fab
+        color="error"
+        aria-label={t('incidents.activate')}
+        onClick={handleTap}
+        sx={{
+          position: 'fixed',
+          bottom: 16,
+          right: 16,
+          width: 56,
+          height: 56,
+        }}
+      >
+        <WarningIcon />
+      </Fab>
+      <ActivationPetPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+      />
+    </>
   );
 }
