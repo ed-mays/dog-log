@@ -22,7 +22,7 @@ import { useAuthStore } from '@store/auth.store';
 
 const userId = 'user-1';
 const mockListForPet = incidentService.listForPet as Mock;
-const mockUseAuthStore = useAuthStore as Mock;
+const mockUseAuthStore = useAuthStore as unknown as Mock;
 
 function fakeIncident(over: Partial<Incident> = {}): Incident {
   const startedAt = new Date('2026-05-02T10:00:00.000Z');
