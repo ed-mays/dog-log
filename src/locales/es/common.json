@@ -68,6 +68,10 @@
       "auto": "timestamps every line",
       "placeholder": "Start typing — each line auto-stamps with elapsed time."
     },
+    "resumeBanner": {
+      "message": "Hay un incidente en progreso.",
+      "action": "Retomar →"
+    },
     "history": {
       "title": "Past incidents",
       "empty": "No incidents recorded for this pet.",

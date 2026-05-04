@@ -2,11 +2,13 @@ import { vi } from 'vitest';
 import { useAuthStore } from '@store/auth.store';
 import { usePetsStore } from '@store/pets.store';
 import { useUiStore } from '@store/ui.store';
+import { useIncidentStore, type IncidentState } from '@store/useIncidentStore';
 import {
   createAuthStoreMock,
   createPetsStoreMock,
   createUiStoreMock,
 } from '@testUtils/mocks/mockStores';
+import { makeZustandSelectorMock } from '@testUtils/mocks/mockZustand';
 
 /**
  * One-liner installers for selector-compatible Zustand store mocks used in component tests.
@@ -46,6 +48,29 @@ export function installUiStoreMock(
     mock.impl as unknown as typeof useUiStore
   );
   return mock;
+}
+
+export function installIncidentStoreMock(
+  overrides: Partial<IncidentState> = {}
+): { hydrateActiveIncident: ReturnType<typeof vi.fn> } {
+  const hydrateActiveIncident = vi.fn().mockResolvedValue(undefined);
+  const state: IncidentState = {
+    activeIncident: null,
+    isLoading: false,
+    error: null,
+    startIncident: vi.fn(),
+    stopIncident: vi.fn(),
+    hydrateActiveIncident,
+    setSeverity: vi.fn(),
+    clearSeverity: vi.fn(),
+    appendJournal: vi.fn(),
+    toggleChip: vi.fn(),
+    ...overrides,
+  };
+  vi.mocked(useIncidentStore).mockImplementation(
+    makeZustandSelectorMock(state) as unknown as typeof useIncidentStore
+  );
+  return { hydrateActiveIncident };
 }
 
 /**

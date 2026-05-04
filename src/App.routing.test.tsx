@@ -4,6 +4,7 @@ import type { AppUser } from '@services/auth/authService';
 import { vi } from 'vitest';
 import {
   installAuthStoreMock,
+  installIncidentStoreMock,
   installPetsStoreMock,
 } from '@testUtils/mocks/mockStoreInstallers';
 import {
@@ -18,12 +19,16 @@ vi.mock('@store/auth.store', () => ({
 vi.mock('@store/pets.store', () => ({
   usePetsStore: vi.fn(),
 }));
+vi.mock('@store/useIncidentStore', () => ({
+  useIncidentStore: vi.fn(),
+}));
 
 describe('Routing and navigation hygiene', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     installPetsStoreMock({ pets: [] });
     installAuthStoreMock({ user: null, initializing: false });
+    installIncidentStoreMock();
   });
 
   it('shows a localized feature-unavailable screen when pet list is disabled', async () => {
