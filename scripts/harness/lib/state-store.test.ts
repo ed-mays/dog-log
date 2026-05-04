@@ -114,6 +114,35 @@ describe('state-store', () => {
     ]);
   });
 
+  it('writes dispatches.jsonl as a sibling of state.json (finding #15 regression guard)', () => {
+    initState('T-28', statePath);
+    appendEvent(statePath, {
+      task_id: 'T-28',
+      type: 'dispatch_end',
+      payload: {
+        role: 'builder',
+        cost_usd: 0.5,
+        duration_ms: 1000,
+        num_turns: 5,
+        session_id: 'sess-1',
+        stop_reason: 'end_turn',
+        status: 'success',
+      },
+    });
+    const expectedJsonl = join(workDir, '.harness/dispatches.jsonl');
+    const buggyDoubleNested = join(
+      workDir,
+      '.harness/.harness/dispatches.jsonl'
+    );
+    expect(existsSync(expectedJsonl)).toBe(true);
+    expect(existsSync(buggyDoubleNested)).toBe(false);
+    const lines = readFileSync(expectedJsonl, 'utf8').trim().split('\n');
+    expect(lines).toHaveLength(1);
+    const parsed = JSON.parse(lines[0]);
+    expect(parsed.task_id).toBe('T-28');
+    expect(parsed.role).toBe('builder');
+  });
+
   // Cleanup helper
   it('cleanup', () => {
     rmSync(workDir, { recursive: true, force: true });
