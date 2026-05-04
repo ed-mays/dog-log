@@ -38,7 +38,10 @@ import {
   type ArbiterExit,
 } from './dispatch/arbiter-dispatch';
 import { applyAmendment } from './dispatch/apply-amendment';
+import { flipTaskCheckbox } from './checkbox-flip';
 import type { SpecGapPayload } from './drift-arbiter-input';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve as resolvePath } from 'node:path';
 import {
   appendEvent,
   defaultStatePath,
@@ -79,6 +82,19 @@ export interface OrchestrateOptions {
   deps?: OrchestrateDeps;
 }
 
+export interface CheckboxFlipResult {
+  /** True iff a `[ ]` → `[x]` substitution was applied AND committed. */
+  flipped: boolean;
+  /** New HEAD sha after the auto-flip commit (when flipped); else null. */
+  newHeadSha: string | null;
+  /** Operator-readable reason. Set on skip OR failure. */
+  reason?: string;
+  /** True when the flip happened in-file but the git commit failed; we
+   * keep the file change so the operator can amend by hand, but we do
+   * not block the success outcome. */
+  commitFailed?: boolean;
+}
+
 export interface OrchestrateDeps {
   dispatchBuilder: typeof dispatchBuilder;
   dispatchColdReader: typeof dispatchColdReader;
@@ -86,6 +102,14 @@ export interface OrchestrateDeps {
   applyAmendment: typeof applyAmendment;
   /** Returns the SHA of the most recent commit on HEAD (for cold-reader diff range). */
   resolveHeadSha: () => string;
+  /** Auto-flip the task checkbox after a successful orchestrate. Default
+   * implementation reads taskListPath, applies flipTaskCheckbox, writes,
+   * stages + commits with `chore(spec): mark T-N [x]`. */
+  commitCheckboxFlip: (
+    taskListPath: string,
+    taskId: string,
+    cwd?: string
+  ) => CheckboxFlipResult;
 }
 
 export interface OrchestrateResult {
@@ -107,6 +131,7 @@ const DEFAULT_DEPS: OrchestrateDeps = {
   applyAmendment,
   resolveHeadSha: () =>
     execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim(),
+  commitCheckboxFlip: defaultCommitCheckboxFlip,
 };
 
 export async function orchestrateTask(
@@ -427,12 +452,37 @@ export async function orchestrateTask(
     aDispatches: number,
     cost: number
   ): OrchestrateResult {
+    // Round-47 escalation: auto-flip the task checkbox in the task list.
+    // Single instance was finding-#deferred (round 43); 2nd recurrence in
+    // rounds 45 + 46 (T-28, T-29 both shipped without checkbox flip)
+    // escalated this to ship-now.
+    let finalCommitSha = commitSha;
+    if (opts.taskListPath) {
+      const flipResult = deps.commitCheckboxFlip(
+        opts.taskListPath,
+        opts.taskId,
+        opts.cwd
+      );
+      appendEvent(statePath, {
+        task_id: opts.taskId,
+        type: 'checkbox_flip',
+        payload: {
+          flipped: flipResult.flipped,
+          new_head_sha: flipResult.newHeadSha,
+          ...(flipResult.reason ? { reason: flipResult.reason } : {}),
+          ...(flipResult.commitFailed ? { commit_failed: true } : {}),
+        },
+      });
+      if (flipResult.flipped && flipResult.newHeadSha) {
+        finalCommitSha = flipResult.newHeadSha;
+      }
+    }
     appendEvent(statePath, {
       task_id: opts.taskId,
       type: 'orchestrate_end',
       payload: {
         outcome: 'success',
-        commit_sha: commitSha,
+        commit_sha: finalCommitSha,
         totalCostUsd: cost,
         builderDispatches: bDispatches,
         arbiterDispatches: aDispatches,
@@ -445,7 +495,7 @@ export async function orchestrateTask(
       arbiterDispatches: aDispatches,
       totalCostUsd: cost,
       state,
-      lastCommitSha: commitSha,
+      lastCommitSha: finalCommitSha,
     };
   }
 }
@@ -526,4 +576,67 @@ export function summarizeOrchestrateResult(result: OrchestrateResult): string {
     lines.push(`halt reason: ${result.haltReason}`);
   }
   return lines.join('\n');
+}
+
+/**
+ * Default impl of `commitCheckboxFlip`. Reads the task list, flips the
+ * checkbox via `flipTaskCheckbox`, writes back, stages + commits with
+ * `chore(spec): mark T-N [x]` (chore prefix exempts the citation linter).
+ *
+ * Failure modes:
+ *   - file read fails              → flipped=false, reason set
+ *   - flipTaskCheckbox returns false → propagated (already-x, blocked, not-found)
+ *   - file write succeeds but git fails → flipped=false + commitFailed=true
+ *     (the markdown change stays so the operator can amend by hand)
+ */
+function defaultCommitCheckboxFlip(
+  taskListPath: string,
+  taskId: string,
+  cwd?: string
+): CheckboxFlipResult {
+  const absPath = resolvePath(cwd ?? process.cwd(), taskListPath);
+  let original: string;
+  try {
+    original = readFileSync(absPath, 'utf8');
+  } catch (err) {
+    return {
+      flipped: false,
+      newHeadSha: null,
+      reason: `read failed: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+  const flip = flipTaskCheckbox(original, taskId);
+  if (!flip.flipped) {
+    return { flipped: false, newHeadSha: null, reason: flip.reason };
+  }
+  try {
+    writeFileSync(absPath, flip.markdown, 'utf8');
+  } catch (err) {
+    return {
+      flipped: false,
+      newHeadSha: null,
+      reason: `write failed: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+  try {
+    execSync(`git add ${JSON.stringify(taskListPath)}`, { cwd, stdio: 'pipe' });
+    execSync(
+      `git commit -m ${JSON.stringify(
+        `chore(spec): mark ${taskId} [x] (orchestrate post-merge step)`
+      )}`,
+      { cwd, stdio: 'pipe' }
+    );
+    const newHead = execSync('git rev-parse HEAD', {
+      cwd,
+      encoding: 'utf8',
+    }).trim();
+    return { flipped: true, newHeadSha: newHead };
+  } catch (err) {
+    return {
+      flipped: false,
+      newHeadSha: null,
+      commitFailed: true,
+      reason: `commit failed (file change retained on disk): ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
 }

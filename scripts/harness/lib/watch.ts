@@ -168,6 +168,8 @@ function formatEventTag(e: StateEvent, opts: WatchOptions): string {
       return paint(opts, ANSI.bold + ANSI.red, '⊘ cycle_halt     ');
     case 'pushback_dispatch':
       return paint(opts, ANSI.cyan, '⟲ pushback       ');
+    case 'checkbox_flip':
+      return paint(opts, ANSI.dim, '☑ checkbox_flip  ');
   }
 }
 
