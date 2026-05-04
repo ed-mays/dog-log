@@ -34,8 +34,20 @@ vi.mock('@store/useIncidentStore');
 vi.mock('@store/pets.store');
 vi.mock('@store/auth.store');
 vi.mock('@features/incidents/components/ActivationPetPicker', () => ({
-  ActivationPetPicker: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="activation-pet-picker" /> : null,
+  ActivationPetPicker: ({
+    open,
+    onClose,
+  }: {
+    open: boolean;
+    onClose: () => void;
+  }) =>
+    open ? (
+      <div data-testid="activation-pet-picker">
+        <button type="button" onClick={onClose}>
+          close-picker
+        </button>
+      </div>
+    ) : null,
 }));
 
 function makePet(id: string): Pet {
@@ -196,6 +208,26 @@ describe('EmergencyActivationFab', () => {
     render(<EmergencyActivationFab />);
     expect(
       screen.queryByRole('button', { name: 'incidents.activate' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('closes ActivationPetPicker when its onClose fires (operator-backfill for coverage gate)', async () => {
+    setupDefaults({
+      params: {},
+      pets: [makePet('pet-1'), makePet('pet-2')],
+    });
+
+    const user = userEvent.setup();
+    render(<EmergencyActivationFab />);
+
+    await user.click(
+      screen.getByRole('button', { name: 'incidents.activate' })
+    );
+    expect(screen.getByTestId('activation-pet-picker')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'close-picker' }));
+    expect(
+      screen.queryByTestId('activation-pet-picker')
     ).not.toBeInTheDocument();
   });
 
