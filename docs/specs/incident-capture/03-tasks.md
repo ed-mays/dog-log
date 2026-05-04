@@ -198,19 +198,19 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **What:** Create `src/features/incidents/components/ActivationPetPicker.tsx`. MUI bottom `<Drawer>`. Lists user's pets with thumbnail + name. Tapping a pet IS the activation (calls `startIncident({ petId })` and navigates).
 - **Verify:** Component test: shows all user's pets; tapping a pet creates incident with that petId.
 
-### `[ ]` T-28 — EmergencyActivationFab (multi-pet + resume)
+### `[x]` T-28 — EmergencyActivationFab (multi-pet + resume)
 
 - **Cite:** spec BR-1, BR-26 (resume short-circuit), BR-28 (all three rules); design §D2 FAB tap-behavior table
 - **What:** Extend FAB (T-14): if active incident exists in store, navigate to `/incidents/active` (resume — top row of table); if multi-pet user on non-pet-scoped surface, open `<ActivationPetPicker>`; otherwise existing slice-1 behavior.
 - **Verify:** Component test: AC-11 (resume), AC-19 (multi-pet picker), AC-20 (single-tap fast path). All three FAB rows tested.
 
-### `[ ]` T-29 — Auth-boot active-incident hydration
+### `[x]` T-29 — Auth-boot active-incident hydration
 
 - **Cite:** spec BR-26; design §D5 DQ-2 resolution
 - **What:** On `useAuthStore` "signed-in" transition, call `useIncidentStore.hydrateActiveIncident()` which queries `incidentService.findActiveIncident()` and sets store state if non-null. Do **not** auto-navigate.
 - **Verify:** Test: simulate page reload while a Firestore emulator has an active incident → store hydrates with it. No navigation occurs.
 
-### `[ ]` T-30 — ResumeIncidentBanner component + global mount
+### `[x]` T-30 — ResumeIncidentBanner component + global mount
 
 - **Cite:** spec BR-26; design §D5 DQ-2 (banner approach)
 - **What:** Create `src/features/incidents/components/ResumeIncidentBanner.tsx`. Visible whenever `useIncidentStore.activeIncident != null` AND the current route ≠ `/incidents/active`. Tap → navigate to `/incidents/active`. Dismissible per session, NOT per active-incident. Mount in `src/App.tsx` adjacent to the FAB.
@@ -338,3 +338,5 @@ Goal after this slice: a single-pet user can tap a global FAB, see a running tim
 - **2026-05-03** — T-26: passed manual smoke for slice 2 (severity, observation chips, journal Enter-commit, type change carry-over, vet call). Closes slice 2 (10/10 tasks). Slice 2 cumulative cost $11.13 across 7 orchestrated dispatches + 2 operator pushback re-dispatches; 2 cold-reader vetoes recovered, 1 cold-reader verdict-non-determinism instance (round 41), 1 finding-#5-relevant slice-end check passed (BR-14 freeze invariant locked at composition layer in T-25 PR). Three new harness findings opened during the slice (#10 state.json finding text, #11 pushback CLI urgency, #12 verdict non-determinism); none addressed yet; queued for harness PR-B round.
 - **2026-05-02** — T-06: clarified verify line to specify `vi.mock('firebase/firestore')` per the established repo-test pattern (see `PetMedicationRepository.test.ts` and 4 sibling repo tests) and explicitly note that the security boundary is covered by `src/tests/firestore.rules.test.ts`, not by repo unit tests. Resolves spec_gap from T-06 (verify line "Firestore emulator" conflicts with the project's mock-based repo-test pattern; no repo currently uses emulator-backed unit tests). Spec/design unchanged. User chose `amend_task` (option 1 of 3) in plan §11 round-25 interview; reasoning recorded in plan §11 info-gathering log. NOTE: this is **instance #1** of a new pattern (emulator-vs-mocks for repo unit tests), distinct from the round-24 no-deploy thread. Watch T-07/T-08 for recurrence; threshold to promote to a builder-prompt rule is 3 instances.
 - **2026-05-03** — T-27: marked `[x]`. Shipped via `harness pushback` re-dispatch in PR #200 (round 43, slice-3 readiness gate); checkbox flip was missed in that PR. Slice 3 now at 1/10. Spec/design unchanged. Harness lesson: include checkbox flip in the orchestrate post-merge step (currently relies on manual operator action).
+- **2026-05-03** — T-28, T-29: marked `[x]`. Same checkbox-flip gap as T-27 (round 43); shipped via `harness orchestrate` in PR #207 and #210 respectively but the orchestrate post-merge step doesn't auto-flip. **This is the 2nd recurrence of the round-43 lesson — escalate harness work: orchestrate should mark `[x]` on success-path completion.**
+- **2026-05-03** — T-30: marked `[x]`. Builder over-shipped on T-29 (round 46, PR #210) — created `ResumeIncidentBanner.tsx` + global App mount as part of DQ-2 resolution, which was T-30's deliverable. Operator gap-fix in this round added the two missing T-30 spec items: (a) `pathname === '/incidents/active'` exclusion (banner was rendering on the active page), (b) sessionStorage-backed dismissal (T-29 used in-memory `useState` only). Spec/design unchanged. **Harness finding #17 (new): builder scope-creep across task boundaries.** When a task's cited design references a deliverable from an adjacent task, builder may construct it pre-emptively. Single instance (round 46→47); threshold = 2nd recurrence to act. Slice 3 now at 4/10.
