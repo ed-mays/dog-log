@@ -1347,9 +1347,75 @@ The full PR-B + Axes-4/5 + PR-D stack survived its first live exercise. T-28 shi
 
 ---
 
+### Round 46 — T-29 auth-boot hydration ships first-try
+
+#### Round 46 trajectory
+
+Single PR. `harness orchestrate T-29` from a fresh `orchestrate/t-29` branch off main; first-try success.
+
+- **PR #210 — T-29 auth-boot active-incident hydration + ResumeIncidentBanner (BR-26, DQ-2).** Builder commit `41b5193` wires `hydrateActiveIncident()` into the auth-boot flow so a still-active incident from a prior session resumes on next sign-in. App does NOT auto-navigate (DQ-2 resolution); instead, builder created a `ResumeIncidentBanner.tsx` (mounted globally in App.tsx) that surfaces the resume option per design §D5. 9 files changed (8 source + 1 test util), 117-test ResumeIncidentBanner.test.tsx + assertions added to App.test.tsx + App.routing.test.tsx + App.authGuard.test.tsx. Cold-reader approved with 0 findings.
+
+#### Round 46 cost
+
+- Subagent: $3.74 (T-29: $3.38 builder + $0.35 cold-reader)
+- Operator: ~30 min (kickoff + monitoring + PR open; coverage was clean first-try, no backfill needed)
+- **Round 46 total: $3.74 subagent + ~30 min operator**
+
+#### Round 46 dispatch metrics (T-29)
+
+| Role        | Dispatches | Cost  | Wall clock | Verdict             |
+| ----------- | ---------- | ----- | ---------- | ------------------- |
+| Builder     | 1          | $3.38 | 14:14      | success             |
+| Cold-reader | 1          | $0.35 | 3:17       | approve, 0 findings |
+| Arbiter     | 0          | —     | —          | (not invoked)       |
+| Pushback    | 0          | —     | —          | (not invoked)       |
+
+T-29 was ~3x more expensive than T-28 — bigger scope (new component + cross-cutting App wiring + 4 test files touched). Cold-reader still approved cleanly.
+
+#### Round 46 stack validation
+
+- **Finding #15 fix verified live:** post-#208, `harness stats` correctly reads `.harness/dispatches.jsonl` (canonical path, no double-nest). Aggregate output reported: 2 dispatches, 1 task, 100% builder success rate, 0% cold-reader veto rate.
+
+#### Round 46 findings (harness)
+
+None new at the time of round 46 close. Two surfaced retroactively in round 47 (see below).
+
+#### Round 46 bottom line
+
+Second clean orchestrated dispatch in a row. The harness now ships a non-trivial cross-cutting feature first-try at ~$4. What didn't surface until round 47 was that builder over-shipped: it built `ResumeIncidentBanner.tsx` (which is T-30's deliverable) as part of T-29's DQ-2 resolution. Slice 3 advances 2/10 → 3/10 nominally; 4/10 effective once T-30 closes its remaining gaps in round 47.
+
+---
+
+### Round 47 — T-30 gap-fix + auto-flip checkbox (round-43 lesson 2nd recurrence)
+
+#### Round 47 trajectory
+
+Two PRs, both pure-operator (no subagent dispatches).
+
+- **PR #211 — T-30 gap-fix for ResumeIncidentBanner (BR-26, DQ-2).** Round 46's T-29 builder over-shipped — created `ResumeIncidentBanner.tsx` + global App mount as part of DQ-2 resolution, which was T-30's deliverable. This PR closes the two T-30 spec items the over-ship missed: (1) route exclusion (banner now hidden when `pathname === '/incidents/active'`), (2) sessionStorage-backed dismissal (T-29 used in-memory `useState`; T-30 spec says "per session"). 3 new tests cover both gaps. Also bulk-flips T-28/T-29/T-30 checkboxes that the orchestrate post-merge step did not auto-apply. **§T0 entries record both the over-ship + the bulk flip; explicitly call out the bulk flip as the 2nd recurrence of the round-43 lesson, escalating it to ship-now.**
+- **PR #212 — orchestrate auto-flips task checkbox on success (round-47 escalation).** New pure `checkbox-flip.ts` (`flipTaskCheckbox(md, taskId)`: idempotent, refuses to override `[!]` blocked, no-op on missing task). New `commitCheckboxFlip` dep on `OrchestrateDeps`; default impl reads task list, flips, writes, runs `git add` + `git commit -m 'chore(spec): mark T-N [x]'` (chore prefix exempts citation linter). Wired into `orchestrate.success()` — runs only when `taskListPath` provided AND outcome is success (NOT on veto / spec_gap / halt). When the flip commits, its new HEAD sha replaces `lastCommitSha` in `OrchestrateResult`. New `checkbox_flip` StateEventType + watch.ts case. Failure modes (file read fail, write fail, git fail) all degrade gracefully without blocking success. 7 pure-fn tests + 4 orchestrate-integration tests.
+
+#### Round 47 cost
+
+- Subagent: $0 (no dispatches)
+- Operator: ~2 hours across both PRs (TDD + wiring + PR open + bulk-flip housekeeping)
+- **Round 47 total: $0 subagent + ~2 hours operator**
+
+#### Round 47 findings (harness)
+
+**Finding #17 (new): builder scope-creep across task boundaries.** When a task's cited design references a deliverable from an adjacent task, builder may construct it pre-emptively. T-29 cited DQ-2 (resolution = banner approach per design §D5); builder built the banner — which was T-30's contract. Cold-reader approved because the banner satisfies T-29's cited content (DQ-2 is in T-29's cite list). The over-ship was _correct in spirit_ — DQ-2's resolution IS the banner — but it crossed the slice's task ordering. Single instance (round 46→47); threshold = 2nd recurrence to act. Possible mitigations when 2nd instance hits: (a) cold-reader pre-flight checks "does this diff touch files that any _later_ task names in its What-line?", (b) task-list parser produces a forward-reference graph and warns the builder explicitly, (c) accept it as the right behavior and merge over-shipped tasks into single-task PRs.
+
+**Round-43 lesson 2nd recurrence shipped:** "orchestrate post-merge step does not auto-flip task checkboxes" — single instance was T-27 round 43; rounds 45+46 added T-28+T-29 as 2nd+3rd recurrences. Escalated to ship-now in round 47. PR #212 implements the fix; from this PR forward, every successful `harness orchestrate` run produces a `chore(spec): mark T-N [x]` commit on top of the builder commit.
+
+#### Round 47 bottom line
+
+Two parallel cleanups: (a) close the T-30 spec gaps that emerged from T-29's over-ship; (b) implement the auto-flip mechanism so this entire class of operator-overhead disappears starting next dispatch. The auto-flip work was ~120 LOC + 11 tests; defensive against 5 failure modes; verified end-to-end via mocked deps in `orchestrate.test.ts`. Will be exercised live on T-31 (round 48). Slice 3 advances 3/10 → 4/10.
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-45. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 2/10 (T-27 + T-28 shipped); PR-B trio shipped (#196/#197/#198); doc snapshot refresh shipped (#195); observability bundle shipped (#201) + finding-#15 path fix (#208); Axis 6 PR-D bundle shipped (#203/#204).** Methodology debt: **0** for shippable findings (#5, #8, #14 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #15 fixed same round; #16 single-instance, threshold = 2nd recurrence). Builder cost-per-task converged within tier; cold-reader scope #7 + task body + pre-flight added; verify-command derivation lifted to deterministic; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped + writes to canonical path.
+**Active branch:** `main` post-round-47. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 4/10 (T-27, T-28, T-29, T-30 shipped); PR-B trio (#196/#197/#198); observability bundle (#201) + path fix (#208); Axis 6 PR-D bundle (#203/#204); orchestrate auto-flip (#212).** Methodology debt: **0** for shippable findings (#5, #8, #14, #16, #17 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #15 fixed round 45). Builder cost-per-task converged within tier; cold-reader scope #7 + task body + pre-flight; verify-command derivation deterministic; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped + canonical path; **orchestrate auto-flips checkbox on success** (round-47 escalation; live exercise pending T-31).
 
 ### Merged to main (chronological)
 
@@ -1409,20 +1475,25 @@ The full PR-B + Axes-4/5 + PR-D stack survived its first live exercise. T-28 shi
 | #206 | 45       | T-27 checkbox flip (PR #200 missed it); §T0 entry with harness lesson (orchestrate post-merge step should auto-flip)                                              |
 | #207 | 45       | T-28 EmergencyActivationFab multi-pet picker — first-try orchestrate ship under full PR-B + Axes-4/5 + PR-D stack; operator backfill +1 coverage test             |
 | #208 | 45       | Finding #15 fix — dispatches.jsonl writes to canonical `.harness/dispatches.jsonl` (not double-nested `.harness/.harness/`)                                       |
+| #209 | 45       | Session log round 45 (T-28 first-try ship + finding #15 fix)                                                                                                      |
+| #210 | 46       | T-29 auth-boot active-incident hydration + ResumeIncidentBanner — first-try orchestrate ship; builder over-shipped T-30's deliverable as part of DQ-2 resolution  |
+| #211 | 47       | T-30 gap-fix (route exclusion + sessionStorage dismissal); slice-3 bulk checkbox flip; finding #17 captured                                                       |
+| #212 | 47       | Orchestrate auto-flip checkbox on success — closes round-43 lesson 2nd recurrence                                                                                 |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
 ### Open
 
-- **Slices 1+2 closed (21/21); slice 3 at 2/10 (T-27, T-28).** PR-B trio (#196/#197/#198) + observability bundle (#201) + Axis 6 PR-D bundle (#203/#204) + finding-#15 path fix (#208). Harness operationally complete with analytics surface (now writing to canonical path) and two LLM-failure-mode pre-flights (task-contract symbols + verify-command derivation), validated end-to-end on T-28.
-- **Round 46 candidate:** **T-29 — Auth-boot active-incident hydration** (BR-26; design §D5 DQ-2 resolution). Per `03-tasks.md`, T-29 wires `hydrateActiveIncident()` (added in T-09) into the auth-boot flow so a still-active incident from a prior session resumes on next sign-in. Should be a small dispatch — single store-action edit + auth-shell hook. Run via `harness orchestrate T-29`; expect canonical verify command derivation + task-contract pre-flight to fire as on T-28.
+- **Slices 1+2 closed (21/21); slice 3 at 4/10 (T-27, T-28, T-29, T-30).** PR-B trio (#196/#197/#198) + observability bundle (#201) + Axis 6 PR-D bundle (#203/#204) + finding-#15 path fix (#208) + auto-flip (#212). Harness operationally complete with analytics surface, two LLM-failure-mode pre-flights, and zero-operator-overhead checkbox housekeeping starting T-31 forward.
+- **Round 48 candidate:** **T-31 — IncidentHistoryList component** (BR-23/24/25; design §D2). Add `incidentService.listForPet(petId)` (new method) + `IncidentHistoryList.tsx` rendering rows with start time, duration, type, severity, journal excerpt; tap → navigate to `/pets/:petId/incidents/:id`. Bigger task than T-29-style cross-cutting wiring (new service method + new feature component + queries); expect $2–$4 cost based on T-29 baseline. **First live exercise of PR #212 auto-flip:** post-success orchestrate run should produce a `chore(spec): mark T-31 [x]` commit on top of the builder commit, no operator action needed.
 - **Open harness work (deferred):**
   - **#5** — invariant propagation slice-end cold-read. Single instance (round 35); threshold = 2nd recurrence.
   - **#8** — forward-of-wire-up file friction (auto-detect at pre-push). Single instance (round 38); threshold = 2nd recurrence.
   - **#12** — cold-reader verdict non-determinism. Single instance (round 41); needs 5x quantification before designing fix.
   - **#13** — article-grade documentation reconstruction. Process finding (round 42); deferred by user.
   - **#14** — `harness pushback --reset` should validate HEAD belongs to the task (round 43). Single instance; fix is ~10 LOC, queue with next harness PR or after a 2nd instance.
-  - **#16** — function-coverage gate is finer than scope_check 7 (round 45). Single instance; threshold = 2nd recurrence to act. Three candidate responses queued in §3 round-45 narrative.
+  - **#16** — function-coverage gate is finer than scope_check 7 (round 45). Single instance; threshold = 2nd recurrence to act.
+  - **#17** — builder scope-creep across task boundaries (round 46→47, T-29 over-shipped T-30's deliverable). Single instance; threshold = 2nd recurrence to act. Mitigations queued in §3 round-47 narrative.
 - **Plan §11 axes status:**
   - Axis 4 (progress reporting) — **shipped** PR #201
   - Axis 5 (long-term logging) — **shipped** PR #201
