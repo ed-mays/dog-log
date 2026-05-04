@@ -12,6 +12,7 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
   limit,
 } from 'firebase/firestore';
 import type {
@@ -331,6 +332,56 @@ describe('IncidentRepository', () => {
         }),
         { merge: true }
       );
+    });
+  });
+
+  describe('findByPetId', () => {
+    const makeDoc = (
+      id: string,
+      startedAt: Date,
+      extra: Partial<{ deletedAt: Date | null }> = {}
+    ) => ({
+      id,
+      data: () => ({
+        petId: 'pet-1',
+        userId,
+        createdBy: userId,
+        startedAt: { toDate: () => startedAt },
+        endedAt: null,
+        chips: [],
+        journal: [],
+        createdAt: { toDate: () => startedAt },
+        updatedAt: { toDate: () => startedAt },
+        deletedAt: extra.deletedAt ?? null,
+        type: null,
+        severity: null,
+      }),
+    });
+
+    it('queries petId == petId AND deletedAt == null, ordered startedAt desc (BR-23)', async () => {
+      const t1 = new Date('2026-05-02T10:00:00.000Z');
+      const t2 = new Date('2026-05-01T08:00:00.000Z');
+      (getDocs as Mock).mockResolvedValue({
+        empty: false,
+        docs: [makeDoc('i-2', t1), makeDoc('i-1', t2)],
+      });
+
+      const results = await repository.findByPetId('pet-1');
+
+      expect(query).toHaveBeenCalled();
+      expect(where).toHaveBeenCalledWith('petId', '==', 'pet-1');
+      expect(where).toHaveBeenCalledWith('deletedAt', '==', null);
+      expect(orderBy).toHaveBeenCalledWith('startedAt', 'desc');
+      expect(results).toHaveLength(2);
+      expect(results[0].id).toBe('i-2');
+      expect(results[1].id).toBe('i-1');
+    });
+
+    it('returns an empty array when no incidents exist for the pet', async () => {
+      (getDocs as Mock).mockResolvedValue({ empty: true, docs: [] });
+
+      const results = await repository.findByPetId('pet-no-incidents');
+      expect(results).toEqual([]);
     });
   });
 
