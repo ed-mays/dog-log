@@ -197,3 +197,73 @@ describe('formatBuilderInputMarkdown', () => {
     expect(fakeMd).toMatch(/BR-999/);
   });
 });
+
+describe('buildBuilderInput — derived verify command (Axis 6)', () => {
+  it('passes a derived verify command through to the output', () => {
+    const dvc = {
+      command: 'pnpm run test:rules',
+      source: 'verbatim' as const,
+      reason: 'extracted from backticks',
+    };
+    const input = buildBuilderInput({
+      task: task('T-01'),
+      specMarkdown: specMd,
+      designMarkdown: designMd,
+      derivedVerifyCommand: dvc,
+    });
+    expect(input.derived_verify_command).toBe(dvc);
+  });
+
+  it('defaults derived_verify_command to null when not provided', () => {
+    const input = buildBuilderInput({
+      task: task('T-01'),
+      specMarkdown: specMd,
+      designMarkdown: designMd,
+    });
+    expect(input.derived_verify_command).toBeNull();
+  });
+
+  it('renders a "## Verify command (canonical, derived)" section in markdown', () => {
+    const input = buildBuilderInput({
+      task: task('T-01'),
+      specMarkdown: specMd,
+      designMarkdown: designMd,
+      derivedVerifyCommand: {
+        command: 'pnpm run preflight',
+        source: 'script-match',
+        reason: 'matched build keyword',
+      },
+    });
+    const md = formatBuilderInputMarkdown(input);
+    expect(md).toMatch(/## Verify command \(canonical, derived\)/);
+    expect(md).toMatch(/```bash\npnpm run preflight\n```/);
+    expect(md).toMatch(/Source: script-match — matched build keyword/);
+  });
+
+  it('omits the canonical section when derived_verify_command is null', () => {
+    const md = formatBuilderInputMarkdown(
+      buildBuilderInput({
+        task: task('T-01'),
+        specMarkdown: specMd,
+        designMarkdown: designMd,
+      })
+    );
+    expect(md).not.toMatch(/canonical, derived/);
+  });
+
+  it('omits the canonical section when command is null (unknown source)', () => {
+    const md = formatBuilderInputMarkdown(
+      buildBuilderInput({
+        task: task('T-01'),
+        specMarkdown: specMd,
+        designMarkdown: designMd,
+        derivedVerifyCommand: {
+          command: null,
+          source: 'unknown',
+          reason: 'no test scripts',
+        },
+      })
+    );
+    expect(md).not.toMatch(/canonical, derived/);
+  });
+});

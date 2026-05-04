@@ -5,6 +5,7 @@
  * BuilderInput. The CLI wrapper handles file I/O.
  */
 
+import type { DerivedVerifyCommand } from './derive-verify-command';
 import {
   extractRequirement,
   extractSpecSection,
@@ -61,6 +62,11 @@ export interface BuilderInput {
    * dispatch — the agent can't satisfy citations that don't exist.
    */
   missing_citations: string[];
+  /** Optional canonical verify command derived from the verify line + the
+   * project's package.json (Axis 6). When provided, the markdown formatter
+   * renders a "## Verify command (canonical, derived)" section so the
+   * builder runs the canonical command rather than re-deriving it. */
+  derived_verify_command?: DerivedVerifyCommand | null;
 }
 
 export interface BuildBuilderInputOptions {
@@ -70,6 +76,8 @@ export interface BuildBuilderInputOptions {
   contextFiles?: string[];
   allowedWrites?: string[];
   budget?: BuilderInputBudget;
+  /** Optional pre-derived verify command (Axis 6). */
+  derivedVerifyCommand?: DerivedVerifyCommand | null;
 }
 
 /**
@@ -93,6 +101,7 @@ export function buildBuilderInput(
     contextFiles = ['CLAUDE.md'],
     allowedWrites = [],
     budget = DEFAULT_BUDGET,
+    derivedVerifyCommand,
   } = opts;
 
   const citations: ExtractedCitation[] = [];
@@ -122,6 +131,7 @@ export function buildBuilderInput(
     allowed_writes: allowedWrites,
     budget,
     missing_citations: missing,
+    derived_verify_command: derivedVerifyCommand ?? null,
   };
 }
 
@@ -181,6 +191,32 @@ export function formatBuilderInputMarkdown(input: BuilderInput): string {
     out.push('## Verify (the per-task gate)');
     out.push('');
     out.push(input.verify);
+    out.push('');
+  }
+
+  if (input.derived_verify_command && input.derived_verify_command.command) {
+    const dvc = input.derived_verify_command;
+    out.push('## Verify command (canonical, derived)');
+    out.push('');
+    out.push(
+      '_Mechanical pre-derivation (Axis 6): the harness has already mapped'
+    );
+    out.push(
+      'the verify line above to a canonical pnpm script. Run this command —'
+    );
+    out.push(
+      'do NOT invent flags, framework syntax, or alternative scripts. If it'
+    );
+    out.push(
+      'fails for a structural reason (script missing, wrong runner) emit'
+    );
+    out.push('`spec_gap` rather than substituting your own command._');
+    out.push('');
+    out.push('```bash');
+    out.push(dvc.command!);
+    out.push('```');
+    out.push('');
+    out.push(`_Source: ${dvc.source} — ${dvc.reason}_`);
     out.push('');
   }
 

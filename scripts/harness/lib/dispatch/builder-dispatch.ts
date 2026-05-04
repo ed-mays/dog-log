@@ -20,6 +20,7 @@ import {
   buildBuilderInput,
   formatBuilderInputMarkdown,
 } from '../builder-input';
+import { deriveVerifyCommand } from '../derive-verify-command';
 import { parseTaskList } from '../task-parser';
 import { dispatchSubagent, type DispatchResult } from '../subagent-dispatch';
 import { parseStructuredExit } from './parse-structured-exit';
@@ -126,10 +127,18 @@ export async function dispatchBuilder(
       `builder dispatch: task ${opts.taskId} not found in ${taskListPath}`
     );
   }
+  // Axis 6: derive canonical verify command from package.json + verify line
+  // so the builder doesn't reinvent flag syntax (round-27 cost: $0.71 on
+  // invented Jest --testPathPattern).
+  const derivedVerifyCommand = derivePackageJsonVerifyCommand(
+    task.verify,
+    opts.cwd
+  );
   const builderInput = buildBuilderInput({
     task,
     specMarkdown: specMd,
     designMarkdown: designMd,
+    derivedVerifyCommand,
   });
   const inputMd = formatBuilderInputMarkdown(builderInput);
 
@@ -173,4 +182,23 @@ export function parseBuilderExit(text: string): BuilderExit {
     );
   }
   return parsed as unknown as BuilderExit;
+}
+
+/**
+ * Read package.json from the dispatch cwd (or process.cwd()) and call
+ * deriveVerifyCommand. Returns null on any I/O error — derivation is a
+ * best-effort optimization, not a hard dependency.
+ */
+function derivePackageJsonVerifyCommand(
+  verifyLine: string | null,
+  cwd?: string
+): ReturnType<typeof deriveVerifyCommand> | null {
+  try {
+    const pkgPath = join(cwd ?? process.cwd(), 'package.json');
+    const raw = readFileSync(pkgPath, 'utf8');
+    const pkg = JSON.parse(raw) as { scripts?: Record<string, string> };
+    return deriveVerifyCommand(verifyLine, pkg);
+  } catch {
+    return null;
+  }
 }
