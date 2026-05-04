@@ -118,6 +118,14 @@ export class IncidentService {
     const repo = new IncidentRepository(userId);
     return repo.update(incidentId, { type: null });
   }
+
+  // BR-23: per-pet chronological list, most recent first.
+  // Soft-delete exclusion is enforced by IncidentRepository.findByPetId at the
+  // query layer — callers receive only live records.
+  async listForPet(userId: string, petId: string): Promise<Incident[]> {
+    const repo = new IncidentRepository(userId);
+    return repo.findByPetId(petId);
+  }
 }
 
 export const incidentService = new IncidentService();

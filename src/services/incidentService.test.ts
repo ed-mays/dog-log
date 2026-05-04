@@ -8,6 +8,7 @@ const mockFindActiveForUser = vi.fn();
 const mockGetById = vi.fn();
 const mockAppendJournal = vi.fn();
 const mockToggleChip = vi.fn();
+const mockFindByPetId = vi.fn();
 
 vi.mock('@repositories/IncidentRepository', () => ({
   IncidentRepository: vi.fn().mockImplementation(() => ({
@@ -17,6 +18,7 @@ vi.mock('@repositories/IncidentRepository', () => ({
     getById: mockGetById,
     appendJournal: mockAppendJournal,
     toggleChip: mockToggleChip,
+    findByPetId: mockFindByPetId,
   })),
 }));
 
@@ -417,5 +419,44 @@ describe('incidentService.clearType', () => {
 
     expect(mockUpdate).toHaveBeenCalledWith('incident-1', { type: null });
     expect(result.type).toBeNull();
+  });
+});
+
+describe('incidentService.listForPet', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('delegates to repository.findByPetId and returns the list (BR-23)', async () => {
+    const startedAt = new Date('2026-05-02T10:00:00.000Z');
+    const incidents = [
+      {
+        id: 'i-1',
+        userId,
+        petId: 'pet-1',
+        startedAt,
+        endedAt: null,
+        type: null,
+        severity: null,
+        chips: [],
+        journal: [],
+        deletedAt: null,
+        createdAt: startedAt,
+        updatedAt: startedAt,
+        createdBy: userId,
+      },
+    ];
+    mockFindByPetId.mockResolvedValue(incidents);
+
+    const result = await incidentService.listForPet(userId, 'pet-1');
+    expect(mockFindByPetId).toHaveBeenCalledWith('pet-1');
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('i-1');
+  });
+
+  it('returns an empty array when no incidents exist for the pet', async () => {
+    mockFindByPetId.mockResolvedValue([]);
+    const result = await incidentService.listForPet(userId, 'pet-no-incidents');
+    expect(result).toEqual([]);
   });
 });

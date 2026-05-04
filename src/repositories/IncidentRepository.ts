@@ -4,6 +4,7 @@ import {
   setDoc,
   query,
   where,
+  orderBy,
   limit,
   getDocs,
   type QueryDocumentSnapshot,
@@ -113,6 +114,27 @@ export class IncidentRepository extends BaseRepository<Incident> {
       return { ...current, chips: next };
     } catch (error) {
       throw this.handleError(error, `toggleChip(${id})`);
+    }
+  }
+
+  // Per BR-23: returns all non-deleted incidents for a pet, most recent first.
+  // Soft-delete exclusion (deletedAt == null) is enforced at the query layer so
+  // all callers (service, hooks, future T-32/T-34 paths) share the same semantics.
+  async findByPetId(petId: string): Promise<Incident[]> {
+    try {
+      const colRef = collection(db, this.collectionPath);
+      const q = query(
+        colRef,
+        where('petId', '==', petId),
+        where('deletedAt', '==', null),
+        orderBy('startedAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((d) =>
+        this.documentToEntity(d as QueryDocumentSnapshot<DocumentData>)
+      );
+    } catch (error) {
+      throw this.handleError(error, `findByPetId(${petId})`);
     }
   }
 
