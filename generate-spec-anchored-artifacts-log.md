@@ -1413,9 +1413,57 @@ Two parallel cleanups: (a) close the T-30 spec gaps that emerged from T-29's ove
 
 ---
 
+### Round 48 — T-31 first full escalation cycle through the orchestrator + pushback CLI
+
+#### Round 48 trajectory
+
+T-31 is the first task in this whole methodology to exercise the COMPLETE escalation chain — build → cold-reader veto → arbiter pushback → operator pushback CLI → re-build → manual cold-reader → spec amendment — across a single round. Every prior round either shipped first-try or short-circuited (cold-reader approve, or simple amendment). Round 48 ran the full machine and produced three findings about the machine itself.
+
+- **Initial orchestrate dispatch (commit `259e748`, discarded):** builder shipped a presentational `IncidentHistoryList` taking an `incidents: Incident[]` prop. Cold-reader vetoed (1 finding); arbiter classified as builder-misread of the task contract; emitted `pushback` (no spec change needed). Orchestrator halted with `halt_pushback_unsupported` (v1 doesn't auto-feed pushback into builder — operator handles via `harness pushback`).
+
+- **Operator pushback re-dispatch (commit `59e02f3`):** wrote a findings markdown file that captured the arbiter's pushback verbatim plus the project's layered architecture (Component → Hook → Service); ran `harness pushback T-31 --findings ... --reset`. The `--reset` cleanly dropped `259e748` because HEAD~1 was `main` (last merged was the round-47 log PR — no risk of clobbering unrelated work like round 43's finding #14). Builder's second attempt: `IncidentRepository.findByPetId` (with `deletedAt is null` at the query layer) + `incidentService.listForPet` + `useIncidentHistory(petId)` hook + component consuming the hook. 8 files, 546 insertions, ~33 unit tests across the new layers.
+
+- **Manual cold-reader review (no commit):** ran `harness review T-31 --diff HEAD~1..HEAD` to validate the pushback dispatch (the pushback CLI dispatches builder only, not cold-reader). Cold-reader vetoed again with 2 findings — both rooted in the **operator's own pushback findings file**, not in the builder.
+
+- **Spec-amendment commit (`75684ea`):** reconciled both findings by amending the spec rather than the code:
+  - **HIGH scope_check 7:** task `What:` literally said `listForPet(petId)` (1-arg) but builder shipped `listForPet(userId, petId)` (2-arg) per the existing `IncidentService` convention (every other method takes `userId` first). Operator chose to amend T-31's `What:` to `listForPet(userId, petId)` rather than re-dispatch to drop `userId` from the public API (which would have broken the 10-method-deep convention in the same file).
+  - **MEDIUM scope_check 4:** `useIncidentHistory.ts` was not in §D2's `incidents/hooks/` file map. Operator-amended §D2 + §D11 changelog to add it.
+  - This commit also flipped T-31 → `[x]` (auto-flip didn't fire because pushback path bypasses the orchestrate success path).
+
+#### Round 48 cost
+
+| Stage                | Role        | Cost  | Wall clock | Verdict                   |
+| -------------------- | ----------- | ----- | ---------- | ------------------------- |
+| Initial orchestrate  | Builder     | $1.14 | 6:13       | success (wrong shape)     |
+| Initial orchestrate  | Cold-reader | $0.20 | 1:06       | veto, 1 finding           |
+| Initial orchestrate  | Arbiter     | $0.27 | 1:30       | pushback (no spec change) |
+| Pushback re-dispatch | Builder     | $1.85 | 9:03       | success (correct shape)   |
+| Manual review        | Cold-reader | $0.31 | 2:00       | veto, 2 findings          |
+
+**Round 48 total: $3.77 subagent + ~1.5h operator** (most of the operator time was understanding the cold-reader's veto-after-pushback signal; small share was actually editing the spec).
+
+#### Round 48 stack validation
+
+- **Pushback CLI (PR #198, second-ever live use):** `harness pushback T-31 --reset` worked exactly as designed; no recurrence of finding #14 (the round-43 hazard where `--reset` clobbered an unrelated commit) because HEAD~1 was the merged round-47 log PR. The CLI is now battle-tested across two distinct task contexts (T-27 originally, T-31 now).
+- **Auto-flip (PR #212): NOT exercised.** Auto-flip only fires on the orchestrate success path. Round 48 did not hit that path — initial orchestrate halted on pushback; the pushback CLI is a separate code path that does not invoke `success()`. Auto-flip awaits its first live exercise on the next first-try ship.
+- **#17 (forward-task over-ship): no recurrence.** The initial dispatch did NOT touch `AppRoutes.tsx` or create `SavedIncidentPage` despite T-31's verify line referencing the not-yet-routed `/pets/:petId/incidents/:incidentId` path. #17 stays single-instance.
+- **Pre-flight + scope_check 7 caught operator divergence.** The HIGH finding from the manual cold-reader was rooted in the operator's pushback findings file (which inferred "needs userId from auth") rather than in the builder's reasoning. Pre-flight greps the diff for symbols literally named in `task_what`; the literal task said `listForPet(petId)`; pre-flight reported `listForPet` Present but never validated the arg-count, and the cold-reader caught the divergence at the prose level. Methodology held.
+
+#### Round 48 findings (harness)
+
+**Finding #18 (new): operator pushback can introduce its own spec divergence.** Both the operator's pushback findings markdown AND the arbiter's verbatim `pushback_clarification` text inferred "needs userId from auth state" — which contradicted the literal task `What:`. Cold-reader pre-flight + scope_check 7 caught it on the next dispatch. Single instance (round 48); threshold = 2nd recurrence to act. Possible mitigations when a 2nd instance hits: (a) `harness pushback` could lint the findings file for divergence from the literal task `What:` (regex-extract symbols from both, diff); (b) the arbiter prompt could be amended to require a "literal task wording" cross-check before generating `pushback_clarification`; (c) accept that operator-pushback divergence IS a thing and rely on the next cold-reader pass to catch it (current state — works at $0.31 + a few minutes operator time).
+
+**Process meta-observation (not a numbered finding yet):** the round took ~1.5h operator and $3.77 subagent for a task whose net delivered code is ~550 lines. Compared to the cleanest first-try rounds (T-28 was $1.14 and ~1h), the full escalation cycle adds ~3x cost + ~1.5x time. The methodology values this — it's how spec amendments and architectural conversations happen — but two repeats in the same slice would warrant a "are these tasks too loosely specified for the harness?" conversation.
+
+#### Round 48 bottom line
+
+The harness completed its first full escalation cycle end-to-end without halt-for-human (every halt was either by-design at a designed boundary, or a productive escalation that produced a valid next step). The methodology absorbed a builder misread, an arbiter pushback, an operator pushback, and an operator-introduced divergence — all with the cold-reader catching what it was supposed to catch. **The methodology held when stressed.** The pushback CLI battle-tested itself; finding #17 didn't recur; finding #18 surfaced and was characterized for the backlog. T-31 ships with a clean Component → Hook → Service architecture that future slice-3 tasks (T-34 `getRecentTypesForPet`) can pattern off. Slice 3 advances 4/10 → 5/10.
+
+---
+
 ## §4 Current state
 
-**Active branch:** `main` post-round-47. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 4/10 (T-27, T-28, T-29, T-30 shipped); PR-B trio (#196/#197/#198); observability bundle (#201) + path fix (#208); Axis 6 PR-D bundle (#203/#204); orchestrate auto-flip (#212).** Methodology debt: **0** for shippable findings (#5, #8, #14, #16, #17 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #15 fixed round 45). Builder cost-per-task converged within tier; cold-reader scope #7 + task body + pre-flight; verify-command derivation deterministic; orchestrator captures real SHA + full findings; pushback CLI shipped; long-term JSONL log + stats + watch shipped + canonical path; **orchestrate auto-flips checkbox on success** (round-47 escalation; live exercise pending T-31).
+**Active branch:** `main` post-round-48. **Slice 1 closed (11/11), slice 2 closed (10/10), slice 3 at 5/10 (T-27, T-28, T-29, T-30, T-31 shipped); PR-B trio (#196/#197/#198); observability bundle (#201) + path fix (#208); Axis 6 PR-D bundle (#203/#204); orchestrate auto-flip (#212); pushback CLI battle-tested across 2 task contexts.** Methodology debt: **0** for shippable findings (#5, #8, #14, #16, #17, #18 deferred at single-instance threshold; #12 deferred pending 5x quantification; #13 is a process finding; #15 fixed round 45). Builder cost-per-task converged within tier; cold-reader scope #7 + task body + pre-flight; verify-command derivation deterministic; orchestrator captures real SHA + full findings; pushback CLI shipped + battle-tested; long-term JSONL log + stats + watch + canonical path; **orchestrate auto-flips checkbox on success** (round-47 escalation; live exercise still pending — T-31 went via pushback path which doesn't fire it).
 
 ### Merged to main (chronological)
 
@@ -1479,21 +1527,24 @@ Two parallel cleanups: (a) close the T-30 spec gaps that emerged from T-29's ove
 | #210 | 46       | T-29 auth-boot active-incident hydration + ResumeIncidentBanner — first-try orchestrate ship; builder over-shipped T-30's deliverable as part of DQ-2 resolution  |
 | #211 | 47       | T-30 gap-fix (route exclusion + sessionStorage dismissal); slice-3 bulk checkbox flip; finding #17 captured                                                       |
 | #212 | 47       | Orchestrate auto-flip checkbox on success — closes round-43 lesson 2nd recurrence                                                                                 |
+| #213 | 47       | Session log rounds 46-47 (T-29 ship + T-30 gap-fix + auto-flip escalation)                                                                                        |
+| #214 | 48       | T-31 IncidentHistoryList — first full escalation cycle (build → veto → arbiter pushback → re-build → manual cold-reader → spec amendment); finding #18 captured   |
 
 **Post-merge deploys complete (round 24):** `firebase deploy --only firestore:rules,storage` + `firebase deploy --only firestore:indexes` against dog-log-dev, both succeeded. (Used standalone commands instead of `pnpm run deploy:dev` due to the broken-hosting-target follow-up logged in §7.)
 
 ### Open
 
-- **Slices 1+2 closed (21/21); slice 3 at 4/10 (T-27, T-28, T-29, T-30).** PR-B trio (#196/#197/#198) + observability bundle (#201) + Axis 6 PR-D bundle (#203/#204) + finding-#15 path fix (#208) + auto-flip (#212). Harness operationally complete with analytics surface, two LLM-failure-mode pre-flights, and zero-operator-overhead checkbox housekeeping starting T-31 forward.
-- **Round 48 candidate:** **T-31 — IncidentHistoryList component** (BR-23/24/25; design §D2). Add `incidentService.listForPet(petId)` (new method) + `IncidentHistoryList.tsx` rendering rows with start time, duration, type, severity, journal excerpt; tap → navigate to `/pets/:petId/incidents/:id`. Bigger task than T-29-style cross-cutting wiring (new service method + new feature component + queries); expect $2–$4 cost based on T-29 baseline. **First live exercise of PR #212 auto-flip:** post-success orchestrate run should produce a `chore(spec): mark T-31 [x]` commit on top of the builder commit, no operator action needed.
+- **Slices 1+2 closed (21/21); slice 3 at 5/10 (T-27, T-28, T-29, T-30, T-31).** PR-B trio (#196/#197/#198) + observability bundle (#201) + Axis 6 PR-D bundle (#203/#204) + finding-#15 path fix (#208) + auto-flip (#212). Harness operationally complete + battle-tested through one full escalation cycle (round 48: build → veto → arbiter pushback → operator pushback → re-build → manual cold-reader → spec amendment).
+- **Round 49 candidate:** **T-32 — `SavedIncidentPage` + route** (BR-25 same surface re-opened; design §D2 routes). Add `src/features/incidents/pages/SavedIncidentPage.tsx` (loads incident by id from route param, renders `<IncidentCaptureSurface>` in stopped mode) and the `/pets/:petId/incidents/:incidentId` route in `AppRoutes.tsx` (flag-gated). Verify: AC-8 (re-open and edit), AC-15 (pet reassignment) — both pass in component tests. Smaller surface than T-31; expect $1–$2 cost based on T-28 baseline. **First live exercise of PR #212 auto-flip** (T-31 went via pushback path which doesn't fire it).
 - **Open harness work (deferred):**
   - **#5** — invariant propagation slice-end cold-read. Single instance (round 35); threshold = 2nd recurrence.
   - **#8** — forward-of-wire-up file friction (auto-detect at pre-push). Single instance (round 38); threshold = 2nd recurrence.
   - **#12** — cold-reader verdict non-determinism. Single instance (round 41); needs 5x quantification before designing fix.
   - **#13** — article-grade documentation reconstruction. Process finding (round 42); deferred by user.
-  - **#14** — `harness pushback --reset` should validate HEAD belongs to the task (round 43). Single instance; fix is ~10 LOC, queue with next harness PR or after a 2nd instance.
+  - **#14** — `harness pushback --reset` should validate HEAD belongs to the task (round 43). Single instance; round-48 use was clean (HEAD~1 was a merged PR, not unrelated work) — pattern is "OK when run promptly after the orchestrate halt"; fix is ~10 LOC, queue with next harness PR or after a 2nd instance.
   - **#16** — function-coverage gate is finer than scope_check 7 (round 45). Single instance; threshold = 2nd recurrence to act.
-  - **#17** — builder scope-creep across task boundaries (round 46→47, T-29 over-shipped T-30's deliverable). Single instance; threshold = 2nd recurrence to act. Mitigations queued in §3 round-47 narrative.
+  - **#17** — builder scope-creep across task boundaries (round 46→47). Single instance; **explicitly NOT recurrent in round 48** (T-31 builder did not over-ship T-32's route despite the verify line referencing it). Threshold remains 2nd recurrence.
+  - **#18** — operator pushback can introduce its own spec divergence (round 48). Single instance; threshold = 2nd recurrence. Mitigations queued in §3 round-48 narrative.
 - **Plan §11 axes status:**
   - Axis 4 (progress reporting) — **shipped** PR #201
   - Axis 5 (long-term logging) — **shipped** PR #201
